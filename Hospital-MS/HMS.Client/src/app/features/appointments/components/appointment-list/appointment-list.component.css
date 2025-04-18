@@ -1,0 +1,100 @@
+#list-patients{
+  min-height: 90vh;
+}
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  h4 {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+}
+
+table {
+  width: 100%;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  overflow: hidden;
+  border: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+th {
+  background-color: var(--main-color);
+  color: #ffffff;
+}
+
+th,
+td {
+  border: none;
+  padding: 15px;
+}
+
+.badge {
+  display: inline-block;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-align: center;
+  height: 100%;
+  padding: 5px 20px;
+  border-radius: 8px;
+}
+
+.table td p {
+  font-size: 14px;
+  padding: 4px 5px 7px;
+  border-radius: 8px;
+  color: white;
+  margin: 0 !important;
+  transition: all 0.3s ease;
+}
+
+
+.pagination-container {
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+  border-top: 2px solid #e9e9ee;
+  background-color: white;
+}
+
+.my-pagination {
+  background-color: transparent !important;
+}
+
+.my-pagination ::ng-deep .ngx-pagination .current {
+  background: var(--main-color);
+  border-radius: 6px;
+  color: white;
+  text-align: center !important;
+}
+
+.my-pagination ::ng-deep .ngx-pagination {
+  margin-top: 14px !important;
+  padding-left: 0 !important;
+}
+
+.my-pagination ::ng-deep .ngx-pagination a {
+  background: none;
+  border-radius: 6px;
+  color: black;
+  font-weight: bold;
+  margin-inline: 3px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+}
+
+.my-pagination ::ng-deep .ngx-pagination a:hover {
+  background: var(--main-color);
+  border-radius: 6px;
+  color: white;
+}
+
+.my-pagination ::ng-deep .ngx-pagination .disabled {
+  color: gray;
+  margin-inline: 3px;
+  text-decoration: none;
+  text-align: center !important;
+}

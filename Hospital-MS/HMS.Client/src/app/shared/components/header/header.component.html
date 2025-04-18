@@ -1,1 +1,18 @@
-<p>header works!</p>
+<header class="dashboard-header">
+  <div class="header-left">
+    <!-- <div class="search-bar">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearch()" />
+    </div> -->
+    <span class="date">{{ currentDate }}</span>
+  </div>
+  <div class="header-right">
+    <div class="header-icons">
+      <i class="fa-regular fa-gear"></i>
+      <i class="fa-regular fa-bell"></i>
+      <div class="user-profile">
+        <img [src]="userProfileImage" alt="User Profile" />
+      </div>
+    </div>
+  </div>
+</header>

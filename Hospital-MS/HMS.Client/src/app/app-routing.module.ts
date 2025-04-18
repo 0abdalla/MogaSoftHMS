@@ -1,11 +1,17 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { HomeComponent } from './features/dashboard/home/home.component';
+import { LoginComponent } from './features/auth/login/login.component';
+import { RegisterComponent } from './features/auth/register/register.component';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { loadingInterceptor } from './core/interceptor/loading.interceptor';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: HomeComponent, canActivate: [authGuard], },
+  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  {path:"login" , component : LoginComponent},
+  {path:"register" , component:RegisterComponent},
+  { path: 'home', component: HomeComponent, canActivate: [authGuard], },
   {
     path: 'patients',
     loadChildren: () => import('./features/patients/patients.module').then(m => m.PatientsModule),
@@ -19,6 +25,16 @@ const routes: Routes = [
   {
     path: 'appointments',
     loadChildren: () => import('./features/appointments/appointments.module').then(m => m.AppointmentsModule),
+    canActivate: [authGuard],
+  },
+  { 
+    path:"emergency" , 
+  loadChildren: () => import('./features/emergency/emergency.module').then(m => m.EmergencyModule),
+  canActivate: [authGuard]
+  },
+  { 
+    path:"insurance",
+    loadChildren: () => import('./features/insurance/insurance.module').then(m => m.InsuranceModule),
     canActivate: [authGuard],
   },
   {
@@ -36,11 +52,15 @@ const routes: Routes = [
     loadChildren: () => import('./features/financial/financial.module').then(m => m.FinancialModule),
     canActivate: [authGuard],
   },
+  {path:"reports" , loadChildren: () => import('./features/reports/reports.module').then(m => m.ReportsModule), canActivate: [authGuard]},
   { path: '**', redirectTo: '/dashboard' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, initialNavigation: 'enabledBlocking', scrollPositionRestoration: "enabled" })],
+  exports: [RouterModule],
+  providers: [
+    provideHttpClient(withInterceptors([loadingInterceptor]))
+  ]
 })
 export class AppRoutingModule { }

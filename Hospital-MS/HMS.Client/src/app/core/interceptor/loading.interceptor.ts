@@ -1,5 +1,37 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpEvent, HttpHandlerFn, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { Observable, catchError, finalize, throwError } from 'rxjs';
+import { LoaderService } from '../services/loader.service';
+import { Router } from '@angular/router';
 
-export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
-  return next(req);
+export const loadingInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<unknown>> => {
+  const loaderService = inject(LoaderService);
+  const router = inject(Router);
+
+  loaderService.show();
+
+  const token = sessionStorage.getItem('token');
+
+  const authReq = token
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+    : req;
+
+  return next(authReq).pipe(
+    catchError(error => {
+      if (error.status === 401) {
+        console.warn('Unauthorized');
+      }
+      return throwError(() => error);
+    }),
+    finalize(() => {
+      loaderService.hide();
+    })
+  );
 };

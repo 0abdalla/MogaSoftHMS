@@ -1,0 +1,60 @@
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light" @fadeIn>
+    <div class="card shadow-lg p-4" style="width: 100%; max-width: 450px;">
+      <h3 class="text-center mb-4 text-primary">إنشاء حساب جديد</h3>
+  
+      <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+        <div class="mb-3">
+          <label class="form-label">الاسم الأول</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="firstName"
+          />
+        </div>
+  
+        <div class="mb-3">
+          <label class="form-label">اسم العائلة</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="lastName"
+          />
+        </div>
+
+
+        <div class="mb-3">
+          <label class="form-label">العنوان</label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="address"
+          />
+        </div>
+  
+        <div class="mb-3">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input
+            type="email"
+            class="form-control"
+            formControlName="email"
+          />
+        </div>
+  
+        <div class="mb-3">
+          <label class="form-label">كلمة المرور</label>
+          <input
+            type="password"
+            class="form-control"
+            formControlName="password"
+          />
+        </div>
+  
+        <button type="submit" class="btn btn-primary w-100">تسجيل</button>
+  
+        <div class="text-center mt-3">
+          <a routerLink="/login" class="text-decoration-none">لديك حساب بالفعل؟ سجل الدخول</a>
+        </div>
+      </form>
+    </div>
+  </div>
+  

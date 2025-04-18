@@ -1,1 +1,308 @@
-<p>patient-list works!</p>
+<main id="list-patients">
+  <div class="container-fluid">
+    <div class="row mt-4">
+      <div class="col-lg-2" *ngFor="let status of patientStatuses">
+        <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-color': status.color }">
+          <h4>{{ status.name }}</h4>
+          <p class="mt-0 fs-5">{{ status.count }} مريض</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-3 mt-4">
+      <form [formGroup]="filterForm" (submit)="applyFilters($event)">
+        <div class="row">
+          <div class="col-lg-8">
+            <div class="row">
+              <div class="col-lg-3">
+                <input type="text" class="form-control shadow-none" placeholder="إسم المريض" formControlName="Search"
+                  name="Search" />
+              </div>
+
+              <div class="col-lg-3">
+                <select class="form-select shadow-none" formControlName="Status" name="Status">
+                  <option selected disabled value="">كل الحالات</option>
+                  <option *ngFor="let status of patientStatuses" [value]="status.value">
+                    {{ status.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col-lg-3">
+                <input type="date" class="form-control shadow-none" placeholder="التاريخ من" formControlName="FromDate" name="FromDate" />
+              </div>
+
+              <div class="col-lg-3">
+                <input type="date" class="form-control shadow-none" placeholder="التاريخ إلى" formControlName="ToDate" name="ToDate" />
+              </div>
+            </div>
+
+
+          </div>
+          <div class="col-lg-4">
+            <div class="row g-2">
+              <div class="col-lg-6">
+                <button type="submit" class="btn-blue w-100">تطبيق</button>
+              </div>
+              <div class="col-lg-6">
+                <button (click)="resetFilters()" type="button" class="btn-red w-100">مسح الفلترات</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="modal fade" id="inpatientDetailsModal" tabindex="-1" aria-labelledby="inpatientDetailsLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header justify-content-center text-center">
+            <h5 class="text-center" id="inpatientDetailsLabel">بيانات المريض الداخلي</h5>
+          </div>
+
+          <div class="modal-body p-4">
+            <h6 class="mb-3 text-primary">بيانات المريض</h6>
+            <div class="row mb-3">
+              <div class="col-lg-4">
+                <strong>الاسم:</strong> {{ admissionDetails?.patientName || '---' }}
+              </div>
+              <div class="col-lg-4">
+                <strong>الرقم الطبي:</strong> {{ admissionDetails?.patientId || '---' }}
+              </div>
+              <div class="col-lg-4">
+                <strong>النوع:</strong> {{ admissionDetails?.patientGender || '---' }}
+              </div>              
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-lg-4">
+                <strong>تاريخ الميلاد:</strong> {{admissionDetails?.dateOfBirth | date:'yyyy-MM-dd'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>الهاتف:</strong> {{admissionDetails?.phone || '---'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>البلد:</strong> {{admissionDetails?.address || '---'}}
+              </div>
+            </div>
+
+            <hr>
+
+            <h6 class="mb-3 text-primary">بيانات الإقامة</h6>
+            <div class="row mb-3">
+              <div class="col-lg-4">
+                <strong>تاريخ الدخول:</strong> {{admissionDetails?.admissionDate | date:'yyyy-MM-dd'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>القسم:</strong> {{admissionDetails?.departmentName || '---'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>الطبيب:</strong> {{admissionDetails?.doctorName || '---'}}
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-lg-4">
+                <strong>الغرفة:</strong> {{admissionDetails?.roomNumber || '---'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>السرير:</strong> {{admissionDetails?.bedNumber || '---'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>نوع الغرفة:</strong> {{admissionDetails?.roomType || '---'}}
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row mb-3" *ngIf="admissionDetails?.insurance">
+              <h6 class="mb-3 text-primary">بيانات التأمين</h6>
+              <div class="col-lg-4">
+                <strong>شركة التأمين:</strong> {{admissionDetails?.insurance?.companyName}}
+              </div>
+              <div class="col-lg-4">
+                <strong>فئة التأمين:</strong> {{admissionDetails?.insurance?.planType}}
+              </div>
+              <div class="col-lg-4">
+                <strong>رقم التأمين:</strong> {{admissionDetails?.insurance?.insuranceNumber}}
+              </div>
+              <hr class="mt-3">
+            </div>
+
+
+            <h6 class="mb-3 text-primary">جهات الاتصال</h6>
+            <div class="row mb-2">
+              <div class="col-lg-6">
+                <strong>اسم جهة الاتصال:</strong> {{admissionDetails?.emergencyContact01}}
+              </div>
+              <div class="col-lg-6">
+                <strong>رقم الهاتف:</strong> {{admissionDetails?.emergencyPhone01}}
+              </div>
+            </div>
+            <div class="row" *ngIf="admissionDetails?.emergencyContact02">
+              <div class="col-lg-6">
+                <strong>اسم جهة الاتصال:</strong> {{admissionDetails?.emergencyContact02}}
+              </div>
+              <div class="col-lg-6">
+                <strong>رقم الهاتف:</strong> {{admissionDetails?.emergencyPhone02}}
+              </div>
+            </div>
+            <hr>
+
+            <h6 class="mb-3 text-primary">بيانات إضافية</h6>
+            <div class="row mb-3">
+              <div class="col-lg-4">
+                <strong>تاريخ التسجيل:</strong> {{admissionDetails?.createdOn | date:'yyyy-MM-dd'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>أمراض مزمنة:</strong> {{admissionDetails?.chronicDiseases || '---'}}
+              </div>
+              <div class="col-lg-4">
+                <strong>عمليات سابقة:</strong> {{admissionDetails?.previousSurgeries || '---'}}
+              </div>
+            </div>
+
+            <hr>
+
+            <h6 class="mb-3 text-primary">معلومات سريعة</h6>
+            <div class="row mb-3">
+              <div class="col-lg-3">
+                <strong>عدد الفواتير:</strong> {{admissionDetails?.invoicesCount || '---'}}
+              </div>
+              <div class="col-lg-3">
+                <strong>آخر فاتورة منشأة:</strong> {{admissionDetails?.lastInvoiceDate || '---'}}
+              </div>
+              <div class="col-lg-3">
+                <strong>عدد الفواتير المستحقة:</strong> {{admissionDetails?.invoicesCount || '---'}}
+              </div>
+              <div class="col-lg-3">
+                <strong>آخر عملية دفع:</strong> {{admissionDetails?.lastPaymentDate || '---'}}
+              </div>
+            </div>
+
+
+          </div>
+          
+          
+          <div class="modal-footer row">
+            <div class="col-2">
+              <button class="btn col-12 btn-outline-info" data-bs-toggle="modal" data-bs-target="#patientModal" (click)="openStatusUpdateModal()">تحديث الحالة</button>
+            </div>
+            <div class="col-2">
+              <button class="btn col-12 btn-outline-info">التاريخ الطبي</button>
+            </div>
+            <div class="col-2">
+              <button class="btn col-12 btn-outline-primary">ترتيب مواعيد</button>
+            </div>
+            <div class="col-2">
+              <button class="btn col-12 btn-outline-success">إنشاء فاتورة</button>
+            </div>
+            <div class="col-2">
+              <button class="btn col-12 btn-outline-warning">إضافة مدفوعات</button>
+            </div>
+            <div class="col-2">
+              <button class="btn col-12 btn-outline-secondary">كشف حساب</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="table table-hover text-center mt-4">
+      <thead>
+        <tr>
+          <th>الرقم</th>
+          <th>الاسم</th>
+          <th>العمر</th>
+          <th>الحالة</th>
+          <th>إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let patient of patients | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }" (click)="openAdmissionDetails(patient.patientId)" data-bs-toggle="modal" data-bs-target="#inpatientDetailsModal" style="cursor: pointer;">
+          <td>{{ patient.patientId }}</td>
+          <td>{{ patient.patientName }}</td>
+          <td>{{ patient.dateOfBirth }}</td>
+          <td>
+            <p class="fw-bold text-white" *ngIf="patient.patientStatus"
+              [ngStyle]="{ backgroundColor: getStatusColor(patient.patientStatus) }">
+              {{ patient.patientStatus }}
+            </p>
+          </td>
+          <td>
+            <button class="btn btn-link text-primary">
+              <i class="fas fa-edit"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="col-lg-12">
+      <div
+        *ngIf="total > 16"
+        class="pagination-container my-0 px-3 py-2 d-flex justify-content-between align-items-center"
+      >
+        <p class="m-0 text-secondary">
+          عرض
+          <span class="mx-1 fw-bold text-black">{{ currentPage }}</span>
+          من
+          <span class="mx-1 fw-bold text-black">{{ fixed }}</span>
+        </p>
+        <div class="my-pagination">
+          <pagination-controls
+            id="paginate"
+            (pageChange)="onPageChange($event)"
+            (pageBoundsCorrection)="onPageChange($event)"
+            [maxSize]="16"
+            [directionLinks]="true"
+            [autoHide]="true"
+            [responsive]="true"
+            previousLabel="السابق"
+            nextLabel="التالي"
+            screenReaderPageLabel="page"
+            screenReaderCurrentLabel="You're on page"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+<div class="modal fade" id="patientModal" tabindex="-1" aria-labelledby="patientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="patientModalLabel">تحديث حالة المريض</h5>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="admissionDetails">
+          <p><strong>الاسم:</strong> {{ admissionDetails.patientName }}</p>
+          <p><strong>رقم المريض:</strong> {{ admissionDetails.phone }}</p>
+        </div>
+        <form [formGroup]="statusForm" (ngSubmit)="updateStatus()">
+          <div class="mb-3">
+            <label for="statusSelect" class="form-label">الحالة الحالية</label>
+            <select id="statusSelect" class="form-select shadow-none" formControlName="newStatus">
+              <option *ngFor="let status of patientStatuses" [value]="status.value">
+                {{ status.name }}
+              </option>
+            </select>
+            <div *ngIf="statusForm.get('newStatus')?.invalid && statusForm.get('newStatus')?.touched" class="text-danger">
+              يرجى اختيار حالة
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="newNote" class="form-label">إضافة ملاحظة جديدة</label>
+            <textarea id="newNote" class="form-control" rows="3" formControlName="notes"></textarea>
+          </div>
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn-blue" [disabled]="statusForm.invalid">حفظ التغييرات</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

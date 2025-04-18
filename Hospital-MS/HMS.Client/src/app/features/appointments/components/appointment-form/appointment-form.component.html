@@ -1,1 +1,120 @@
-<p>appointment-form works!</p>
+<main id="add-reservation" @fadeIn>
+  <div class="container-fluid">
+    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+      <div class="row mb-3">
+        <h4>بيانات المريض</h4>
+        <div class="col-lg-6">
+          <label for="patientName" class="form-label">إسم المريض</label>
+          <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName">
+        </div>
+        <div class="col-lg-6">
+          <label for="patientPhone" class="form-label">رقم هاتف المريض</label>
+          <input type="text" id="patientPhone" class="form-control shadow-none" placeholder="أدخل رقم هاتف المريض" formControlName="patientPhone">
+        </div>
+      </div>
+      <hr>
+      <div class="row mb-3">
+        <h4>بيانات الحجز</h4>
+        <div class="col-lg-3">
+          <label for="clinic-type" class="form-label">نوع الحجز</label>
+          <select id="clinic-type" class="form-select shadow-none" formControlName="appointmentType">
+            <option selected disabled value="">اختر نوع الحجز</option>
+            <option value="General">كشف</option>
+            <option value="Consultation">استشارة</option>
+            <option value="Surgery">عمليات</option>
+            <option value="Screening">تحاليل</option>
+            <option value="Radiology">أشعة</option>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label for="clinic" class="form-label">الخدمة الطبية</label>
+          <select id="clinic" class="form-select shadow-none" formControlName="clinicId">
+            <option selected disabled value="">اختر الخدمة</option>
+            <option *ngFor="let clinic of filteredClinics" [value]="clinic.id">{{ clinic.name }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label for="clinic-doctor" class="form-label">الدكتور المختص</label>
+          <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId">
+            <option selected disabled value="">اختر الدكتور المختص</option>
+            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{ doctor.fullName }}</option>
+          </select>
+        </div>
+        <div class="col-lg-3">
+          <label for="app-date" class="form-label">الوقت</label>
+          <input id="app-date" type="datetime-local" formControlName="appointmentDate" class="form-control shadow-none">
+        </div>
+      </div>
+      <hr>
+      <div class="row mb-3">
+        <h4>بيانات إضافية</h4>
+        
+        <div class="col-lg-4">
+          <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
+          <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
+            <option selected disabled value="">اختر شركة التأمين</option>
+            <option value="شركة 1">شركة 1</option>
+            <option value="شركة 2">شركة 2</option>
+          </select>
+        </div>
+        <div class="col-lg-4">
+          <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
+          <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
+            <option selected disabled value="">اختر فئة التأمين</option>
+            <option value="فئة 1">فئة 1</option>
+            <option value="فئة 2">فئة 2</option>
+          </select>
+        </div>
+        <div class="col-lg-4">
+          <label for="insuranceNumber" class="form-label">رقم التأمين</label>
+          <input type="text" id="insuranceNumber" class="form-control shadow-none" formControlName="insuranceNumber" placeholder="أدخل رقم التأمين"
+            pattern="[0-9]*">
+        </div>
+      
+        <div class="col-lg-4 mt-3">
+          <label class="form-label">تم تحويله؟</label>
+          <div class="form-check">
+            <input type="radio" id="referredYes" class="form-check-input shadow-none" formControlName="referred" value="yes">
+            <label for="referredYes" class="form-check-label">نعم</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" id="referredNo" class="form-check-input shadow-none" formControlName="referred" value="no">
+            <label for="referredNo" class="form-check-label">لا</label>
+          </div>
+        </div>
+        <div class="col-lg-4 mt-3" *ngIf="reservationForm.get('referred')?.value === 'yes'">
+          <label for="referredClinic" class="form-label">العيادة المحول منها</label>
+          <select [disabled]="!reservationForm.get('referred')?.value" id="referredClinic" class="form-select shadow-none" formControlName="referredClinic">
+            <option selected disabled value="">اختر العيادة</option>
+            <option value="عيادة العظام">عيادة العظام</option>
+            <option value="عيادة الباطنة">عيادة الباطنة</option>
+          </select>
+        </div>
+        <!-- <div class="col-lg-4 mt-3">
+          <label class="form-label">حاصل على تطعيم؟</label>
+          <div class="form-check">
+            <input type="radio" id="vaccinatedYes" class="form-check-input shadow-none" formControlName="vaccinated" value="yes">
+            <label for="vaccinatedYes" class="form-check-label">نعم</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" id="vaccinatedNo" class="form-check-input shadow-none" formControlName="vaccinated" value="no">
+            <label for="vaccinatedNo" class="form-check-label">لا</label>
+          </div>
+        </div> -->
+        <div class="col-lg-4 mt-3">
+          <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
+          <select id="paymentMethod" class="form-select shadow-none" formControlName="paymentMethod">
+            <option selected disabled value="">اختر وسيلة الدفع</option>
+            <option value="Cash">نقدي</option>
+            <option value="Instapay">تحويل لحظي</option>
+          </select>
+        </div>
+      </div>
+      <div class="row px-3">
+          <button type="submit" [disabled]="!reservationForm.valid" class="btn-blue w-50">إضافة</button>
+          <button type="reset" class="btn-red w-50">الغاء</button>
+        
+      </div>
+    </form>
+  </div>
+</main>

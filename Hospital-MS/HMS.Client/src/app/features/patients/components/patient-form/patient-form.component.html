@@ -1,1 +1,218 @@
-<p>patient-form works!</p>
+<main id="add-inpatient">
+  <div class="container-fluid">
+    <form [formGroup]="patientForm" (ngSubmit)="onSubmit()">
+        <h4 class="mb-4">بيانات المريض</h4>
+        <div class="row mb-3">
+          <div class="col-lg-4">
+            <label for="patientName" class="form-label">اسم المريض</label>
+            <input type="text" id="patientName" class="form-control shadow-none" formControlName="patientName">
+          </div>
+          <div class="col-lg-4">
+            <label for="patientNationalId" class="form-label">رقم بطاقة المريض</label>
+            <input type="text" id="patientNationalId" class="form-control shadow-none" formControlName="patientNationalId">
+          </div>
+          <div class="col-lg-4">
+            <label for="patientBirthDate" class="form-label">تاريخ الميلاد</label>
+            <input type="date" id="patientBirthDate" class="form-control shadow-none" formControlName="patientBirthDate">
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-lg-4">
+            <label for="patientPhone" class="form-label">رقم الهاتف</label>
+            <input type="text" id="patientPhone" class="form-control shadow-none" formControlName="patientPhone">
+          </div>
+          <div class="col-lg-4">
+            <label for="patientAddress" class="form-label">محل الإقامة</label>
+            <input type="text" id="patientAddress" class="form-control shadow-none" formControlName="patientAddress">
+          </div>
+          <div class="col-lg-4">
+            <label for="patientStatus" class="form-label">الحالة</label>
+            <select id="patientStatus" class="form-select shadow-none" formControlName="patientStatus">
+              <option selected disabled value="">اختر الحالة</option>
+              <option value="Staying">إقامة</option>
+              <option value="Surgery">جراحة</option>
+            </select>
+          </div>
+        </div>
+
+        <hr>
+        <h5 class="mt-4 mb-3">بيانات الإقامة</h5>
+        <div class="row mb-3">
+          <div class="col-lg-4">
+            <label for="admissionDate" class="form-label">تاريخ الدخول</label>
+            <input type="date" id="admissionDate" class="form-control shadow-none" value="{{currentDate}}" disabled>
+          </div>
+          <div class="col-lg-4">
+            <label for="departmentId" class="form-label">القسم</label>
+            <select id="departmentId" class="form-select shadow-none" formControlName="departmentId" (change)="onDepartmentChange()">
+              <option selected disabled value="">اختر القسم</option>
+              <option *ngFor="let department of departments" [value]="department.id">{{department.name}}</option>
+            </select>            
+          </div>
+          <div class="col-lg-4">
+            <label for="doctorId" class="form-label">الطبيب المسؤول</label>
+            <select id="doctorId" class="form-select shadow-none" formControlName="doctorId">
+              <option selected disabled value="">اختر الطبيب المسئول</option>
+              <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{doctor.fullName}}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-lg-4">
+            <label for="roomType" class="form-label">نوع الغرفة</label>
+            <select id="roomType" class="form-select shadow-none" formControlName="roomType" (change)="onRoomTypeChange()">
+              <option selected disabled value="">اختر النوع</option>
+              <option value="Shared">عادية</option>
+              <option value="Private">فندقية</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label for="roomId" class="form-label">رقم الغرفة</label>
+            <select id="roomId" class="form-select shadow-none" formControlName="roomId" (change)="onRoomChange()">
+              <option selected disabled value="">اختر الغرفة</option>
+              <option *ngFor="let room of filteredRooms" [value]="room.id">{{room.number}}</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label for="bedId" class="form-label">رقم السرير</label>
+            <select id="bedId" class="form-select shadow-none" formControlName="bedId">
+              <option selected disabled value="">اختر السرير</option>
+              <option *ngFor="let bed of filteratedBeds" [value]="bed.id">{{bed.number}}</option>
+            </select>
+          </div>
+        </div>
+        <hr>
+        <h5 class="mt-4 mb-3">قائمة الاتصال</h5>
+          <div class="row">
+            <div class="col-lg-6">
+              <label for="emergencyPhone01">رقم الهاتف 1</label>
+              <input
+                id="emergencyPhone01"
+                formControlName="emergencyPhone01"
+                type="text"
+                class="form-control shadow-none"
+                placeholder="أدخل رقم الهاتف"
+              />
+            </div>
+
+            <div class="col-lg-6">
+              <label for="emergencyContact01">جهة الاتصال 1</label>
+              <input
+                id="emergencyContact01"
+                formControlName="emergencyContact01"
+                type="text"
+                class="form-control shadow-none"
+                placeholder="أدخل اسم جهة الاتصال"
+              />
+            </div>
+
+            <div *ngIf="showSecondContact">
+              <div class="col-lg-6">
+                <label for="emergencyPhone02">رقم الهاتف 2</label>
+                <input
+                  id="emergencyPhone02"
+                  formControlName="emergencyPhone02"
+                  type="text"
+                  class="form-control shadow-none"
+                  placeholder="أدخل رقم الهاتف"
+                />
+              </div>
+
+              <div class="col-lg-6">
+                <label for="emergencyContact02">جهة الاتصال 2</label>
+                <input
+                  id="emergencyContact02"
+                  formControlName="emergencyContact02"
+                  type="text"
+                  class="form-control shadow-none"
+                  placeholder="أدخل اسم جهة الاتصال"
+                />
+              </div>
+            </div>
+
+          </div>
+          <button type="button" class="btn-blue mt-2" (click)="addSecondContact()" [disabled]="showSecondContact">
+            إضافة جهة اتصال
+          </button>
+        <hr>
+        <h5 class="mt-4 mb-3">بيانات التأمين</h5>
+        <div class="row mb-4">
+          <div class="col-lg-4">
+            <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
+            <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
+              <option value="">اختر شركة التأمين</option>
+              <option value="شركة 1">شركة 1</option>
+              <option value="شركة 2">شركة 2</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
+            <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
+              <option value="">اختر فئة التأمين</option>
+              <option value="فئة 1">فئة 1</option>
+              <option value="فئة 2">فئة 2</option>
+            </select>
+          </div>
+          <div class="col-lg-4">
+            <label for="insuranceNumber" class="form-label">رقم التأمين</label>
+            <input type="text" id="insuranceNumber" class="form-control shadow-none" formControlName="insuranceNumber" pattern="[0-9]*">
+          </div>
+        </div>
+        <hr>
+        <h5 class="mt-4 mb-3">بيانات إضافية</h5>
+        <div class="row mb-4">
+          <div class="col-lg-4">
+            <label for="healthStatus" class="form-label">الحالة الصحية الحالية</label>
+            <select id="healthStatus" class="form-select shadow-none" formControlName="healthStatus">
+              <option selected disabled value="">اختر الحالة الصحية</option>
+              <option value="مستقرة">مستقرة</option>
+              <option value="غير مستقرة">غير مستقرة</option>
+              <option value="حرجة">حرجة</option>
+            </select>
+          </div>
+
+          <div class="col-lg-4">
+            <label for="initialDiagnosis" class="form-label">تشخيص مبدئي</label>
+            <input type="text" id="initialDiagnosis" class="form-control shadow-none" formControlName="initialDiagnosis">
+          </div>
+
+          <div class="col-lg-4">
+            <label for="notes" class="form-label">ملاحظات عند الدخول</label>
+            <input type="text" id="notes" class="form-control shadow-none" formControlName="notes">
+          </div>
+
+          <div class="col-lg-4 mt-3">
+            <label class="form-label d-block">هل له مرافق؟</label>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="hasCompanionYes" [value]="true" formControlName="hasCompanion">
+              <label class="form-check-label" for="hasCompanionYes">نعم</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" id="hasCompanionNo" [value]="false" formControlName="hasCompanion">
+              <label class="form-check-label" for="hasCompanionNo">لا</label>
+            </div>
+          </div>          
+
+          <div class="col-lg-4 mt-3" *ngIf="patientForm.get('hasCompanion')?.value === true">
+            <label for="companionName" class="form-label">اسم المرافق</label>
+            <input type="text" id="companionName" class="form-control shadow-none" formControlName="companionName">
+          </div>
+          <div class="col-lg-4 mt-3" *ngIf="patientForm.get('hasCompanion')?.value === true">
+            <label for="companionNationalId" class="form-label">الرقم القومي للمرافق</label>
+            <input type="text" id="companionNationalId" class="form-control shadow-none" formControlName="companionNationalId">
+          </div>
+          <div class="col-lg-4 mt-3" *ngIf="patientForm.get('hasCompanion')?.value === true">
+            <label for="companionPhone" class="form-label">رقم الهاتف</label>
+            <input type="text" id="companionPhone" class="form-control shadow-none" formControlName="companionPhone">
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-start gap-2">
+          <button [disabled]="patientForm.invalid" type="submit" class="btn-blue">إضافة</button>
+          <button type="reset" class="btn-red">إلغاء</button>
+        </div>
+    </form>
+  </div>
+</main>

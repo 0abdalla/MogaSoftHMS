@@ -1,1 +1,78 @@
-/* You can add global styles to this file, and also import other style files */
+:root {
+  --main-color: #3D5DA7;
+  --second-color: #ED3B93;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--second-color);
+}
+
+body {
+  direction: rtl !important;
+  font-family: "Cairo", sans-serif;
+}
+
+.btn-blue {
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn-red {
+  background-color: var(--second-color);
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.btn-blue:hover {
+  background-color: #283D6A;
+}
+
+.btn-red:hover {
+  background-color: #BE2F4B;
+}
+
+.btn-blue:disabled,
+.btn-red:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-section, .print-section * {
+    visibility: visible;
+  }
+
+  .print-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    display: none !important;
+  }
+}
