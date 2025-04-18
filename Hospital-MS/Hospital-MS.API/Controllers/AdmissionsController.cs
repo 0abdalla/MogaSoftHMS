@@ -21,7 +21,7 @@ namespace Hospital_MS.API.Controllers
 
             return result.IsSuccess
                 ? Created()
-                : BadRequest(result.Error);
+                : BadRequest(result.Error);  
         }
 
         [HttpGet("{patientId}")]
