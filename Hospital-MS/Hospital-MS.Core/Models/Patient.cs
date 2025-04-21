@@ -26,6 +26,7 @@ namespace Hospital_MS.Core.Models
         public PatientStatus? Status { get; set; }
 
 
+
         public int? InsuranceCompanyId { get; set; }
         public int? InsuranceCategoryId { get; set; }
         public string? InsuranceNumber { get; set; }
