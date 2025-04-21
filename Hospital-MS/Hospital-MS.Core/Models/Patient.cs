@@ -31,8 +31,5 @@ namespace Hospital_MS.Core.Models
 
         public InsuranceCompany? InsuranceCompany { get; set; }
         public InsuranceCategory? InsuranceCategory { get; set; }
-
-        public ICollection<PatientAttachment> Attachments { get; set; } = new HashSet<PatientAttachment>();
-        public ICollection<PatientMedicalHistory> MedicalHistories { get; set; } = new HashSet<PatientMedicalHistory>();
     }
 }
