@@ -22,6 +22,7 @@ namespace Hospital_MS.Core.Models
         public bool IsActive { get; set; } = true;
         public string? Notes { get; set; }
         public Gender? Gender { get; set; }
+
         public PatientStatus? Status { get; set; }
 
 
