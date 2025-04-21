@@ -41,7 +41,14 @@ namespace Hospital_MS.API.Controllers
                 : NotFound(result.Error);
         }
 
-
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetPatientById(int id, CancellationToken cancellationToken)
+        {
+            var result = await _patientService.GetByIdAsync(id, cancellationToken);
+            return result.IsSuccess
+                ? Ok(result.Value)
+                : NotFound(result.Error);
+        }
 
     }
 }

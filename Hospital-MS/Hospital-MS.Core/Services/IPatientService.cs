@@ -15,5 +15,7 @@ namespace Hospital_MS.Core.Services
         Task<int> GetPatientsCountAsync(GetPatientsRequest request, CancellationToken cancellationToken = default);
         Task<Result<PatientCountsResponse>> GetCountsAsync(CancellationToken cancellationToken = default);
         Task<Result> UpdateStatusAsync(int id, UpdatePatientStatusRequest request, CancellationToken cancellationToken = default);
+
+        Task<Result<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     }
 }

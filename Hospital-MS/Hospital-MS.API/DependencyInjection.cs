@@ -2,10 +2,12 @@
 using Hospital_MS.Core.Repositories;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Services.Auth;
+using Hospital_MS.Core.Services.Common;
 using Hospital_MS.Reposatories._Data;
 using Hospital_MS.Reposatories.Repositories;
 using Hospital_MS.Services;
 using Hospital_MS.Services.Auth;
+using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +63,9 @@ namespace Hospital_MS.API
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IInsuranceService, InsuranceService>();
 
+            services.AddScoped<IPatientHistoryService, PatientHistoryService>();
+            services.AddScoped<IPatientAttachmentService, PatientAttachmentService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
 

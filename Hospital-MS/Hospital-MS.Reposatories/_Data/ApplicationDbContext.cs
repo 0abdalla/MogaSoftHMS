@@ -25,6 +25,8 @@ namespace Hospital_MS.Reposatories._Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Clinic> Clinics { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<PatientAttachment> PatientAttachments { get; set; }
+        public DbSet<PatientMedicalHistory> PatientMedicalHistories { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

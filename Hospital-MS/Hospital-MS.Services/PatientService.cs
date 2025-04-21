@@ -45,6 +45,32 @@ namespace Hospital_MS.Services
             return Result.Success<IReadOnlyList<PatientResponse>>(response);
         }
 
+        public async Task<Result<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var patient = await _unitOfWork.Repository<Patient>().GetByIdAsync(id, cancellationToken);
+
+            if (patient is not { })
+                return Result.Failure<PatientResponse>(GenericErrors<Patient>.NotFound);
+
+            var response = new PatientResponse
+            {
+                PatientId = patient.Id,
+                PatientName = patient.FullName,
+                Address = patient.Address,
+                DateOfBirth = patient.DateOfBirth,
+                PatientStatus = patient.Status.ToString(),
+                Phone = patient.Phone,
+                CreatedOn = patient.CreatedOn,
+                CreatedBy = $"{patient.CreatedBy?.FirstName} {patient.CreatedBy?.LastName}",
+                UpdatedOn = patient.UpdatedOn,
+                UpdatedBy = patient.UpdatedBy != null ?
+                    $"{patient.UpdatedBy.FirstName} {patient.UpdatedBy.LastName}" :
+                    string.Empty
+            };
+
+            return Result.Success(response);
+        }
+
         public async Task<Result<PatientCountsResponse>> GetCountsAsync(CancellationToken cancellationToken = default)
         {
             var patients = await _unitOfWork.Repository<Patient>().GetAllAsync(cancellationToken);

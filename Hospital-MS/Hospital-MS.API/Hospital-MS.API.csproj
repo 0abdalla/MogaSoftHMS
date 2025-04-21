@@ -27,4 +27,8 @@
     <ProjectReference Include="..\Hospital-MS.Services\Hospital-MS.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>
