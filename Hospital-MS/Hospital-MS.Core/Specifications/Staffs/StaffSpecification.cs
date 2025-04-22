@@ -49,6 +49,7 @@ namespace Hospital_MS.Core.Specifications.Staffs
         {
             Includes.Add(x => x.Clinic);
             Includes.Add(x => x.Department);
+            Includes.Add(x => x.StaffAttachments);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hospital_MS.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,13 @@ namespace Hospital_MS.Core.Contracts.Staff
         public int? ClinicId { get; set; }
         public string? ClinicName { get; set; }
         public string? DepartmentName { get; set; }
-
-
         public int DepartmentId { get; set; }
+
+        public string? MaritalStatus { get; set; }
+        public string? Address { get; set; }
+        public string Gender { get; set; }
+        public string? Notes { get; set; }
+
+        public List<string> AttachmentsUrls { get; set; } = new List<string>();
     }
 }

@@ -57,7 +57,9 @@ namespace Hospital_MS.Services
                     Gender = gender,
                     Notes = request.Notes,
                     Address = request.Address,
-                    
+                    Type = staffType,
+                    Status = staffStatus,
+
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
@@ -90,14 +92,16 @@ namespace Hospital_MS.Services
 
                 await _unitOfWork.Repository<StaffAttachments>().AddRangeAsync(AttachmentItems, cancellationToken);
 
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
                 await transaction.CommitAsync(cancellationToken);
 
                 return Result.Success();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return Result.Failure(new Error("CreateStaffError", ex.Message, 500));
+                return Result.Failure(GenericErrors<Staff>.FailedToAdd);
             }
 
         }
@@ -156,6 +160,12 @@ namespace Hospital_MS.Services
                 ClinicName = staff.Clinic?.Name,
                 DepartmentName = staff.Department?.Name,
                 NationalId = staff.NationalId,
+                Address = staff.Address,
+                Notes = staff.Notes,
+                Gender = staff.Gender.ToString(),
+                MaritalStatus = staff.MaritalStatus.ToString(),
+
+                AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
             };
 
             return Result.Success(response);
