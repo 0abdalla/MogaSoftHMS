@@ -4,6 +4,7 @@ using Hospital_MS.Reposatories._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hospital_MS.Reposatories.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250422151638_AddStaffAttachmentTable")]
+    partial class AddStaffAttachmentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1078,10 +1081,6 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
                     b.Property<int?>("ClinicId")
                         .HasColumnType("int");
 
@@ -1105,25 +1104,12 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(350)
                         .HasColumnType("nvarchar(350)");
 
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasMaxLength(55)
-                        .HasColumnType("nvarchar(55)");
-
                     b.Property<DateOnly>("HireDate")
                         .HasColumnType("date");
-
-                    b.Property<string>("MaritalStatus")
-                        .HasMaxLength(55)
-                        .HasColumnType("nvarchar(55)");
 
                     b.Property<string>("NationalId")
                         .HasMaxLength(22)
                         .HasColumnType("nvarchar(22)");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1055)
-                        .HasColumnType("nvarchar(1055)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -1870,7 +1856,7 @@ namespace Hospital_MS.Reposatories.Migrations
             modelBuilder.Entity("Hospital_MS.Core.Models.StaffAttachments", b =>
                 {
                     b.HasOne("Hospital_MS.Core.Models.Staff", "Staff")
-                        .WithMany("StaffAttachments")
+                        .WithMany()
                         .HasForeignKey("StaffId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1990,11 +1976,6 @@ namespace Hospital_MS.Reposatories.Migrations
             modelBuilder.Entity("Hospital_MS.Core.Models.Specialty", b =>
                 {
                     b.Navigation("Doctors");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.Staff", b =>
-                {
-                    b.Navigation("StaffAttachments");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Ward", b =>

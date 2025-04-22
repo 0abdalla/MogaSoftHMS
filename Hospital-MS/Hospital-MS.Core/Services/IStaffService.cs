@@ -12,5 +12,9 @@ namespace Hospital_MS.Core.Services
     {
         Task<Result> CreateAsync(CreateStaffRequest request, CancellationToken cancellationToken = default);
         Task<Result<IReadOnlyList<StaffResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<Result<StaffResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<Result<IReadOnlyList<StaffResponse>>> GetFilteredStaffAsync(GetStaffRequest request, CancellationToken cancellationToken = default);
+        Task<int> GetFilteredStaffCountAsync(GetStaffRequest request, CancellationToken cancellationToken = default);
+        Task<Result<StaffCountsResponse>> GetStaffCountsAsync(CancellationToken cancellationToken = default);
     }
 }

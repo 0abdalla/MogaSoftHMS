@@ -11,7 +11,13 @@ namespace Hospital_MS.Core.Models
         public string PhoneNumber { get; set; } = string.Empty;
         public DateOnly HireDate { get; set; }
         public StaffStatus Status { get; set; } 
-        public StaffType Type { get; set; } 
+        public StaffType Type { get; set; }
+        public string? NationalId { get; set; }
+
+        public MaritalStatus? MaritalStatus { get; set; }
+        public string? Address { get; set; }
+        public Gender Gender { get; set; }
+        public string? Notes { get; set; }
 
         public int? ClinicId { get; set; }
         public int DepartmentId { get; set; }
@@ -19,5 +25,6 @@ namespace Hospital_MS.Core.Models
         // Navigation Property
         public Clinic? Clinic { get; set; }
         public Department Department { get; set; } = default!;
+        public ICollection<StaffAttachments> StaffAttachments { get; set; } = new HashSet<StaffAttachments>();
     }
 }

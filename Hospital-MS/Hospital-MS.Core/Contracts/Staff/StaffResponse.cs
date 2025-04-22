@@ -16,7 +16,11 @@ namespace Hospital_MS.Core.Contracts.Staff
         public DateOnly HireDate { get; set; }
         public string Status { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public string? NationalId { get; set; }
         public int? ClinicId { get; set; }
+        public string? ClinicName { get; set; }
+        public string? DepartmentName { get; set; }
+
 
         public int DepartmentId { get; set; }
     }

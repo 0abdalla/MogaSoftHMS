@@ -7,11 +7,6 @@ using Hospital_MS.Core.Services.Common;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Specifications.PatientAttachments;
 using Microsoft.AspNetCore.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services
 {

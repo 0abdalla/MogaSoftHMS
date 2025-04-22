@@ -19,7 +19,7 @@ namespace Hospital_MS.Reposatories._Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<NurseActivity> NurseActivities { get; set; }
         public DbSet<NurseShift> NurseShifts { get; set; }
-        public DbSet<DoctorPerformance> DoctorPerformances { get; set; }
+        public DbSet<DoctorRating> DoctorPerformances { get; set; }
         public DbSet<DoctorSchedule> DoctorSchedules { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Booking> Bookings { get; set; }
@@ -27,6 +27,9 @@ namespace Hospital_MS.Reposatories._Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<PatientAttachment> PatientAttachments { get; set; }
         public DbSet<PatientMedicalHistory> PatientMedicalHistories { get; set; }
+        public DbSet<Doctor> Doctors { get; set; }
+        public DbSet<Specialty> Specialties { get; set; }
+        public DbSet<StaffAttachments> StaffAttachments { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

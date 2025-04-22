@@ -29,8 +29,17 @@ namespace Hospital_MS.Reposatories._Data.Configurations
                 .IsRequired()
                 .HasColumnType("date");
 
-            builder.Property(s=>s.Status)
+            builder.Property(s => s.Status)
                 .HasMaxLength(100);
+
+            builder.Property(s => s.Address)
+                .HasMaxLength(500);
+
+            builder.Property(s => s.Notes)
+                .HasMaxLength(1055);
+
+
+            builder.Property(s => s.NationalId).HasMaxLength(22);
 
             builder.Property(p => p.Status)
                      .HasConversion(
@@ -41,6 +50,16 @@ namespace Hospital_MS.Reposatories._Data.Configurations
                      .HasConversion(
                      (type) => type.ToString(),
                      (stu) => Enum.Parse<StaffType>(stu, true)).HasMaxLength(55);
+
+            builder.Property(p => p.Gender)
+                     .HasConversion(
+                     (type) => type.ToString(),
+                     (gen) => Enum.Parse<Gender>(gen, true)).HasMaxLength(55);
+
+            builder.Property(p => p.MaritalStatus)
+                     .HasConversion(
+                     (type) => type.ToString(),
+                     (gen) => Enum.Parse<MaritalStatus>(gen, true)).HasMaxLength(55);
         }
     }
 }

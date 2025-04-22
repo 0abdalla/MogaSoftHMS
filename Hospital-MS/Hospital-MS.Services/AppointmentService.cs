@@ -208,7 +208,7 @@ namespace Hospital_MS.Services
 
             appointment.Patient.Status = newStatus;
 
-            _unitOfWork.Repository<Appointment>().Update(appointment);
+            _unitOfWork.Repository<Appointment>().Delete(appointment); // *** 
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

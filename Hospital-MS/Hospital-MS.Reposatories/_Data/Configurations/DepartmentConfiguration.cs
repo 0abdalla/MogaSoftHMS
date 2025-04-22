@@ -16,6 +16,12 @@ namespace Hospital_MS.Reposatories._Data.Configurations
             builder.Property(b => b.Name)
                 .IsRequired()
                 .HasMaxLength(255);
+
+             builder.Property(b => b.Description)
+                .IsRequired()
+                .HasMaxLength(755);
+
+
  
         }
     }
