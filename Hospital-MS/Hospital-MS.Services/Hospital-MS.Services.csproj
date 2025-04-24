@@ -12,11 +12,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Hospital-MS.Core\Hospital-MS.Core.csproj" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	  <ProjectReference Include="..\Hospital-MS.Interfaces\Hospital-MS.Interfaces.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -15,44 +15,42 @@ namespace Hospital_MS.API.Controllers
         public async Task<IActionResult> Create([FromBody] PatientMedicalHistoryRequest request, CancellationToken cancellationToken)
         {
             var result = await _patientHistoryService.CreateAsync(request, cancellationToken);
-
-            return result.IsSuccess ? Created() : BadRequest(result.Error);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] PatientMedicalHistoryRequest request, CancellationToken cancellationToken)
         {
             var result = await _patientHistoryService.UpdateAsync(id, request, cancellationToken);
-
-            return result.IsSuccess ? NoContent() : NotFound(result.Error);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
             var result = await _patientHistoryService.DeleteAsync(id, cancellationToken);
-            return result.IsSuccess ? NoContent() : NotFound(result.Error);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
         {
             var result = await _patientHistoryService.GetByIdAsync(id, cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+            return Ok(result);
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var result = await _patientHistoryService.GetAllAsync(cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+            return Ok(result);
         }
 
         [HttpGet("patient/{patientId}")]
         public async Task<IActionResult> GetByPatientId(int patientId, CancellationToken cancellationToken)
         {
             var result = await _patientHistoryService.GetByPatientIdAsync(patientId, cancellationToken);
-            return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+            return Ok(result);
         }
     }
 }

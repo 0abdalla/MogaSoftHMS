@@ -1,9 +1,9 @@
-﻿using Hospital_MS.Core.Services.Common;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data.Common;
 using System.Data;
 using System.Reflection;
+using Hospital_MS.Interfaces.Common;
 
 namespace Hospital_MS.Services.Common
 {

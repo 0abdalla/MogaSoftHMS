@@ -1,13 +1,13 @@
 ﻿using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Repositories;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Services.Auth;
-using Hospital_MS.Core.Services.Common;
+using Hospital_MS.Interfaces.Auth;
+using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Reposatories;
 using Hospital_MS.Reposatories._Data;
-using Hospital_MS.Reposatories.Repositories;
-using Hospital_MS.Services;
 using Hospital_MS.Services.Auth;
 using Hospital_MS.Services.Common;
+using Hospital_MS.Services.HMS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,32 +25,19 @@ namespace Hospital_MS.API
 
             //var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
-            services.AddCors(options =>
-            options.AddDefaultPolicy(
-            builder => builder
-            .AllowAnyOrigin()
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            ));
-
+            services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services.AddAuthConfig(configuration);
 
             var connectionString = configuration.GetConnectionString("DefaultConnection") ??
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
-            services
-                .AddSwaggerServices();
-            //.AddMapsterConfig()
-            //.AddFluentValidationConfig();
-
-            services.AddHttpContextAccessor(); // To access the current HttpContext in services
+            services.AddSwaggerServices();
+            services.AddHttpContextAccessor();
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IClinicService, ClinicService>();
@@ -62,7 +49,6 @@ namespace Hospital_MS.API
             services.AddScoped<IBedService, BedService>();
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IInsuranceService, InsuranceService>();
-
             services.AddScoped<IPatientHistoryService, PatientHistoryService>();
             services.AddScoped<IPatientAttachmentService, PatientAttachmentService>();
             services.AddScoped<IFileService, FileService>();
@@ -77,13 +63,6 @@ namespace Hospital_MS.API
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
-            //services.Configure<JwtOptions>(configuration.GetSection(JwtOptions.SectionName));
-
-
-            /// services.AddOptions<JwtOptions>()           ==>>       Adds the IOptions<JwtOptions> service (DI) container.
-            /// BindConfiguration(JwtOptions.SectionName)   ==>>       Binds a specific section of the configuration file (appsettings.json) to the JwtOptions class.
-            /// ValidateOnStart();                          ==>>       Validates the options at application startup instead of waiting until the options are first requested.
 
             services.AddOptions<JwtOptions>()
                 .BindConfiguration(JwtOptions.SectionName)
@@ -117,7 +96,6 @@ namespace Hospital_MS.API
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 8;
-                //options.SignIn.RequireConfirmedEmail = true;
                 options.User.RequireUniqueEmail = true;
             });
 
@@ -136,7 +114,7 @@ namespace Hospital_MS.API
                     Description = "API documentation for Hospital-MS"
                 });
 
-                // Define the Bearer auth scheme
+
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
@@ -151,24 +129,24 @@ namespace Hospital_MS.API
                     """
                 });
 
-                // Require Bearer token globally
+
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
                 {
-                    new OpenApiSecurityScheme
                     {
-                        Reference = new OpenApiReference
+                        new OpenApiSecurityScheme
                         {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "Bearer",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header
                         },
-                        Scheme = "Bearer",
-                        Name = "Bearer",
-                        In = ParameterLocation.Header
-                    },
-                    new List<string>()
-                }
-            });
+                        new List<string>()
+                    }
+                });
             });
 
             return services;

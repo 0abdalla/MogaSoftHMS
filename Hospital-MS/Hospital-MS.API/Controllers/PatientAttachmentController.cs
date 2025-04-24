@@ -15,30 +15,21 @@ namespace Hospital_MS.API.Controllers
         public async Task<IActionResult> CreateAsync(int patientId, [FromForm] PatientAttachmentRequest request, CancellationToken cancellationToken = default)
         {
             var result = await _patientAttachmentService.CreateAsync(patientId, request, cancellationToken);
-
-            return result.IsSuccess
-                ? Created()
-                : BadRequest(result);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             var result = await _patientAttachmentService.DeleteAsync(id, cancellationToken);
-
-            return result.IsSuccess
-                ? NoContent()
-                : BadRequest(result);
+            return Ok(result);
         }
 
         [HttpGet("{patientId}")]
         public async Task<IActionResult> GetAllAsync(int patientId, CancellationToken cancellationToken = default)
         {
             var result = await _patientAttachmentService.GetAllAsync(patientId, cancellationToken);
-
-            return result.IsSuccess
-                ? Ok(result.Value)
-                : BadRequest(result);
+            return Ok(result);
         }
     }
 }

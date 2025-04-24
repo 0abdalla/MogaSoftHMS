@@ -1,4 +1,4 @@
-﻿using Hospital_MS.Core.Services.Common;
+﻿using Hospital_MS.Interfaces.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System;
