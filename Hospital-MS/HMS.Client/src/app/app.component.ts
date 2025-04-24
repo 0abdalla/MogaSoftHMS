@@ -15,6 +15,7 @@ export class AppComponent {
   onSidebarToggled(isCollapsed: boolean) {
     this.isSidebarCollapsed = isCollapsed;
   }
+
   constructor(private router: Router) {
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))

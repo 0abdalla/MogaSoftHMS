@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import Swal from 'sweetalert2';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,7 +16,53 @@ export class SidebarComponent {
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
 
-  constructor(private router: Router , private authService : AuthService) { }
+  constructor(private router: Router, private authService: AuthService) {}
+
+  ngOnInit() {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.setActiveMenuBasedOnRoute();
+      });
+
+    this.setActiveMenuBasedOnRoute();
+  }
+
+  setActiveMenuBasedOnRoute() {
+    const currentRoute = this.router.url
+    const routeMenuMap: { [key: string]: string } = {
+      '/home': 'home',
+      '/patients/list': 'patients',
+      '/patients/add': 'patients',
+      '/appointments/list': 'appointments',
+      '/appointments/add': 'appointments',
+      '/appointments/settings': 'appointments',
+      '/emergency/emergency-reception': 'emergency',
+      '/insurance/insurance-list': 'insurance',
+      '/insurance/add-insurance': 'insurance',
+      '/finance/accounts': 'finance',
+      '/finance/transactions': 'finance',
+      '/inventory/stock': 'inventory',
+      '/inventory/purchases': 'inventory',
+      '/staff/list': 'staff',
+      '/staff/add': 'staff',
+      '/reports/financial': 'reports',
+      '/reports/medical': 'reports',
+      '/settings/general': 'settings',
+      '/settings/doctors': 'settings',
+      '/settings/doctors-list': 'settings'
+    };
+
+    for (const route in routeMenuMap) {
+      if (currentRoute.startsWith(route)) {
+        this.activeMenu = routeMenuMap[route];
+        this.activeSubmenuRoute = currentRoute;
+        return;
+      }
+    }
+    this.activeMenu = null;
+    this.activeSubmenuRoute = '';
+  }
 
   toggleSubMenu(menu: string) {
     this.activeMenu = this.activeMenu === menu ? null : menu;
@@ -28,19 +75,18 @@ export class SidebarComponent {
 
   logout() {
     Swal.fire({
-      title: "هل أنت متأكد؟",
-      icon: "question",
+      title: 'هل أنت متأكد؟',
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: "#3D5DA7",
-      cancelButtonColor: "#ED3B93",
-      confirmButtonText: "نعم",
-      cancelButtonText: "لا",
+      confirmButtonColor: '#3D5DA7',
+      cancelButtonColor: '#ED3B93',
+      confirmButtonText: 'نعم',
+      cancelButtonText: 'لا'
     }).then((result) => {
       if (result.isConfirmed) {
         this.authService.logout();
         this.router.navigate(['/login']);
       }
     });
-    
   }
 }

@@ -26,14 +26,14 @@ export class AdmissionService {
   getAddmisionById(id : number): Observable<any> {
     return this.http.get<any>(this.baseUrl + '/api/Admissions/' + id)
   }
+  getPatientById(id : number): Observable<any> {
+    return this.http.get<any>(this.baseUrl + '/api/Patients/' + id)
+  }
   addAdmision(addAdmision : FormData){
     return this.http.post(this.baseUrl + '/api/Admissions', addAdmision)
   }
   updateAdmision(id : number, patient : FormData){
     return this.http.put(this.baseUrl + '/api/Patients/status/' + id, patient)
-  }
-  deleteAdmision(id : number){
-    return this.http.delete(this.baseUrl + '/api/Admissions/' + id)
   }
   // 
   getDepartments(){
@@ -47,5 +47,8 @@ export class AdmissionService {
   }
   getBeds(){
     return this.http.get(this.baseUrl + '/api/Beds')
+  }
+  deleteAdmision(id : number){
+    return this.http.delete(this.baseUrl + '/api/Admissions/' + id)
   }
 }

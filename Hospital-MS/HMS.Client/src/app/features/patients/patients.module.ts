@@ -10,6 +10,8 @@ import { AffairsComponent } from './components/affairs/affairs.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { AgePipe } from '../../core/pipes/age.pipe';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -18,7 +20,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     PatientDetailComponent,
     PatientFormComponent,
     AppointmentsComponent,
-    AffairsComponent
+    AffairsComponent,
+    AgePipe
   ],
   imports: [
     CommonModule,
@@ -26,7 +29,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     ReactiveFormsModule,
     FormsModule,
     NgSelectModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    ToastModule
   ]
 })
 export class PatientsModule { }

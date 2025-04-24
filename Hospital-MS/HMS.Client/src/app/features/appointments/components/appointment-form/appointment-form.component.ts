@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AppointmentService } from '../../../../core/services/appointment.service';
 import { StaffService } from '../../../../core/services/staff.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-appointment-form',
@@ -28,13 +29,16 @@ export class AppointmentFormComponent implements OnInit {
   // 
   doctors!:any;
   filteredDoctors: any[] = [];
-  constructor(private fb: FormBuilder , private appointmentService: AppointmentService , private staffService: StaffService) {
+  // 
+  radiologyTypes: string[] = ['أشعة سينية', 'أشعة مقطعية', 'رنين مغناطيسي', 'موجات صوتية'];
+  constructor(private fb: FormBuilder , private appointmentService: AppointmentService , private staffService: StaffService , private messageService: MessageService) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', Validators.required],
       appointmentType: ['', Validators.required],
       clinicId: [{ value: '', disabled: true }, Validators.required],
-      doctorId: [{ value: '', disabled: true }, Validators.required],
+      doctorId: [{ value: '', disabled: true }],
+      radiologyType:[{ value: '', disabled: true }],
       appointmentDate: ['', Validators.required],
       insuranceCompanyId: [null],
       insuranceCategoryId: [null],
@@ -82,14 +86,17 @@ export class AppointmentFormComponent implements OnInit {
     this.appointmentService.createAppointment(this.reservationForm.value).subscribe({
       next: (response) => {
         console.log('Appointment created successfully', response);
+        this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
         this.reservationForm.reset();
       },
       error: (error) => {
         console.error('Error creating appointment', error);
         console.error('details:', this.reservationForm.value);
+        this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
       }
-    })
+    });
   }
+  
   getClinics() {
     this.appointmentService.getClinics().subscribe({
       next: (data) => {
@@ -113,5 +120,9 @@ export class AppointmentFormComponent implements OnInit {
         console.log(err);
       }
     });
+  }
+  // 
+  get selectedAppointmentType() {
+    return this.reservationForm.get('appointmentType')?.value;
   }
 }

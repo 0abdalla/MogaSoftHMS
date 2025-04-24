@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StaffService } from '../../../../core/services/staff.service';
 import { AdmissionService } from '../../../../core/services/admission.service';
 import { forkJoin } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-patient-form',
@@ -26,34 +27,45 @@ export class PatientFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
-    private addmisionService: AdmissionService
+    private addmisionService: AdmissionService,
+    private messageService : MessageService
   ) {
     this.patientForm = this.fb.group({
-      patientName: ['' , Validators.required],
-      patientPhone: ['' , Validators.required],
-      patientBirthDate: ['' , Validators.required],
-      patientNationalId: ['' , Validators.required],
-      patientAddress: ['' , Validators.required],
-      patientStatus: ['' , Validators.required],
-      emergencyPhone01: ['' , Validators.required],
-      emergencyContact01: ['' , Validators.required],
-      emergencyPhone02: [''],
-      emergencyContact02: [''],
-      departmentId: ['' , Validators.required],
-      doctorId: [{value: '', disabled: true}, Validators.required],
-      roomType : ['' , Validators.required],
-      roomId: [{value: '', disabled: true} , Validators.required],
-      bedId: [{value: '', disabled: true} , Validators.required],
+      patientName: ['', Validators.required],
+      patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
+      patientBirthDate: ['', Validators.required],
+      patientNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
+      patientAddress: ['', Validators.required],
+      patientStatus: ['', Validators.required],
+      emergencyPhone01: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
+      emergencyContact01: ['', Validators.required],
+      emergencyPhone02: ['', [Validators.pattern(/^01[0125][0-9]{8}$/)]], 
+      emergencyContact02: ['', []], 
+      departmentId: ['', Validators.required],
+      doctorId: [{ value: '', disabled: true }, Validators.required],
+      roomType: ['', Validators.required],
+      roomId: [{ value: '', disabled: true }, Validators.required],
+      bedId: [{ value: '', disabled: true }, Validators.required],
       insuranceCompanyId: [null],
       insuranceCategoryId: [null],
-      insuranceNumber: [''],
-      healthStatus: [''],
-      initialDiagnosis: [''],
-      hasCompanion: [false],
-      companionName: [''],
-      companionNationalId: [''],
-      companionPhone: [''],
-      notes: ['']
+      insuranceNumber: [null],
+      healthStatus: ['', Validators.required],
+      initialDiagnosis: ['', Validators.required],
+      hasCompanion: [false, Validators.required], 
+      companionName: ['', []], 
+      companionNationalId: ['', [Validators.pattern(/^[0-9]{14}$/)]], 
+      companionPhone: ['', [Validators.pattern(/^01[0125][0-9]{8}$/)]], 
+      notes: [''],
+    });
+
+    this.patientForm.get('hasCompanion')?.valueChanges.subscribe((value) => {
+      this.updateCompanionValidators(value);
+    });
+    this.patientForm.get('emergencyPhone02')?.valueChanges.subscribe(() => {
+      this.updateSecondContactValidators();
+    });
+    this.patientForm.get('emergencyContact02')?.valueChanges.subscribe(() => {
+      this.updateSecondContactValidators();
     });
   }
   addSecondContact() {
@@ -92,9 +104,12 @@ export class PatientFormComponent implements OnInit {
           console.log("Done");
           this.patientForm.reset();
           this.showSecondContact = false;
+          this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
         },
         error: (error) => {
           console.error(error);
+          this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
+
         }
       });
     }else{
@@ -136,5 +151,41 @@ export class PatientFormComponent implements OnInit {
       this.patientForm.get('bedId')?.disable();
     }
     this.patientForm.get('bedId')?.setValue('');
+  }
+
+  // 
+  updateCompanionValidators(hasCompanion: boolean): void {
+    const companionName = this.patientForm.get('companionName');
+    const companionNationalId = this.patientForm.get('companionNationalId');
+    const companionPhone = this.patientForm.get('companionPhone');
+
+    if (hasCompanion) {
+      companionName?.setValidators([Validators.required]);
+      companionNationalId?.setValidators([Validators.required, Validators.pattern(/^[0-9]{14}$/)]);
+      companionPhone?.setValidators([Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]);
+    } else {
+      companionName?.setValidators([]);
+      companionNationalId?.setValidators([Validators.pattern(/^[0-9]{14}$/)]);
+      companionPhone?.setValidators([Validators.pattern(/^01[0125][0-9]{8}$/)]);
+    }
+
+    companionName?.updateValueAndValidity();
+    companionNationalId?.updateValueAndValidity();
+    companionPhone?.updateValueAndValidity();
+  }
+  updateSecondContactValidators(): void {
+    const emergencyPhone02 = this.patientForm.get('emergencyPhone02');
+    const emergencyContact02 = this.patientForm.get('emergencyContact02');
+
+    if (this.showSecondContact) {
+      emergencyPhone02?.setValidators([Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]);
+      emergencyContact02?.setValidators([Validators.required]);
+    } else {
+      emergencyPhone02?.setValidators([Validators.pattern(/^01[0125][0-9]{8}$/)]);
+      emergencyContact02?.setValidators([]);
+    }
+
+    emergencyPhone02?.updateValueAndValidity();
+    emergencyContact02?.updateValueAndValidity();
   }
 }

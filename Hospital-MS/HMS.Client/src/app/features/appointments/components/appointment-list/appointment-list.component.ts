@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PaginatedPatients, Patients } from '../../../../core/models/patient';
 import { AppointmentService } from '../../../../core/services/appointment.service';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { MessageService } from 'primeng/api';
 declare var html2pdf: any;
 
 @Component({
@@ -35,7 +36,7 @@ export class AppointmentListComponent implements OnInit {
   selectedAppointment: any;
   // 
   clinics!:any;
-  constructor(private appointmentService: AppointmentService , private fb : FormBuilder) {}
+  constructor(private appointmentService: AppointmentService , private fb : FormBuilder , private messageService : MessageService) {}
   ngOnInit() {
     this.filterForm = this.fb.group({
       Type: [''],
@@ -50,7 +51,7 @@ export class AppointmentListComponent implements OnInit {
   }
   getServiceColor(type: string): string {
     const serviceObj = this.patientServices.find((s) => s.name === type);
-    return serviceObj ? serviceObj.color : '#000';
+    return serviceObj ? serviceObj.back : '#000';
   }
   print() {
     window.print();
@@ -139,12 +140,12 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getCounts().subscribe({
       next: (data) => {
         this.patientServices = [
-          { name: 'كشف', count: data.generalCount, color: '#1E90FF' },
-          { name: 'استشارة', count: data.consultationCount, color: '#FFA500' },
-          { name: 'عمليات', count: data.surgeryCount, color: '#8B0000' },
-          { name: 'تحاليل', count: data.screeningCount, color: '#FF6347' },
-          { name: 'أشعة', count: data.radiologyCount, color: '#20B2AA' },
-          { name: 'طوارئ', count: data.emergencyCount, color: '#FF0000' },
+          { name: 'كشف', value: 'General', count: data.generalCount, color: 'linear-gradient(237.82deg, #1E90FF 30.69%, #A3D4FF 105.5%)', back: '#1E90FF' },
+          { name: 'استشارة', value: 'Consultation', count: data.consultationCount, color: 'linear-gradient(236.62deg, #FFA500 30.14%, #FFDCA3 83.62%)', back: '#FFA500' },
+          { name: 'عمليات', value: 'Surgery', count: data.surgeryCount, color: 'linear-gradient(227.58deg, #8B0000 26.13%, #FFB6B6 115.78%)', back: '#8B0000' },
+          { name: 'تحاليل', value: 'Screening', count: data.screeningCount, color: 'linear-gradient(248.13deg, #FF6347 35.68%, #FFAAA5 99.61%)', back: '#FF6347' },
+          { name: 'أشعة', value: 'Radiology', count: data.radiologyCount, color: 'linear-gradient(236.62deg, #20B2AA 30.14%, #A3E4E0 83.62%)', back: '#20B2AA' },
+          { name: 'طوارئ', value: 'Emergency', count: data.emergencyCount, color: 'linear-gradient(236.62deg, #FF0000 30.14%, #FF9999 83.62%)', back: '#FF0000' },
         ];
       },
       error: (err) => {
@@ -160,13 +161,25 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.updateEmergency(id, this.updateEmergencyForm).subscribe({
       next: (updatedPatient) => {
         console.log('تم التحديث بنجاح:', updatedPatient);
+        this.messageService.add({ severity: 'success', summary: 'تم التحديث', detail: 'تم التحديث بنجاح' });
         this.getPatients();
         this.updateEmergencyForm.reset();
       },
       error: (err) => {
         console.error('حدث خطأ أثناء التحديث:', err);
+        this.messageService.add({ severity: 'error', summary: 'فشل التحديث', detail: 'حدث خطأ أثناء التحديث' });
       }
     });
   }
-  
+  getServiceName(type: string): string {
+    const map: { [key: string]: string } = {
+      Emergency: 'طوارئ',
+      Radiology: 'أشعة',
+      Screening: 'تحاليل',
+      Surgery: 'عمليات',
+      Consultation: 'استشارة',
+      General: 'كشف'
+    };
+    return map[type] || type;
+  }  
 }

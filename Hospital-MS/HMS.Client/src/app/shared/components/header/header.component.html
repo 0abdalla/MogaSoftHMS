@@ -1,10 +1,6 @@
-<header class="dashboard-header">
+<header class="dashboard-header mb-3">
   <div class="header-left">
-    <!-- <div class="search-bar">
-      <i class="fas fa-search"></i>
-      <input type="text" placeholder="Search" [(ngModel)]="searchQuery" (input)="onSearch()" />
-    </div> -->
-    <span class="date">{{ currentDate }}</span>
+    <span class="route">{{routeNow}}</span>
   </div>
   <div class="header-right">
     <div class="header-icons">
@@ -16,3 +12,6 @@
     </div>
   </div>
 </header>
+<div class="container-fluid mb-3">
+  <span class="date">{{currentDate}}</span>
+</div>

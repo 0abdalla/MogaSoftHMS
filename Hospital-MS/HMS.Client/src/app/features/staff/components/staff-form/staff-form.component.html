@@ -1,1 +1,121 @@
-<p>staff-form works!</p>
+<main id="staff-form" @fadeIn>
+    <div class="container-fluid">
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="form p-2">
+            <p-toast position="top-left"></p-toast>
+            <h4 class="mb-3">🧑‍🏭بيانات الموظف</h4>
+            <div class="row mb-3">
+              <div class="col-lg-3">
+                <label class="form-label">الاسم بالكامل</label>
+                <input type="text" class="form-control shadow-none" formControlName="fullName">
+              </div>
+              <div class="col-lg-3">
+                <label class="form-label">الرقم القومي</label>
+                <input type="text" class="form-control shadow-none" formControlName="nationalId">
+              </div>
+              <div class="col-lg-3">
+                <label class="form-label">النوع</label>
+                <select class="form-select shadow-none" formControlName="gender">
+                  <option selected disabled value="">اختر النوع</option>
+                  <option value="Male">ذكر</option>
+                  <option value="Female">أنثى</option>
+                </select>
+              </div>
+              <div class="col-lg-3">
+                <label class="form-label">الحالة الاجتماعية</label>
+                <select class="form-select shadow-none" formControlName="maritalStatus">
+                  <option selected disabled value="">اختر الحالة</option>
+                  <option value="Single">أعزب</option>
+                  <option value="Married">متزوج</option>
+                  <option value="Divorced">مطلق</option>
+                  <option value="Widowed">أرمل</option>
+                </select>
+              </div>
+            </div>
+          
+            <h4 class="mb-3">📞طرق الاتصال</h4>
+            <div class="row mb-3">
+              <div class="col-lg-4">
+                <label class="form-label">رقم الهاتف</label>
+                <input type="text" class="form-control shadow-none" formControlName="phoneNumber">
+              </div>
+              <div class="col-lg-4">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-control shadow-none" formControlName="email">
+              </div>
+              <div class="col-lg-4">
+                <label class="form-label">العنوان</label>
+                <input type="text" class="form-control shadow-none" formControlName="address">
+              </div>
+            </div>
+          
+            <h4 class="mb-3">💼بيانات التوظيف</h4>
+            <div class="row mb-3">
+              
+              <div class="col-lg-4">
+                <label class="form-label">الوظيفة</label>
+                <select class="form-select shadow-none" formControlName="type">
+                  <option selected disabled value="">اختر الوظيفة</option>
+                  <option value="Nurse">ممرضين</option>
+                  <option value="Administator">إداريين</option>
+                  <option value="Worker">عمال</option>
+                </select>
+              </div>
+              <!-- <div class="col-lg-4">
+                <label class="form-label">التخصص</label>
+                <input type="text" class="form-control shadow-none" formControlName="specialization">
+              </div> -->
+              <div class="col-lg-4">
+                <label class="form-label">تاريخ التعيين</label>
+                <input type="date" class="form-control shadow-none" formControlName="hireDate">
+              </div>
+            </div>
+          
+            <!-- <div class="row mb-3">
+              <div class="col-lg-4" *ngIf="employeeForm.get('type')?.value === 'Doctor' || employeeForm.get('type')?.value === 'Nurse'">
+                <label class="form-label">القسم الطبي</label>
+                <select class="form-select shadow-none" formControlName="departmentId">
+                  <option selected disabled value="">اختر القسم</option>
+                  <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+                </select>
+              </div>
+              <div class="col-lg-4" *ngIf="employeeForm.get('type')?.value === 'Doctor' || employeeForm.get('type')?.value === 'Nurse'">
+                <label class="form-label">العيادة</label>
+                <select class="form-select shadow-none" formControlName="clinicId">
+                  <option selected disabled value="">اختر العيادة</option>
+                  <option *ngFor="let clinic of clinics" [value]="clinic.id">{{ clinic.name }}</option>
+                </select>
+              </div>
+              <div class="col-lg-4" *ngIf="(employeeForm.get('type')?.value === 'Worker' || employeeForm.get('type')?.value === 'Administator')">
+                <label class="form-label">المسمى الوظيفي</label>
+                <input type="text" class="form-control shadow-none" formControlName="jobTitle">
+              </div>
+            </div> -->
+            <h4 class="mb-3">📋المرفقات</h4>
+            <div class="row mb-3">
+              <!-- <div class="col-lg-4">
+                <label class="form-label">حالة الموظف</label>
+                <select class="form-select shadow-none" formControlName="status">
+                  <option selected disabled value="">اختر الحالة</option>
+                  <option value="Active">فعال</option>
+                  <option value="Inactive">غير فعال</option>
+                </select>
+              </div> -->
+              <div class="col-lg-12">
+                <label class="form-label" for="Files">مرفقات</label>
+                <input type="file" class="form-control shadow-none" id="Files" (change)="onFileSelected($event)" multiple accept=".png,.jpg,.jpeg,.pdf">
+              </div>
+              <div class="col-lg-12 mt-3">
+                <label class="form-label">ملاحظات</label>
+                <textarea rows="2" class="form-control shadow-none" formControlName="notes"></textarea>
+              </div>
+            </div>
+          
+            <div class="row justify-content-center gap-2 px-3">
+                <button type="submit" [disabled]="!employeeForm.valid" class="btn-blue col-2">حفظ البيانات</button>
+                <button type="reset" class="btn-outline-blue col-2">الغاء</button>
+              
+            </div>
+          
+        </form>
+    </div>
+</main>

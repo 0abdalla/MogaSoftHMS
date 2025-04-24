@@ -260,7 +260,7 @@ namespace Hospital_MS.Services
                 if (request.DoctorSchedules is not null && request.DoctorSchedules.Count > 0)
                 {
                     var newSchedules = request.DoctorSchedules
-                        .Where(schedule => schedule.IsWorking) 
+                        //.Where(schedule => schedule.IsWorking) 
                         .Select(schedule => new DoctorSchedule
                         {
                             DoctorId = doctor.Id,
