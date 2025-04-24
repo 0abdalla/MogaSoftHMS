@@ -28,5 +28,10 @@ namespace Hospital_MS.Core.Contracts.Staff
         public int? ClinicId { get; set; }
 
         public List<IFormFile> Files { get; set; } = [];
+
+        public bool IsAuthorized { get; set; }
+        public string? UserName { get; set; }
+        public string? Password { get; set; }
+
     }
 }

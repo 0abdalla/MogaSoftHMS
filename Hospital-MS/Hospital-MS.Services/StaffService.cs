@@ -9,6 +9,7 @@ using Hospital_MS.Core.Repositories;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Services.Common;
 using Hospital_MS.Core.Specifications.Staffs;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -19,10 +20,11 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Services
 {
-    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService) : IStaffService
+    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, UserManager<ApplicationUser> userManager) : IStaffService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         public async Task<Result> CreateAsync(CreateStaffRequest request, CancellationToken cancellationToken = default)
         {
@@ -94,6 +96,30 @@ namespace Hospital_MS.Services
                 await _unitOfWork.Repository<StaffAttachments>().AddRangeAsync(AttachmentItems, cancellationToken);
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
+                // Create User
+
+                if (request.IsAuthorized)
+                {
+                    if (string.IsNullOrEmpty(request.UserName) || string.IsNullOrEmpty(request.Password))
+                        return Result.Failure(new Error("InvalidUserData", "UserName and Password are required.", 400));
+
+                    var existingUser = await _userManager.FindByNameAsync(request.UserName);
+
+                    if (existingUser != null)
+                        return Result.Failure(new Error("UserAlreadyExists", "User with this username already exists.", 400));
+
+
+                    var user = new ApplicationUser
+                    {
+                        UserName = request.UserName,
+                        IsActive = true,          
+                        FirstName = request.FullName,
+                        LastName = string.Empty
+                    };
+                   
+                    await _userManager.CreateAsync(user, request.Password);
+                }
 
                 await transaction.CommitAsync(cancellationToken);
 

@@ -45,7 +45,7 @@ namespace Hospital_MS.Services
                     Email = request.Email,
                     Gender = gender,
                     Phone = request.Phone,
-                    NationalId = request.NationalId,
+                    NationalId = request.NationalId, 
                     DepartmentId = request.DepartmentId,
                     SpecialtyId = request.SpecialtyId,
                     MaritalStatus = maritalStatus,
@@ -247,27 +247,28 @@ namespace Hospital_MS.Services
                 _unitOfWork.Repository<Doctor>().Update(doctor);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                // Update Doctor Schedules
+                // Update Doctor Schedules based on the provided schedule data
 
                 var existingSchedules = await _unitOfWork.Repository<DoctorSchedule>()
                     .GetAllAsQueryable()
                     .Where(ds => ds.DoctorId == doctor.Id)
-                    .ToListAsync(cancellationToken: cancellationToken);
+                    .ToListAsync(cancellationToken);
 
                 _unitOfWork.Repository<DoctorSchedule>().DeleteRange(existingSchedules);
-
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
                 if (request.DoctorSchedules is not null && request.DoctorSchedules.Count > 0)
                 {
-                    var newSchedules = request.DoctorSchedules.Select(schedule => new DoctorSchedule
-                    {
-                        DoctorId = doctor.Id,
-                        WeekDay = schedule.WeekDay,
-                        StartTime = schedule.StartTime,
-                        EndTime = schedule.EndTime
-
-                    }).ToList();
+                    var newSchedules = request.DoctorSchedules
+                        .Where(schedule => schedule.IsWorking) 
+                        .Select(schedule => new DoctorSchedule
+                        {
+                            DoctorId = doctor.Id,
+                            WeekDay = schedule.WeekDay,
+                            StartTime = schedule.StartTime,
+                            EndTime = schedule.EndTime
+                        })
+                        .ToList();
 
                     await _unitOfWork.Repository<DoctorSchedule>().AddRangeAsync(newSchedules, cancellationToken);
                     await _unitOfWork.CompleteAsync(cancellationToken);
@@ -279,6 +280,7 @@ namespace Hospital_MS.Services
             {
                 await transaction.RollbackAsync(cancellationToken);
                 return Result.Failure(GenericErrors<Doctor>.FailedToUpdate);
+                //return Result.Failure(new Error("Failed", ex.Message, 400));
             }
 
             return Result.Success();
