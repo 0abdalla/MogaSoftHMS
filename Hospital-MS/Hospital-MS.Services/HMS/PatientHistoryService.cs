@@ -4,8 +4,8 @@ using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Specifications.MedicalHistories;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetByIdAsync(id, cancellationToken);
+                var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
 
                 if (medicalHistory is not { })
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -70,7 +70,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var spec = new PatientMedicalHistory();//PatientMedicalHistorySpecification();
+            var spec = new PatientMedicalHistory();
 
             var medicalHistories = await _unitOfWork.Repository<PatientMedicalHistory>().GetAllWithSpecAsync(spec, cancellationToken);
 
@@ -94,9 +94,9 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientMedicalHistory();//PatientMedicalHistorySpecification(id);
+            var spec = new PatientMedicalHistory();
 
-            var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetByIdWithIncludesAsync(i => i.Id == id, cancellationToken, x => x.Patient, x => x.CreatedBy, x => x.UpdatedBy);
+            var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetAll(i => i.Id == id).Include(x => x.Patient).Include(x => x.CreatedBy).Include(x => x.UpdatedBy).FirstOrDefaultAsync();
 
             if (medicalHistory is not { })
                 return ErrorResponseModel<PatientMedicalHistoryResponse>.Failure(GenericErrors.NotFound);
@@ -118,7 +118,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetByPatientIdAsync(int patientId, CancellationToken cancellationToken = default)
         {
-            var m = await _unitOfWork.Repository<PatientMedicalHistory>().GetByIdWithIncludesAsync(i => i.PatientId == patientId, cancellationToken, x => x.Patient, x => x.CreatedBy, x => x.UpdatedBy);
+            var m = await _unitOfWork.Repository<PatientMedicalHistory>().GetAll(i => i.PatientId == patientId).Include(x => x.Patient).Include(x => x.CreatedBy).Include(x => x.UpdatedBy).FirstOrDefaultAsync();
 
             var response = new PatientMedicalHistoryResponse
             {
@@ -139,7 +139,7 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetByIdAsync(id, cancellationToken);
+                var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
 
                 if (medicalHistory is not { })
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);

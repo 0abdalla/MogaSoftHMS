@@ -5,7 +5,8 @@ using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Helpers;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -73,9 +74,9 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int patientId, CancellationToken cancellationToken = default)
         {
-            var admission = await _unitOfWork.Repository<Admission>().GetByIdWithIncludesAsync(i => i.PatientId == patientId, cancellationToken,
-                x => x.CreatedBy, x => x.UpdatedBy, x => x.Patient, x => x.Bed, x => x.Room, x => x.Doctor, x => x.Department);
-
+            var admission = await _unitOfWork.Repository<Admission>().GetAll(i => i.PatientId == patientId).Include(x => x.CreatedBy).Include(x => x.UpdatedBy)
+                .Include(x => x.Patient).Include(x => x.Bed).Include(x => x.Room).Include(x => x.Doctor).Include(x => x.Department).FirstOrDefaultAsync();
+            
             if (admission is not { })
                 return ErrorResponseModel<AdmissionResponse>.Failure(GenericErrors.NotFound);
 

@@ -7,7 +7,8 @@ using Hospital_MS.Core.Helpers;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Specifications.Appointments;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -70,7 +71,7 @@ namespace Hospital_MS.Services.HMS
         {
             var spec = new Appointment(); //new AppointmentSpecification(request);
 
-            var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(spec, cancellationToken);
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAll();
 
             var response = appointments.Select(app => new AppointmentResponse
             {
@@ -106,8 +107,8 @@ namespace Hospital_MS.Services.HMS
         {
             var spec = new Appointment();
 
-            var appointment = await _unitOfWork.Repository<Appointment>().GetByIdWithIncludesAsync(i => i.Id == id, cancellationToken, x => x.CreatedBy,
-                x => x.UpdatedBy, x => x.Patient, x => x.Doctor, x => x.Patient.InsuranceCompany, x => x.Patient.InsuranceCategory, x => x.Clinic);
+            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.CreatedBy).Include(x => x.UpdatedBy)
+                .Include(x => x.Patient).Include(x => x.Doctor).Include(x => x.Patient.InsuranceCompany).Include(x => x.Patient.InsuranceCategory).Include(x => x.Clinic).FirstOrDefaultAsync();
 
             if (appointment == null)
                 return ErrorResponseModel<AppointmentResponse>.Failure(GenericErrors.NotFound);
@@ -160,7 +161,7 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, UpdateAppointmentRequest request, CancellationToken cancellationToken = default)
         {
 
-            var appointment = await _unitOfWork.Repository<Appointment>().GetByIdAsync(id, cancellationToken);
+            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
 
             if (appointment == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -185,7 +186,7 @@ namespace Hospital_MS.Services.HMS
         {
             var spec = new Appointment();
 
-            var appointment = await _unitOfWork.Repository<Appointment>().GetByIdWithSpecAsync(spec, cancellationToken);
+            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.Patient).Include(x => x.UpdatedBy).FirstOrDefaultAsync();
 
             if (appointment is not { })
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);

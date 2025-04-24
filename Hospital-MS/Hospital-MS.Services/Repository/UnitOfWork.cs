@@ -1,4 +1,4 @@
-﻿using Hospital_MS.Interfaces.Common;
+﻿using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Reposatories._Data;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;

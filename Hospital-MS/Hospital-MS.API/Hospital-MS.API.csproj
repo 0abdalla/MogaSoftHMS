@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Hospital-MS.Interfaces\Hospital-MS.Interfaces.csproj" />
-    <ProjectReference Include="..\Hospital-MS.Reposatories\Hospital-MS.Reposatories.csproj" />
     <ProjectReference Include="..\Hospital-MS.Services\Hospital-MS.Services.csproj" />
   </ItemGroup>
 

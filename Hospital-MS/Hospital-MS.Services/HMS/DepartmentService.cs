@@ -4,7 +4,7 @@ using Hospital_MS.Core.Contracts.Departments;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
 
 namespace Hospital_MS.Services.HMS
 {

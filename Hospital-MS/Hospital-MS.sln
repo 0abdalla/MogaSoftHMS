@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hospital-MS.Core", "Hospita
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hospital-MS.Services", "Hospital-MS.Services\Hospital-MS.Services.csproj", "{A8042B0E-C7A1-4940-BF75-825CC9390703}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hospital-MS.Reposatories", "Hospital-MS.Reposatories\Hospital-MS.Reposatories.csproj", "{B74AF014-B544-42DC-A834-3506E702DA84}"
-EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "HMS.Client", "HMS.Client\", "{B82BD154-67B6-4096-91B5-A4348B04D68C}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
@@ -52,10 +50,6 @@ Global
 		{A8042B0E-C7A1-4940-BF75-825CC9390703}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8042B0E-C7A1-4940-BF75-825CC9390703}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8042B0E-C7A1-4940-BF75-825CC9390703}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Release|Any CPU.ActiveCfg = Debug|Any CPU

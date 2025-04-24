@@ -7,7 +7,7 @@ using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Specifications.Patients;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,7 +48,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var patient = await _unitOfWork.Repository<Patient>().GetByIdAsync(id, cancellationToken);
+            var patient = await _unitOfWork.Repository<Patient>().GetAll(id);
 
             if (patient is not { })
                 return ErrorResponseModel<PatientResponse>.Failure(GenericErrors.NotFound);

@@ -3,6 +3,7 @@ using Hospital_MS.Core.Services;
 using Hospital_MS.Core.Services.Auth;
 using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Reposatories;
 using Hospital_MS.Reposatories._Data;
 using Hospital_MS.Services.Auth;

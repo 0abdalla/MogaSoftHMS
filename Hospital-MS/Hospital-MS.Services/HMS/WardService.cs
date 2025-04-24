@@ -4,7 +4,7 @@ using Hospital_MS.Core.Contracts.Wards;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -40,7 +40,5 @@ namespace Hospital_MS.Core.Errors
         public static Error SuccessLogin = new("تم تسجيل الدخول بنجاح", Status.Success);
 
         public static Error SuccessRegister = new("تم تسجيل مستخدم جديد بنجاح", Status.Success);
-
-        
     }
 }

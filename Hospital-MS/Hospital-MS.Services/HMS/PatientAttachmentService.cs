@@ -7,6 +7,8 @@ using Hospital_MS.Core.Specifications.PatientAttachments;
 using Microsoft.AspNetCore.Hosting;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Core.Common;
+using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -49,7 +51,7 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var attachment = await _unitOfWork.Repository<PatientAttachment>().GetByIdAsync(id, cancellationToken);
+                var attachment = await _unitOfWork.Repository<PatientAttachment>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
 
                 if (attachment is not { })
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_MS.API.Controllers
 {
-    [Authorize]
     public class PatientsController(IPatientService patientService) : ApiBaseController
     {
         private readonly IPatientService _patientService = patientService;
