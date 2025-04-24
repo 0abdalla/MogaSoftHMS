@@ -23,5 +23,6 @@ namespace Hospital_MS.Core.Repositories
         void Update(T entity);
         void Delete(T entity);
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+        void DeleteRange(IEnumerable<T> entities);
     }
 }

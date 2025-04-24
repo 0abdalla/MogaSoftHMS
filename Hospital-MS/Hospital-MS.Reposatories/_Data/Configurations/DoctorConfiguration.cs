@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hospital_MS.Core.Enums;
 
 namespace Hospital_MS.Reposatories._Data.Configurations
 {
@@ -13,13 +14,10 @@ namespace Hospital_MS.Reposatories._Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Doctor> builder)
         {
-            builder.Property(d => d.FirstName)
-                .IsRequired()
-                .HasMaxLength(100);
 
-            builder.Property(d => d.LastName)
+            builder.Property(d => d.FullName)
                 .IsRequired()
-                .HasMaxLength(100);
+                .HasMaxLength(550);
 
             builder.Property(d => d.NationalId)
                 .HasMaxLength(50);
@@ -28,16 +26,17 @@ namespace Hospital_MS.Reposatories._Data.Configurations
                 .IsRequired()
                 .HasMaxLength(20);
 
+            builder.Property(d => d.Degree)
+               .HasMaxLength(55);
+
             builder.Property(d => d.Email)
-                .IsRequired()
                 .HasMaxLength(100);
 
             builder.Property(d => d.Address)
                 .HasMaxLength(500);
 
-            builder.Property(d => d.EmploymentType)
-                .IsRequired()
-                .HasMaxLength(50);
+            builder.Property(d => d.Address)
+                .HasMaxLength(1000);
 
             builder.Property(d => d.PhotoUrl)
                 .HasMaxLength(500);
@@ -47,6 +46,21 @@ namespace Hospital_MS.Reposatories._Data.Configurations
 
             builder.Property(d => d.StartDate)
                 .HasColumnType("date");
+
+            builder.Property(p => p.Status)
+            .HasConversion(
+            (type) => type.ToString(),
+            (stu) => Enum.Parse<StaffStatus>(stu, true)).HasMaxLength(55);
+
+            builder.Property(p => p.Gender)
+                     .HasConversion(
+                     (type) => type.ToString(),
+                     (gen) => Enum.Parse<Gender>(gen, true)).HasMaxLength(55);
+
+            builder.Property(p => p.MaritalStatus)
+                     .HasConversion(
+                     (type) => type.ToString(),
+                     (gen) => Enum.Parse<MaritalStatus>(gen, true)).HasMaxLength(55);
         }
     }
 }

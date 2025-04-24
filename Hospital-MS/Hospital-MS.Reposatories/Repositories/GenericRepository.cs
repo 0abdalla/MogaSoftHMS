@@ -94,6 +94,9 @@ namespace Hospital_MS.Reposatories.Repositories
         public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
         => await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
 
+        public void DeleteRange(IEnumerable<T> entities)
+       => _dbContext.Set<T>().RemoveRange(entities);
+
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
         => await _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
 

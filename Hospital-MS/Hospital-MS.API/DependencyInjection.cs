@@ -66,6 +66,7 @@ namespace Hospital_MS.API
             services.AddScoped<IPatientHistoryService, PatientHistoryService>();
             services.AddScoped<IPatientAttachmentService, PatientAttachmentService>();
             services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IDoctorService, DoctorService>();
 
             return services;
 

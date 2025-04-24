@@ -83,6 +83,7 @@ namespace Hospital_MS.Services
                         {
                             FileUrl = fileUrl,
                             StaffId = staff.Id,
+                            
                         };
 
                         AttachmentItems.Add(attachment);
