@@ -138,7 +138,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<StaffResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new StaffSpecification(id);
+            var spec = new Staff();//StaffSpecification(id);
 
             var staff = await _unitOfWork.Repository<Staff>().GetByIdWithIncludesAsync(i => i.Id == id, cancellationToken, x => x.Clinic, x => x.Department, x => x.StaffAttachments);
 
@@ -174,7 +174,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<StaffResponse>> GetFilteredStaffAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new StaffSpecification(request);
+            var spec = new Staff();//StaffSpecification(request);
 
             var staffs = await _unitOfWork.Repository<Staff>().GetAllWithSpecAsync(spec, cancellationToken);
 
@@ -201,7 +201,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<int> GetFilteredStaffCountAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new StaffCountSpecification(request);
+            var spec = new Staff();//StaffCountSpecification(request);
             return await _unitOfWork.Repository<Staff>().GetCountAsync(spec, cancellationToken);
         }
 

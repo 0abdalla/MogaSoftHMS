@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Specifications.Beds
 {
-    public class BedSpecification : BaseSpecification<Bed>
+    public class BedSpecification
     {
-        public BedSpecification()
-        {
-            AddIncludes();
-        }
+        //public BedSpecification()
+        //{
+        //    AddIncludes();
+        //}
 
-        private void AddIncludes()
-        {
-            Includes.Add(b => b.Room);
-        }
+        //private void AddIncludes()
+        //{
+        //    Includes.Add(b => b.Room);
+        //}
     }
 }

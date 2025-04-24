@@ -1,5 +1,4 @@
-﻿using Hospital_MS.Core.Specifications;
-using Hospital_MS.Interfaces.Common;
+﻿using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Reposatories._Data;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -20,7 +19,7 @@ namespace Hospital_MS.Reposatories
             _dbContext = dbContext;
         }
 
-        public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(ISpecification<T> spec, CancellationToken cancellationToken)
+        public async Task<IReadOnlyList<T>> GetAllWithSpecAsync(T spec, CancellationToken cancellationToken)
         {
             return await ApplySecifications(spec).ToListAsync(cancellationToken);
         }
@@ -30,7 +29,7 @@ namespace Hospital_MS.Reposatories
             return await _dbContext.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
         }
 
-        public async Task<T?> GetByIdWithSpecAsync(ISpecification<T> spec, CancellationToken cancellationToken)
+        public async Task<T?> GetByIdWithSpecAsync(T spec, CancellationToken cancellationToken)
         {
             return await ApplySecifications(spec).FirstOrDefaultAsync(cancellationToken);
         }
@@ -78,9 +77,9 @@ namespace Hospital_MS.Reposatories
         public void Delete(T entity)
         => _dbContext.Set<T>().Remove(entity);
 
-        private IQueryable<T> ApplySecifications(ISpecification<T> spec)
+        private IQueryable<T> ApplySecifications(T spec)
         {
-            return SpecificationsEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
+            return null; //SpecificationsEvaluator<T>.GetQuery(_dbContext.Set<T>(), spec);
         }
 
         public Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
@@ -98,21 +97,16 @@ namespace Hospital_MS.Reposatories
             return _dbContext.Set<T>().FirstOrDefaultAsync(predicate, cancellationToken);
         }
 
-        public async Task<int> GetCountAsync(ISpecification<T> spec, CancellationToken cancellationToken)
+        public async Task<int> GetCountAsync(T spec, CancellationToken cancellationToken)
         {
             return await ApplySecifications(spec).CountAsync(cancellationToken);
         }
 
-        public IQueryable<T> GetAllAsQueryable(ISpecification<T>? spec = null)
+        public IQueryable<T> GetAllAsQueryable(T? spec = null)
         {
             var query = _dbContext.Set<T>().AsQueryable();
 
-            if (spec != null)
-            {
-                query = SpecificationsEvaluator<T>.GetQuery(query, spec);
-            }
-
-            return query;
+            return null;
         }
 
         public IQueryable<T> GetAllAsQueryable()

@@ -1,11 +1,9 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Beds;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Specifications.Beds;
 using Hospital_MS.Interfaces.Common;
 using System;
 using System.Collections.Generic;
@@ -48,7 +46,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<BedResponse>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var spec = new BedSpecification();
+            var spec = new Bed();//BedSpecification();
 
             var beds = await _unitOfWork.Repository<Bed>().GetAllWithSpecAsync(spec, cancellationToken);
 

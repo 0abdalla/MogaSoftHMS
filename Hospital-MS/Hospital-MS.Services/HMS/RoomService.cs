@@ -52,7 +52,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<RoomResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var spec = new RoomSpecification();
+            var spec = new Room();//RoomSpecification();
 
             var rooms = await _unitOfWork.Repository<Room>().GetAllWithSpecAsync(spec, cancellationToken);
 

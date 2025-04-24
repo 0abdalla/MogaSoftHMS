@@ -70,7 +70,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var spec = new PatientMedicalHistorySpecification();
+            var spec = new PatientMedicalHistory();//PatientMedicalHistorySpecification();
 
             var medicalHistories = await _unitOfWork.Repository<PatientMedicalHistory>().GetAllWithSpecAsync(spec, cancellationToken);
 
@@ -94,7 +94,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientMedicalHistorySpecification(id);
+            var spec = new PatientMedicalHistory();//PatientMedicalHistorySpecification(id);
 
             var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetByIdWithIncludesAsync(i => i.Id == id, cancellationToken, x => x.Patient, x => x.CreatedBy, x => x.UpdatedBy);
 

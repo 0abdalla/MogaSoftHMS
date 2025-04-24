@@ -8,17 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LinqKit.Core" Version="1.2.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.4" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hospital-MS.Services\Hospital-MS.Services.csproj" />
+    <ProjectReference Include="..\Hospital-MS.Core\Hospital-MS.Core.csproj" />
+    <ProjectReference Include="..\Hospital-MS.Interfaces\Hospital-MS.Interfaces.csproj" />
   </ItemGroup>
 
 </Project>

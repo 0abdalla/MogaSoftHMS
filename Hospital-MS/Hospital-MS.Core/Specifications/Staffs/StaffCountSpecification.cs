@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Specifications.Staffs
 {
-    public class StaffCountSpecification : BaseSpecification<Staff>
+    public class StaffCountSpecification
     {
-        public StaffCountSpecification(GetStaffRequest request)
-            : base(x =>
-                    (string.IsNullOrEmpty(request.Search) ||
-                    x.FullName.ToLower().Contains(request.Search) ||
-                    x.PhoneNumber.ToLower().Contains(request.Search)) &&
-                    (string.IsNullOrEmpty(request.Type) ||
-                    x.Type == Enum.Parse<StaffType>(request.Type))
-            )
-        { }
+        //public StaffCountSpecification(GetStaffRequest request)
+        //    : base(x =>
+        //            (string.IsNullOrEmpty(request.Search) ||
+        //            x.FullName.ToLower().Contains(request.Search) ||
+        //            x.PhoneNumber.ToLower().Contains(request.Search)) &&
+        //            (string.IsNullOrEmpty(request.Type) ||
+        //            x.Type == Enum.Parse<StaffType>(request.Type))
+        //    )
+        //{ }
     }
 }

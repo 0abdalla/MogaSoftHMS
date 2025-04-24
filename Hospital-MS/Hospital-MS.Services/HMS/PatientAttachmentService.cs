@@ -78,7 +78,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientAttachmentResponse>> GetAllAsync(int patientId, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientAttachmentSpecification(patientId);
+            var spec = new PatientAttachment();//PatientAttachmentSpecification(patientId);
 
             var attachments = await _unitOfWork.Repository<PatientAttachment>().GetAllWithSpecAsync(spec, cancellationToken);
 

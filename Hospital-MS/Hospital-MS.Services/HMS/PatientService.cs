@@ -22,7 +22,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientResponse>> GetAllAsync(GetPatientsRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientSpecification(request);
+            var spec = new Patient();//PatientSpecification(request);
 
             var patients = await _unitOfWork.Repository<Patient>().GetAllWithSpecAsync(spec, cancellationToken);
 
@@ -89,7 +89,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<int> GetPatientsCountAsync(GetPatientsRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientCountsSpecification(request);
+            var spec = new Patient();//PatientCountsSpecification(request);
 
             return await _unitOfWork.Repository<Patient>().GetCountAsync(spec, cancellationToken);
         }

@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Specifications.Admissions
 {
-    public class AdmissionCountSpecification : BaseSpecification<Admission>
+    public class AdmissionCountSpecification
     {
-        public AdmissionCountSpecification(GetAdmissionsRequest request)
-        : base(x =>
-                    (string.IsNullOrEmpty(request.Search) ||
-                    x.Patient.FullName.ToLower().Contains(request.Search) ||
-                    x.Patient.Phone.ToLower().Contains(request.Search)) &&
-                    (string.IsNullOrEmpty(request.Status) ||
-                    x.Patient.Status == Enum.Parse<PatientStatus>(request.Status)) &&
-                    (!request.FromDate.HasValue || x.AdmissionDate.Date >= request.FromDate.Value.Date) &&
-                    (!request.ToDate.HasValue || x.AdmissionDate.Date <= request.ToDate.Value.Date)
-            )
-        {
+        //public AdmissionCountSpecification(GetAdmissionsRequest request)
+        //: (x =>
+        //            (string.IsNullOrEmpty(request.Search) ||
+        //            x.Patient.FullName.ToLower().Contains(request.Search) ||
+        //            x.Patient.Phone.ToLower().Contains(request.Search)) &&
+        //            (string.IsNullOrEmpty(request.Status) ||
+        //            x.Patient.Status == Enum.Parse<PatientStatus>(request.Status)) &&
+        //            (!request.FromDate.HasValue || x.AdmissionDate.Date >= request.FromDate.Value.Date) &&
+        //            (!request.ToDate.HasValue || x.AdmissionDate.Date <= request.ToDate.Value.Date)
+        //    )
+        //{
 
-        }
+        //}
     }
 }

@@ -9,47 +9,47 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Specifications.Staffs
 {
-    public class StaffSpecification : BaseSpecification<Staff>
+    public class StaffSpecification
     {
-        public StaffSpecification(int id)
-            : base(x => x.Id == id)
-        {
-            AddIncludes();
-        }
+        //public StaffSpecification(int id)
+        //    : base(x => x.Id == id)
+        //{
+        //    AddIncludes();
+        //}
 
-        public StaffSpecification(GetStaffRequest request)
-            : base(x =>
-                    (string.IsNullOrEmpty(request.Search) ||
-                    x.FullName.ToLower().Contains(request.Search) ||
-                    x.PhoneNumber.ToLower().Contains(request.Search)) &&
-                    (string.IsNullOrEmpty(request.Type) ||
-                    x.Type == Enum.Parse<StaffType>(request.Type))
-            )
-        {
-            AddIncludes();
+        //public StaffSpecification(GetStaffRequest request)
+        //    : base(x =>
+        //            (string.IsNullOrEmpty(request.Search) ||
+        //            x.FullName.ToLower().Contains(request.Search) ||
+        //            x.PhoneNumber.ToLower().Contains(request.Search)) &&
+        //            (string.IsNullOrEmpty(request.Type) ||
+        //            x.Type == Enum.Parse<StaffType>(request.Type))
+        //    )
+        //{
+        //    AddIncludes();
 
-            ApplyOrderByDescending(x => x.Id);
+        //    ApplyOrderByDescending(x => x.Id);
 
-            var pageIndexHelper = 0;
+        //    var pageIndexHelper = 0;
 
-            if ((request.PageIndex - 1) < 0)
-            {
-                pageIndexHelper = 0;
-            }
-            else
-            {
-                pageIndexHelper = request.PageIndex - 1;
+        //    if ((request.PageIndex - 1) < 0)
+        //    {
+        //        pageIndexHelper = 0;
+        //    }
+        //    else
+        //    {
+        //        pageIndexHelper = request.PageIndex - 1;
 
-            }
+        //    }
 
-            ApplyPagination(pageIndexHelper * request.PageSize, request.PageSize);
-        }
+        //    ApplyPagination(pageIndexHelper * request.PageSize, request.PageSize);
+        //}
 
-        private void AddIncludes()
-        {
-            Includes.Add(x => x.Clinic);
-            Includes.Add(x => x.Department);
-            Includes.Add(x => x.StaffAttachments);
-        }
+        //private void AddIncludes()
+        //{
+        //    Includes.Add(x => x.Clinic);
+        //    Includes.Add(x => x.Department);
+        //    Includes.Add(x => x.StaffAttachments);
+        //}
     }
 }

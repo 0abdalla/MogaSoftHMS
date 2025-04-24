@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Specifications.Appointments
 {
-    public class AppointmentsCountSpecification : BaseSpecification<Appointment>
+    public class AppointmentsCountSpecification
     {
-        public AppointmentsCountSpecification(GetAppointmentsRequest request)
-            : base(x => (string.IsNullOrEmpty(request.Search) ||
-                        x.Patient.FullName.ToLower().Contains(request.Search) ||
-                        x.Patient.Phone.ToLower().Contains(request.Search)) &&
-                        (string.IsNullOrEmpty(request.Type) ||
-                        x.Type == Enum.Parse<AppointmentType>(request.Type))
-            )
-        {
+        //public AppointmentsCountSpecification(GetAppointmentsRequest request)
+        //    : base(x => (string.IsNullOrEmpty(request.Search) ||
+        //                x.Patient.FullName.ToLower().Contains(request.Search) ||
+        //                x.Patient.Phone.ToLower().Contains(request.Search)) &&
+        //                (string.IsNullOrEmpty(request.Type) ||
+        //                x.Type == Enum.Parse<AppointmentType>(request.Type))
+        //    )
+        //{
 
-        }
+        //}
     }
 }

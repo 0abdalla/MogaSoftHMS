@@ -9,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Specifications.Patients
 {
-    public class PatientCountsSpecification : BaseSpecification<Patient>
+    public class PatientCountsSpecification
     {
-        public PatientCountsSpecification(GetPatientsRequest request)
-            : base(x =>
-                    (string.IsNullOrEmpty(request.Search) ||
-                    x.FullName.ToLower().Contains(request.Search) ||
-                    x.Phone.ToLower().Contains(request.Search)) &&
-                    (string.IsNullOrEmpty(request.Status) ||
-                    x.Status == Enum.Parse<PatientStatus>(request.Status)) &&
-                    (!request.FromDate.HasValue || x.CreatedOn.Date >= request.FromDate.Value.Date) &&
-                    (!request.ToDate.HasValue || x.CreatedOn.Date <= request.ToDate.Value.Date)
-            )
+        //public PatientCountsSpecification(GetPatientsRequest request)
+        //    : base(x =>
+        //            (string.IsNullOrEmpty(request.Search) ||
+        //            x.FullName.ToLower().Contains(request.Search) ||
+        //            x.Phone.ToLower().Contains(request.Search)) &&
+        //            (string.IsNullOrEmpty(request.Status) ||
+        //            x.Status == Enum.Parse<PatientStatus>(request.Status)) &&
+        //            (!request.FromDate.HasValue || x.CreatedOn.Date >= request.FromDate.Value.Date) &&
+        //            (!request.ToDate.HasValue || x.CreatedOn.Date <= request.ToDate.Value.Date)
+        //    )
 
-        {
-        }
+        //{
+        //}
     }
 }

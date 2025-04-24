@@ -68,7 +68,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<AppointmentResponse>> GetAllAsync(GetAppointmentsRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new AppointmentSpecification(request);
+            var spec = new Appointment(); //new AppointmentSpecification(request);
 
             var appointments = await _unitOfWork.Repository<Appointment>().GetAllWithSpecAsync(spec, cancellationToken);
 
@@ -97,14 +97,14 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<int> GetAppointmentsCountAsync(GetAppointmentsRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new AppointmentsCountSpecification(request);
+            var spec = new Appointment();
 
             return await _unitOfWork.Repository<Appointment>().GetCountAsync(spec, cancellationToken);
         }
 
         public async Task<ErrorResponseModel<AppointmentResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new AppointmentSpecification(id);
+            var spec = new Appointment();
 
             var appointment = await _unitOfWork.Repository<Appointment>().GetByIdWithIncludesAsync(i => i.Id == id, cancellationToken, x => x.CreatedBy,
                 x => x.UpdatedBy, x => x.Patient, x => x.Doctor, x => x.Patient.InsuranceCompany, x => x.Patient.InsuranceCategory, x => x.Clinic);
@@ -183,7 +183,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusInEmergencyRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new AppointmentSpecification(id);
+            var spec = new Appointment();
 
             var appointment = await _unitOfWork.Repository<Appointment>().GetByIdWithSpecAsync(spec, cancellationToken);
 
