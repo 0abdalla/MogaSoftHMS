@@ -52,6 +52,7 @@ namespace Hospital_MS.API.Controllers
         {
             var result = await _patientHistoryService.GetByPatientIdAsync(patientId, cancellationToken);
             return Ok(result);
+            //
         }
     }
 }
