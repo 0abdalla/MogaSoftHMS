@@ -107,17 +107,19 @@ namespace Hospital_MS.Services.HMS
 
         //        var staffResponse = staff.Select(s => new StaffResponse
         //        {
-        //            Id = s.Id,
-        //            FullName = s.FullName,
-        //            Email = s.Email,
-        //            Specialization = s.Specialization,
-        //            PhoneNumber = s.PhoneNumber,
-        //            HireDate = s.HireDate,
-        //            Status = s.Status.ToString(),
-        //            Type = s.Type.ToString(),
-        //            ClinicId = s.ClinicId,
-        //            DepartmentId = s.DepartmentId,
-        //            NationalId = s.NationalId,
+        //        Id = staff.Id,
+        //        FullName = staff.FullName,
+        //        Email = staff.Email,
+        //        Specialization = staff.Specialization,
+        //        PhoneNumber = staff.PhoneNumber,
+        //        HireDate = staff.HireDate,
+        //        Status = staff.Status.ToString(),
+        //        Type = staff.Type.ToString(),
+        //        ClinicId = staff.ClinicId,
+        //        DepartmentId = staff.DepartmentId,
+        //        ClinicName = staff.Clinic?.Name,
+        //        DepartmentName = staff.Department?.Name,
+        //        NationalId = staff.NationalId,
         //        }).ToList();
 
         //        return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
@@ -162,54 +164,5 @@ namespace Hospital_MS.Services.HMS
             return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess, response);
 
         }
-
-        //public async Task<ErrorResponseModel<StaffResponse>> GetFilteredStaffAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
-        //{
-        //    var spec = new Staff();//StaffSpecification(request);
-
-        //    var staffs = await _unitOfWork.Repository<Staff>().GetAllWithSpecAsync(spec, cancellationToken);
-
-        //    var staffResponse = staffs.Select(staff => new StaffResponse
-        //    {
-        //        Id = staff.Id,
-        //        FullName = staff.FullName,
-        //        Email = staff.Email,
-        //        Specialization = staff.Specialization,
-        //        PhoneNumber = staff.PhoneNumber,
-        //        HireDate = staff.HireDate,
-        //        Status = staff.Status.ToString(),
-        //        Type = staff.Type.ToString(),
-        //        ClinicId = staff.ClinicId,
-        //        DepartmentId = staff.DepartmentId,
-        //        ClinicName = staff.Clinic?.Name,
-        //        DepartmentName = staff.Department?.Name,
-        //        NationalId = staff.NationalId,
-
-        //    }).ToList().AsReadOnly();
-
-        //    return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
-        //}
-
-        //public async Task<int> GetFilteredStaffCountAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
-        //{
-        //    var spec = new Staff();//StaffCountSpecification(request);
-        //    return await _unitOfWork.Repository<Staff>().GetCountAsync(spec, cancellationToken);
-        //}
-
-        //public async Task<ErrorResponseModel<StaffCountsResponse>> GetStaffCountsAsync(CancellationToken cancellationToken = default)
-        //{
-        //    var staffs = await _unitOfWork.Repository<Staff>().GetAllAsync(cancellationToken);
-
-        //    var response = new StaffCountsResponse
-        //    {
-        //        AdministratorsCount = staffs.Count(s => s.Type == StaffType.Administrator),
-        //        DoctorsCount = staffs.Count(s => s.Type == StaffType.Doctor),
-        //        NursesCount = staffs.Count(s => s.Type == StaffType.Nurse),
-        //        WorkersCount = staffs.Count(s => s.Type == StaffType.Worker),
-
-        //    };
-
-        //    return ErrorResponseModel<StaffCountsResponse>.Success(GenericErrors.GetSuccess, response);
-        //}
     }
 }
