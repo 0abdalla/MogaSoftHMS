@@ -1,4 +1,4 @@
-﻿using Hospital_MS.Core.Helpers;
+﻿
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,11 +24,11 @@ namespace Hospital_MS.Core.Contracts.Doctors
 
         private string? search;
 
-        public string? Search
-        {
-            get { return search; }
-            set => search = ArabicNormalizer.NormalizeArabic(value ?? string.Empty);
+        //public string? Search
+        //{
+        //    get { return search; }
+        //    set => search = ArabicNormalizer.NormalizeArabic(value ?? string.Empty);
 
-        }
+        //}
     }
 }
