@@ -125,7 +125,6 @@ namespace Hospital_MS.Services.HMS
                 EmergencyLevel = appointment.EmergencyLevel,
                 ClinicId = appointment.ClinicId,
                 ClinicName = appointment?.Clinic?.Name,
-
             };
 
             return ErrorResponseModel<AppointmentResponse>.Success(GenericErrors.GetSuccess, response);

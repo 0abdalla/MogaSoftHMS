@@ -47,16 +47,8 @@ namespace Hospital_MS.Reposatories
             return _dbContext.Set<T>().CountAsync(cancellationToken);
         }
 
-        public Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
-        {
-            return _dbContext.Set<T>().FirstOrDefaultAsync(predicate, cancellationToken);
-        }
+        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken) => await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
 
-        public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken)
-        => await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
-
-        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
-        => await _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
-
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)  => await _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
     }
 }

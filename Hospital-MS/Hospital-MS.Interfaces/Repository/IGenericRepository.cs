@@ -10,7 +10,6 @@ namespace Hospital_MS.Interfaces.Repository
         void Delete(T entity);
         Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
         Task<int> CountAsync(CancellationToken cancellationToken);
-        Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
     }
