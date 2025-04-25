@@ -25,17 +25,29 @@ export class HomeComponent {
       type: 'areaspline',
       renderTo: 'appointments-line',
       style: {
-        fontFamily: 'Cairo, sans-serif'
+        fontFamily: 'Tajawal'
       }
     },
     title: {
-      text: 'اعداد المواعيد',
+      text: 'أعداد الحجوزات',
       align: 'right',
-      margin:0
+      margin:0,
+      style:{
+        fontFamily:"Tajawal",
+        fontSize: '20px',
+        fontWeight: 'bold',
+        color:'Black'
+      }
     },
     subtitle: {
-      text: 'مقارنة بين العيادات الداخلية والخارجية',
+      text: 'مقارنة بين الشهر الحالي والماضي',
       align: 'right',
+      style:{
+        fontFamily:"Tajawal",
+        fontSize: '16px',
+        fontWeight: '500',
+        color:'#7C8FAC',
+      }
     },
     xAxis: {
       categories: ['10/04', '13/04', '16/04', '19/04', '22/04', '25/04', '28/04'],
@@ -80,91 +92,59 @@ export class HomeComponent {
 
   completedAppsChart = new Chart({
     chart: {
-      type: 'pie',
-      renderTo: 'appointments-donut',
-      backgroundColor: 'transparent',
-      events: {
-        render: function () {
-          const chart: any = this
-          const percentage = '77%';
-
-          if (chart.customLabel) {
-            chart.customLabel.destroy();
-          }
-
-          const centerX = chart.plotLeft + chart.plotWidth / 2;
-          const centerY = chart.plotTop + chart.plotHeight / 2;
-          chart.customLabel = chart.renderer.text(
-            percentage,
-            centerX,
-            centerY
-          )
-          .css({
-            color: '#3D5DA7',
-            fontSize: '40px',
-            fontWeight: 'bold',
-            textAnchor: 'middle'
-          })
-          .attr({
-            align: 'center'
-          })
-          .add();
-
-          const bbox = chart.customLabel.getBBox();
-          chart.customLabel.attr({
-            y: centerY - bbox.height / 2
-          });
-        }
-      }
+        type: 'pie',
+        renderTo: 'appointments-donut',
+        backgroundColor: 'transparent',
     },
     title: {
-      text: 'المواعيد المنجزة',
-      align: 'center',
-      verticalAlign: 'top',
-      style: {
-        fontSize: '16px',
-        fontWeight: 'bold',
-        fontFamily: 'Cairo, sans-serif'
-      }
+        text: 'المواعيد المنجزة',
+        align: 'center',
+        verticalAlign: 'top',
+        style: {
+            fontSize: '23px',
+            fontWeight: 'bold',
+            fontFamily: 'Tajawal, sans-serif',
+            color: 'Black',
+        }
+    },
+    subtitle: {
+        text: '<span style="font-size: 40px; font-weight: bold; color: #5A6A85; font-family: Roboto, sans-serif;">77%</span>',
+        floating: true,
+        useHTML: true,
+        align: 'center',
+        verticalAlign: 'middle',
+        y: 25
     },
     tooltip: {
-      pointFormat: '<b>{point.percentage:.1f}%</b>'
+        pointFormat: '<b>{point.percentage:.1f}%</b>'
     },
     plotOptions: {
-      pie: {
-        innerSize: '80%',
-        dataLabels: {
-          enabled: false
-        },
-        borderWidth: 0
-      }
+        pie: {
+            innerSize: '80%',
+            dataLabels: {
+                enabled: false
+            },
+            borderWidth: 0
+        }
     },
     series: [{
-      name: 'نسبة الانجاز',
-      type: 'pie',
-      data: [
-        {
-          name: 'تم إنجازها',
-          y: 77,
-          color: '#3D5DA7'
-        },
-        {
-          name: 'لم يتم إنجازها',
-          y: 23,
-          color: '#ED3B93'
-        }
-      ]
+        name: 'نسبة الانجاز',
+        type: 'pie',
+        data: [
+            {
+                name: 'تم إنجازها',
+                y: 77,
+                color: '#3D5DA7'
+            },
+            {
+                name: 'لم يتم إنجازها',
+                y: 23,
+                color: '#ED3B93'
+            }
+        ]
     }],
     credits: { enabled: false },
     legend: {
-      layout: 'horizontal',
-      align: 'center',
-      verticalAlign: 'bottom',
-      symbolRadius: 0,
-      itemStyle: {
-        fontFamily: 'Cairo, sans-serif',
-        fontSize: '13px'
-      },
       events: {
         itemClick: function (event) {
           return false;
@@ -185,19 +165,26 @@ export class HomeComponent {
       style: {
         fontSize: '20px',
         fontWeight: 'bold',
-        fontFamily: 'Cairo, sans-serif'
+        fontFamily: 'Tajawal, sans-serif',
+        color: 'Black',
       }
     },
     subtitle:{
       text: 'عدد الحالات اللتي أنجزها الطبيب',
       align: 'right',
+      style:{
+        fontSize: '16px',
+        fontWeight: 'bold',
+        fontFamily: 'Tajawal, sans-serif',
+        color: '#7C8FAC',
+      }
     },
     xAxis: {
-      categories: ['يناير', 'فبراير', 'مارس', 'أبريل'],
+      categories: ['الأسبوع الأول', 'الأسبوع الثاني', 'الأسبوع الثالث', 'الأسبوع الرابع'],
       title: { text: null },
       labels: {
         style: {
-          fontFamily: 'Cairo, sans-serif'
+          fontFamily: 'Tajawal, sans-serif'
         }
       }
     },
@@ -210,7 +197,7 @@ export class HomeComponent {
       labels: {
         overflow: 'justify',
         style: {
-          fontFamily: 'Cairo, sans-serif'
+          fontFamily: 'Tajawal, sans-serif'
         }
       }
     },
@@ -223,10 +210,13 @@ export class HomeComponent {
         stacking: 'normal'
       },
       bar: {
+        pointWidth: 35,
         dataLabels: {
           enabled: true,
           style: {
-            fontFamily: 'Cairo, sans-serif'
+            fontFamily: 'Tajawal, sans-serif',
+            color: '#fff',
+            fontSize: '16px'
           }
         }
       }
@@ -236,7 +226,9 @@ export class HomeComponent {
       align: 'center',
       verticalAlign: 'bottom',
       itemStyle: {
-        fontFamily: 'Cairo, sans-serif',
+        fontFamily: 'Tajawal, sans-serif',
+        fontSize: '16px',
+        color: '#7C8FAC'
       },
       events: {
         itemClick: function (event) {
@@ -253,191 +245,22 @@ export class HomeComponent {
         name: 'د. أحمد',
         type: 'bar',
         data: [5, 7, 6, 5],
-        color: '#7D8EFF'
+        color: '#D94A91',
+        
       },
       {
         name: 'د. ندى',
         type: 'bar',
         data: [3, 5, 4, 6],
-        color: '#EF7DA0'
+        color: '#435AA0'
       },
       {
         name: 'د. سالم',
         type: 'bar',
         data: [7, 3, 5, 4],
-        color: '#60D7B1'
+        color: '#70A1FF'
       }
     ]
-  });
-
-  appointmentsChart = new Chart({
-    chart: {
-      type: 'pie',
-    },
-    title: {
-      text: 'نسبة إنجاز المواعيد'
-    },
-    series: [
-      {
-        type: 'pie',
-        name: 'عدد المواعيد',
-        data: [
-          ['مكتملة', 55],
-          ['فائتة', 15],
-          ['ملغاة', 10],
-          ['أُعيد جدولتها', 20]
-        ],
-        colors: ['green', 'lightgrey', 'red', 'orange']
-      }
-    ],
-    accessibility: {
-      point: {
-        valueSuffix: '%'
-      }
-    },
-    credits: {
-      enabled: false
-    },
-    legend: {
-      events: {
-        itemClick: function (event) {
-          return false;
-        },
-      },
-    }
-  });
-
-  growthChart = new Chart({
-    chart: {
-      type: 'area'
-    },
-    title: {
-      text: 'نمو المواعيد شهريًا'
-    },
-    xAxis: {
-      categories: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
-      tickmarkPlacement: 'on',
-    },
-    yAxis: {
-      title: {
-        text: 'العدد / الإيرادات'
-      }
-    },
-    tooltip: {
-      shared: true,
-      valueSuffix: ''
-    },
-    series: [
-      {
-        name: 'عدد المواعيد',
-        type: 'area',
-        data: [120, 135, 150, 170, 200, 230],
-        color: 'var(--main-color)'
-      },
-      {
-        name: 'الإيرادات',
-        type: 'area',
-        data: [10000, 12000, 14000, 17000, 21000, 26000],
-        color: 'var(--second-color)'
-      }
-    ],
-    credits: {
-      enabled: false
-    },
-    legend: {
-      events: {
-        itemClick: function (event) {
-          return false;
-        },
-      },
-    },
-  });
-
-  departmentChart = new Chart({
-    chart: {
-      type: 'bar'
-    },
-    title: {
-      text: 'توزيع ضغط العمل على الأقسام',
-    },
-    xAxis: {
-      categories: ['الأسنان', 'الجلدية', 'القلب', 'العظام', 'النساء والولادة'],
-      title: {
-        text: 'الأقسام',
-        
-      }
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: 'عدد الحالات',
-        
-      }
-    },
-    series: [
-      {
-        name: 'عدد الحالات',
-        type: 'bar',
-        color: 'var(--main-color)',
-        data: [120, 80, 50, 65, 90]
-      }
-    ],
-    credits: {
-      enabled: false
-    },
-    legend: {
-      events: {
-        itemClick: function (event) {
-          return false;
-        },
-      },
-    }
-  });
-  
-  doctorChart = new Chart({
-    chart: {
-      type: 'column'
-    },
-    title: {
-      text: 'أفضل الأطباء أداءً'
-    },
-    xAxis: {
-      categories: ['د. أحمد', 'د. سارة', 'د. كريم', 'د. فاطمة', 'د. ياسين'],
-      crosshair: true
-    },
-    yAxis: {
-      min: 0,
-      title: {
-        text: 'عدد المواعيد / التقييم'
-      }
-    },
-    tooltip: {
-      shared: true
-    },
-    series: [
-      {
-        name: 'عدد المواعيد',
-        type: 'column',
-        data: [80, 95, 70, 60, 100],
-        color: 'var(--main-color)'
-      },
-      {
-        name: 'متوسط التقييم',
-        type: 'column',
-        data: [4.2, 4.8, 4.0, 3.9, 4.5],
-        color: 'var(--second-color)'
-      }
-    ],
-    credits: {
-      enabled: false
-    },
-    legend: {
-      events: {
-        itemClick: function (event) {
-          return false;
-        },
-      },
-    }
   });
 
   clinicChart = new Chart({
@@ -447,29 +270,77 @@ export class HomeComponent {
     title: {
       text: 'توزيع ضغط الحجوزات',
       align: 'right',
-      style: {
+      style:{
+        fontFamily:"Tajawal",
         fontSize: '20px',
         fontWeight: 'bold',
-        fontFamily: 'Cairo, sans-serif'
+        color:'Black'
+      }
+    },
+    subtitle:{
+      text: 'في هذا القسم يتم حساب ضغط الحجوزات على مدار الشهر الحالى على خدماتك الطبية ',
+      align: 'right',
+      style:{
+        fontSize: '16px',
+        fontWeight: '500',
+        fontFamily: 'Tajawal, sans-serif',
+        color:'#7C8FAC',
       }
     },
     xAxis: {
-      categories: ['العظام', 'الباطنة', 'الجلدية', 'الأسنان', 'القلب', 'النساء', 'الأطفال'],
+      categories: [
+        'العظام',
+        'الباطنة',
+        'الجلدية',
+        'الأسنان',
+        'القلب',
+        'النساء',
+        'الأطفال',
+        'تحاليل دم',
+        'تحاليل بول',
+        'أشعة سينية',
+        'أشعة رنين',
+        'عيادة تغذية'
+      ],
+      labels:{
+        style: {
+          fontFamily: 'Tajawal, sans-serif',
+          color:"#A1A7C4",
+          fontSize:'12px',
+          fontWeight:'500'
+        }
+      }
     },
     yAxis: {
       min: 0,
+      labels:{
+        style: {
+          fontFamily: 'Tajawal, sans-serif',
+          color:"#A1A7C4",
+          fontSize:'12px',
+          fontWeight:'500'
+        }
+      },
       title: {
-        text: 'عدد الحجوزات'
+        text: ''
       }
     },
     tooltip: {
       pointFormat: 'عدد الحجوزات: <b>{point.y}</b>'
     },
+    plotOptions: {
+      column: {
+        borderRadius: 8,
+        pointPadding: 0.2,
+        borderWidth: 0
+      }
+    },
     series: [{
       name: 'الحجوزات',
       type: 'column',
-      data: [320, 250, 180, 440, 350, 270, 190],
-      color: '#3f51b5'
+      data: [320, 250, 180, 440, 350, 270, 190, 220, 180, 300, 280, 240],
+      color: '#435AA0',
+      
     }],
     legend: {
       enabled:false

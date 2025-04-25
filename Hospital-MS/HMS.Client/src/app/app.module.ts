@@ -15,6 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { ChartModule } from 'angular-highcharts';
 import { InterceptorComponent } from './core/interceptor/interceptor/interceptor.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AgePipe } from './core/pipes/age.pipe';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ChartModule,
     BrowserAnimationsModule,
   ],
-  providers: [],
+  providers: [
+    MessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -7,13 +7,13 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3D5DA7;
+  background: #5A6A85;
 }
 
 .sidebar {
   position: relative;
   background-color: white;
-  color: #3D5DA7;
+  color: #5A6A85;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   position: fixed;
   width: 16% !important;
@@ -34,7 +34,7 @@
   top: 50px;
   left: -20px;
   border: none;
-  background-color: #3D5DA7;
+  background-color: #5A6A85;
   color: white;
   font-size: 20px;
   width: 40px;
@@ -57,7 +57,7 @@
 .user-profile h4,
 .user-profile p {
   margin: 10px 0;
-  color: #3D5DA7;
+  color: #5A6A85;
 }
 
 .menu {
@@ -70,7 +70,9 @@
 }
 
 .menu a {
-  color: #3D5DA7;
+  color: #5A6A85;
+  font-weight: 700;
+  font-size: 15px;
   border-radius: 8px;
   text-decoration: none;
   display: flex;
@@ -91,32 +93,38 @@
 }
 
 .menu a:hover {
-  background-color: #004080;
+  background-color: var(--second-color);
   color: white;
 }
 
 .menu .submenu a.a-subMenu:hover {
   background-color: #c7cadc !important;
-  color: black !important;
 }
 
 .router-active,
 .activSub {
-  background-color: #c7cadc !important;
-  color: black !important;
+  color: #D94A91 !important;
   border-radius: 6px !important;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 140%;
+  letter-spacing: -1%;
+  text-align: right;
 }
 
 .submenu {
   margin-top: 6px !important;
   list-style: none;
   padding-left: 6px;
-  border-right: 0.5px solid #004080 !important;
   padding-right: 2px !important;
   max-height: 0;
   opacity: 0;
   overflow: hidden;
   transition: 0.5s;
+  background-color: #FAFBFF;
+  border-width: 0px 1px 1px 1px;
+  border-style: solid;
+  border-color: #00000005;
 }
 
 .submenu.open {
@@ -130,8 +138,8 @@
 }
 
 .submenu a {
-  font-size: 14px;
-  color: #3D5DA7;
+  font-size: 15px;
+  color: #5A6A85;
 }
 
 .submenu li a i {
@@ -140,7 +148,7 @@
 }
 
 .menu a.activSide {
-  background-color: #004080 !important;
+  background: linear-gradient(180deg, #445CA4 -30.68%, #5F73AE 53.58%, #3E4F81 143.18%) !important;
   color: white !important;
 }
 
@@ -202,4 +210,8 @@
 
 .sidebar.collapsed .submenu {
   display: none;
+}
+
+.fa-circle{
+  font-size: 8px !important;
 }

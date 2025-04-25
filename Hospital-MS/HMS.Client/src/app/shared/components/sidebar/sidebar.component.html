@@ -8,7 +8,6 @@
   </div>
 
   <ul class="menu p-2">
-    <hr class="m-0 p-0" />
     <li>
       <a routerLink="/home" routerLinkActive="activSide" (click)="toggleSubMenu('home')">
         <i class="fa-solid fa-house"></i>
@@ -16,7 +15,7 @@
       </a>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <li>
       <a (click)="toggleSubMenu('patients')" [class.activSide]="activeMenu === 'patients'">
@@ -29,33 +28,19 @@
       </a>
       <ul class="submenu" [ngClass]="{'open': activeMenu === 'patients' && !isCollapsed}" *ngIf="!isCollapsed">
         <li>
-          <a routerLink="/patients/list" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/patients/list'" class="a-subMenu">
+          <a routerLink="/patients/list" routerLinkActive="activSub" class="a-subMenu">
             <i class="fa-solid fa-circle"></i>إدارة المرضى
           </a>
         </li>
         <li>
-          <a routerLink="/patients/add" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/patients/add'" class="a-subMenu">
+          <a routerLink="/patients/add" routerLinkActive="activSub" class="a-subMenu">
             <i class="fa-solid fa-circle"></i>إضافة مريض
           </a>
         </li>
-        <!-- <li>
-          <a routerLink="/patients/appointments" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/patients/appointments'" class="a-subMenu">
-            <i class="fa-solid fa-circle"></i>المواعيد
-          </a>
-        </li> -->
-        <!-- <li>
-          <a routerLink="/patients/affairs" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/patients/affairs'" class="a-subMenu">
-            <i class="fa-solid fa-circle"></i>إدارة علاقات المرضى
-          </a>
-        </li> -->
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
     <li>
       <a (click)="toggleSubMenu('appointments')" [class.activSide]="activeMenu === 'appointments'">
         <i class="fa-solid fa-calendar-check"></i>
@@ -86,7 +71,7 @@
         </li>
       </ul>
     </li>
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <!-- <li>
       <a (click)="toggleSubMenu('emergency')" [class.activSide]="activeMenu === 'emergency'">
@@ -119,7 +104,7 @@
         <span *ngIf="!isCollapsed">الطوارئ</span>
       </a>
     </li>
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <li>
       <a (click)="toggleSubMenu('insurance')" [class.activSide]="activeMenu === 'insurance'">
@@ -151,12 +136,12 @@
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <li>
       <a (click)="toggleSubMenu('finance')" [class.activSide]="activeMenu === 'finance'">
         <i class="fa-solid fa-money-bill-trend-up"></i>
-        <span *ngIf="!isCollapsed">الحسابات العامة</span>
+        <span *ngIf="!isCollapsed">الحسابات </span>
         <i class="fa me-auto" [ngClass]="{
           'fa-chevron-up': activeMenu === 'finance',
           'fa-chevron-down': activeMenu !== 'finance'
@@ -178,12 +163,12 @@
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <li>
       <a (click)="toggleSubMenu('inventory')" [class.activSide]="activeMenu === 'inventory'">
         <i class="fa-solid fa-boxes-stacked"></i>
-        <span *ngIf="!isCollapsed">ادارة المشتريات</span>
+        <span *ngIf="!isCollapsed"> المشتريات</span>
         <i class="fa me-auto" [ngClass]="{
           'fa-chevron-up': activeMenu === 'inventory',
           'fa-chevron-down': activeMenu !== 'inventory'
@@ -205,34 +190,33 @@
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <li>
-      <a (click)="toggleSubMenu('hr')" [class.activSide]="activeMenu === 'hr'">
+      <a (click)="toggleSubMenu('staff')" [class.activSide]="activeMenu === 'staff'">
         <i class="fa-solid fa-users-gear"></i>
         <span *ngIf="!isCollapsed">الموارد البشرية</span>
         <i class="fa me-auto" [ngClass]="{
-          'fa-chevron-up': activeMenu === 'hr',
-          'fa-chevron-down': activeMenu !== 'hr'
+          'fa-chevron-up': activeMenu === 'staff',
+          'fa-chevron-down': activeMenu !== 'staff'
         }" *ngIf="!isCollapsed"></i>
       </a>
-      <ul class="submenu" [ngClass]="{'open': activeMenu === 'hr' && !isCollapsed}" *ngIf="!isCollapsed">
+      <ul class="submenu" [ngClass]="{'open': activeMenu === 'staff' && !isCollapsed}" *ngIf="!isCollapsed">
         <li>
-          <a routerLink="/hr/employees" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/hr/employees'" class="a-subMenu">
-            <i class="fa-solid fa-circle"></i>الموظفين
+          <a routerLink="/staff/list" routerLinkActive="activSub" class="a-subMenu">
+            <i class="fa-solid fa-circle"></i>إدارة الموظفين
           </a>
         </li>
         <li>
-          <a routerLink="/hr/attendance" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/hr/attendance'" class="a-subMenu">
-            <i class="fa-solid fa-circle"></i>الحضور والانصراف
+          <a routerLink="/staff/add" routerLinkActive="activSub" class="a-subMenu">
+            <i class="fa-solid fa-circle"></i>إضافة موظف
           </a>
         </li>
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+
+    
 
     <li>
       <a (click)="toggleSubMenu('reports')" [class.activSide]="activeMenu === 'reports'">
@@ -259,7 +243,7 @@
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
 
     <li>
       <a (click)="toggleSubMenu('settings')" [class.activSide]="activeMenu === 'settings'">
@@ -277,16 +261,23 @@
             <i class="fa-solid fa-circle"></i>الإعدادات العامة
           </a>
         </li>
+        
         <li>
-          <a routerLink="/settings/users" routerLinkActive="activSub"
-            [class.activSub]="activeSubmenuRoute === '/settings/users'" class="a-subMenu">
-            <i class="fa-solid fa-circle"></i>إدارة المستخدمين
+          <a routerLink="/settings/doctors-list" routerLinkActive="activSub"
+            [class.activSub]="activeSubmenuRoute === '/settings/doctors-list'" class="a-subMenu">
+            <i class="fa-solid fa-circle"></i>قائمة الأطباء
+          </a>
+        </li>
+        <li>
+          <a routerLink="/settings/doctors" routerLinkActive="activSub"
+            [class.activSub]="activeSubmenuRoute === '/settings/doctors'" class="a-subMenu">
+            <i class="fa-solid fa-circle"></i>إعدادات الأطباء
           </a>
         </li>
       </ul>
     </li>
 
-    <hr class="m-0 p-0" *ngIf="!isCollapsed" />
+    
   </ul>
 
   <div class="logout d-flex align-items-center justify-content-center px-4 text-danger" (click)="logout()">

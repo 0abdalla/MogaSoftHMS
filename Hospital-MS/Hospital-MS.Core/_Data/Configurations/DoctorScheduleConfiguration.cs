@@ -9,7 +9,8 @@ namespace Hospital_MS.Reposatories._Data.Configurations
         public void Configure(EntityTypeBuilder<DoctorSchedule> builder)
         {
             builder.Property(ds => ds.WeekDay)
-               .IsRequired();
+               .IsRequired()
+               .HasMaxLength(20);
 
             builder.Property(ds => ds.StartTime)
                    .IsRequired();

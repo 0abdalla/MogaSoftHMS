@@ -1,8 +1,9 @@
 <main id="add-reservation" @fadeIn>
   <div class="container-fluid">
-    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="reservationForm" class="form p-2" (ngSubmit)="onSubmit()">
+      <p-toast position="top-left"></p-toast>
+      <h4>👤بيانات المريض</h4>
       <div class="row mb-3">
-        <h4>بيانات المريض</h4>
         <div class="col-lg-6">
           <label for="patientName" class="form-label">إسم المريض</label>
           <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName">
@@ -13,8 +14,8 @@
         </div>
       </div>
       <hr>
+      <h4>🏥بيانات الحجز</h4>
       <div class="row mb-3">
-        <h4>بيانات الحجز</h4>
         <div class="col-lg-3">
           <label for="clinic-type" class="form-label">نوع الحجز</label>
           <select id="clinic-type" class="form-select shadow-none" formControlName="appointmentType">
@@ -33,22 +34,35 @@
             <option *ngFor="let clinic of filteredClinics" [value]="clinic.id">{{ clinic.name }}</option>
           </select>
         </div>
-        <div class="col-lg-3">
-          <label for="clinic-doctor" class="form-label">الدكتور المختص</label>
-          <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId">
-            <option selected disabled value="">اختر الدكتور المختص</option>
-            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{ doctor.fullName }}</option>
+        <div class="col-lg-3" *ngIf="selectedAppointmentType !== 'Screening'">
+          <label for="clinic-doctor" class="form-label">
+            {{ selectedAppointmentType === 'Radiology' ? 'نوع الأشعة' : 'الدكتور المختص' }}
+          </label>
+          <select id="clinic-doctor" class="form-select shadow-none" 
+                  [formControlName]="selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId'">
+            <option selected disabled value="">
+              {{ selectedAppointmentType === 'Radiology' ? 'اختر نوع الأشعة' : 'اختر الدكتور المختص' }}
+            </option>
+        
+            <ng-container *ngIf="selectedAppointmentType === 'Radiology'">
+              <option *ngFor="let type of radiologyTypes" [value]="type">{{ type }}</option>
+            </ng-container>
+        
+            <ng-container *ngIf="selectedAppointmentType !== 'Radiology'">
+              <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{ doctor.fullName }}</option>
+            </ng-container>
           </select>
         </div>
+        
+        
         <div class="col-lg-3">
           <label for="app-date" class="form-label">الوقت</label>
           <input id="app-date" type="datetime-local" formControlName="appointmentDate" class="form-control shadow-none">
         </div>
       </div>
       <hr>
+      <h4>📋بيانات إضافية</h4>
       <div class="row mb-3">
-        <h4>بيانات إضافية</h4>
-        
         <div class="col-lg-4">
           <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
           <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
@@ -110,9 +124,9 @@
           </select>
         </div>
       </div>
-      <div class="row px-3">
-          <button type="submit" [disabled]="!reservationForm.valid" class="btn-blue w-50">إضافة</button>
-          <button type="reset" class="btn-red w-50">الغاء</button>
+      <div class="row justify-content-center gap-2 px-3">
+          <button type="submit" [disabled]="!reservationForm.valid" class="btn-blue col-2">إضافة</button>
+          <button type="reset" class="btn-outline-blue col-2">الغاء</button>
         
       </div>
     </form>

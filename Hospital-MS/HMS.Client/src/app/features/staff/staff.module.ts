@@ -5,6 +5,9 @@ import { StaffRoutingModule } from './staff-routing.module';
 import { StaffListComponent } from './components/staff-list/staff-list.component';
 import { StaffDetailComponent } from './components/staff-detail/staff-detail.component';
 import { StaffFormComponent } from './components/staff-form/staff-form.component';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -15,7 +18,10 @@ import { StaffFormComponent } from './components/staff-form/staff-form.component
   ],
   imports: [
     CommonModule,
-    StaffRoutingModule
+    StaffRoutingModule,
+    NgxPaginationModule,
+    ReactiveFormsModule,
+    ToastModule
   ]
 })
 export class StaffModule { }

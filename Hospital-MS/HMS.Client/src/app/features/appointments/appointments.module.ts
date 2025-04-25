@@ -8,7 +8,7 @@ import { AppointmentFormComponent } from './components/appointment-form/appointm
 import { AppointmetSettingsComponent } from './components/appointmet-settings/appointmet-settings.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
-
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -22,7 +22,8 @@ import { NgxPaginationModule } from 'ngx-pagination';
     AppointmentsRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    ToastModule
   ]
 })
 export class AppointmentsModule { }

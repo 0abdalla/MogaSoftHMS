@@ -5,6 +5,7 @@ import { EmergencyRoutingModule } from './emergency-routing.module';
 import { EmergencyReceptionComponent } from './components/emergency-reception/emergency-reception.component';
 import { UpdateStatusComponent } from './components/update-status/update-status.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     EmergencyRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToastModule
   ]
 })
 export class EmergencyModule { }

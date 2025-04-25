@@ -2,77 +2,67 @@
   <div class="container-fluid">
     <div class="row">
         <div class="col-lg-3 mb-4">
-          <div class="card border-0 shadow p-3">
-            <h6 class="mb-2">عدد المواعيد</h6>
-            <h4>اليوم: 25</h4>
-            <p class="mb-0 text-muted">هذا الأسبوع: 112</p>
+          <div class="card p-4 border-0 shadow">
+              <h6 class="mb-2">عدد المواعيد</h6>
+              <h4>25</h4>
+              <div class="d-flex align-items-center justify-content-start gap-1">
+                <p class="m-0"> 12%</p>
+              <i class="fa-regular fa-circle-arrow-up"></i>
+              </div>
+            <img src="assets/vendors/imgs/line.png" alt="">
+          </div>
+        </div>
+        <div class="col-lg-3 mb-4">
+          <div class="card p-4 border-0 shadow">
+              <h6 class="mb-2">المرضى الحاليين </h6>
+              <h4>250</h4>
+              <div class="d-flex align-items-center justify-content-start gap-1">
+                <p class="m-0"> 20%</p>
+              <i class="fa-regular fa-circle-arrow-up"></i>
+              </div>
+            <img src="assets/vendors/imgs/line.png" alt="">
+          </div>
+        </div>
+        <div class="col-lg-3 mb-4">
+          <div class="card p-4 border-0 shadow">
+              <h6 class="mb-2">الأطباء النشطين</h6>
+              <h4>70</h4>
+              <div class="d-flex align-items-center justify-content-start gap-1">
+                <p class="m-0"> 12%</p>
+              <i class="fa-regular fa-circle-arrow-up"></i>
+              </div>
+            <img src="assets/vendors/imgs/line.png" alt="">
+          </div>
+        </div>
+        <div class="col-lg-3 mb-4">
+          <div class="card p-4 border-0 shadow">
+              <h6 class="mb-2">نسبة إشغال الأسرّة</h6>
+              <h4>25%</h4>
+              <div class="d-flex align-items-center justify-content-start gap-1">
+                <p class="m-0"> 12%</p>
+              <i class="fa-regular fa-circle-arrow-up"></i>
+              </div>
+            <img src="assets/vendors/imgs/line.png" alt="">
           </div>
         </div>
       
-        <div class="col-lg-3 mb-4">
-          <div class="card border-0 shadow p-3">
-            <h6 class="mb-2">المرضى الحاليين</h6>
-            <h4>58</h4>
-            <p class="mb-0 text-muted">داخل المستشفى الآن</p>
-          </div>
-        </div>
-      
-        <div class="col-lg-3 mb-4">
-          <div class="card border-0 shadow p-3">
-            <h6 class="mb-2">الأطباء النشطين</h6>
-            <h4>18</h4>
-            <p class="mb-0 text-muted">في الدوام حاليًا</p>
-          </div>
-        </div>
-      
-        <div class="col-lg-3 mb-4">
-          <div class="card border-0 shadow p-3">
-            <h6 class="mb-2">نسبة إشغال الأسرة</h6>
-            <h4>٪82</h4>
-            <p class="mb-0 text-muted">123 / 150 سرير</p>
-          </div>
-        </div>
         <div class="col-lg-12 mb-4">
-          <div class="card p-3 shadow">
+          <div class="bg-white p-3 shadow">
             <div [chart]="appointmentNumsChart"></div>
           </div>
         </div>
         <div class="col-lg-3 mb-4">
-          <div class="card p-3 shadow">
+          <div class="bg-white p-3 shadow">
             <div [chart]="completedAppsChart"></div>
           </div>
         </div>
         <div class="col-lg-9 mb-4">
-          <div class="card p-3 shadow">
+          <div class="bg-white p-3 shadow">
             <div [chart]="doctorsChart"></div>
           </div>
         </div>
-        <!-- <div class="col-lg-6 mb-4">
-          <div class="card p-3 shadow">
-            <div [chart]="appointmentsChart"></div>
-          </div>
-        </div> -->
-      
-        <!-- <div class="col-lg-6 mb-4">
-          <div class="card p-3 shadow">
-            <div [chart]="growthChart"></div>
-          </div>
-        </div> -->
-
-        <!-- <div class="col-lg-8 mb-4">
-          <div class="card p-3 shadow">
-            <div [chart]="departmentChart"></div>
-          </div>
-        </div>
-
-        <div class="col-lg-4 mb-4">
-          <div class="card p-3 shadow">
-            <div [chart]="doctorChart"></div>
-          </div>
-        </div> -->
-        
         <div class="col-lg-12 mb-4">
-          <div class="card p-3 shadow">
+          <div class="bg-white p-3 shadow">
             <div [chart]="clinicChart"></div>
           </div>
         </div>
