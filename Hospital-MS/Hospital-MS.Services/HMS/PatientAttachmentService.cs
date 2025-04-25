@@ -3,7 +3,6 @@ using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Specifications.PatientAttachments;
 using Microsoft.AspNetCore.Hosting;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Core.Common;
@@ -80,9 +79,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientAttachmentResponse>> GetAllAsync(int patientId, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientAttachment();//PatientAttachmentSpecification(patientId);
-
-            var attachments = await _unitOfWork.Repository<PatientAttachment>().GetAllWithSpecAsync(spec, cancellationToken);
+            var attachments = await _unitOfWork.Repository<PatientAttachment>().GetAll(i => i.PatientId == patientId).Include(x => x.Patient).Include(x => x.CreatedBy).Include(x => x.UpdatedBy).ToListAsync();
 
             var response = attachments.Select(attachment => new PatientAttachmentResponse
             {
@@ -91,9 +88,7 @@ namespace Hospital_MS.Services.HMS
                 CreatedOn = attachment.CreatedOn,
                 CreatedBy = $"{attachment.CreatedBy?.FirstName} {attachment.CreatedBy?.LastName}",
                 UpdatedOn = attachment.UpdatedOn,
-                UpdatedBy = attachment.UpdatedBy != null ?
-                    $"{attachment.UpdatedBy.FirstName} {attachment.UpdatedBy.LastName}" :
-                    string.Empty
+                UpdatedBy = attachment.UpdatedBy != null ? $"{attachment.UpdatedBy.FirstName} {attachment.UpdatedBy.LastName}" : string.Empty
 
             }).ToList();
 

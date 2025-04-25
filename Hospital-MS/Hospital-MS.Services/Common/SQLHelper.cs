@@ -51,27 +51,25 @@ namespace Hospital_MS.Services.Common
             }
         }
 
-        public DataTable ExecuteDataTable(string commandText, params SqlParameter[] Parameters)
+        public async Task<DataTable> ExecuteDataTableAsync(string commandText, params SqlParameter[] Parameters)
         {
             using (SqlConnection connection = new SqlConnection(ConnectionString))
+            using (SqlCommand command = new SqlCommand(commandText, connection))
             {
-                DataTable dt = new DataTable();
-                connection.Open();
-                SqlCommand command = new SqlCommand();
-
-                command.Connection = connection;
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = commandText;
-                for (int i = 0; i < Parameters.Length; i++)
-                {
-                    command.Parameters.Add(Parameters[i]);
+                command.CommandTimeout = 1200;
 
+                if (Parameters != null && Parameters.Length > 0)
+                    command.Parameters.AddRange(Parameters);
+
+                await connection.OpenAsync();
+
+                using (var reader = await command.ExecuteReaderAsync())
+                {
+                    var dt = new DataTable();
+                    dt.Load(reader);
+                    return dt;
                 }
-                SqlDataAdapter adpater = new SqlDataAdapter(command);
-                adpater.SelectCommand.CommandTimeout = 1200;
-                adpater.Fill(dt);
-                connection.Close();
-                return dt;
             }
         }
 

@@ -1,12 +1,11 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Rooms;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Specifications.Rooms;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,9 +51,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<RoomResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var spec = new Room();//RoomSpecification();
-
-            var rooms = await _unitOfWork.Repository<Room>().GetAllWithSpecAsync(spec, cancellationToken);
+            var rooms = await _unitOfWork.Repository<Room>().GetAll().Include(x => x.Ward).ToListAsync();
 
             var response = rooms.Select(room => new RoomResponse
             {

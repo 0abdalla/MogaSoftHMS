@@ -21,10 +21,9 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> GetAppointments([FromQuery] GetAppointmentsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAppointments([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
-            var result = await _appointmentService.GetAllAsync(request, cancellationToken);
-            int count = await _appointmentService.GetAppointmentsCountAsync(request, cancellationToken);
+            var result = await _appointmentService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
         }
 
@@ -36,9 +35,9 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpGet("counts")]
-        public async Task<IActionResult> GetAppointmentsCounts(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAppointmentsCounts(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
-            var count = await _appointmentService.GetCountsAsync(cancellationToken);
+            var count = await _appointmentService.GetCountsAsync(pagingFilter, cancellationToken);
             return Ok(count);
         }
 
@@ -50,7 +49,7 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpPut("emergency/{id}")]
-        public async Task<IActionResult> UpdatePatientStatusInEmergency(int id,[FromBody] UpdatePatientStatusInEmergencyRequest request,CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdatePatientStatusInEmergency(int id, [FromBody] UpdatePatientStatusInEmergencyRequest request, CancellationToken cancellationToken)
         {
             var result = await _appointmentService.UpdateStatusAsync(id, request, cancellationToken);
             return Ok(result);

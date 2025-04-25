@@ -18,27 +18,27 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> GetAllStaff(CancellationToken cancellationToken)
-        {
-            var result = await _staffService.GetAllAsync(cancellationToken);
-            return Ok(result);
-        }
+        //[HttpGet("")]
+        //public async Task<IActionResult> GetAllStaff(CancellationToken cancellationToken)
+        //{
+        //    var result = await _staffService.GetAllAsync(cancellationToken);
+        //    return Ok(result);
+        //}
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetFilteredStaff([FromQuery] GetStaffRequest request, CancellationToken cancellationToken)
-        {
-            var result = await _staffService.GetFilteredStaffAsync(request, cancellationToken);
-            int count = await _staffService.GetFilteredStaffCountAsync(request, cancellationToken);
-            return Ok(result);
-        }
+        //[HttpGet("all")]
+        //public async Task<IActionResult> GetFilteredStaff([FromQuery] GetStaffRequest request, CancellationToken cancellationToken)
+        //{
+        //    var result = await _staffService.GetFilteredStaffAsync(request, cancellationToken);
+        //    int count = await _staffService.GetFilteredStaffCountAsync(request, cancellationToken);
+        //    return Ok(result);
+        //}
 
-        [HttpGet("counts")]
-        public async Task<IActionResult> GetStaffCounts(CancellationToken cancellationToken)
-        {
-            var result = await _staffService.GetStaffCountsAsync(cancellationToken);
-            return Ok(result);
-        }
+        //[HttpGet("counts")]
+        //public async Task<IActionResult> GetStaffCounts(CancellationToken cancellationToken)
+        //{
+        //    var result = await _staffService.GetStaffCountsAsync(cancellationToken);
+        //    return Ok(result);
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetStaff(int id, CancellationToken cancellationToken)

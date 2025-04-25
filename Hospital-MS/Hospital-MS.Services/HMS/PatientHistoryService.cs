@@ -4,19 +4,23 @@ using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
+using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class PatientHistoryService(IUnitOfWork unitOfWork) : IPatientHistoryService
+    public class PatientHistoryService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IPatientHistoryService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ISQLHelper _sQLHelper = sQLHelper;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(PatientMedicalHistoryRequest request, CancellationToken cancellationToken = default)
         {
@@ -68,28 +72,25 @@ namespace Hospital_MS.Services.HMS
 
         }
 
-        public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
-            var spec = new PatientMedicalHistory();
-
-            var medicalHistories = await _unitOfWork.Repository<PatientMedicalHistory>().GetAllWithSpecAsync(spec, cancellationToken);
-
-            var response = medicalHistories.Select(m => new PatientMedicalHistoryResponse
+            try
             {
-                Id = m.Id,
-                Description = m.Description,
-                PatientId = m.PatientId,
-                PatientName = m.Patient.FullName,
-                CreatedOn = m.CreatedOn,
-                CreatedBy = $"{m.CreatedBy?.FirstName} {m.CreatedBy?.LastName}",
-                UpdatedOn = m.UpdatedOn,
-                UpdatedBy = m.UpdatedBy != null ?
-                    $"{m.UpdatedBy.FirstName} {m.UpdatedBy.LastName}" :
-                    string.Empty
+                var Params = new SqlParameter[3];
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[2] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+                Params[3] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllPatientMedicalHistory", Params);
+                int totalCount = 0;
+                if (dt.Rows.Count > 0)
+                    int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
 
-            }).ToList().AsReadOnly();
-
-            return ErrorResponseModel<PatientMedicalHistoryResponse>.Success(GenericErrors.GetSuccess);
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, new List<DataTable?> { dt });
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
         }
 
         public async Task<ErrorResponseModel<PatientMedicalHistoryResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)

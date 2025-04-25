@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Contracts.Patients;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Helpers;
 using Hospital_MS.Core.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,17 +12,16 @@ namespace Hospital_MS.API.Controllers
         private readonly IPatientService _patientService = patientService;
 
         [HttpGet("")]
-        public async Task<IActionResult> GetPatients([FromQuery] GetPatientsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPatients([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
-            var result = await _patientService.GetAllAsync(request, cancellationToken);
-            int count = await _patientService.GetPatientsCountAsync(request, cancellationToken);
+            var result = await _patientService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
         }
 
         [HttpGet("counts")]
-        public async Task<IActionResult> GetAdmissionsCounts(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAdmissionsCounts(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
-            var count = await _patientService.GetCountsAsync(cancellationToken);
+            var count = await _patientService.GetCountsAsync(pagingFilter, cancellationToken);
             return Ok(count);
         }
 

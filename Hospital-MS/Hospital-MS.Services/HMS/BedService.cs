@@ -5,6 +5,7 @@ using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,9 +47,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<BedResponse>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var spec = new Bed();//BedSpecification();
-
-            var beds = await _unitOfWork.Repository<Bed>().GetAllWithSpecAsync(spec, cancellationToken);
+            var beds = await _unitOfWork.Repository<Bed>().GetAll().Include(i => i.Room).ToListAsync();
 
             var result = beds.Select(x => new BedResponse
             {

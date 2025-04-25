@@ -5,6 +5,7 @@ using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -36,7 +37,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<DepartmentResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var departments = await _unitOfWork.Repository<Department>().GetAllAsync(cancellationToken);
+            var departments = await _unitOfWork.Repository<Department>().GetAll().ToListAsync();
 
             var response = departments.Select(d => new DepartmentResponse
             {

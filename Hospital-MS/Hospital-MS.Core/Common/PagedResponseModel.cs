@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Abstractions;
+using Hospital_MS.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,23 +17,32 @@ namespace Hospital_MS.Core.Common
         }
 
         public List<T> Results { get; set; }
-        public int CurrentPage { get; set; }
-        public int PageSize { get; set; }
         public int TotalCount { get; set; }
-        public string SearchText { get; set; }
-        public List<FilterModel> FilterList { get; set; }
         public string ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
-        public void Success(Error error)
+        public Status? ErrorCode { get; set; }
+        public static PagedResponseModel<T> Success(Error error, int totalCount, List<T?> value = default)
         {
-            IsSuccess = true;
-            ErrorMessage = error.Message;
+            return new PagedResponseModel<T>
+            {
+                IsSuccess = true,
+                ErrorMessage = error.Message,
+                ErrorCode = error.Status,
+                TotalCount = totalCount,
+                Results = value
+            };
         }
 
-        public void Failure(Error error)
+        public static PagedResponseModel<T> Failure(Error error)
         {
-            IsSuccess = false;
-            ErrorMessage = error.Message;
+            return new PagedResponseModel<T>
+            {
+                IsSuccess = false,
+                ErrorMessage = error.Message,
+                ErrorCode = error.Status,
+                TotalCount = 0,
+                Results = new List<T>()
+            };
         }
     }
 }

@@ -1,17 +1,13 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Patients;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Helpers;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Specifications.Staffs;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.Repository;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,11 +60,7 @@ namespace Hospital_MS.Services.HMS
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
-
                 await _unitOfWork.CompleteAsync(cancellationToken);
-
-
-                // Save Attachment files
 
                 var AttachmentItems = new List<StaffAttachments>();
                 var AttachmentURLs = new List<string>();
@@ -107,41 +99,39 @@ namespace Hospital_MS.Services.HMS
 
         }
 
-        public async Task<ErrorResponseModel<StaffResponse>> GetAllAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                var staff = await _unitOfWork.Repository<Staff>().GetAllAsync(cancellationToken);
+        //public async Task<ErrorResponseModel<StaffResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+        //{
+        //    try
+        //    {
+        //        var staff = await _unitOfWork.Repository<Staff>().GetAllAsync(cancellationToken);
 
-                var staffResponse = staff.Select(s => new StaffResponse
-                {
-                    Id = s.Id,
-                    FullName = s.FullName,
-                    Email = s.Email,
-                    Specialization = s.Specialization,
-                    PhoneNumber = s.PhoneNumber,
-                    HireDate = s.HireDate,
-                    Status = s.Status.ToString(),
-                    Type = s.Type.ToString(),
-                    ClinicId = s.ClinicId,
-                    DepartmentId = s.DepartmentId,
-                    NationalId = s.NationalId,
-                }).ToList();
+        //        var staffResponse = staff.Select(s => new StaffResponse
+        //        {
+        //            Id = s.Id,
+        //            FullName = s.FullName,
+        //            Email = s.Email,
+        //            Specialization = s.Specialization,
+        //            PhoneNumber = s.PhoneNumber,
+        //            HireDate = s.HireDate,
+        //            Status = s.Status.ToString(),
+        //            Type = s.Type.ToString(),
+        //            ClinicId = s.ClinicId,
+        //            DepartmentId = s.DepartmentId,
+        //            NationalId = s.NationalId,
+        //        }).ToList();
 
-                return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
-            }
-            catch (Exception ex)
-            {
-                return ErrorResponseModel<StaffResponse>.Failure(GenericErrors.TransFailed);
-            }
+        //        return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return ErrorResponseModel<StaffResponse>.Failure(GenericErrors.TransFailed);
+        //    }
 
-        }
+        //}
 
         public async Task<ErrorResponseModel<StaffResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new Staff();//StaffSpecification(id);
-
-            var staff = await _unitOfWork.Repository<Staff>().GetByIdWithIncludesAsync(i => i.Id == id, cancellationToken, x => x.Clinic, x => x.Department, x => x.StaffAttachments);
+            var staff = await _unitOfWork.Repository<Staff>().GetAll(i => i.Id == id).Include(x => x.Clinic).Include(x => x.Department).Include(x => x.StaffAttachments).FirstOrDefaultAsync();
 
             if (staff is not { })
                 return ErrorResponseModel<StaffResponse>.Failure(GenericErrors.NotFound);
@@ -173,53 +163,53 @@ namespace Hospital_MS.Services.HMS
 
         }
 
-        public async Task<ErrorResponseModel<StaffResponse>> GetFilteredStaffAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
-        {
-            var spec = new Staff();//StaffSpecification(request);
+        //public async Task<ErrorResponseModel<StaffResponse>> GetFilteredStaffAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
+        //{
+        //    var spec = new Staff();//StaffSpecification(request);
 
-            var staffs = await _unitOfWork.Repository<Staff>().GetAllWithSpecAsync(spec, cancellationToken);
+        //    var staffs = await _unitOfWork.Repository<Staff>().GetAllWithSpecAsync(spec, cancellationToken);
 
-            var staffResponse = staffs.Select(staff => new StaffResponse
-            {
-                Id = staff.Id,
-                FullName = staff.FullName,
-                Email = staff.Email,
-                Specialization = staff.Specialization,
-                PhoneNumber = staff.PhoneNumber,
-                HireDate = staff.HireDate,
-                Status = staff.Status.ToString(),
-                Type = staff.Type.ToString(),
-                ClinicId = staff.ClinicId,
-                DepartmentId = staff.DepartmentId,
-                ClinicName = staff.Clinic?.Name,
-                DepartmentName = staff.Department?.Name,
-                NationalId = staff.NationalId,
+        //    var staffResponse = staffs.Select(staff => new StaffResponse
+        //    {
+        //        Id = staff.Id,
+        //        FullName = staff.FullName,
+        //        Email = staff.Email,
+        //        Specialization = staff.Specialization,
+        //        PhoneNumber = staff.PhoneNumber,
+        //        HireDate = staff.HireDate,
+        //        Status = staff.Status.ToString(),
+        //        Type = staff.Type.ToString(),
+        //        ClinicId = staff.ClinicId,
+        //        DepartmentId = staff.DepartmentId,
+        //        ClinicName = staff.Clinic?.Name,
+        //        DepartmentName = staff.Department?.Name,
+        //        NationalId = staff.NationalId,
 
-            }).ToList().AsReadOnly();
+        //    }).ToList().AsReadOnly();
 
-            return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
-        }
+        //    return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
+        //}
 
-        public async Task<int> GetFilteredStaffCountAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
-        {
-            var spec = new Staff();//StaffCountSpecification(request);
-            return await _unitOfWork.Repository<Staff>().GetCountAsync(spec, cancellationToken);
-        }
+        //public async Task<int> GetFilteredStaffCountAsync(GetStaffRequest request, CancellationToken cancellationToken = default)
+        //{
+        //    var spec = new Staff();//StaffCountSpecification(request);
+        //    return await _unitOfWork.Repository<Staff>().GetCountAsync(spec, cancellationToken);
+        //}
 
-        public async Task<ErrorResponseModel<StaffCountsResponse>> GetStaffCountsAsync(CancellationToken cancellationToken = default)
-        {
-            var staffs = await _unitOfWork.Repository<Staff>().GetAllAsync(cancellationToken);
+        //public async Task<ErrorResponseModel<StaffCountsResponse>> GetStaffCountsAsync(CancellationToken cancellationToken = default)
+        //{
+        //    var staffs = await _unitOfWork.Repository<Staff>().GetAllAsync(cancellationToken);
 
-            var response = new StaffCountsResponse
-            {
-                AdministratorsCount = staffs.Count(s => s.Type == StaffType.Administrator),
-                DoctorsCount = staffs.Count(s => s.Type == StaffType.Doctor),
-                NursesCount = staffs.Count(s => s.Type == StaffType.Nurse),
-                WorkersCount = staffs.Count(s => s.Type == StaffType.Worker),
+        //    var response = new StaffCountsResponse
+        //    {
+        //        AdministratorsCount = staffs.Count(s => s.Type == StaffType.Administrator),
+        //        DoctorsCount = staffs.Count(s => s.Type == StaffType.Doctor),
+        //        NursesCount = staffs.Count(s => s.Type == StaffType.Nurse),
+        //        WorkersCount = staffs.Count(s => s.Type == StaffType.Worker),
 
-            };
+        //    };
 
-            return ErrorResponseModel<StaffCountsResponse>.Success(GenericErrors.GetSuccess, response);
-        }
+        //    return ErrorResponseModel<StaffCountsResponse>.Success(GenericErrors.GetSuccess, response);
+        //}
     }
 }

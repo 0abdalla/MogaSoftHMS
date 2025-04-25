@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Contracts.Patients;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -40,9 +41,9 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpGet("")]
-        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAll(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
-            var result = await _patientHistoryService.GetAllAsync(cancellationToken);
+            var result = await _patientHistoryService.GetAllAsync(pagingFilter);
             return Ok(result);
         }
 

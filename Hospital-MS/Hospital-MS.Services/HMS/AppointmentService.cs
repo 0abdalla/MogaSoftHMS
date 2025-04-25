@@ -1,20 +1,22 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Helpers;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Specifications.Appointments;
+using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class AppointmentService(IUnitOfWork unitOfWork) : IAppointmentService
+    public class AppointmentService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IAppointmentService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ISQLHelper _sQLHelper = sQLHelper;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(CreateAppointmentRequest request, CancellationToken cancellationToken = default)
         {
@@ -67,46 +69,34 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<AppointmentResponse>> GetAllAsync(GetAppointmentsRequest request, CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
-            var spec = new Appointment(); //new AppointmentSpecification(request);
-
-            var appointments = await _unitOfWork.Repository<Appointment>().GetAll();
-
-            var response = appointments.Select(app => new AppointmentResponse
+            try
             {
-                Id = app.Id,
-                PatientName = app.Patient.FullName,
-                DoctorName = app?.Doctor?.FullName,
-                AppointmentDate = app.AppointmentDateTime,
-                PaymentMethod = app.PaymentMethod,
-                Status = app.Status.ToString(),
-                Type = app.Type.ToString(),
-                DoctorId = app.DoctorId,
-                PatientId = app.PatientId,
-                CreatedOn = app.CreatedOn,
-                UpdatedOn = app.UpdatedOn,
-                CreatedBy = $"{app.CreatedBy.FirstName} {app.CreatedBy.LastName}",
-                UpdatedBy = $"{app?.UpdatedBy?.FirstName} {app?.UpdatedBy?.LastName}" ?? string.Empty,
-                PatientPhone = app?.Patient?.Phone,
-                ClinicId = app.ClinicId,
-                ClinicName = app?.Clinic?.Name,
-            }).ToList().AsReadOnly();
+                var Params = new SqlParameter[4];
+                var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemValue;
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[1] = new SqlParameter("@Type", Type ?? (object)DBNull.Value);
+                Params[2] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+                Params[3] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllAppointments", Params);
+                int totalCount = 0;
+                if (dt.Rows.Count > 0)
+                {
+                    int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
+                }
 
-            return ErrorResponseModel<AppointmentResponse>.Success(GenericErrors.GetSuccess);
-        }
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, new List<DataTable?> { dt });
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
 
-        public async Task<int> GetAppointmentsCountAsync(GetAppointmentsRequest request, CancellationToken cancellationToken = default)
-        {
-            var spec = new Appointment();
-
-            return await _unitOfWork.Repository<Appointment>().GetCountAsync(spec, cancellationToken);
         }
 
         public async Task<ErrorResponseModel<AppointmentResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new Appointment();
-
             var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.CreatedBy).Include(x => x.UpdatedBy)
                 .Include(x => x.Patient).Include(x => x.Doctor).Include(x => x.Patient.InsuranceCompany).Include(x => x.Patient.InsuranceCategory).Include(x => x.Clinic).FirstOrDefaultAsync();
 
@@ -141,21 +131,21 @@ namespace Hospital_MS.Services.HMS
             return ErrorResponseModel<AppointmentResponse>.Success(GenericErrors.GetSuccess);
         }
 
-        public async Task<ErrorResponseModel<AppointmentCountsResponse>> GetCountsAsync(CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<DataTable>> GetCountsAsync(PagingFilterModel pagingFilter,CancellationToken cancellationToken = default)
         {
-            var appointments = await _unitOfWork.Repository<Appointment>().GetAllAsync(cancellationToken);
-
-            var response = new AppointmentCountsResponse
+            try
             {
-                EmergencyCount = appointments.Count(a => a.Type == AppointmentType.Emergency),
-                ScreeningCount = appointments.Count(a => a.Type == AppointmentType.Screening),
-                RadiologyCount = appointments.Count(a => a.Type == AppointmentType.Radiology),
-                SurgeryCount = appointments.Count(a => a.Type == AppointmentType.Surgery),
-                ConsultationCount = appointments.Count(a => a.Type == AppointmentType.Consultation),
-                GeneralCount = appointments.Count(a => a.Type == AppointmentType.General)
-            };
-
-            return ErrorResponseModel<AppointmentCountsResponse>.Success(GenericErrors.GetSuccess);
+                var Params = new SqlParameter[2];
+                var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemValue;
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[1] = new SqlParameter("@Type", Type ?? (object)DBNull.Value);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAppointmentTypeCountStatistics", Params);
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, 6, new List<DataTable?> { dt });
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
         }
 
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, UpdateAppointmentRequest request, CancellationToken cancellationToken = default)
@@ -184,8 +174,6 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusInEmergencyRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new Appointment();
-
             var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.Patient).Include(x => x.UpdatedBy).FirstOrDefaultAsync();
 
             if (appointment is not { })

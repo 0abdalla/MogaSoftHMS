@@ -20,6 +20,7 @@ namespace Hospital_MS.Core.Contracts.Staff
         }
 
         public int PageIndex { get; set; } = 1;
+        public string MyProperty { get; set; }
 
         private string? Search;
     }

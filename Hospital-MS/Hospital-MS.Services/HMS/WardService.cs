@@ -1,10 +1,10 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Wards;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<WardResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var wards = await _unitOfWork.Repository<Ward>().GetAllAsync(cancellationToken);
+            var wards = await _unitOfWork.Repository<Ward>().GetAll().ToListAsync();
 
             var response = wards.Select(ward => new WardResponse
             {

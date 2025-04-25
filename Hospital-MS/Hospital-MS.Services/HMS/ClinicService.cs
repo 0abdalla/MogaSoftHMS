@@ -6,6 +6,7 @@ using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Repository;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<ClinicResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         {
 
-            var clinics = await _unitOfWork.Repository<Clinic>().GetAllAsync(cancellationToken);
+            var clinics = await _unitOfWork.Repository<Clinic>().GetAll().ToListAsync();
 
             var clinicResponses = clinics.Select(c => new ClinicResponse
             {
