@@ -11,7 +11,7 @@ namespace Hospital_MS.Core.Services
     public interface IWardService
     {
         Task<ErrorResponseModel<string>> CreateAsync(CreateWardRequest request, CancellationToken cancellationToken = default);
-        Task<ErrorResponseModel<WardResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<List<WardResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
 
     }
 }

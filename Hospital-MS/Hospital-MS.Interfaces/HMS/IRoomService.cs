@@ -12,6 +12,6 @@ namespace Hospital_MS.Core.Services
     public interface IRoomService
     {
         Task<ErrorResponseModel<string>> CreateAsync(CreateRoomRequest request, CancellationToken cancellationToken = default);
-        Task<ErrorResponseModel<RoomResponse>> GetAllAsync( CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<List<RoomResponse>>> GetAllAsync( CancellationToken cancellationToken = default);
     }
 }

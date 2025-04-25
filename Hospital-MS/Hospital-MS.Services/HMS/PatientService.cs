@@ -43,7 +43,7 @@ namespace Hospital_MS.Services.HMS
                     int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
                 }
 
-                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, new List<DataTable?> { dt });
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
             }
             catch (Exception)
             {
@@ -90,7 +90,7 @@ namespace Hospital_MS.Services.HMS
                 Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);
                 var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetPatientStatusCountStatistics", Params);
 
-                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, 6, new List<DataTable?> { dt });
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, 6, dt);
             }
             catch (Exception)
             {

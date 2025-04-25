@@ -12,6 +12,6 @@ namespace Hospital_MS.Core.Services
     public interface IBedService
     {
         Task<ErrorResponseModel<string>> CreateAsync(CreateBedRequest request, CancellationToken cancellationToken = default);
-        Task<ErrorResponseModel<BedResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<List<BedResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

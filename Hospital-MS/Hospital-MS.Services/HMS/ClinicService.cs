@@ -44,7 +44,7 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<ClinicResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<List<ClinicResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
 
             var clinics = await _unitOfWork.Repository<Clinic>().GetAll().ToListAsync();
@@ -55,10 +55,10 @@ namespace Hospital_MS.Services.HMS
                 Name = c.Name,
                 Type = c.Type.ToString(),
 
-            }).ToList().AsReadOnly();
+            }).ToList();
 
 
-            return ErrorResponseModel<ClinicResponse>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<List<ClinicResponse>>.Success(GenericErrors.GetSuccess, clinicResponses);
         }
     }
 }

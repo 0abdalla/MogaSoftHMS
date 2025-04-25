@@ -1,5 +1,4 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Departments;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
@@ -35,7 +34,7 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<DepartmentResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<List<DepartmentResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var departments = await _unitOfWork.Repository<Department>().GetAll().ToListAsync();
 
@@ -44,9 +43,9 @@ namespace Hospital_MS.Services.HMS
                 Id = d.Id,
                 Name = d.Name,
 
-            }).ToList().AsReadOnly();
+            }).ToList();
 
-            return ErrorResponseModel<DepartmentResponse>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<List<DepartmentResponse>>.Success(GenericErrors.GetSuccess, response);
         }
     }
 }

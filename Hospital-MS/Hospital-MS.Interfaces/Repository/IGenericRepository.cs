@@ -1,5 +1,4 @@
-﻿using Hospital_MS.Core.Specifications;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Hospital_MS.Interfaces.Repository
 {

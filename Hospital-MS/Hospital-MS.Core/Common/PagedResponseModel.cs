@@ -11,17 +11,12 @@ namespace Hospital_MS.Core.Common
 {
     public class PagedResponseModel<T>
     {
-        public PagedResponseModel()
-        {
-            Results = new List<T>();
-        }
-
-        public List<T> Results { get; set; }
+        public T? Results { get; set; }
         public int TotalCount { get; set; }
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
         public bool IsSuccess { get; set; }
         public Status? ErrorCode { get; set; }
-        public static PagedResponseModel<T> Success(Error error, int totalCount, List<T?> value = default)
+        public static PagedResponseModel<T> Success(Error error, int totalCount, T? value = default)
         {
             return new PagedResponseModel<T>
             {
@@ -40,8 +35,7 @@ namespace Hospital_MS.Core.Common
                 IsSuccess = false,
                 ErrorMessage = error.Message,
                 ErrorCode = error.Status,
-                TotalCount = 0,
-                Results = new List<T>()
+                TotalCount = 0
             };
         }
     }

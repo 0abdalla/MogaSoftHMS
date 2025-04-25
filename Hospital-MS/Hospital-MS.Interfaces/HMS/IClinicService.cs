@@ -12,7 +12,7 @@ namespace Hospital_MS.Core.Services
     public interface IClinicService
     {
         Task<ErrorResponseModel<string>> CreateAsync(CreateClinicRequest request, CancellationToken cancellationToken = default);
-        Task<ErrorResponseModel<ClinicResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<List<ClinicResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
 
     }
 }

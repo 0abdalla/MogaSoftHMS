@@ -113,7 +113,7 @@ namespace Hospital_MS.Services.HMS
                 UpdatedBy = admission.UpdatedBy != null ? $"{admission.UpdatedBy.FirstName} {admission.UpdatedBy.LastName}" : string.Empty
             };
 
-            return ErrorResponseModel<AdmissionResponse>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<AdmissionResponse>.Success(GenericErrors.GetSuccess, response);
         }
     }
 }

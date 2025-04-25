@@ -85,7 +85,7 @@ namespace Hospital_MS.Services.HMS
                 if (dt.Rows.Count > 0)
                     int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
 
-                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, new List<DataTable?> { dt });
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
             }
             catch (Exception)
             {

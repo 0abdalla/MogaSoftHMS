@@ -45,7 +45,7 @@ namespace Hospital_MS.Services.HMS
 
         }
 
-        public async Task<ErrorResponseModel<BedResponse>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<ErrorResponseModel<List<BedResponse>>> GetAllAsync(CancellationToken cancellationToken)
         {
             var beds = await _unitOfWork.Repository<Bed>().GetAll().Include(i => i.Room).ToListAsync();
 
@@ -59,7 +59,7 @@ namespace Hospital_MS.Services.HMS
 
             }).ToList();
 
-            return ErrorResponseModel<BedResponse>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<List<BedResponse>>.Success(GenericErrors.GetSuccess, result);
         }
     }
 }

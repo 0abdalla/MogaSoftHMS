@@ -77,7 +77,7 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<PatientAttachmentResponse>> GetAllAsync(int patientId, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<List<PatientAttachmentResponse>>> GetAllAsync(int patientId, CancellationToken cancellationToken = default)
         {
             var attachments = await _unitOfWork.Repository<PatientAttachment>().GetAll(i => i.PatientId == patientId).Include(x => x.Patient).Include(x => x.CreatedBy).Include(x => x.UpdatedBy).ToListAsync();
 
@@ -92,7 +92,7 @@ namespace Hospital_MS.Services.HMS
 
             }).ToList();
 
-            return ErrorResponseModel<PatientAttachmentResponse>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<List<PatientAttachmentResponse>>.Success(GenericErrors.GetSuccess, response);
         }
     }
 }

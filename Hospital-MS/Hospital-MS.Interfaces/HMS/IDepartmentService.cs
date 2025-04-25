@@ -12,6 +12,6 @@ namespace Hospital_MS.Core.Services
     public interface IDepartmentService
     {
         Task<ErrorResponseModel<string>> CreateAsync(CreateDepartmentRequest request, CancellationToken cancellationToken = default);
-        Task<ErrorResponseModel<DepartmentResponse>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<List<DepartmentResponse>>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

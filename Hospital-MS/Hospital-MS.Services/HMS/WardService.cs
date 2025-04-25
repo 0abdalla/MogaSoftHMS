@@ -39,7 +39,7 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<WardResponse>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<List<WardResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             var wards = await _unitOfWork.Repository<Ward>().GetAll().ToListAsync();
 
@@ -48,9 +48,9 @@ namespace Hospital_MS.Services.HMS
                 Id = ward.Id,
                 Number = ward.Number,
                 Capacity = ward.Capacity
-            }).ToList().AsReadOnly();
+            }).ToList();
 
-            return ErrorResponseModel<WardResponse>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<List<WardResponse>>.Success(GenericErrors.GetSuccess, response);
         }
     }
 }
