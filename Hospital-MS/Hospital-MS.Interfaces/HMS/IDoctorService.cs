@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Abstractions;
+using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Doctors;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,11 @@ namespace Hospital_MS.Core.Services
 {
     public interface IDoctorService
     {
-        Task<Result> CreateAsync(DoctorRequest request, CancellationToken cancellationToken = default);
-        Task<Result<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-        Task<Result<IReadOnlyList<AllDoctorsResponse>>> GetAllAsync(GetDoctorsRequest request,CancellationToken cancellationToken = default);
-        Task<int> GetAllCountAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default);
-        Task<Result> UpdateAsync(int id, DoctorRequest request, CancellationToken cancellationToken = default);
-        Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default);
-        Task<Result<DoctorsCountResponse>> GetCountsAsync(CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> CreateAsync(DoctorRequest request, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<List<AllDoctorsResponse>>> GetAllAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> UpdateAsync(int id, DoctorRequest request, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<DoctorsCountResponse>> GetCountsAsync(CancellationToken cancellationToken = default);
     }
 }

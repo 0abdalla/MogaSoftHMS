@@ -164,5 +164,20 @@ namespace Hospital_MS.Services.HMS
             return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess, response);
 
         }
+
+        public async Task<ErrorResponseModel<string>> GetStaffCountsAsync(CancellationToken cancellationToken = default)
+        {
+            var staffs = await _unitOfWork.Repository<Staff>().GetAll().ToListAsync();
+
+            var response = new
+            {
+                AdministratorsCount = staffs.Count(s => s.Type == StaffType.Administrator),
+                DoctorsCount = staffs.Count(s => s.Type == StaffType.Doctor),
+                NursesCount = staffs.Count(s => s.Type == StaffType.Nurse),
+                WorkersCount = staffs.Count(s => s.Type == StaffType.Worker),
+            };
+
+            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+        }
     }
 }

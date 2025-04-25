@@ -7,10 +7,6 @@
         public string WeekDay { get; set; } = string.Empty; 
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
-
-
-        
-        //public Staff Doctor { get; set; } = default!;
         public Doctor Doctor { get; set; } = default!;
     }
 }

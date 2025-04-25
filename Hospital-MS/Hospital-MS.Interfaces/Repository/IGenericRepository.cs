@@ -11,6 +11,7 @@ namespace Hospital_MS.Interfaces.Repository
         Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken);
         Task<int> CountAsync(CancellationToken cancellationToken);
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
+        void DeleteRange(IEnumerable<T> entities);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
     }
 }

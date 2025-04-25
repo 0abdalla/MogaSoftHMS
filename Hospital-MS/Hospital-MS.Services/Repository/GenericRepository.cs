@@ -37,6 +37,8 @@ namespace Hospital_MS.Reposatories
 
         public void Delete(T entity) => _dbContext.Set<T>().Remove(entity);
 
+        public void DeleteRange(IEnumerable<T> entities) => _dbContext.Set<T>().RemoveRange(entities);
+
         public Task<int> CountAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken)
         {
             return _dbContext.Set<T>().CountAsync(predicate, cancellationToken);
@@ -49,6 +51,6 @@ namespace Hospital_MS.Reposatories
 
         public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken) => await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
 
-        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)  => await _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) => await _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
     }
 }

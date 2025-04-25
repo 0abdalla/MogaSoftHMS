@@ -1,12 +1,12 @@
 ﻿using Hospital_MS.Core.Abstractions;
+using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Doctors;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Repositories;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Services.Common;
-using Hospital_MS.Core.Specifications.Doctors;
+using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Services
+namespace Hospital_MS.Services.HMS
 {
     public class DoctorService(IUnitOfWork unitOfWork, IFileService fileService, IWebHostEnvironment webHostEnvironment) : IDoctorService
     {
@@ -23,19 +23,19 @@ namespace Hospital_MS.Services
         private readonly IFileService _fileService = fileService;
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
-        public async Task<Result> CreateAsync(DoctorRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> CreateAsync(DoctorRequest request, CancellationToken cancellationToken = default)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
-                    return Result.Failure(new Error("InvalidGender", "Invalid Gender provided.", 400));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidGender);
 
                 if (!Enum.TryParse<StaffStatus>(request.Status, true, out var staffStatus))
-                    return Result.Failure(new Error("InvalidStatus", "Invalid staff Status provided.", 400));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
 
                 if (!Enum.TryParse<MaritalStatus>(request.MaritalStatus, true, out var maritalStatus))
-                    return Result.Failure(new Error("InvalidMaritalStatus", "Invalid MaritalStatus provided.", 400));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidMaritalStatus);
 
                 var doctor = new Doctor
                 {
@@ -45,7 +45,7 @@ namespace Hospital_MS.Services
                     Email = request.Email,
                     Gender = gender,
                     Phone = request.Phone,
-                    NationalId = request.NationalId, 
+                    NationalId = request.NationalId,
                     DepartmentId = request.DepartmentId,
                     SpecialtyId = request.SpecialtyId,
                     MaritalStatus = maritalStatus,
@@ -65,8 +65,6 @@ namespace Hospital_MS.Services
 
                 await _unitOfWork.Repository<Doctor>().AddAsync(doctor, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
-
-                // Save Doctor Schedules
 
                 if (request.DoctorSchedules is not null && request.DoctorSchedules.Count > 0)
                 {
@@ -94,23 +92,21 @@ namespace Hospital_MS.Services
             catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return Result.Failure(GenericErrors<Doctor>.FailedToAdd);
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
 
-            return Result.Success();
+            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess);
 
         }
 
-        public Task<Result> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<IReadOnlyList<AllDoctorsResponse>>> GetAllAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<List<AllDoctorsResponse>>> GetAllAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default)
         {
-            var spec = new DoctorSpecification(request);
-
-            var doctors = await _unitOfWork.Repository<Doctor>().GetAllWithSpecAsync(spec, cancellationToken);
+            var doctors = await _unitOfWork.Repository<Doctor>().GetAll().ToListAsync();
 
             var response = doctors.Select(doc => new AllDoctorsResponse
             {
@@ -119,26 +115,17 @@ namespace Hospital_MS.Services
                 Phone = doc.Phone,
                 Department = doc.Department.Name,
                 Status = doc.Status.ToString()
-            }).ToList().AsReadOnly();
+            }).ToList();
 
-            return Result.Success<IReadOnlyList<AllDoctorsResponse>>(response);
+            return ErrorResponseModel<List<AllDoctorsResponse>>.Success(GenericErrors.GetSuccess, response);
         }
 
-        public Task<int> GetAllCountAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var spec = new DoctorsCountSpecification(request);
-
-            return _unitOfWork.Repository<Doctor>().GetCountAsync(spec, cancellationToken);
-        }
-
-        public async Task<Result<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var spec = new DoctorSpecification(id);
-
-            var doctor = await _unitOfWork.Repository<Doctor>().GetByIdWithSpecAsync(spec, cancellationToken);
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAll().FirstOrDefaultAsync();
 
             if (doctor is null)
-                return Result.Failure<DoctorResponse>(GenericErrors<Doctor>.NotFound);
+                return ErrorResponseModel<DoctorResponse>.Failure(GenericErrors.NotFound);
 
             var doctorResponse = new DoctorResponse
             {
@@ -177,14 +164,14 @@ namespace Hospital_MS.Services
                     string.Empty
             };
 
-            return Result.Success(doctorResponse);
+            return ErrorResponseModel<DoctorResponse>.Success(GenericErrors.GetSuccess, doctorResponse);
 
         }
 
-        public async Task<Result<DoctorsCountResponse>> GetCountsAsync(CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<DoctorsCountResponse>> GetCountsAsync(CancellationToken cancellationToken = default)
         {
-            var doctors = await _unitOfWork.Repository<Doctor>().GetAllAsync(cancellationToken);
-            var departments = await _unitOfWork.Repository<Department>().GetAllAsync(cancellationToken);
+            var doctors = await _unitOfWork.Repository<Doctor>().GetAll().ToListAsync();
+            var departments = await _unitOfWork.Repository<Department>().GetAll().ToListAsync();
 
             var response = new DoctorsCountResponse
             {
@@ -193,28 +180,28 @@ namespace Hospital_MS.Services
                 TotalDoctors = doctors.Count,
             };
 
-            return Result.Success(response);
+            return ErrorResponseModel<DoctorsCountResponse>.Success(GenericErrors.GetSuccess, response);
         }
 
 
-        public async Task<Result> UpdateAsync(int id, DoctorRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, DoctorRequest request, CancellationToken cancellationToken = default)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
-                var doctor = await _unitOfWork.Repository<Doctor>().GetByIdAsync(id, cancellationToken);
+                var doctor = await _unitOfWork.Repository<Doctor>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
 
                 if (doctor is null)
-                    return Result.Failure(new Error("NotFound", "Doctor not found.", 404));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
                 if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
-                    return Result.Failure(new Error("InvalidGender", "Invalid Gender provided.", 400));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidGender);
 
                 if (!Enum.TryParse<StaffStatus>(request.Status, true, out var staffStatus))
-                    return Result.Failure(new Error("InvalidStatus", "Invalid staff Status provided.", 400));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
 
                 if (!Enum.TryParse<MaritalStatus>(request.MaritalStatus, true, out var maritalStatus))
-                    return Result.Failure(new Error("InvalidMaritalStatus", "Invalid MaritalStatus provided.", 400));
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidMaritalStatus);
 
                 doctor.Address = request.Address;
                 doctor.FullName = request.FullName;
@@ -247,10 +234,8 @@ namespace Hospital_MS.Services
                 _unitOfWork.Repository<Doctor>().Update(doctor);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                // Update Doctor Schedules based on the provided schedule data
-
                 var existingSchedules = await _unitOfWork.Repository<DoctorSchedule>()
-                    .GetAllAsQueryable()
+                    .GetAll()
                     .Where(ds => ds.DoctorId == doctor.Id)
                     .ToListAsync(cancellationToken);
 
@@ -279,11 +264,10 @@ namespace Hospital_MS.Services
             catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return Result.Failure(GenericErrors<Doctor>.FailedToUpdate);
-                //return Result.Failure(new Error("Failed", ex.Message, 400));
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
 
-            return Result.Success();
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
         }
     }
 }
