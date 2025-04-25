@@ -184,7 +184,7 @@ namespace Hospital_MS.Services.HMS
         //        ClinicName = staff.Clinic?.Name,
         //        DepartmentName = staff.Department?.Name,
         //        NationalId = staff.NationalId,
-
+        //
         //    }).ToList().AsReadOnly();
 
         //    return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess);
