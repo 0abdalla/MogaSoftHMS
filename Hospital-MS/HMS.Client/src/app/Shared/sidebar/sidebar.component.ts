@@ -19,6 +19,7 @@ export class SidebarComponent {
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
+    debugger;
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -31,26 +32,26 @@ export class SidebarComponent {
   setActiveMenuBasedOnRoute() {
     const currentRoute = this.router.url
     const routeMenuMap: { [key: string]: string } = {
-      '/home': 'home',
-      '/patients/list': 'patients',
-      '/patients/add': 'patients',
-      '/appointments/list': 'appointments',
-      '/appointments/add': 'appointments',
-      '/appointments/settings': 'appointments',
-      '/emergency/emergency-reception': 'emergency',
-      '/insurance/insurance-list': 'insurance',
-      '/insurance/add-insurance': 'insurance',
-      '/finance/accounts': 'finance',
-      '/finance/transactions': 'finance',
-      '/inventory/stock': 'inventory',
-      '/inventory/purchases': 'inventory',
-      '/staff/list': 'staff',
-      '/staff/add': 'staff',
-      '/reports/financial': 'reports',
-      '/reports/medical': 'reports',
-      '/settings/general': 'settings',
-      '/settings/doctors': 'settings',
-      '/settings/doctors-list': 'settings'
+      '/hms/home': 'home',
+      '/hms/patients/list': 'patients',
+      '/hms/patients/add': 'patients',
+      '/hms/appointments/list': 'appointments',
+      '/hms/appointments/add': 'appointments',
+      '/hms/appointments/settings': 'appointments',
+      '/hms/emergency/emergency-reception': 'emergency',
+      '/hms/insurance/insurance-list': 'insurance',
+      '/hms/insurance/add-insurance': 'insurance',
+      '/hms/finance/accounts': 'finance',
+      '/hms/finance/transactions': 'finance',
+      '/hms/inventory/stock': 'inventory',
+      '/hms/inventory/purchases': 'inventory',
+      '/hms/staff/list': 'staff',
+      '/hms/staff/add': 'staff',
+      '/hms/reports/financial': 'reports',
+      '/hms/reports/medical': 'reports',
+      '/hms/settings/general': 'settings',
+      '/hms/settings/doctors': 'settings',
+      '/hms/settings/doctors-list': 'settings'
     };
 
     for (const route in routeMenuMap) {

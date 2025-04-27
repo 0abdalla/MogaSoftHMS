@@ -41,4 +41,13 @@ export class AuthService {
   getToken(): string | null {
     return sessionStorage.getItem('token');
   }
+
+  isInRole(roles: string[]): boolean {
+    let userModel = JSON.parse(localStorage.getItem('UserModel'));
+    if (!userModel)
+      return false;
+
+    let ckeckRole = roles.some(i => i == userModel?.role);
+    return ckeckRole;
+  }
 }

@@ -11,6 +11,7 @@ import { PatientDetailComponent } from './patient-detail/patient-detail.componen
 import { PatientFormComponent } from './patient-form/patient-form.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
 import { AffairsComponent } from './affairs/affairs.component';
+import { SharedModule } from '../../../Shared/shared.module';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { AffairsComponent } from './affairs/affairs.component';
     FormsModule,
     NgSelectModule,
     NgxPaginationModule,
-    ToastModule
+    ToastModule,
+    SharedModule
   ]
 })
 export class PatientsModule { }
