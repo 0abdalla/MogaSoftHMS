@@ -1,22 +1,20 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './shared/components/header/header.component';
-import { FooterComponent } from './shared/components/footer/footer.component';
-import { HomeComponent } from './features/dashboard/home/home.component';
-import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { LoginComponent } from './features/auth/login/login.component';
-import { RegisterComponent } from './features/auth/register/register.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartModule } from 'angular-highcharts';
-import { InterceptorComponent } from './core/interceptor/interceptor/interceptor.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AgePipe } from './core/pipes/age.pipe';
 import { MessageService } from 'primeng/api';
+import { RegisterComponent } from './Auth/register/register.component';
+import { LoginComponent } from './Auth/login/login.component';
+import { HomeComponent } from './Components/HMS/dashboard/home/home.component';
+import { FooterComponent } from './Shared/footer/footer.component';
+import { SidebarComponent } from './Shared/sidebar/sidebar.component';
+import { HeaderComponent } from './Shared/header/header.component';
+import { InterceptorComponent } from './Security/interceptor/interceptor.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +25,7 @@ import { MessageService } from 'primeng/api';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    InterceptorComponent,
+    InterceptorComponent
     
   ],
   imports: [
