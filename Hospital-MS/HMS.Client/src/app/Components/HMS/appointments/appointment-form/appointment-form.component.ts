@@ -31,6 +31,9 @@ export class AppointmentFormComponent implements OnInit {
   filteredDoctors: any[] = [];
   // 
   radiologyTypes: string[] = ['أشعة سينية', 'أشعة مقطعية', 'رنين مغناطيسي', 'موجات صوتية'];
+  // 
+  showReceipt: boolean = false;
+  submittedData: any = {};
   constructor(private fb: FormBuilder , private appointmentService: AppointmentService , private staffService: StaffService , private messageService: MessageService) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
@@ -45,7 +48,7 @@ export class AppointmentFormComponent implements OnInit {
       insuranceNumber: [''],
       referred: ['no'],
       referredClinic: [''],
-      paymentMethod: ['', Validators.required],
+      paymentMethod: ['Cash', Validators.required],
     });
     this.reservationForm.get('appointmentType')?.valueChanges.subscribe((selectedType) => {
       this.filteredClinics = this.clinics.filter((clinic: any) => clinic.type === selectedType);
@@ -87,6 +90,8 @@ export class AppointmentFormComponent implements OnInit {
       next: (response) => {
         console.log('Appointment created successfully', response);
         this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
+        this.submittedData = { ...this.reservationForm.value };
+        this.showReceipt = true;
         this.reservationForm.reset();
       },
       error: (error) => {
@@ -100,7 +105,7 @@ export class AppointmentFormComponent implements OnInit {
   getClinics() {
     this.appointmentService.getClinics().subscribe({
       next: (data) => {
-        this.clinics = data;
+        this.clinics = data.results;
         this.filteredClinics = this.clinics;
         
         console.log(this.clinics);
@@ -113,7 +118,7 @@ export class AppointmentFormComponent implements OnInit {
   getStaff(){
     this.staffService.getStaff().subscribe({
       next: (data) => {
-        this.doctors = data.filter((staff: any) => staff.type === 'Doctor' && staff.status === 'Active');
+        this.doctors = data.results.filter((staff: any) => staff.type === 'Doctor' && staff.status === 'Active');
         console.log(this.doctors);
       },
       error: (err) => {
@@ -124,5 +129,23 @@ export class AppointmentFormComponent implements OnInit {
   // 
   get selectedAppointmentType() {
     return this.reservationForm.get('appointmentType')?.value;
+  }
+  // 
+  getClinicName(clinicId: string): string {
+    const clinic = this.clinics.find((c: any) => c.id === +clinicId);
+    return clinic ? clinic.name : 'غير محدد';
+  }
+
+  getDoctorName(doctorId: string): string {
+    const doctor = this.doctors.find((d: any) => d.id === +doctorId);
+    return doctor ? doctor.fullName : 'غير محدد';
+  }
+  printReceipt() {
+    window.print();
+  }
+
+  closeReceipt() {
+    this.showReceipt = false;
+    this.submittedData = {};
   }
 }

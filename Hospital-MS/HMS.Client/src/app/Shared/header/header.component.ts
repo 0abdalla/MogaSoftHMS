@@ -1,31 +1,36 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import {   NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
   currentDate: string = '';
   userProfileImage: string = 'assets/vendors/imgs/avatar.png';
   searchQuery: string = '';
   routeNow: string = '';
-  // 
+  
   @Input() isCollapsed: boolean = false;
   @Output() sidebarToggled = new EventEmitter<boolean>();
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
 
-  constructor(private router : Router) { }
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.setCurrentDate();
+
+    // Set the initial route immediately on component initialization
+    this.routeNow = this.getArabicRouteName(this.router.url);
+
+    // Subscribe to future navigation events
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.routeNow = this.getArabicRouteName(event.url);
       }
-    });    
+    });
   }
 
   setCurrentDate(): void {
@@ -55,33 +60,37 @@ export class HeaderComponent {
     }
     switch (path) {
       case '/':
-      case '/home':
+      case '/hms/home':
         return 'لوحة البيانات';
-      case '/patients/list':
+      case '/hms/patients/list':
         return 'إدارة المرضى';
-      case '/patients/add':
+      case '/hms/patients/add':
         return 'إضافة مريض';
-      case '/appointments/list':
+      case '/hms/appointments/list':
         return 'إدارة الحجوزات';
-      case '/appointments/add':
+      case '/hms/appointments/add':
         return 'إضافة حجز';
-      case '/appointments/settings':
+      case '/hms/appointments/settings':
         return 'إعدادات الحجوزات';
-      case '/emergency/emergency-reception':
+      case '/hms/emergency/emergency-reception':
         return 'الطوارئ';
-      case '/staff/list':
+      case '/hms/staff/list':
         return 'إدارة الموظفين';
-      case '/staff/add':
+      case '/hms/staff/add':
         return 'إضافة موظف';
-      case '/reports':
+      case '/hms/reports':
         return 'التقارير';
-      case '/settings/doctors':
+      case '/hms/settings/doctors':
         return 'إعدادات الأطباء';
-      case '/settings/doctors-list':
+      case '/hms/settings/doctors-list':
         return 'إدارة الأطباء';
+      case '/hms/insurance/insurance-list':
+        return 'إدارة التأمينات';
+      case '/hms/insurance/add-insurance':
+        return 'إضافة وكيل تأمين';
       default:
         console.warn('No matching route found for:', path);
-        return 'الصفحة';
+        return 'Infinity Clinic';
     }
   }
 

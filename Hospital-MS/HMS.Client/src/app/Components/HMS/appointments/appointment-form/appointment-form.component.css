@@ -1,3 +1,89 @@
 #add-reservation{
     min-height: 90vh;
 }
+
+.receipt-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .receipt {
+    width: 100%;
+    max-width: 600px;
+    border: 1px solid #ccc;
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    direction: rtl;
+  }
+  
+  .receipt-header {
+    text-align: center;
+  }
+  
+  .company-logo {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+  
+  .receipt-header h2 {
+    margin: 10px 0;
+    color: #007bff;
+  }
+  
+  .receipt-body h4 {
+    margin-top: 20px;
+    color: #333;
+  }
+  
+  .receipt-body p {
+    margin: 5px 0;
+    font-size: 14px;
+  }
+  
+  .receipt-body p strong {
+    color: #555;
+  }
+  
+  .receipt-footer {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 12px;
+    color: #777;
+  }
+  
+  .receipt-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .btn-blue,
+  .btn-outline-blue {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #receipt,
+    #receipt * {
+      visibility: visible;
+    }
+    #receipt {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      box-shadow: none;
+      border: none;
+    }
+    .receipt-actions {
+      display: none;
+    }
+  }

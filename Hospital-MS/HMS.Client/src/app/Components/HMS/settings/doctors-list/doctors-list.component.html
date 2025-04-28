@@ -19,7 +19,11 @@
       <div class="card mt-3 p-2">
         <div class="p-3 mt-4">
           <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-            <div class="row justify-content-between g-2">
+            <div class="row g-2">
+              <div class="col-lg-2">
+                <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
+                <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إزالة الفلترة</button>
+              </div>
               <div class="col-lg-4">
                 <input
                   type="text"
@@ -35,10 +39,7 @@
                         <option value="Inactive">غير متاح</option>
                       </select>
                     </div> -->
-                    <div class="col-lg-4 d-flex gap-2">
-                      <button type="submit" class="btn-blue w-100">تطبيق</button>
-                      <button type="button" (click)="resetFilters()" class="btn-red w-100">مسح الفلترات</button>
-                    </div>
+                    
                   </div>
                 </form>
               </div>

@@ -17,29 +17,34 @@
     <div class="card mt-3 p-2">
       <div class="p-3 mt-4">
         <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-          <div class="row g-2">
-            <div class="col-lg-4">
-              <input
-                type="text"
-                class="form-control shadow-none"
-                placeholder="أدخل إسم المريض أو رقم الهاتف"
-                formControlName="Search"
-              />
+          <div class="row justify-content-between align-items-center gap-2">
+            <div class="row col-8">
+              <div class="col-lg-2">
+                <button type="button" (click)="resetFilters()" class="btn-cancel ">إزالة الفلترة</button>
+              </div>
+              <div class="col-lg-3">
+                <select class="form-select shadow-none" formControlName="Type">
+                  <option selected disabled value="">اختر نوع الحجز</option>
+                  <option value="General">كشف</option>
+                  <option value="Consultation">استشارة</option>
+                  <option value="Surgery">عمليات</option>
+                  <option value="Screening">تحاليل</option>
+                  <option value="Radiology">أشعة</option>
+                  <option value="Emergency">طوارئ</option>
+                </select>
+              </div>
+              <div class="col-lg-6">
+                <input
+                  type="text"
+                  class="form-control shadow-none"
+                  placeholder="أدخل إسم المريض أو رقم الهاتف"
+                  formControlName="Search"
+                />
+              </div>
             </div>
-            <div class="col-lg-4">
-              <select class="form-select shadow-none" formControlName="Type">
-                <option selected disabled value="">اختر نوع الحجز</option>
-                <option value="General">كشف</option>
-                <option value="Consultation">استشارة</option>
-                <option value="Surgery">عمليات</option>
-                <option value="Screening">تحاليل</option>
-                <option value="Radiology">أشعة</option>
-                <option value="Emergency">طوارئ</option>
-              </select>
-            </div>
-            <div class="col-lg-4 d-flex gap-2">
-              <button type="submit" class="btn-blue w-100">تطبيق</button>
-              <button type="button" (click)="resetFilters()" class="btn-red w-100">مسح الفلترات</button>
+            
+            <div class="col-lg-2">
+              <button type="submit" class="btn-purble">+ إضافة حجز</button>
             </div>
           </div>
         </form>

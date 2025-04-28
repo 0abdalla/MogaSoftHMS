@@ -2,21 +2,21 @@
   <div class="container-fluid">
     <form [formGroup]="patientForm" class="form p-2" (ngSubmit)="onSubmit()">
       <p-toast position="top-left"></p-toast>
-      <h4 class="mb-4">👤بيانات المريض</h4>
+      <h4>👤بيانات المريض</h4>
       <div class="row mb-3">
         <div class="col-lg-4">
           <label for="patientName" class="form-label">اسم المريض</label>
-          <input type="text" id="patientName" class="form-control shadow-none" formControlName="patientName" />
+          <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName" />
           <div *ngIf="patientForm.get('patientName')?.invalid && patientForm.get('patientName')?.touched" class="text-danger">
             اسم المريض مطلوب
           </div>
         </div>
         <div class="col-lg-4">
-          <label for="patientNationalId" class="form-label">رقم بطاقة المريض</label>
-          <input type="text" id="patientNationalId" class="form-control shadow-none" formControlName="patientNationalId" />
+          <label for="patientNationalId" class="form-label">الرقم القومي</label>
+          <input type="text" id="patientNationalId" class="form-control shadow-none" placeholder="أدخل الرقم القومي" formControlName="patientNationalId" />
           <div *ngIf="patientForm.get('patientNationalId')?.invalid && patientForm.get('patientNationalId')?.touched" class="text-danger">
-            <ng-container *ngIf="patientForm.get('patientNationalId')?.errors?.['required']">رقم البطاقة مطلوب</ng-container>
-            <ng-container *ngIf="patientForm.get('patientNationalId')?.errors?.['pattern']">رقم البطاقة يجب أن يكون 14 رقمًا</ng-container>
+            <ng-container *ngIf="patientForm.get('patientNationalId')?.errors?.['required']">الرقم القومي مطلوب</ng-container>
+            <ng-container *ngIf="patientForm.get('patientNationalId')?.errors?.['pattern']">الرقم القومي يجب أن يكون 14 رقمًا</ng-container>
           </div>
         </div>
         <div class="col-lg-4">
@@ -28,7 +28,7 @@
         </div>
         <div class="col-lg-4">
           <label for="patientPhone" class="form-label">رقم الهاتف</label>
-          <input type="text" id="patientPhone" class="form-control shadow-none" formControlName="patientPhone" />
+          <input type="text" id="patientPhone" class="form-control shadow-none" placeholder="أدخل رقم الهاتف" formControlName="patientPhone" />
           <div *ngIf="patientForm.get('patientPhone')?.invalid && patientForm.get('patientPhone')?.touched" class="text-danger">
             <ng-container *ngIf="patientForm.get('patientPhone')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
             <ng-container *ngIf="patientForm.get('patientPhone')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
@@ -36,7 +36,7 @@
         </div>
         <div class="col-lg-4">
           <label for="patientAddress" class="form-label">محل الإقامة</label>
-          <input type="text" id="patientAddress" class="form-control shadow-none" formControlName="patientAddress" />
+          <input type="text" id="patientAddress" class="form-control shadow-none" placeholder="أدخل محل الإقامة" formControlName="patientAddress" />
           <div *ngIf="patientForm.get('patientAddress')?.invalid && patientForm.get('patientAddress')?.touched" class="text-danger">
             محل الإقامة مطلوب
           </div>
@@ -46,7 +46,10 @@
           <select id="patientStatus" class="form-select shadow-none" formControlName="patientStatus">
             <option selected disabled value="">اختر الحالة</option>
             <option value="Staying">إقامة</option>
-            <option value="Surgery">عملية</option>
+            <option value="IntensiveCare">عناية مركزة</option>
+            <option value="Emergency">طوارئ</option>
+            <option value="NeonatalCare">حضانات الأطفال</option>
+            <option value="Surgery">عمليات</option>
           </select>
           <div *ngIf="patientForm.get('patientStatus')?.invalid && patientForm.get('patientStatus')?.touched" class="text-danger">
             الحالة مطلوبة
@@ -54,7 +57,7 @@
         </div>
       </div>
     
-      <h4 class="mt-4 mb-3">🏥بيانات الأقامة</h4>
+      <h4 class="mt-4">🏥بيانات الأقامة</h4>
       <div class="row mb-3">
         <div class="col-lg-4">
           <label for="admissionDate" class="form-label">تاريخ الدخول</label>
@@ -116,10 +119,23 @@
         </div>
       </div>
     
-      <h4 class="mt-4 mb-3">📞قائمة الاتصال</h4>
-      <div class="row">
-        <div class="col-lg-6">
-          <label for="emergencyPhone01">رقم الهاتف 1</label>
+      <h4 class="mt-4">📞قائمة الاتصال</h4>
+      <div class="row align-items-center">
+        <div class="col-lg-5">
+          <label class="form-label" for="emergencyContact01">الإسم 1</label>
+          <input
+            id="emergencyContact01"
+            formControlName="emergencyContact01"
+            type="text"
+            class="form-control shadow-none"
+            placeholder="أدخل اسم الإسم"
+          />
+          <div *ngIf="patientForm.get('emergencyContact01')?.invalid && patientForm.get('emergencyContact01')?.touched" class="text-danger">
+            اسم الإسم مطلوب
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <label class="form-label" for="emergencyPhone01">رقم الهاتف 1</label>
           <input
             id="emergencyPhone01"
             formControlName="emergencyPhone01"
@@ -132,54 +148,42 @@
             <ng-container *ngIf="patientForm.get('emergencyPhone01')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
           </div>
         </div>
-        <div class="col-lg-6">
-          <label for="emergencyContact01">جهة الاتصال 1</label>
+        <div class="col-lg-2">
+          <button type="button" class="btn-blue" (click)="addSecondContact()" [disabled]="showSecondContact">
+            إضافة جهة اتصال
+          </button>
+        </div>
+        <div class="col-lg-5" *ngIf="showSecondContact">
+          <label class="form-label" for="emergencyContact02">الإسم 2</label>
           <input
-            id="emergencyContact01"
-            formControlName="emergencyContact01"
+            id="emergencyContact02"
+            formControlName="emergencyContact02"
             type="text"
             class="form-control shadow-none"
-            placeholder="أدخل اسم جهة الاتصال"
+            placeholder="أدخل اسم الإسم"
           />
-          <div *ngIf="patientForm.get('emergencyContact01')?.invalid && patientForm.get('emergencyContact01')?.touched" class="text-danger">
-            اسم جهة الاتصال مطلوب
+          <div *ngIf="patientForm.get('emergencyContact02')?.invalid && patientForm.get('emergencyContact02')?.touched" class="text-danger">
+            اسم الإسم مطلوب
           </div>
         </div>
-        <div *ngIf="showSecondContact">
-          <div class="col-lg-6">
-            <label for="emergencyPhone02">رقم الهاتف 2</label>
-            <input
-              id="emergencyPhone02"
-              formControlName="emergencyPhone02"
-              type="text"
-              class="form-control shadow-none"
-              placeholder="أدخل رقم الهاتف"
-            />
-            <div *ngIf="patientForm.get('emergencyPhone02')?.invalid && patientForm.get('emergencyPhone02')?.touched" class="text-danger">
-              <ng-container *ngIf="patientForm.get('emergencyPhone02')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
-              <ng-container *ngIf="patientForm.get('emergencyPhone02')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <label for="emergencyContact02">جهة الاتصال 2</label>
-            <input
-              id="emergencyContact02"
-              formControlName="emergencyContact02"
-              type="text"
-              class="form-control shadow-none"
-              placeholder="أدخل اسم جهة الاتصال"
-            />
-            <div *ngIf="patientForm.get('emergencyContact02')?.invalid && patientForm.get('emergencyContact02')?.touched" class="text-danger">
-              اسم جهة الاتصال مطلوب
-            </div>
+        <div class="col-lg-5" *ngIf="showSecondContact">
+          <label class="form-label" for="emergencyPhone02">رقم الهاتف 2</label>
+          <input
+            id="emergencyPhone02"
+            formControlName="emergencyPhone02"
+            type="text"
+            class="form-control shadow-none"
+            placeholder="أدخل رقم الهاتف"
+          />
+          <div *ngIf="patientForm.get('emergencyPhone02')?.invalid && patientForm.get('emergencyPhone02')?.touched" class="text-danger">
+            <ng-container *ngIf="patientForm.get('emergencyPhone02')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
+            <ng-container *ngIf="patientForm.get('emergencyPhone02')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
           </div>
         </div>
       </div>
-      <button type="button" class="btn-blue mt-2" (click)="addSecondContact()" [disabled]="showSecondContact">
-        إضافة جهة اتصال
-      </button>
+      
     
-      <h4 class="mt-4 mb-3">🛡بيانات التأمين</h4>
+      <h4 class="mt-4">🛡️بيانات التأمين</h4>
       <div class="row mb-4">
         <div class="col-lg-4">
           <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
@@ -213,7 +217,7 @@
         </div>
       </div>
     
-      <h4 class="mt-4 mb-3">📋بيانات إضافية</h4>
+      <h4 class="mt-4">📋بيانات إضافية</h4>
       <div class="row mb-4">
         <div class="col-lg-4">
           <label for="healthStatus" class="form-label">الحالة الصحية الحالية</label>
@@ -229,14 +233,14 @@
         </div>
         <div class="col-lg-4">
           <label for="initialDiagnosis" class="form-label">تشخيص مبدئي</label>
-          <input type="text" id="initialDiagnosis" class="form-control shadow-none" formControlName="initialDiagnosis" />
+          <input type="text" id="initialDiagnosis" class="form-control shadow-none" placeholder="أدخل التشخيص المبدئي" formControlName="initialDiagnosis" />
           <div *ngIf="patientForm.get('initialDiagnosis')?.invalid && patientForm.get('initialDiagnosis')?.touched" class="text-danger">
             التشخيص المبدئي مطلوب
           </div>
         </div>
         <div class="col-lg-4">
           <label for="notes" class="form-label">ملاحظات عند الدخول</label>
-          <input type="text" id="notes" class="form-control shadow-none" formControlName="notes" />
+          <input type="text" id="notes" class="form-control shadow-none" placeholder="أدخل الملاحظات عند الدخول" formControlName="notes" />
         </div>
         <div class="col-lg-12 mt-3">
           <label class="form-label d-block">هل له مرافق؟</label>
@@ -252,6 +256,7 @@
           </div>
           <div class="form-check form-check-inline">
             <input
+              
               class="form-check-input"
               type="radio"
               id="hasCompanionNo"
@@ -266,14 +271,14 @@
         </div>
         <div class="col-lg-4 mt-3" *ngIf="patientForm.get('hasCompanion')?.value === true">
           <label for="companionName" class="form-label">اسم المرافق</label>
-          <input type="text" id="companionName" class="form-control shadow-none" formControlName="companionName" />
+          <input type="text" id="companionName" class="form-control shadow-none" placeholder="أدخل اسم المرافق" formControlName="companionName" />
           <div *ngIf="patientForm.get('companionName')?.invalid && patientForm.get('companionName')?.touched" class="text-danger">
             اسم المرافق مطلوب
           </div>
         </div>
         <div class="col-lg-4 mt-3" *ngIf="patientForm.get('hasCompanion')?.value === true">
           <label for="companionNationalId" class="form-label">الرقم القومي للمرافق</label>
-          <input type="text" id="companionNationalId" class="form-control shadow-none" formControlName="companionNationalId" />
+          <input type="text" id="companionNationalId" class="form-control shadow-none" placeholder="أدخل الرقم القومي للمرافق" formControlName="companionNationalId" />
           <div *ngIf="patientForm.get('companionNationalId')?.invalid && patientForm.get('companionNationalId')?.touched" class="text-danger">
             <ng-container *ngIf="patientForm.get('companionNationalId')?.errors?.['required']">الرقم القومي للمرافق مطلوب</ng-container>
             <ng-container *ngIf="patientForm.get('companionNationalId')?.errors?.['pattern']">الرقم القومي يجب أن يكون 14 رقمًا</ng-container>
@@ -281,7 +286,7 @@
         </div>
         <div class="col-lg-4 mt-3" *ngIf="patientForm.get('hasCompanion')?.value === true">
           <label for="companionPhone" class="form-label">رقم الهاتف</label>
-          <input type="text" id="companionPhone" class="form-control shadow-none" formControlName="companionPhone" />
+          <input type="text" id="companionPhone" class="form-control shadow-none" placeholder="أدخل رقم هاتف المرافق" formControlName="companionPhone" />
           <div *ngIf="patientForm.get('companionPhone')?.invalid && patientForm.get('companionPhone')?.touched" class="text-danger">
             <ng-container *ngIf="patientForm.get('companionPhone')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
             <ng-container *ngIf="patientForm.get('companionPhone')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>

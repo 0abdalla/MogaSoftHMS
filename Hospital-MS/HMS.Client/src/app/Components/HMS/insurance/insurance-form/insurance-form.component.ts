@@ -52,7 +52,7 @@ export class InsuranceFormComponent {
   }
 
   ngOnInit() : void {
-    
+    this.addCategory();
   }
   get categories() {
     return this.insuranceForm.get('contractDetails.categories') as FormArray;
@@ -63,11 +63,9 @@ export class InsuranceFormComponent {
   }
 
   addCategory() {
-    const categoryName = this.insuranceForm.get('contractDetails')?.get('categories')?.value.length + 1;
-    const coverage = this.insuranceForm.get('contractDetails')?.get('categories')?.value.length * 10;
     this.categories.push(this.fb.group({
-      name: [`Category ${categoryName}`, Validators.required],
-      coveragePercentage: [coverage <= 100 ? coverage : 100, [Validators.required, Validators.min(0), Validators.max(100)]]
+      name: ['', Validators.required],
+      coveragePercentage: ['', [Validators.required, Validators.min(0), Validators.max(100)]]
     }));
   }
 

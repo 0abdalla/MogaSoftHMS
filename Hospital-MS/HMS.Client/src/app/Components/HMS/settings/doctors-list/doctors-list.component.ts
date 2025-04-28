@@ -46,7 +46,7 @@ export class DoctorsListComponent implements OnInit {
     const { Search, Status } = this.filterForm.value;
     this.doctorService.getDoctors(this.currentPage, this.pageSize, Status, Search).subscribe({
       next:(res)=>{
-        this.doctors = res.data.map((doctor:any) => {
+        this.doctors = res.results.map((doctor:any) => {
           if (doctor.status === 'Active') {
             doctor.status = 'متاح';
           } else {

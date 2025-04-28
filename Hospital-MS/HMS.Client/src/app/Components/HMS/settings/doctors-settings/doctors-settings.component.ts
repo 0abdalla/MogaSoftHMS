@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
@@ -12,7 +12,7 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 })
 export class DoctorsSettingsComponent implements OnInit {
   departments!: any;
-  clinics!: any[];
+  clinics!: any;
   doctorForm!: FormGroup;
   days = [
     { value: 'Friday', label: 'الجمعة' },
@@ -44,11 +44,12 @@ export class DoctorsSettingsComponent implements OnInit {
       Address: ['', Validators.required],
       DepartmentId: ['', Validators.required],
       SpecialtyId: ['1'],
+      ClinicId: [''], //Not added yet
       Degree: ['', Validators.required],
       Status: ['Active', Validators.required],
       StartDate: ['', Validators.required],
       Notes: [''],
-      DoctorSchedules: this.fb.array([]),
+      DoctorSchedules: this.fb.array([], this.scheduleValidator.bind(this)),
     });
   }
 
@@ -61,7 +62,7 @@ export class DoctorsSettingsComponent implements OnInit {
   getClinics() {
     this.appointmentService.getClinics().subscribe({
       next: (data) => {
-        this.clinics = data;
+        this.clinics = data.results;
       },
       error: (error) => {
         console.error(error);
@@ -71,8 +72,8 @@ export class DoctorsSettingsComponent implements OnInit {
 
   getDepartments() {
     this.admissionService.getDepartments().subscribe({
-      next: (data) => {
-        this.departments = data;
+      next: (data:any) => {
+        this.departments = data.results;
       },
       error: (error) => {
         console.error(error);
@@ -85,13 +86,33 @@ export class DoctorsSettingsComponent implements OnInit {
   }
 
   addSchedule(): void {
-    this.schedules.push(
-      this.fb.group({
+    const scheduleGroup = this.fb.group(
+      {
         weekDay: ['', Validators.required],
         startTime: ['', Validators.required],
         endTime: ['', Validators.required],
-      })
+      },
+      { validators: [this.timeRangeValidator.bind(this)] }
     );
+  
+    this.schedules.push(scheduleGroup);
+    scheduleGroup.valueChanges.subscribe(() => {
+      this.schedules.updateValueAndValidity();
+      if (scheduleGroup.hasError('invalidTimeRange')) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'تحذير',
+          detail: 'وقت الانتهاء يجب أن يكون بعد وقت البدء',
+        });
+      }
+      if (this.schedules.hasError('overlappingSchedule')) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'تحذير',
+          detail: 'لا يمكن اختيار نفس اليوم مع نفس المواعيد',
+        });
+      }
+    });
   }
 
   removeSchedule(index: number): void {
@@ -107,7 +128,7 @@ export class DoctorsSettingsComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.doctorForm.valid && !this.photoError) {
+    if (this.doctorForm.valid && !this.photoError && !this.doctorForm.hasError('overlappingSchedule')) {
       const formData = new FormData();
 
       formData.append('FullName', this.doctorForm.value.FullName);
@@ -196,5 +217,50 @@ export class DoctorsSettingsComponent implements OnInit {
       this.photoFile = file;
       this.photoError = false;
     }
+  }
+  // 
+  scheduleValidator(control: AbstractControl): ValidationErrors | null {
+  const schedules = (control as FormArray).controls as FormGroup[];
+  const overlapping = schedules.find((currentSchedule, i) => {
+    const { weekDay: currentDay, startTime: currentStart, endTime: currentEnd } = currentSchedule.value;
+    if (!currentDay || !currentStart || !currentEnd) return false;
+    return schedules.some((otherSchedule, j) => {
+      if (i === j) return false;
+      const { weekDay: otherDay, startTime: otherStart, endTime: otherEnd } = otherSchedule.value;
+      if (!otherDay || !otherStart || !otherEnd) return false;
+      if (currentDay !== otherDay) return false;
+
+      return this.hasTimeOverlap(
+        this.timeToMinutes(currentStart),
+        this.timeToMinutes(currentEnd),
+        this.timeToMinutes(otherStart),
+        this.timeToMinutes(otherEnd)
+      );
+    });
+  });
+  return overlapping ? { overlappingSchedule: true } : null;
+  }
+
+  timeRangeValidator(control: AbstractControl): ValidationErrors | null {
+  const { startTime, endTime } = control.value;
+  if (startTime && endTime) {
+    const start = this.timeToMinutes(startTime);
+    const end = this.timeToMinutes(endTime);
+    
+    return end <= start ? { invalidTimeRange: true } : null;
+  }
+  return null;
+  }
+
+  hasTimeOverlap(start1: number, end1: number, start2: number, end2: number): boolean {
+    return (
+      (start1 === start2 && end1 === end2) ||
+      (start1 < end2 && end1 > start2)
+    );
+  }
+
+  timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
   }
 }

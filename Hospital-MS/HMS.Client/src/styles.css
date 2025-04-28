@@ -69,6 +69,42 @@ body {
   cursor: not-allowed;
 }
 
+.btn-cancel{
+  background-color: #F56476;
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.btn-cancel:hover{
+  background-color: #d34b5b;
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.btn-purble{
+  background-color: #D94A91;
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.btn-purble:hover{
+  background-color: #b33071;
+  color: white;
+  border: none;
+  padding: 7px 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+  cursor: pointer;
+}
 @media print {
   body * {
     visibility: hidden;
@@ -93,6 +129,12 @@ body {
 }
 .form-select , .form-control{
   border: 1px solid #D9E1EC !important;
+}
+.form-select:focus{
+  border: 1px solid var(--main-color) !important;
+}
+.form-control:focus{
+  border: 1px solid var(--main-color) !important;
 }
 input::placeholder{
   color: #A1A7C4 !important;

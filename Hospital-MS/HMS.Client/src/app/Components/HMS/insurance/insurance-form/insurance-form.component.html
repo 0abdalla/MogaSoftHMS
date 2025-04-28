@@ -1,12 +1,12 @@
 <main id="ins-form">
     <div class="container-fluid">
-      <form [formGroup]="insuranceForm" (ngSubmit)="onSubmit()">
-        <h3>تفاصيل الشركة</h3>
+      <form [formGroup]="insuranceForm" class="form p-2" (ngSubmit)="onSubmit()">
+        <h4>🏢تفاصيل الشركة</h4>
         <div class="row">
           <div class="col-lg-6">
             <label class="form-label" for="name">اسم الشركة:</label>
             <input id="name" class="form-control shadow-none" formControlName="name" placeholder="أدخل اسم الشركة">
-            <div *ngIf="insuranceForm.get('name')?.touched && insuranceForm.get('name')?.hasError('required')" class="error">
+            <div *ngIf="insuranceForm.get('name')?.touched && insuranceForm.get('name')?.hasError('required')" class="text-danger">
               اسم الشركة مطلوب
             </div>
   
@@ -17,30 +17,28 @@
           <div class="col-lg-6">
             <label class="form-label" for="email">البريد الإلكتروني:</label>
             <input id="email" class="form-control shadow-none" formControlName="email" placeholder="أدخل البريد الإلكتروني">
-            <div *ngIf="insuranceForm.get('email')?.touched && insuranceForm.get('email')?.hasError('required')" class="error">
+            <div *ngIf="insuranceForm.get('email')?.touched && insuranceForm.get('email')?.hasError('required')" class="text-danger">
               البريد الإلكتروني مطلوب
             </div>
-            <div *ngIf="insuranceForm.get('email')?.touched && insuranceForm.get('email')?.hasError('email')" class="error">
+            <div *ngIf="insuranceForm.get('email')?.touched && insuranceForm.get('email')?.hasError('email')" class="text-danger">
               يرجى إدخال بريد إلكتروني صحيح
             </div>
   
             <label class="form-label" for="contactNumber">رقم التواصل:</label>
             <input id="contactNumber" class="form-control shadow-none" formControlName="contactNumber" placeholder="أدخل رقم التواصل">
-            <div *ngIf="insuranceForm.get('contactNumber')?.touched && insuranceForm.get('contactNumber')?.hasError('required')" class="error">
+            <div *ngIf="insuranceForm.get('contactNumber')?.touched && insuranceForm.get('contactNumber')?.hasError('required')" class="text-danger">
               رقم التواصل مطلوب
             </div>
           </div>
         </div>
-  
-        <hr>
-  
-        <h3>تفاصيل العقد</h3>
+    
+        <h4 class="mt-3">📋تفاصيل العقد</h4>
         <div formGroupName="contractDetails">
           <div class="row">
             <div class="col-lg-6">
               <label class="form-label" for="startDate">تاريخ بدء العقد:</label>
               <input id="startDate" type="date" class="form-control shadow-none" formControlName="startDate">
-              <div *ngIf="insuranceForm.get('contractDetails')?.get('startDate')?.touched && insuranceForm.get('contractDetails')?.get('startDate')?.hasError('required')" class="error">
+              <div *ngIf="insuranceForm.get('contractDetails')?.get('startDate')?.touched && insuranceForm.get('contractDetails')?.get('startDate')?.hasError('required')" class="text-danger">
                 تاريخ البدء مطلوب
               </div>
             </div>
@@ -48,41 +46,46 @@
             <div class="col-lg-6">
               <label class="form-label" for="endDate">تاريخ انتهاء العقد:</label>
               <input id="endDate" type="date" class="form-control shadow-none" formControlName="endDate">
-              <div *ngIf="insuranceForm.get('contractDetails')?.get('endDate')?.touched && insuranceForm.get('contractDetails')?.get('endDate')?.hasError('required')" class="error">
+              <div *ngIf="insuranceForm.get('contractDetails')?.get('endDate')?.touched && insuranceForm.get('contractDetails')?.get('endDate')?.hasError('required')" class="text-danger">
                 تاريخ الانتهاء مطلوب
               </div>
             </div>
           </div>
   
-          <label class="form-label" for="contractDescription">وصف العقد:</label>
-          <textarea id="contractDescription" class="form-control shadow-none" formControlName="description" placeholder="أدخل وصف العقد"></textarea>
+          <!-- <label class="form-label" for="contractDescription">وصف العقد:</label>
+          <textarea id="contractDescription" class="form-control shadow-none" formControlName="description" placeholder="أدخل وصف العقد"></textarea> -->
   
-          <hr>
-          <h4>فئات التغطية</h4>
-          <div class="category-input">
-            <button type="button" class="btn-blue" (click)="addCategory()">إضافة فئة</button>
+          <h4 class="mt-3">🛡️فئات التغطية</h4>
+          <div class="mb-3" formArrayName="categories">
+            <div *ngFor="let category of categories.controls; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
+              <div class="col-lg-5">
+                <label class="form-label">اسم الفئة</label>
+                <input class="form-control shadow-none" formControlName="name" placeholder="أدخل اسم الفئة" />
+                <div *ngIf="category.get('name')?.touched && category.get('name')?.hasError('required')" class="text-danger">
+                  اسم الفئة مطلوب
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <label class="form-label">نسبة التغطية (%)</label>
+                <input type="number" class="form-control shadow-none" formControlName="coveragePercentage" placeholder="أدخل نسبة التغطية (%)" min="0" max="100" />
+                <div *ngIf="category.get('coveragePercentage')?.touched && category.get('coveragePercentage')?.hasError('required')" class="text-danger">
+                  نسبة التغطية مطلوبة
+                </div>
+                <div *ngIf="category.get('coveragePercentage')?.touched && (category.get('coveragePercentage')?.hasError('min') || category.get('coveragePercentage')?.hasError('max'))" class="text-danger">
+                  يجب أن تكون النسبة بين 0 و100
+                </div>
+              </div>
+              <div class="col-lg-2">
+                <button type="button" class="btn-blue" (click)="addCategory()">إضافة فئة</button>
+                <button type="button" class="btn-red mx-1" (click)="removeCategory(i)">حذف</button>
+              </div>
+            </div>
           </div>
-          <ul formArrayName="categories">
-            <li *ngFor="let category of categories.controls; let i = index" [formGroupName]="i">
-              <input class="form-control shadow-none" formControlName="name" placeholder="أدخل اسم الفئة">
-              <input type="number" class="form-control shadow-none" formControlName="coveragePercentage" placeholder="أدخل نسبة التغطية (%)" min="0" max="100">
-              <button type="button" class="btn-red" (click)="removeCategory(i)">حذف</button>
-              <div *ngIf="category.get('name')?.touched && category.get('name')?.hasError('required')" class="error">
-                اسم الفئة مطلوب
-              </div>
-              <div *ngIf="category.get('coveragePercentage')?.touched && category.get('coveragePercentage')?.hasError('required')" class="error">
-                نسبة التغطية مطلوبة
-              </div>
-              <div *ngIf="category.get('coveragePercentage')?.touched && (category.get('coveragePercentage')?.hasError('min') || category.get('coveragePercentage')?.hasError('max'))" class="error">
-                يجب أن تكون النسبة بين 0 و100
-              </div>
-            </li>
-            <li *ngIf="categories.length === 0">لا توجد فئات مسجلة</li>
-          </ul>
         </div>
-  
-        <button class="btn-blue" type="submit">{{ isEditMode ? 'حفظ التعديلات' : 'إضافة الشركة' }}</button>
-        <button class="btn-red mx-2" type="button" (click)="resetForm()">مسح</button>
+        <div class="row justify-content-center gap-2 px-3">
+          <button type="submit" [disabled]="!insuranceForm.valid" class="btn-blue col-2">حفظ البيانات</button>
+          <button type="reset" class="btn-outline-blue col-2">إلغاء</button>
+        </div>
       </form>
     </div>
   </main>
