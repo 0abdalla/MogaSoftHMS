@@ -24,7 +24,8 @@
                 <i class="fa me-auto" [ngClass]="{
           'fa-chevron-up': activeMenu === 'patients',
           'fa-chevron-down': activeMenu !== 'patients'
-        }" *ngIf="!isCollapsed"></i>
+        }" *ngIf="!isCollapsed">
+        </i>
             </a>
             <ul class="submenu" [ngClass]="{'open': activeMenu === 'patients' && !isCollapsed}" *ngIf="!isCollapsed">
                 <li>

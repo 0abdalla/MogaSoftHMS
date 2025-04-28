@@ -2,14 +2,14 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
-import { AuthService } from '../../Auth/auth.service';
+import { AuthService } from '../../../../Auth/auth.service';
 
 @Component({
-  selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  selector: 'app-hms-side-menue',
+  templateUrl: './hms-side-menue.component.html',
+  styleUrl: './hms-side-menue.component.css'
 })
-export class SidebarComponent {
+export class HMSSideMenueComponent {
   isCollapsed: boolean = false;
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
@@ -19,7 +19,6 @@ export class SidebarComponent {
   constructor(private router: Router, private authService: AuthService) {}
 
   ngOnInit() {
-    debugger;
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {

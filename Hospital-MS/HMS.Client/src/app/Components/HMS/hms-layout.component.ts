@@ -9,6 +9,7 @@ export class HmsLayoutComponent {
   isSidebarCollapsed: boolean = false;
 
   onSidebarToggled(isCollapsed: boolean) {
+    debugger;
     this.isSidebarCollapsed = isCollapsed;
   }
 

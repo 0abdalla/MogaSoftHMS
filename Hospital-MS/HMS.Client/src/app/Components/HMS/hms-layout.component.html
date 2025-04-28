@@ -1,7 +1,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-3 sidebar-container">
-            <app-sidebar (sidebarToggled)="onSidebarToggled($event)"></app-sidebar>
+            <app-hms-side-menue (sidebarToggled)="onSidebarToggled($event)"></app-hms-side-menue>
         </div>
         <div class="col-9 main-content" [ngClass]="{'sidebar-collapsed': isSidebarCollapsed}">
             <app-header></app-header>
