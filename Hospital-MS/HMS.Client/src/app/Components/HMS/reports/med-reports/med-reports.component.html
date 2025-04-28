@@ -1,0 +1,91 @@
+<main id="med-report">
+  <div class="container-fluid p-3">  
+    <ul class="nav nav-tabs row justify-content-between align-items-center mb-3">
+      <div class="col-4">
+        <li class="nav-item d-flex justify-content-center text-center">
+          <a class="nav-link" [class.active]="activeTab === 'appointments'" (click)="activeTab = 'appointments'">الحجوزات</a>
+        </li>
+      </div>
+      <div class="col-4">
+        <li class="nav-item d-flex justify-content-center text-center">
+          <a class="nav-link" [class.active]="activeTab === 'patients'" (click)="activeTab = 'patients'">المرضى</a>
+        </li>
+      </div>
+      <div class="col-4">
+        <li class="nav-item d-flex justify-content-center text-center">
+          <a class="nav-link" [class.active]="activeTab === 'doctors'" (click)="activeTab = 'doctors'">الأطباء</a>
+        </li>
+      </div>
+    </ul>
+  
+    <div *ngIf="activeTab === 'appointments'">
+      <button class="btn-blue mb-3" (click)="exportAppointmentsPDF()">تحويل إلى PDF</button>
+      <table class="table table-hover" id="pdfAppointmentContent">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>المريض</th>
+            <th>الطبيب</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of appointments">
+            <td>{{ a.id }}</td>
+            <td>{{ a.patient }}</td>
+            <td>{{ a.doctor }}</td>
+            <td>{{ a.date }}</td>
+            <td>{{ a.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div *ngIf="activeTab === 'patients'">
+      <button class="btn-blue mb-3" (click)="exportPatientsPDF()">تحويل إلى PDF</button>
+      <table class="table table-hover" id="pdfPatientContent">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>العمر</th>
+            <th>النوع</th>
+            <th>عدد الزيارات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of patients">
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.age }}</td>
+            <td>{{ p.gender }}</td>
+            <td>{{ p.visits }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div *ngIf="activeTab === 'doctors'">
+      <button class="btn-blue mb-3" (click)="exportDoctorsPDF()">تحويل إلى PDF</button>
+      <table class="table table-hover" id="pdfDoctorContent">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>التخصص</th>
+            <th>عدد الحالات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of doctors">
+            <td>{{ d.id }}</td>
+            <td>{{ d.name }}</td>
+            <td>{{ d.specialty }}</td>
+            <td>{{ d.cases }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>

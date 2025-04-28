@@ -1,0 +1,29 @@
+<main id="appointment-settings">
+    <div class="container-fluid">
+    <form [formGroup]="settingsForm" (ngSubmit)="saveSettings()">
+      <div class="row mb-3">
+        <div class="col-md-10">
+          <label class="form-label">تقسيم مواعيد الحجز</label>
+          <select formControlName="slotInterval" class="form-select shadow-none">
+            <option [value]="15">كل 15 دقيقة</option>
+            <option [value]="20">كل 20 دقيقة</option>
+            <option [value]="30">كل 30 دقيقة</option>
+            <option [value]="60">كل ساعة</option>
+          </select>
+        </div>
+  
+        <div class="col-md-10">
+          <label class="form-label">عدد الأيام المسموحة للحجز مقدمًا</label>
+          <input type="number" class="form-control shadow-none" formControlName="daysAllowed" min="1" max="30" />
+        </div>
+      </div>
+  
+      <div class="form-check form-switch col-10 mb-4">
+        <input class="form-check-input" type="checkbox" role="switch" formControlName="onlineBookingEnabled" id="bookingSwitch">
+        <label class="form-check-label" for="bookingSwitch">تفعيل الحجز أونلاين</label>
+      </div>
+  
+      <button type="submit" class="btn btn-primary">حفظ الإعدادات</button>
+    </form>
+    </div>
+  </main>

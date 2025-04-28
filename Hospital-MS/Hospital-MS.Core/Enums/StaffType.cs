@@ -10,11 +10,12 @@ namespace Hospital_MS.Core.Enums
     {
         Doctor,
         Nurse,
-        Technician,
-        Administrator,
-        Receptionist,
-        Pharmacist,
-        Cleaner,
-        Security
+        Worker,
+        Administrator
+
+        //Receptionist,
+        //Pharmacist,
+        //Cleaner,
+        //Security
     }
 }

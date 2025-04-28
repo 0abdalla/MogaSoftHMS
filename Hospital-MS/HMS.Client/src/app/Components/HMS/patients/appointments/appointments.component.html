@@ -1,0 +1,199 @@
+<div class="container-fluid mt-4">
+    <form [formGroup]="admissionsForm" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="title" class="form-label">العنوان</label>
+          <input type="text" class="form-control shadow-none" id="title" formControlName="title" required placeholder="أدخل العنوان هنا">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="orderNumber" class="form-label">رقم الطلب</label>
+          <input type="text" class="form-control shadow-none" id="orderNumber" formControlName="orderNumber" required placeholder="أدخل رقم الطلب هنا">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="startDate" class="form-label">تاريخ البدء</label>
+          <input type="date" class="form-control shadow-none" id="startDate" formControlName="startDate" required placeholder="اختر تاريخ البدء">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="endDate" class="form-label">تاريخ الانتهاء</label>
+          <input type="date" class="form-control shadow-none" id="endDate" formControlName="endDate" placeholder="اختر تاريخ الانتهاء">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="client" class="form-label">المريض</label>
+          <select class="form-select shadow-none" id="client" formControlName="client">
+            <option selected disabled value="">اختر المريض</option>
+            <option value="new">مريض جديد</option>
+            <option value="returning">مريض عائد</option>
+          </select>
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="assignedEmployees" class="form-label">الموظفون المُعيّنون</label>
+          <select class="form-select shadow-none" id="assignedEmployees" formControlName="assignedEmployees">
+            <option selected disabled value="">اختر الموظفين</option>
+            <option value="dr-ahmed">الدكتور أحمد</option>
+            <option value="dr-fatima">الدكتورة فاطمة</option>
+            <option value="nurse-laila">الممرضة ليلى</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="budget" class="form-label">الميزانية</label>
+          <input type="text" class="form-control shadow-none" id="budget" formControlName="budget" placeholder="أدخل الميزانية هنا">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="tags" class="form-label">العملة</label>
+          <select class="form-select shadow-none" id="tags" formControlName="tags">
+            <option selected disabled value="">اختر العملة</option>
+            <option value="EGP">جنيه مصري</option>
+            <option value="USD">دولار أمريكي</option>
+            <option value="EUR">يورو</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="description" class="form-label">الوصف</label>
+          <textarea rows="4" class="form-control shadow-none" id="description" formControlName="description" placeholder="أدخل وصف الحالة هنا"></textarea>
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="attachments" class="form-label">المرفقات</label>
+          <div class="custom-file-upload">
+            <input type="file" id="attachments" formControlName="attachments" (change)="onFileChange($event, 'attachments')" multiple hidden>
+            <label for="attachments" class="file-upload-label">
+              <i class="fa-light fs-2 fa-cloud-arrow-up"></i>
+              <span>اسحب الملفات هنا أو اختر من جهازك</span>
+            </label>
+          </div>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="examType" class="form-label">نوع الفحص</label>
+          <select class="form-select shadow-none" id="examType" formControlName="examType">
+            <option selected disabled value="">اختر نوع الفحص</option>
+            <option value="neurologist">طبيب أعصاب</option>
+            <option value="cardiologist">طبيب قلب</option>
+            <option value="orthopedic">طبيب عظام</option>
+          </select>
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="doctorName" class="form-label">اسم الطبيب</label>
+          <input type="text" class="form-control shadow-none" id="doctorName" formControlName="doctorName" placeholder="أدخل اسم الطبيب هنا">
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="patientNumber" class="form-label">رقم المريض</label>
+          <input type="text" class="form-control shadow-none" id="patientNumber" formControlName="patientNumber" placeholder="أدخل رقم المريض هنا">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="email" class="form-label">البريد الإلكتروني</label>
+          <input type="email" class="form-control shadow-none" id="email" formControlName="email" placeholder="أدخل البريد الإلكتروني هنا">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="age" class="form-label">العمر</label>
+          <input type="number" class="form-control shadow-none" id="age" formControlName="age" placeholder="أدخل عمر المريض هنا">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="address" class="form-label">محل الإقامة</label>
+          <input type="text" class="form-control shadow-none" id="address" formControlName="address" placeholder="أدخل محل إقامة المريض هنا">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="chronicDiseases" class="form-label">الأمراض المزمنة</label>
+          <input type="text" class="form-control shadow-none" id="chronicDiseases" formControlName="chronicDiseases" placeholder="أدخل الأمراض المزمنة هنا">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="formerSurgeries" class="form-label">العمليات الجراحية السابقة</label>
+          <input type="text" class="form-control shadow-none" id="formerSurgeries" formControlName="formerSurgeries" placeholder="أدخل العمليات السابقة هنا">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="lastMedicalVisit" class="form-label">آخر زيارة طبية</label>
+          <input type="date" class="form-control shadow-none" id="lastMedicalVisit" formControlName="lastMedicalVisit" placeholder="اختر تاريخ آخر زيارة">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label class="form-label d-block">حاصل على التطعيم</label>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="vaccinatedYes" value="true" formControlName="vaccinated">
+            <label class="form-check-label" for="vaccinatedYes">نعم</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="vaccinatedNo" value="false" formControlName="vaccinated">
+            <label class="form-check-label" for="vaccinatedNo">لا</label>
+          </div>
+        </div>      
+      </div>
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="complain" class="form-label">الشكوى</label>
+          <textarea rows="4" class="form-control shadow-none" id="complain" formControlName="complain" placeholder="أدخل شكوى المريض هنا"></textarea>
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="scansAndXRays" class="form-label">الفحوصات والأشعة</label>
+          <div class="custom-file-upload">
+            <input type="file" id="scansAndXRays" formControlName="scansAndXRays" (change)="onFileChange($event, 'scansAndXRays')" multiple hidden>
+            <label for="scansAndXRays" class="file-upload-label">
+              <i class="fa-light fs-2 fa-cloud-arrow-up"></i>
+              <span>اسحب الملفات هنا أو اختر من جهازك</span>
+            </label>
+          </div>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-lg-12 mb-3">
+          <label for="medicalNotes" class="form-label">الملاحظات الطبية</label>
+          <textarea rows="5" class="form-control shadow-none" id="medicalNotes" formControlName="medicalNotes" placeholder="أدخل الملاحظات الطبية هنا"></textarea>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="insuranceType" class="form-label">نوع التأمين</label>
+          <select class="form-select shadow-none" id="insuranceType" formControlName="insuranceType">
+            <option selected disabled value="">اختر نوع التأمين</option>
+            <option value="none">غير مؤمن</option>
+            <option value="private">تأمين خاص</option>
+            <option value="public">تأمين عام</option>
+          </select>
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="insuranceCompany" class="form-label">شركة التأمين</label>
+          <select class="form-select shadow-none" id="insuranceCompany" formControlName="insuranceCompany">
+            <option selected disabled value="">اختر شركة التأمين</option>
+            <option value="none">لا يوجد</option>
+            <option value="companyA">شركة التأمين أ</option>
+            <option value="companyB">شركة التأمين ب</option>
+          </select>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-lg-6 mb-3">
+          <label for="partnerPhoneNumber" class="form-label">رقم الهاتف</label>
+          <input type="text" class="form-control shadow-none" id="partnerPhoneNumber" formControlName="partnerPhoneNumber" placeholder="أدخل رقم هاتف الشريك هنا">
+        </div>
+        <div class="col-lg-6 mb-3">
+          <label for="partnerEmail" class="form-label">البريد الإلكتروني</label>
+          <input type="email" class="form-control shadow-none" id="partnerEmail" formControlName="partnerEmail" placeholder="أدخل البريد الإلكتروني للشريك هنا">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12 text-end">
+          <button type="submit" class="btn-blue">إضافة</button>
+          <button type="reset" class="btn-red me-2">إلغاء</button>
+        </div>
+      </div>
+    </form>
+  </div>

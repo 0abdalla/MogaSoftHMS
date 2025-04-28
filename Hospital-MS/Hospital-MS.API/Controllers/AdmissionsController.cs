@@ -15,22 +15,17 @@ namespace Hospital_MS.API.Controllers
         private readonly IAdmissionService _admissionService = admissionService;
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateAdmission([FromBody] CreateAdmissionRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAdmission([FromBody] CreateAdmissionRequest request)
         {
-            var result = await _admissionService.CreateAsync(request, cancellationToken);
-
-            return result.IsSuccess
-                ? Created()
-                : BadRequest(result.Error);
+            var result = await _admissionService.CreateAsync(request);
+            return Ok(result);
         }
 
         [HttpGet("{patientId}")]
         public async Task<IActionResult> GetPatientAdmission(int patientId, CancellationToken cancellationToken)
         {
             var result = await _admissionService.GetByIdAsync(patientId, cancellationToken);
-            return result.IsSuccess
-                ? Ok(result.Value)
-                : NotFound(result.Error);
+            return Ok(result);
         }
     }
 }

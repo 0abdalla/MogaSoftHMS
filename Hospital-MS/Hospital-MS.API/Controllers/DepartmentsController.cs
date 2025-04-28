@@ -15,18 +15,14 @@ namespace Hospital_MS.API.Controllers
         public async Task<IActionResult> CreateDepartment([FromBody] CreateDepartmentRequest request, CancellationToken cancellationToken)
         {
             var result = await _departmentService.CreateAsync(request, cancellationToken);
-            return result.IsSuccess
-                ? Created()
-                : BadRequest(result.Error);
+            return Ok(result);
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetDepartments(CancellationToken cancellationToken)
         {
             var result = await _departmentService.GetAllAsync(cancellationToken);
-            return result.IsSuccess
-                ? Ok(result.Value)
-                : NotFound(result.Error);
+            return Ok(result);
         }
     }
 }

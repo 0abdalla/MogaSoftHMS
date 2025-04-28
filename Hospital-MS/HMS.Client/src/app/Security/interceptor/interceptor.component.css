@@ -1,0 +1,40 @@
+.loading {
+    display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: rgba(255, 255, 255, 0.9);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+  }
+  
+  .loading svg polyline {
+    fill: none;
+    stroke-width: 5; 
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  
+  .loading svg polyline#back {
+    stroke: #ff4d5033; 
+  }
+  
+  .loading svg polyline#front {
+    stroke: var(--second-color);
+    stroke-dasharray: 72, 216;
+    stroke-dashoffset: 288;
+    animation: dash_682 1.5s linear infinite;
+  }
+  
+  @keyframes dash_682 {
+    70% {
+      opacity: 0;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }

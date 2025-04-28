@@ -1,0 +1,25 @@
+.col-3,
+.col-9 {
+    padding: 0 !important;
+}
+
+.col-3 {
+    width: 16% !important;
+}
+
+.col-9 {
+    background-color: white;
+    margin-right: 16% !important;
+    width: calc(100% - 16%) !important;
+    transition: margin-right 0.3s ease, width 0.3s ease;
+}
+
+.col-9.sidebar-collapsed {
+    margin-right: 5% !important;
+    width: calc(100% - 5%) !important;
+}
+
+.col-3 .sidebar.collapsed~.col-9 {
+    margin-right: 5% !important;
+    width: calc(100% - 5%) !important;
+}

@@ -1,0 +1,18 @@
+#emergency-reception{
+    min-height: 90vh;
+}
+.form-select option[value="حرجة"] {
+    background-color: red;
+    color: white;
+  }
+  
+  .form-select option[value="متوسطة"] {
+    background-color: yellow;
+    color: black;
+  }
+  
+  .form-select option[value="خفيفة"] {
+    background-color: green;
+    color: white;
+  }
+  

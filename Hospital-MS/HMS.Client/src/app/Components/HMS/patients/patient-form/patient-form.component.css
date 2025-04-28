@@ -1,0 +1,12 @@
+#add-patient {
+  min-height: 100vh;
+}
+h5{
+  color: black;
+  font-size: 22px;
+  font-weight: 500;
+  span{
+    color: #576CAB;
+    font-weight: 700;
+  }
+}

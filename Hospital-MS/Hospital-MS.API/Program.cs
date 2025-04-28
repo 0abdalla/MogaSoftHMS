@@ -8,21 +8,11 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-//// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//
-    //app.MapOpenApi();
-//}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
-
-app.UseCors(); // Use default CORS policy
-
+app.UseCors();
+app.UseStaticFiles();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

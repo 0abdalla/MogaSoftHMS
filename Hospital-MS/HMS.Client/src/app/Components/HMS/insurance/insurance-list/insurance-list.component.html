@@ -1,0 +1,168 @@
+<main id="ins-list">
+    <div class="container-fluid">
+        <div class="card p-3 mt-4">
+          <form [formGroup]="filterForm" (ngSubmit)="applyFilters($event)">
+            <div class="row">
+              <div class="col-lg-8">
+                <div class="row">
+                  <div class="col-lg-6">
+                    <input 
+                      type="text" 
+                      class="form-control shadow-none" 
+                      placeholder="اسم الشركة" 
+                      formControlName="name" />
+                  </div>
+      
+                  <div class="col-lg-6">
+                    <select class="form-select shadow-none" formControlName="status">
+                      <option value="">كل الحالات</option>
+                      <option value="Active">نشطة</option>
+                      <option value="Inactive">غير نشطة</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="row g-2">
+                  <div class="col-lg-6">
+                    <button type="submit" class="btn-blue w-100">تطبيق</button>
+                  </div>
+                  <div class="col-lg-6">
+                    <button type="button" (click)="resetFilters()" class="btn-red w-100">مسح الفلترات</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#insuranceModal">
+            Launch demo modal
+          </button>
+
+
+        <table class="table table-hover mt-4">
+          <thead>
+            <tr>
+              <th>اسم الشركة</th>
+              <th>الكود</th>
+              <th>رقم التواصل</th>
+              <th>الحالة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let company of filteredCompanies">
+              <td>{{ company.name }}</td>
+              <td>{{ company.code }}</td>
+              <td>{{ company.contactNumber }}</td>
+              <td>{{ company.status === 'Active' ? 'نشطة' : 'غير نشطة' }}</td>
+              <td>
+                <button class="btn btn-warning" (click)="editCompany(company.id); $event.stopPropagation()">
+                    <i class="fa-solid fa-pen-to-square"></i>                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredCompanies.length === 0">
+              <td colspan="5">لا توجد شركات مطابقة</td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div class="modal fade" id="insuranceModal" tabindex="-1" aria-labelledby="insuranceLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+              <div  class="modal-content">
+                <div id="pdfContent" class="print-section">
+                    <div class="modal-header justify-content-center text-center">
+                        <h5 class="text-center text-primary" id="insuranceLabel">تفاصيل شركة التأمين</h5>
+                      </div>
+                
+                      <div class="modal-body p-4">
+                        <h6 class="mb-3 text-primary">بيانات الشركة</h6>
+                        <div class="row mb-3">
+                          <div class="col-lg-4">
+                            <strong>الاسم:</strong> الشركة العالمية للتأمين
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>الكود:</strong> INS-00123
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>الحالة:</strong> نشطة
+                          </div>
+                        </div>
+                
+                        <div class="row mb-3">
+                          <div class="col-lg-4">
+                            <strong>رقم التواصل:</strong> 01234567890
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>البريد الإلكتروني:</strong> insuranceglobal.com
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>العنوان:</strong> القاهرة، مصر
+                          </div>
+                        </div>
+                
+                        <div class="row mb-3">
+                          <div class="col-lg-4">
+                            <strong>تاريخ التسجيل:</strong> 2021-06-15
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>عدد الحالات المعالجة:</strong> 1,256
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>إجمالي المبلغ المستحق من الشركة:</strong> 100,256
+                          </div>
+                        </div>
+                
+                        <hr>
+                
+                        <h6 class="mb-3 text-primary">تفاصيل العقد</h6>
+                        <div class="row mb-3">
+                          <div class="col-lg-4">
+                            <strong>الوصف:</strong> عقد تأمين صحي شامل يغطي الحالات الطارئة والإقامة بالمستشفيات
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>تاريخ البدء:</strong> 2022-01-01
+                          </div>
+                          <div class="col-lg-4">
+                            <strong>تاريخ الانتهاء:</strong> 2025-01-01
+                          </div>
+                        </div>
+                
+                        <hr>
+                
+                        <h6 class="mb-3 text-primary">فئات التغطية</h6>
+                      <div class="row mb-3">
+                          <div class="col-lg-4">
+                              <strong>الفئة الذهبية:</strong> تغطي 90% من تكلفة العلاج
+                          </div>
+                          <div class="col-lg-4">
+                              <strong>الفئة الفضية:</strong> تغطي 70% من تكلفة العلاج
+                          </div>
+                          <div class="col-lg-4">
+                              <strong>الفئة البرونزية:</strong> تغطي 50% من تكلفة العلاج
+                          </div>
+                      </div>
+                
+                      </div>
+                </div>
+                
+          
+                <div class="modal-footer row">
+                  <div class="col-4">
+                    <button class="btn col-12 btn-outline-info">عقود سابقة</button>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn col-12 btn-outline-primary" (click)="print()">طباعة</button>
+                  </div>
+                  <div class="col-4">
+                    <button class="btn col-12 btn-outline-success" (click)="exportToPDF()">تحويل إلى PDF</button>
+                  </div>
+                </div>
+          
+              </div>
+            </div>
+          </div>
+          
+      </div>
+</main>

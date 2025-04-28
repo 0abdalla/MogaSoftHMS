@@ -1,8 +1,9 @@
 ﻿using Hospital_MS.Core.Abstractions;
+using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Auth;
 using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services.Auth;
+using Hospital_MS.Interfaces.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -19,10 +20,10 @@ namespace Hospital_MS.Services.Auth
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
 
-        public async Task<Result<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
             if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
-                return Result.Failure<AuthResponse>(GenericErrors<ApplicationUser>.InvalidCredentials);
+                return ErrorResponseModel<AuthResponse>.Failure(GenericErrors.InvalidCredentials);
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
 
@@ -44,28 +45,28 @@ namespace Hospital_MS.Services.Auth
                     expiresIn
                 );
 
-                return Result.Success(response);
+                return ErrorResponseModel<AuthResponse>.Success(GenericErrors.SuccessLogin, response);
             }
 
-            return Result.Failure<AuthResponse>(GenericErrors<ApplicationUser>.InvalidCredentials);
+            return ErrorResponseModel<AuthResponse>.Failure(GenericErrors.InvalidCredentials);
         }
 
-        public async Task<Result> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
         {
             var emailIsExists = await _userManager.FindByEmailAsync(request.Email) is not null;
 
             if (emailIsExists)
-                return Result.Failure(GenericErrors<ApplicationUser>.DuplicateEmail);
+                return ErrorResponseModel<string>.Failure(GenericErrors.DuplicateEmail);
 
-           var user = new ApplicationUser
-           {
-               FirstName = request.FirstName,
-               LastName = request.LastName,
-               Address = request.Address,
-               Email = request.Email,
-               UserName = request.Email,
-               IsActive = true,
-           };
+            var user = new ApplicationUser
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Address = request.Address,
+                Email = request.Email,
+                UserName = request.Email,
+                IsActive = true,
+            };
 
             user.UserName = request.Email;
 
@@ -73,12 +74,12 @@ namespace Hospital_MS.Services.Auth
 
             if (result.Succeeded)
             {
-                return Result.Success();
+                return ErrorResponseModel<string>.Success(GenericErrors.SuccessRegister);
             }
 
             var error = result.Errors.First();
 
-            return Result.Failure(new Error(error.Code, error.Description, StatusCodes.Status400BadRequest));
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
 }

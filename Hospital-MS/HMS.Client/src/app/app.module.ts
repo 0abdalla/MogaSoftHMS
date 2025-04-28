@@ -1,26 +1,35 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './shared/components/header/header.component';
-import { FooterComponent } from './shared/components/footer/footer.component';
-import { HomeComponent } from './features/dashboard/home/home.component';
-import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MessageService } from 'primeng/api';
+import { RegisterComponent } from './Auth/register/register.component';
+import { LoginComponent } from './Auth/login/login.component';
+import { SharedModule } from './Shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HeaderComponent,
-    SidebarComponent,
-    FooterComponent,
-    HomeComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgSelectModule,
+    HttpClientModule,
+    SharedModule,
+    BrowserAnimationsModule,
   ],
-  providers: [],
+  providers: [
+    MessageService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

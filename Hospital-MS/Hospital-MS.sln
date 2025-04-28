@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hospital-MS.Core", "Hospita
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hospital-MS.Services", "Hospital-MS.Services\Hospital-MS.Services.csproj", "{A8042B0E-C7A1-4940-BF75-825CC9390703}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hospital-MS.Reposatories", "Hospital-MS.Reposatories\Hospital-MS.Reposatories.csproj", "{B74AF014-B544-42DC-A834-3506E702DA84}"
-EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "HMS.Client", "HMS.Client\", "{B82BD154-67B6-4096-91B5-A4348B04D68C}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
@@ -32,6 +30,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "HMS.Client", "HMS.Client\",
 		SlnRelativePath = "HMS.Client\"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hospital-MS.Interfaces", "Hospital-MS.Interfaces\Hospital-MS.Interfaces.csproj", "{408EDA0F-B204-4E59-98F8-6135A700E910}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,14 +50,14 @@ Global
 		{A8042B0E-C7A1-4940-BF75-825CC9390703}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8042B0E-C7A1-4940-BF75-825CC9390703}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8042B0E-C7A1-4940-BF75-825CC9390703}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B74AF014-B544-42DC-A834-3506E702DA84}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{B82BD154-67B6-4096-91B5-A4348B04D68C}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{408EDA0F-B204-4E59-98F8-6135A700E910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{408EDA0F-B204-4E59-98F8-6135A700E910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{408EDA0F-B204-4E59-98F8-6135A700E910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{408EDA0F-B204-4E59-98F8-6135A700E910}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

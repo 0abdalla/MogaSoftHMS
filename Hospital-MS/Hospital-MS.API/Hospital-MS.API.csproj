@@ -22,9 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hospital-MS.Core\Hospital-MS.Core.csproj" />
-    <ProjectReference Include="..\Hospital-MS.Reposatories\Hospital-MS.Reposatories.csproj" />
+    <ProjectReference Include="..\Hospital-MS.Interfaces\Hospital-MS.Interfaces.csproj" />
     <ProjectReference Include="..\Hospital-MS.Services\Hospital-MS.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

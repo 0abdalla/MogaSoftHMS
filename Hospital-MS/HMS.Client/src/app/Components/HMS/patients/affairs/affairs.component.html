@@ -1,0 +1,115 @@
+<main id="prm-container">
+    <div class="container-fluid">
+        <div class="card p-3 my-4">
+            <form (submit)="applyFilters($event)">
+              <div class="row">
+                <div class="col-lg-8">
+                  <div class="row">
+                    <div class="col-lg-6">
+                        <input type="text" class="form-control shadow-none" placeholder="إسم المريض"
+                        name="name" [(ngModel)]="filters.name" />                      
+                    </div>
+      
+                    <div class="col-lg-6">
+                        <select class="form-select shadow-none" [(ngModel)]="filters.status" name="status">
+                          <option selected disabled value="">كل الحالات</option>
+                          <option *ngFor="let status of patientStatuses" [value]="status.name">
+                            {{ status.name }}
+                          </option>
+                        </select>
+                      </div>
+      
+                  </div>
+      
+      
+                </div>
+                <div class="col-lg-4">
+                  <div class="row g-2">
+                    <div class="col-lg-6">
+                      <button type="submit" class="btn-blue w-100">تطبيق</button>
+                    </div>
+                    <div class="col-lg-6">
+                      <button (click)="resetFilters()" type="button" class="btn-red w-100">مسح الفلترات</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+      
+            </form>
+          </div>
+          <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#patientModal">
+            Launch demo modal
+          </button>
+          
+        <div class="table-responsive">
+          <table class="table table-hover text-center align-middle">
+            <thead>
+              <tr>
+                <th>الاسم</th>
+                <th>رقم المريض</th>
+                <th>الحالة</th>
+                <th>آخر تواصل</th>
+                <th>ملاحظات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let patient of filteredPatients">
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.phone }}</td>
+                <td>
+                    <p class="fw-bold text-white" *ngIf="patient.status"
+                      [ngStyle]="{ backgroundColor: getStatusColor(patient.status) }">
+                      {{ patient.status }}
+                    </p>
+                  </td>
+                <td>{{ patient.lastInteraction }}</td>
+                <td>{{ patient.notes }}</td>
+                
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      
+      </div>
+</main>
+
+
+
+<div class="modal fade" id="patientModal" tabindex="-1" aria-labelledby="patientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="patientModalLabel">بيانات المريض</h5>
+        </div>
+        <div class="modal-body" *ngIf="selectedPatient">
+          <p><strong>الاسم:</strong> {{ selectedPatient.name }}</p>
+          <p><strong>رقم المريض:</strong> {{ selectedPatient.phone }}</p>
+  
+          <div class="mb-3">
+            <label for="statusSelect" class="form-label">الحالة الحالية</label>
+            <select class="form-select shadow-none" id="statusSelect" [(ngModel)]="selectedPatient.status">
+              <option *ngFor="let status of patientStatuses" [value]="status.name">
+                {{ status.name }}
+              </option>
+            </select>
+          </div>
+  
+          <div class="mb-3">
+            <label for="newNote" class="form-label">إضافة ملاحظة جديدة</label>
+            <textarea id="newNote" class="form-control shadow-none" rows="2" [(ngModel)]="newNote"></textarea>
+            <button class="btn-blue mt-2" (click)="addNote()">إضافة</button>
+          </div>
+  
+          <div *ngIf="selectedPatient.notes?.length">
+            <h6>الملاحظات السابقة:</h6>
+            <ul class="list-group p-0">
+              <li *ngFor="let note of selectedPatient.notes" class="list-group-item">
+                {{ note }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

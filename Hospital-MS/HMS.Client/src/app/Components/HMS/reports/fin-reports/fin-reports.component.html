@@ -1,0 +1,64 @@
+<main id="fin-report">
+    <div class="container-fluid p-3">
+        <ul class="nav nav-tabs row justify-content-between align-items-center mb-3">
+            <div class="col-6 p-0">
+                <li class="nav-item d-flex justify-content-center text-center">
+                    <a class="nav-link" [class.active]="activeTab === 'billing'" (click)="activeTab = 'billing'">الفواتير والمدفوعات</a>
+                  </li>
+            </div>
+            <div class="col-6 p-0">
+                <li class="nav-item d-flex justify-content-center text-center">
+                    <a class="nav-link" [class.active]="activeTab === 'attendance'" (click)="activeTab = 'attendance'">الحضور والانصراف</a>
+                  </li>
+            </div>
+          </ul>
+  
+    <div *ngIf="activeTab === 'billing'">
+      <button class="btn-blue mb-3" (click)="exportBillingPDF()">تحويل إلى PDF</button>
+      <table class="table table-hover" id="pdfBillContent">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>المريض</th>
+            <th>المبلغ</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of billings">
+            <td>{{ b.id }}</td>
+            <td>{{ b.patient }}</td>
+            <td>{{ b.amount }} ج.م</td>
+            <td>{{ b.date }}</td>
+            <td>{{ b.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <div *ngIf="activeTab === 'attendance'">
+      <button class="btn-blue mb-3" (click)="exportAttendancePDF()">تحويل إلى PDF</button>
+      <table class="table table-hover" id="pdfAttendanceContent">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>الموظف</th>
+            <th>التاريخ</th>
+            <th>دخول</th>
+            <th>خروج</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of attendance">
+            <td>{{ a.id }}</td>
+            <td>{{ a.employee }}</td>
+            <td>{{ a.date }}</td>
+            <td>{{ a.in }}</td>
+            <td>{{ a.out }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>

@@ -1,7 +1,6 @@
 ﻿using Hospital_MS.Core.Contracts.Beds;
 using Hospital_MS.Core.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_MS.API.Controllers
@@ -15,19 +14,14 @@ namespace Hospital_MS.API.Controllers
         public async Task<IActionResult> CreateBed([FromBody] CreateBedRequest request, CancellationToken cancellationToken)
         {
             var result = await _bedService.CreateAsync(request, cancellationToken);
-            return result.IsSuccess
-                ? Created()
-                : BadRequest(result.Error);
+            return Ok(result);
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetAllBeds(CancellationToken cancellationToken)
         {
-            var beds = await _bedService.GetAllAsync(cancellationToken);
-
-            return beds.IsSuccess
-                ? Ok(beds.Value)
-                : NotFound(beds.Error);
+            var result = await _bedService.GetAllAsync(cancellationToken);
+            return Ok(result);
         }
 
     }

@@ -1,0 +1,32 @@
+.custom-file-upload {
+    border: 2px dashed #d3d3d3;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+  }
+  
+  .file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: var(--main-color);
+    font-size: 16px;
+  }
+  
+  .cloud-icon {
+    font-size: 24px;
+    color: var(--main-color);
+  }
+  
+  .custom-file-upload:hover {
+    background-color: #e9ecef;
+    border: 2px dashed var(--main-color);
+  }

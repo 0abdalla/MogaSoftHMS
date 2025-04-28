@@ -15,20 +15,14 @@ namespace Hospital_MS.API.Controllers
         public async Task<IActionResult> CreateRoom([FromBody] CreateRoomRequest request, CancellationToken cancellationToken)
         {
             var result = await _roomService.CreateAsync(request, cancellationToken);
-
-            return result.IsSuccess
-                ? Created()
-                : BadRequest(result.Error);
+            return Ok(result);
         }
 
         [HttpGet("")]
         public async Task<IActionResult> GetRooms(CancellationToken cancellationToken)
         {
             var result = await _roomService.GetAllAsync(cancellationToken);
-
-            return result.IsSuccess
-                ? Ok(result.Value)
-                : NotFound(result.Error);
+            return Ok(result);
         }
 
     }

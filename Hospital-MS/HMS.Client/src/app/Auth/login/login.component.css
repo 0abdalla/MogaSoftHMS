@@ -1,0 +1,138 @@
+#login {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background: none;
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: -1;
+        background-image: url(../../../assets/vendors/imgs/login.png);
+        opacity: 1;
+        animation: fadeImage1 15s infinite;
+    }
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: -2;
+        background-image: url(../../../assets/vendors/imgs/login2.png);
+        opacity: 0;
+        animation: fadeImage2 15s infinite;
+    }
+    .bg-layer-3 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        z-index: -3;
+        background-image: url(../../../assets/vendors/imgs/login3.png);
+        opacity: 0;
+        animation: fadeImage3 15s infinite;
+    }
+
+    .carde {
+        background-image: radial-gradient(160.48% 100.6% at 79.82% 8.55%, rgba(242, 242, 242, 0.95) 0%, rgba(242, 242, 242, 0.55) 100%), 
+        url(../../../assets/vendors/imgs/pattern.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100% 100%, cover;
+        border-radius: 30px;
+        backdrop-filter: blur(42px);
+        position: relative;
+        z-index: 1;
+    }    
+    p {
+        font-size: 18px;
+        font-weight: 500;
+        color: black;
+        a {
+            color: var(--main-color);
+        }
+    }
+    .form-control {
+        background: #EBEDF3;
+        border: 1px solid #0000001A !important;
+        box-shadow: -1px 1px 5.1px 0px #0000001A !important;
+    }
+    .form-control:focus {
+        border: 1px solid var(--main-color) !important;
+    }
+    .btn-blue {
+        font-weight: 700;
+        text-align: center;
+        height: 45px !important;
+    }
+}
+
+@keyframes fadeImage1 {
+    0% {
+        opacity: 1; 
+    }
+    25% {
+        opacity: 1; 
+    }
+    33% {
+        opacity: 0; 
+    }
+    91% {
+        opacity: 0; 
+    }
+    100% {
+        opacity: 1; 
+    }
+}
+
+@keyframes fadeImage2 {
+    0% {
+        opacity: 0; 
+    }
+    25% {
+        opacity: 0; 
+    }
+    33% {
+        opacity: 1; 
+    }
+    58% {
+        opacity: 1; 
+    }
+    66% {
+        opacity: 0; 
+    }
+    100% {
+        opacity: 0; 
+    }
+}
+
+@keyframes fadeImage3 {
+    0% {
+        opacity: 0; 
+    }
+    58% {
+        opacity: 0; 
+    }
+    66% {
+        opacity: 1; 
+    }
+    91% {
+        opacity: 1; 
+    }
+    100% {
+        opacity: 0; 
+    }
+}
