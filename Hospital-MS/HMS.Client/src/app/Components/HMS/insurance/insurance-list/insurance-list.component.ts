@@ -11,42 +11,42 @@ declare var bootstrap: any;
   templateUrl: './insurance-list.component.html',
   styleUrl: './insurance-list.component.css',
   animations: [
-        trigger('fadeIn', [
-          transition(':enter', [
-            style({ opacity: 0 }),
-            animate('200ms ease-in', style({ opacity: 1 })),
-          ]),
-          transition(':leave', [
-            animate('200ms ease-out', style({ opacity: 0 })),
-          ])
-        ])
-      ],
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-in', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-out', style({ opacity: 0 })),
+      ])
+    ])
+  ],
 })
 export class InsuranceListComponent implements OnInit {
-  filterForm!:FormGroup;
+  filterForm!: FormGroup;
   // 
-  insurnaces!:InsuranceCompany[];
+  insurnaces!: InsuranceCompany[];
   // 
   pageSize = 16;
   currentPage = 1;
   total = 0;
   fixed = Math.ceil(this.total / this.pageSize);
   // 
-  selectedInsurance!:any;
-  constructor(private fb : FormBuilder , private insuranceService : InsuranceService , private router: Router) {
+  selectedInsurance!: any;
+  constructor(private fb: FormBuilder, private insuranceService: InsuranceService, private router: Router) {
     this.filterForm = this.fb.group({
       Search: ['', Validators.required],
     });
-   }
+  }
   ngOnInit(): void {
     this.getAllInsurances();
   }
-  applyFilters(){}
-  resetFilters(){}
+  applyFilters() { }
+  resetFilters() { }
   // 
-  getAllInsurances(){
+  getAllInsurances() {
     this.insuranceService.getAllInsurances().subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.insurnaces = res.results;
         console.log(this.insurnaces);
       },
@@ -55,9 +55,9 @@ export class InsuranceListComponent implements OnInit {
       }
     })
   }
-  getInsuranceById(id:number){
+  getInsuranceById(id: number) {
     this.insuranceService.getInsuranceById(id).subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.selectedInsurance = res.results;
         console.log(this.selectedInsurance);
       },
@@ -66,7 +66,7 @@ export class InsuranceListComponent implements OnInit {
       }
     })
   }
-  openInsuranceModal(id:number){
+  openInsuranceModal(id: number) {
     this.getInsuranceById(id);
   }
 
@@ -85,14 +85,14 @@ export class InsuranceListComponent implements OnInit {
   onPageChange(event: number) {
     this.currentPage = event;
   }
-  print(){
+  print() {
     const printContents = document.getElementById('pdfContent')?.innerHTML;
     const originalContents = document.body.innerHTML;
     document.body.innerHTML = printContents;
     window.print();
     document.body.innerHTML = originalContents;
   }
-  exportToPDF(){
+  exportToPDF() {
     const printContents = document.getElementById('pdfContent')?.innerHTML;
     const originalContents = document.body.innerHTML;
     document.body.innerHTML = printContents;

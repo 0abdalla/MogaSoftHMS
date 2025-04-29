@@ -1,5 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Appointments;  
+using Hospital_MS.Core.Contracts.Appointments;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,8 +19,8 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> GetAppointments([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        [HttpPost("GetAppointments")]
+        public async Task<IActionResult> GetAppointments(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
             var result = await _appointmentService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
@@ -33,7 +33,7 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("counts")]
+        [HttpPost("GetAppointmentsCounts")]
         public async Task<IActionResult> GetAppointmentsCounts(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
             var count = await _appointmentService.GetCountsAsync(pagingFilter, cancellationToken);

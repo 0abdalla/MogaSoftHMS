@@ -123,7 +123,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAll().FirstOrDefaultAsync();
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAll().Include(x => x.Department).Include(x => x.Specialty).Include(x => x.Schedules).Include(x => x.CreatedBy).Include(x => x.UpdatedBy).FirstOrDefaultAsync();
 
             if (doctor is null)
                 return ErrorResponseModel<DoctorResponse>.Failure(GenericErrors.NotFound);

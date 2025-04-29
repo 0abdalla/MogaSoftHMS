@@ -12,6 +12,7 @@ using Hospital_MS.Services.HMS;
 using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -23,7 +24,12 @@ namespace Hospital_MS.API
     {
         public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+                                    {
+                                        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                                        options.JsonSerializerOptions.WriteIndented = true;
+                                    })
+                                    .AddNewtonsoftJson(); ;
 
             //var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
@@ -102,6 +108,8 @@ namespace Hospital_MS.API
                 options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             });
+
+           
 
             return services;
         }
