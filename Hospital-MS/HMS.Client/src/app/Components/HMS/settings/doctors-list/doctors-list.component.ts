@@ -138,7 +138,7 @@ export class DoctorsListComponent implements OnInit {
       }
     }
 
-    this.router.navigate(['/settings/doctors', doctorId]);
+    this.router.navigate(['/hms/settings/doctors', doctorId]);
   }
   print(){}
   exportToPDF(){}

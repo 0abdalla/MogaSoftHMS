@@ -25,12 +25,12 @@
               يرجى إدخال بريد إلكتروني صحيح
             </div>
   
-            <label class="form-label" for="contactNumber">رقم الهاتف:</label>
-            <input id="contactNumber" class="form-control shadow-none" formControlName="contactNumber" placeholder="أدخل رقم الهاتف">
-            <div *ngIf="insuranceForm.get('contactNumber')?.touched && insuranceForm.get('contactNumber')?.hasError('required')" class="text-danger">
+            <label class="form-label" for="phone">رقم الهاتف:</label>
+            <input id="phone" class="form-control shadow-none" formControlName="phone" placeholder="أدخل رقم الهاتف">
+            <div *ngIf="insuranceForm.get('phone')?.touched && insuranceForm.get('phone')?.hasError('required')" class="text-danger">
               رقم الهاتف مطلوب
             </div>
-            <div *ngIf="insuranceForm.get('contactNumber')?.touched && insuranceForm.get('contactNumber')?.hasError('pattern')" class="text-danger">
+            <div *ngIf="insuranceForm.get('phone')?.touched && insuranceForm.get('phone')?.hasError('pattern')" class="text-danger">
               يرجى إدخال رقم هاتف صحيح
             </div>
           </div>

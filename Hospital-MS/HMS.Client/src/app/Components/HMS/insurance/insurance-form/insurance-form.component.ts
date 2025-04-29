@@ -1,23 +1,9 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-export interface InsuranceCompany {
-  id: number;
-  name: string;
-  code: string;
-  contactNumber: string;
-  email: string;
-  address: string;
-  status: 'Active' | 'Inactive';
-  registrationDate?: Date;
-  processedClaimsCount?: number;
-  contractDetails?: {
-    description: string;
-    startDate: Date;
-    endDate: Date;
-    categories: { name: string; coveragePercentage: number }[];
-  };
-}
+import { MessageService } from 'primeng/api';
+import { InsuranceCompany } from '../../../../Models/HMS/insurance';
+import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 @Component({
   selector: 'app-insurance-form',
   templateUrl: './insurance-form.component.html',
@@ -25,78 +11,97 @@ export interface InsuranceCompany {
 })
 export class InsuranceFormComponent {
   insuranceForm: FormGroup;
-  isEditMode = false;
   companies: InsuranceCompany[] = [];
-  editCompanyId: number | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private router: Router
+    private insuranceService: InsuranceService,
+    private messageService : MessageService
   ) {
     this.insuranceForm = this.fb.group({
       name: ['', Validators.required],
       code: [''],
-      contactNumber: ['', Validators.required],
+      contactNumber: ['', [Validators.required , Validators.pattern(/^01[0125][0-9]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      address: ['', Validators.required],
-      status: ['Active', Validators.required],
-      contractDetails: this.fb.group({
-        description: [''],
-        startDate: [new Date().toISOString().split('T')[0], Validators.required],
-        endDate: [new Date().toISOString().split('T')[0], Validators.required],
-        categories: this.fb.array([])
-      }),
-      assignedAgents: this.fb.array([])
-    });
+      contractStartDate: ['', Validators.required],
+      contractEndDate: ['', Validators.required],
+      insuranceCategories: this.fb.array([])
+    }, { validators: this.dateRangeValidator });    
   }
 
   ngOnInit() : void {
     this.addCategory();
   }
-  get categories() {
-    return this.insuranceForm.get('contractDetails.categories') as FormArray;
-  }
-
-  get assignedAgents() {
-    return this.insuranceForm.get('assignedAgents') as FormArray;
+  get insuranceCategories() {
+    return this.insuranceForm.get('insuranceCategories') as FormArray;
   }
 
   addCategory() {
-    this.categories.push(this.fb.group({
+    this.insuranceCategories.push(this.fb.group({
       name: ['', Validators.required],
-      coveragePercentage: ['', [Validators.required, Validators.min(0), Validators.max(100)]]
+      rate: [null, [Validators.required, Validators.min(0), Validators.max(100)]]
     }));
   }
 
   removeCategory(index: number) {
-    this.categories.removeAt(index);
+    if (this.insuranceCategories.length <= 1) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'تحذير',
+        detail: 'يجب أن يكون هناك على الأقل فئة واحدة'
+      });
+      return;
+    }
+    this.insuranceCategories.removeAt(index);
   }
 
   onSubmit() {
+    this.insuranceForm.markAllAsTouched();
     if (this.insuranceForm.invalid) {
-      alert('يرجى ملء جميع الحقول المطلوبة بشكل صحيح');
-      return;
-    }
-
-  }
-
-  resetForm() {
-    this.insuranceForm.reset({
-      name: '',
-      code: '',
-      contactNumber: '',
-      email: '',
-      address: '',
-      status: 'Active',
-      contractDetails: {
-        description: '',
-        startDate: new Date().toISOString().split('T')[0],
-        endDate: new Date().toISOString().split('T')[0],
-        categories: []
-      },
+      this.messageService.add({
+      severity: 'error',
+      summary: 'خطأ',
+      detail: 'يرجى ملء جميع الحقول المطلوبة بشكل صحيح'
     });
-    this.categories.clear();
-    this.assignedAgents.clear();
+    console.log('Form Errors:', this.insuranceForm.errors);
+    console.log('Form Value:', this.insuranceForm.value);
+    return;
+  }else{
+    this.insuranceService.addInsurance(this.insuranceForm.value).subscribe({
+      next: (response) => {
+        console.log('Insurance added successfully', response);
+        this.messageService.add({ severity: 'success', summary: 'تم الإضافة', detail: 'تم إضافة الشركة بنجاح' });
+        this.resetForm();
+      },
+      error: (error) => {
+        console.error('Error adding insurance', error);
+        console.error('details:', this.insuranceForm.value);
+        this.messageService.add({ severity: 'error', summary: 'فشل الإضافة', detail: 'حدث خطأ أثناء إضافة الشركة' });
+      }
+    });
   }
+}
+
+resetForm() {
+  this.insuranceForm.reset({
+    name: '',
+    code: '',
+    contactNumber: '',
+    email: '',
+    contractStartDate: '',
+    contractEndDate: '',
+    insuranceCategories: []
+  });
+  this.insuranceCategories.clear();
+  this.addCategory();
+  }
+  // 
+  dateRangeValidator(group: AbstractControl): ValidationErrors | null {
+    const startDate = group.get('contractStartDate')?.value;
+    const endDate = group.get('contractEndDate')?.value;
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      return { invalidDateRange: true };
+    }
+    return null;
+  }  
 }

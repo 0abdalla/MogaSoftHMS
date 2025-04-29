@@ -1,136 +1,136 @@
-<main id="doctors-list" @fadeIn>
-    <section class="section1" id="cards">
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-4" *ngFor="let doctor of doctorsData">
-            <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': doctor.color }">
-              <h4>{{ doctor.name }}</h4>
-              <p class="mt-0">{{ doctor.count }}</p>
-              <div class="percentage d-flex align-items-center justify-content-center gap-1">
-                <p class="m-0"> 12%</p>
-                <i class="fa-regular fa-circle-arrow-up"></i>
+  <main id="doctors-list" @fadeIn>
+      <section class="section1" id="cards">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-4" *ngFor="let doctor of doctorsData">
+              <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': doctor.color }">
+                <h4>{{ doctor.name }}</h4>
+                <p class="mt-0">{{ doctor.count }}</p>
+                <div class="percentage d-flex align-items-center justify-content-center gap-1">
+                  <p class="m-0"> 12%</p>
+                  <i class="fa-regular fa-circle-arrow-up"></i>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
-    <section class="section2" id="table-doctors">
-      <div class="card mt-3 p-2">
-        <div class="p-3 mt-4">
-          <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-            <div class="row g-2">
-              <div class="col-lg-2">
-                <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
-                <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إزالة الفلترة</button>
-              </div>
-              <div class="col-lg-4">
-                <input
-                  type="text"
-                        class="form-control shadow-none"
-                        placeholder="أدخل إسم الطبيب أو رقم الهاتف"
-                        formControlName="Search"
-                      />
-                    </div>
-                    <!-- <div class="col-lg-4">
-                      <select class="form-select shadow-none" formControlName="Status">
-                        <option selected disabled value="">اختر حالة الطبيب</option>
-                        <option value="Active">متاح</option>
-                        <option value="Inactive">غير متاح</option>
-                      </select>
-                    </div> -->
-                    
-                  </div>
-                </form>
-              </div>
-          
-              <table class="table table-hover mt-4">
-                  <thead>
-                    <tr>
-                      <th>الإسم</th>
-                      <th>التخصص</th>
-                      <th>رقم الهاتف</th>
-                      <th>الحالة</th>
-                      <!-- <th>الإجراءات</th> -->
-                    </tr>
-                  </thead>
-                  <tbody *ngIf="doctors!.length > 0">
-                    <tr
-                      *ngFor="let doctor of doctors | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }"
-                      (click)="openDoctorModal(doctor.id)"
-                      data-bs-toggle="modal"
-                      data-bs-target="#doctorDetailsModal"
-                      style="cursor: pointer"
-                    >
-                      <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                          <div class="avatar-circle">{{ doctor.fullName.charAt(0) }}</div>
-                          <span class="fw-bold">{{ doctor.fullName }}</span>
-                        </div>
-                      </td>
-                      <td>
-                        {{ doctor.department }}
-                      </td>
-                      <td>
-                        {{ doctor.phone }}
-                      </td>
+      </section>
+      <section class="section2" id="table-doctors">
+        <div class="card mt-3 p-2">
+          <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+              <div class="row g-2">
+                <div class="col-lg-2">
+                  <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
+                  <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إزالة الفلترة</button>
+                </div>
+                <div class="col-lg-4">
+                  <input
+                    type="text"
+                          class="form-control shadow-none"
+                          placeholder="أدخل إسم الطبيب أو رقم الهاتف"
+                          formControlName="Search"
+                        />
+                      </div>
+                      <!-- <div class="col-lg-4">
+                        <select class="form-select shadow-none" formControlName="Status">
+                          <option selected disabled value="">اختر حالة الطبيب</option>
+                          <option value="Active">متاح</option>
+                          <option value="Inactive">غير متاح</option>
+                        </select>
+                      </div> -->
                       
-                
-                
-                      <td>
-                          <span
-                            class="status-pill"
-                            [ngClass]="{
-                              'bg-success': doctor.status === 'متاح',
-                              'bg-secondary': doctor.status == 'غير متاح'
-                            }"
-                          >
-                            {{ doctor.status }}
-                          </span>
+                    </div>
+                  </form>
+                </div>
+            
+                <table class="table table-hover mt-4">
+                    <thead>
+                      <tr>
+                        <th>الإسم</th>
+                        <th>التخصص</th>
+                        <th>رقم الهاتف</th>
+                        <th>الحالة</th>
+                        <!-- <th>الإجراءات</th> -->
+                      </tr>
+                    </thead>
+                    <tbody *ngIf="doctors!.length > 0">
+                      <tr
+                        *ngFor="let doctor of doctors | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }"
+                        (click)="openDoctorModal(doctor.id)"
+                        data-bs-toggle="modal"
+                        data-bs-target="#doctorDetailsModal"
+                        style="cursor: pointer"
+                      >
+                        <td>
+                          <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <div class="avatar-circle">{{ doctor.fullName.charAt(0) }}</div>
+                            <span class="fw-bold">{{ doctor.fullName }}</span>
+                          </div>
+                        </td>
+                        <td>
+                          {{ doctor.department }}
+                        </td>
+                        <td>
+                          {{ doctor.phone }}
                         </td>
                         
+                  
+                  
+                        <td>
+                            <span
+                              class="status-pill"
+                              [ngClass]="{
+                                'bg-success': doctor.status === 'متاح',
+                                'bg-secondary': doctor.status == 'غير متاح'
+                              }"
+                            >
+                              {{ doctor.status }}
+                            </span>
+                          </td>
+                          
+                  
+                        <!-- <td>
+                          <button class="btn btn-outline-warning">
+                            <i class="fa-light fa-pen-to-square"></i>
+                          </button>
+                        </td> -->
+                      </tr>
+                    </tbody>
+                  
+                    <tbody *ngIf="doctors?.length === 0">
+                      <tr>
+                        <td colspan="5" class="text-center text-muted">لا توجد أطباء حتى الآن</td>
+                      </tr>
+                    </tbody>
+                </table>
                 
-                      <!-- <td>
-                        <button class="btn btn-outline-warning">
-                          <i class="fa-light fa-pen-to-square"></i>
-                        </button>
-                      </td> -->
-                    </tr>
-                  </tbody>
-                
-                  <tbody *ngIf="doctors?.length === 0">
-                    <tr>
-                      <td colspan="5" class="text-center text-muted">لا توجد أطباء حتى الآن</td>
-                    </tr>
-                  </tbody>
-              </table>
-              
-          
-              <div class="col-lg-12">
-                <div
-                  *ngIf="total > 16"
-                  class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
-                >
-                  <div class="my-pagination">
-                    <pagination-controls
-                      id="paginate"
-                      (pageChange)="onPageChange($event)"
-                      (pageBoundsCorrection)="onPageChange($event)"
-                      [maxSize]="16"
-                      [directionLinks]="true"
-                      [autoHide]="true"
-                      [responsive]="true"
-                      previousLabel=""
-                      nextLabel=""
-                      screenReaderPageLabel="page"
-                      screenReaderCurrentLabel="You're on page"
-                    >
-                    </pagination-controls>
+            
+                <div class="col-lg-12">
+                  <div
+                    *ngIf="total > 16"
+                    class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
+                  >
+                    <div class="my-pagination">
+                      <pagination-controls
+                        id="paginate"
+                        (pageChange)="onPageChange($event)"
+                        (pageBoundsCorrection)="onPageChange($event)"
+                        [maxSize]="16"
+                        [directionLinks]="true"
+                        [autoHide]="true"
+                        [responsive]="true"
+                        previousLabel=""
+                        nextLabel=""
+                        screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page"
+                      >
+                      </pagination-controls>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-    </section>
+      </section>
   </main>
   
   
