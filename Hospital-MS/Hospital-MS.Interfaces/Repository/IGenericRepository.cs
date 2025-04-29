@@ -13,5 +13,10 @@ namespace Hospital_MS.Interfaces.Repository
         Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
         void DeleteRange(IEnumerable<T> entities);
         Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+
+        // *** *** *** ***
+        Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default);
+        IQueryable<T> GetAllAsQueryable(CancellationToken cancellationToken = default);
     }
 }

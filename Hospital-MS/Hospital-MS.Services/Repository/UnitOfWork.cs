@@ -1,9 +1,9 @@
-﻿using Hospital_MS.Interfaces.Repository;
-using Hospital_MS.Reposatories._Data;
+﻿using Hospital_MS.Core._Data;
+using Hospital_MS.Interfaces.Repository;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Collections;
 
-namespace Hospital_MS.Reposatories
+namespace Hospital_MS.Services.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
