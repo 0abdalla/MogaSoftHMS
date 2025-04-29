@@ -1,4 +1,4 @@
-﻿using Hospital_MS.Core.Abstractions;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Enums;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Core.Errors
+namespace Hospital_MS.Services.Common
 {
     public class GenericErrors
     {
@@ -40,5 +40,8 @@ namespace Hospital_MS.Core.Errors
         public static Error SuccessLogin = new("تم تسجيل الدخول بنجاح", Status.Success);
 
         public static Error SuccessRegister = new("تم تسجيل مستخدم جديد بنجاح", Status.Success);
+
+
+        public static Error AlreadyExists = new("هذا العنصر موجود بالفعل", Status.Failed);
     }
 }

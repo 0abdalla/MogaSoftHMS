@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Reposatories._Data.Configurations
+namespace Hospital_MS.Core._Data.Configurations
 {
     public class PatientAttachmentConfiguration : IEntityTypeConfiguration<PatientAttachment>
     {

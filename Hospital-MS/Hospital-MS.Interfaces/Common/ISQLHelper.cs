@@ -13,5 +13,7 @@ namespace Hospital_MS.Interfaces.Common
         Task<DataTable> ExecuteDataTableAsync(string commandText, params SqlParameter[] Parameters);
         DataSet ExecuteDataset(string commandText, SqlParameter[] commandParameters);
         List<TElement> SQLQuery<TElement>(string commandText, params SqlParameter[] parameters);
+
+        Task<DataTable> ExecuteTextCommandAsync(string query, params SqlParameter[] parameters);
     }
 }

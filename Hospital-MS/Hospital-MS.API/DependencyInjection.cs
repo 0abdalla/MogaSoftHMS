@@ -1,14 +1,15 @@
-﻿using Hospital_MS.Core.Models;
+﻿using Hospital_MS.Core._Data;
+using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
-using Hospital_MS.Core.Services.Auth;
 using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
-using Hospital_MS.Reposatories;
-using Hospital_MS.Reposatories._Data;
 using Hospital_MS.Services.Auth;
 using Hospital_MS.Services.Common;
 using Hospital_MS.Services.HMS;
+using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ namespace Hospital_MS.API
             services.AddScoped<IRoomService, RoomService>();
             services.AddScoped<IBedService, BedService>();
             services.AddScoped<IPatientService, PatientService>();
-            services.AddScoped<IInsuranceService, InsuranceService>();
+            services.AddScoped<IInsuranceCompanyService, InsuranceCompanyService>();
             services.AddScoped<IPatientHistoryService, PatientHistoryService>();
             services.AddScoped<IPatientAttachmentService, PatientAttachmentService>();
             services.AddScoped<IFileService, FileService>();

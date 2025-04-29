@@ -1,107 +1,102 @@
-import { Component } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { InsuranceService } from '../../../../Services/HMS/insurance.service';
+import { InsuranceCompany } from '../../../../Models/HMS/insurance';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
-import { InsuranceCompany } from '../insurance-form/insurance-form.component';
-declare var html2pdf: any;
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-insurance-list',
   templateUrl: './insurance-list.component.html',
-  styleUrl: './insurance-list.component.css'
+  styleUrl: './insurance-list.component.css',
+  animations: [
+        trigger('fadeIn', [
+          transition(':enter', [
+            style({ opacity: 0 }),
+            animate('200ms ease-in', style({ opacity: 1 })),
+          ]),
+          transition(':leave', [
+            animate('200ms ease-out', style({ opacity: 0 })),
+          ])
+        ])
+      ],
 })
-export class InsuranceListComponent {
-  companies: InsuranceCompany[] = [
-    {
-      id: 1,
-      name: 'Y للتأمينات',
-      code: 'Y123',
-      contactNumber: '+966123456789',
-      email: 'contact@y-insurance.com',
-      address: 'الرياض، شارع العليا',
-      status: 'Active',
-      contractDetails: {
-        description: 'عقد تأمين صحي شامل',
-        startDate: new Date('2025-01-01'),
-        endDate: new Date('2025-12-31'),
-        categories: [
-          { name: 'Premium', coveragePercentage: 90 },
-          { name: 'Basic', coveragePercentage: 70 }
-        ]
-      },
-    },
-    {
-      id: 2,
-      name: 'Z للتأمين',
-      code: 'Z456',
-      contactNumber: '+966987654321',
-      email: 'info@z-insurance.com',
-      address: 'جدة، شارع الملك',
-      status: 'Inactive',
-      contractDetails: {
-        description: 'عقد تأمين محدود',
-        startDate: new Date('2024-06-01'),
-        endDate: new Date('2024-12-31'),
-        categories: [{ name: 'Standard', coveragePercentage: 80 }]
-      },
-    }
-  ];
-
-  filterForm: FormGroup;
-  filteredCompanies: InsuranceCompany[] = [...this.companies];
-  selectedCompany: InsuranceCompany | null = null;
-  showModal = false;
-
-  constructor(private fb: FormBuilder, private router: Router) {
+export class InsuranceListComponent implements OnInit {
+  filterForm!:FormGroup;
+  // 
+  insurnaces!:InsuranceCompany[];
+  // 
+  pageSize = 16;
+  currentPage = 1;
+  total = 0;
+  fixed = Math.ceil(this.total / this.pageSize);
+  // 
+  selectedInsurance!:any;
+  constructor(private fb : FormBuilder , private insuranceService : InsuranceService , private router: Router) {
     this.filterForm = this.fb.group({
-      name: [''],
-      status: ['']
+      Search: ['', Validators.required],
     });
+   }
+  ngOnInit(): void {
+    this.getAllInsurances();
+  }
+  applyFilters(){}
+  resetFilters(){}
+  // 
+  getAllInsurances(){
+    this.insuranceService.getAllInsurances().subscribe({
+      next: (res:any) => {
+        this.insurnaces = res.results;
+        console.log(this.insurnaces);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+  getInsuranceById(id:number){
+    this.insuranceService.getInsuranceById(id).subscribe({
+      next: (res:any) => {
+        this.selectedInsurance = res.results;
+        console.log(this.selectedInsurance);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
+  }
+  openInsuranceModal(id:number){
+    this.getInsuranceById(id);
   }
 
-  applyFilters(event: Event) {
-    event.preventDefault();
-    const filters = this.filterForm.value;
-    this.filteredCompanies = this.companies.filter(company => {
-      const matchesName = filters.name 
-        ? company.name.toLowerCase().includes(filters.name.toLowerCase()) 
-        : true;
-      const matchesStatus = filters.status 
-        ? company.status === filters.status 
-        : true;
-      return matchesName && matchesStatus;
-    });
+  editInsurance(companyId: number): void {
+    const modalElement = document.getElementById('insuranceModal');
+    if (modalElement) {
+      const modal = bootstrap.Modal.getInstance(modalElement);
+      if (modal) {
+        modal.hide();
+      }
+    }
+
+    this.router.navigate(['hms/insurance/add-insurance', companyId]);
   }
-
-  resetFilters() {
-    this.filterForm.reset({ name: '', status: '' });
-    this.filteredCompanies = [...this.companies];
-  }
-
-  showCompanyDetails(company: InsuranceCompany) {
-    this.selectedCompany = company;
-    this.showModal = true;
-    console.log('Company Details:', company);
-  }
-
-
-  editCompany(id: number) {
-    this.router.navigate(['/edit-insurance', id]);
+  // 
+  onPageChange(event: number) {
+    this.currentPage = event;
   }
   print(){
+    const printContents = document.getElementById('pdfContent')?.innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
     window.print();
+    document.body.innerHTML = originalContents;
   }
-
-  exportToPDF() {
-    const element = document.getElementById('pdfContent');
-  
-    const opt = {
-      margin:       0.5,
-      filename:     'insurance-details.pdf',
-      image:        { type: 'jpeg', quality: 1 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-    };
-  
-    html2pdf().set(opt).from(element).save();
+  exportToPDF(){
+    const printContents = document.getElementById('pdfContent')?.innerHTML;
+    const originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents;
   }
 }

@@ -1,8 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Patients;
-using Hospital_MS.Core.Helpers;
-using Hospital_MS.Core.Services;
-using Microsoft.AspNetCore.Authorization;
+using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_MS.API.Controllers

@@ -1,5 +1,5 @@
 ﻿using Hospital_MS.Core.Contracts.Beds;
-using Hospital_MS.Core.Services;
+using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

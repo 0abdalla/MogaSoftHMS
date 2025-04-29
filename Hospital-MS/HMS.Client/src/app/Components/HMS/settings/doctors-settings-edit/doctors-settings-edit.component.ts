@@ -156,24 +156,6 @@ export class DoctorsSettingsEditComponent implements OnInit {
 
     const formData = new FormData();
     const formValue: any = this.doctorForm.value;
-
-    // if (this.photoFile) {
-    //   formData.append('PhotoUrl', this.photoFile);
-    // }
-    // formData.append('FullName', formValue.FullName);
-    // formData.append('NationalId', formValue.NationalId);
-    // formData.append('DateOfBirth', formValue.DateOfBirth);
-    // formData.append('Gender', formValue.Gender);
-    // formData.append('MaritalStatus', formValue.MaritalStatus);
-    // formData.append('Phone', formValue.Phone);
-    // formData.append('Email', formValue.Email);
-    // formData.append('Address', formValue.Address);
-    // formData.append('DepartmentId', formValue.DepartmentId);
-    // formData.append('SpecialtyId', formValue.SpecialtyId);
-    // formData.append('Degree', formValue.Degree);
-    // formData.append('Status', formValue.Status);
-    // formData.append('StartDate', formValue.StartDate);
-    // formData.append('Notes', formValue.Notes);
     this.buildFormData(formData,formValue);
     // Append schedules
     formValue.DoctorSchedules.forEach((schedule: any, index: number) => {

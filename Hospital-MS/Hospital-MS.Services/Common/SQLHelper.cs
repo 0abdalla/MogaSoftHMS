@@ -169,6 +169,33 @@ namespace Hospital_MS.Services.Common
                 command.Parameters.Add(sqlParameter);
             }
         }
+
+
+        // *** *** *** *** 
+
+        public async Task<DataTable> ExecuteTextCommandAsync(string query, params SqlParameter[] parameters)
+        {
+            using var connection = new SqlConnection(ConnectionString);
+
+            using var command = new SqlCommand(query, connection);
+
+            command.CommandType = CommandType.Text;
+
+            command.CommandTimeout = 1200;
+
+            if (parameters != null && parameters.Length > 0)
+                command.Parameters.AddRange(parameters);
+
+            await connection.OpenAsync();
+
+            using var reader = await command.ExecuteReaderAsync();
+
+            var dt = new DataTable();
+
+            dt.Load(reader);
+
+            return dt;
+        }
     }
 }
 

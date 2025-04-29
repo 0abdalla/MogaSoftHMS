@@ -8,6 +8,11 @@
         Surgery,
         FollowUp,
         Staying,
-        Outpatient // عيادات خارجية
+        Outpatient, // عيادات خارجية  
+
+
+        IntensiveCare, // عناية مركزة  
+        Emergency, // طوارئ  
+        NeonatalCare, // حضانات الأطفال  
     }
 }

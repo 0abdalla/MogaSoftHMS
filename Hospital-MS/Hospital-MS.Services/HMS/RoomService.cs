@@ -1,10 +1,10 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Rooms;
 using Hospital_MS.Core.Enums;
-using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services;
+using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,6 +33,8 @@ namespace Hospital_MS.Services.HMS
                 {
                     Number = request.Number,
                     WardId = request.WardId,
+                    DailyPrice = request.DailyPrice
+                    
                 };
 
                 await _unitOfWork.Repository<Room>().AddAsync(room, cancellationToken);
@@ -41,9 +43,8 @@ namespace Hospital_MS.Services.HMS
 
                 return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
 
@@ -51,7 +52,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<List<RoomResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var rooms = await _unitOfWork.Repository<Room>().GetAll().Include(x => x.Ward).ToListAsync();
+            var rooms = await _unitOfWork.Repository<Room>().GetAll().Include(x => x.Ward).ToListAsync(cancellationToken);
 
             var response = rooms.Select(room => new RoomResponse
             {
@@ -60,7 +61,9 @@ namespace Hospital_MS.Services.HMS
                 Type = room.Type.ToString(),
                 Status = room.Status.ToString(),
                 WardId = room.WardId,
-                WardNumber = room.Ward.Number
+                WardNumber = room.Ward.Number,
+                DailyPrice = room.DailyPrice,
+                
 
             }).ToList();
 

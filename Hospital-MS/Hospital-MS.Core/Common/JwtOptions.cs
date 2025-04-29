@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Core.Services.Auth
+namespace Hospital_MS.Core.Common
 {
     public class JwtOptions
     {

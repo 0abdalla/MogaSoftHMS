@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Core.Helpers
+namespace Hospital_MS.Services.Common
 {
     public static class ArabicNormalizer
     {

@@ -5,17 +5,23 @@ import { InsuranceRoutingModule } from './insurance-routing.module';
 import { InsuranceListComponent } from './insurance-list/insurance-list.component';
 import { InsuranceFormComponent } from './insurance-form/insurance-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ToastModule } from 'primeng/toast';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { InsuranceEditComponent } from './insurance-edit/insurance-edit.component';
 
 
 @NgModule({
   declarations: [
     InsuranceListComponent,
-    InsuranceFormComponent
+    InsuranceFormComponent,
+    InsuranceEditComponent
   ],
   imports: [
     CommonModule,
     InsuranceRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ToastModule,
+    NgxPaginationModule
   ]
 })
 export class InsuranceModule { }

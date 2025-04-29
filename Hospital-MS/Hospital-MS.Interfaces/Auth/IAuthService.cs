@@ -1,5 +1,4 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Auth;
 using System;
 using System.Collections.Generic;
