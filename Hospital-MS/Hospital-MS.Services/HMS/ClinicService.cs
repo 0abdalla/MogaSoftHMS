@@ -1,11 +1,11 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Clinics;
 using Hospital_MS.Core.Enums;
-using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
+using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

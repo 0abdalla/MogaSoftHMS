@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Models;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Auth;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -6,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Hospital_MS.Core.Services.Auth
+namespace Hospital_MS.Services.Auth
 {
     public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
     {

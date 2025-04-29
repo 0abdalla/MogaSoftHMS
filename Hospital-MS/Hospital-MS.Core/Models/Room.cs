@@ -8,6 +8,8 @@ namespace Hospital_MS.Core.Models
         public int Number { get; set; } 
         public RoomType Type { get; set; }
         public RoomStatus Status { get; set; } = RoomStatus.Available;
+        public decimal DailyPrice { get; set; } = 0m;
+
 
         public int WardId { get; set; }
         public Ward Ward { get; set; } = default!;

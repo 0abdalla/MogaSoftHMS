@@ -1,6 +1,6 @@
 ﻿using Hospital_MS.Core.Contracts.Staff;
-using Hospital_MS.Core.Helpers;
 using Hospital_MS.Core.Services;
+using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -3,7 +3,7 @@ using Hospital_MS.Core.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Hospital_MS.Reposatories._Data.Configurations
+namespace Hospital_MS.Core._Data.Configurations
 {
     public class StaffConfiguration : IEntityTypeConfiguration<Staff>
     {

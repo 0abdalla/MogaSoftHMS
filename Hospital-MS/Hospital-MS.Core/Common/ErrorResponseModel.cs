@@ -1,5 +1,4 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Enums;
+﻿using Hospital_MS.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ namespace Hospital_MS.Core.Common
 {
     public class ErrorResponseModel<T>
     {
-        public bool? IsSuccess { get; set; }
+        public bool IsSuccess { get; set; }
         public string? Message { get; set; }
         public Status? ErrorCode { get; set; }
         public T? Results { get; set; }

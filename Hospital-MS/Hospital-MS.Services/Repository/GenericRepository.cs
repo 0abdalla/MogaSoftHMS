@@ -1,5 +1,5 @@
-﻿using Hospital_MS.Interfaces.Repository;
-using Hospital_MS.Reposatories._Data;
+﻿using Hospital_MS.Core._Data;
+using Hospital_MS.Interfaces.Repository;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Reposatories
+namespace Hospital_MS.Services.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
@@ -52,5 +52,18 @@ namespace Hospital_MS.Reposatories
         public async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken) => await _dbContext.Set<T>().AddRangeAsync(entities, cancellationToken);
 
         public async Task<bool> AnyAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default) => await _dbContext.Set<T>().AnyAsync(predicate, cancellationToken);
+
+
+
+        // *** *** *** ***
+        public async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken)
+                => await _dbContext.Set<T>().FindAsync([id], cancellationToken);
+
+        public async Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken)
+                => await _dbContext.Set<T>().AsNoTracking().ToListAsync(cancellationToken);
+
+        public IQueryable<T> GetAllAsQueryable(CancellationToken cancellationToken)
+                => _dbContext.Set<T>().AsQueryable();
+
     }
 }

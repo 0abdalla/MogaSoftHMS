@@ -1,13 +1,12 @@
-﻿using Hospital_MS.Core.Abstractions;
-using Hospital_MS.Core.Contracts.Patients;
-using Hospital_MS.Core.Errors;
+﻿using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services;
 using Microsoft.AspNetCore.Hosting;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Interfaces.Repository;
 using Microsoft.EntityFrameworkCore;
+using Hospital_MS.Interfaces.HMS;
+using Hospital_MS.Services.Common;
 
 namespace Hospital_MS.Services.HMS
 {

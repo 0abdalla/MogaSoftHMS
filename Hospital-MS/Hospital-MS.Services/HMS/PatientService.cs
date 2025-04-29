@@ -1,19 +1,14 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Enums;
-using Hospital_MS.Core.Errors;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -54,7 +49,7 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var patient = await _unitOfWork.Repository<Patient>().GetAll(i => i.Id == id).Include(i => i.InsuranceCompany).Include(i => i.InsuranceCategory)
-                .Include(x => x.CreatedBy).Include(x => x.UpdatedOn).FirstOrDefaultAsync();
+                .Include(x => x.CreatedBy).Include(x => x.UpdatedOn).FirstOrDefaultAsync(cancellationToken);
 
             if (patient is not { })
                 return ErrorResponseModel<PatientResponse>.Failure(GenericErrors.NotFound);
@@ -95,7 +90,7 @@ namespace Hospital_MS.Services.HMS
             catch (Exception)
             {
                 return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
-            }
+            } 
         }
 
         public async Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusRequest request, CancellationToken cancellationToken = default)
