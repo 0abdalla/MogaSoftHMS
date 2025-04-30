@@ -1,25 +1,29 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService) : IStaffService
+    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, ISQLHelper sQLHelper) : IStaffService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
+        private readonly ISQLHelper _sQLHelper = sQLHelper;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(CreateStaffRequest request, CancellationToken cancellationToken = default)
         {
@@ -98,6 +102,57 @@ namespace Hospital_MS.Services.HMS
             }
 
         }
+
+        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var Params = new SqlParameter[6];
+
+                var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
+
+                var FromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
+
+                var ToDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
+
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+
+                Params[1] = new SqlParameter("@Status", Status ?? (object)DBNull.Value);
+
+                Params[2] = new SqlParameter("@FromDate", FromDate ?? (object)DBNull.Value);
+
+                Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);
+
+                Params[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+
+                Params[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllStaff", Params);
+
+                int totalCount = 0;
+
+                if (dt.Rows.Count > 0)
+                {
+                    int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
+                }
+
+                //Covert Enm to Arabic 
+                foreach (DataRow row in dt.Rows)
+                {
+                    row.TryTranslateEnum<StaffType>("Type");
+                    row.TryTranslateEnum<Gender>("Gender");
+                    row.TryTranslateEnum<MaritalStatus>("MaritalStatus");
+                    row.TryTranslateEnum<StaffStatus>("Status");
+                }
+
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
         //
         //public async Task<ErrorResponseModel<StaffResponse>> GetAllAsync(CancellationToken cancellationToken = default)
         //{
@@ -133,7 +188,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<StaffResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var staff = await _unitOfWork.Repository<Staff>().GetAll(i => i.Id == id).Include(x => x.Clinic).Include(x => x.Department).Include(x => x.StaffAttachments).FirstOrDefaultAsync();
+            var staff = await _unitOfWork.Repository<Staff>().GetAll(i => i.Id == id).Include(x => x.Clinic).Include(x => x.Department).Include(x => x.StaffAttachments).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             if (staff is not { })
                 return ErrorResponseModel<StaffResponse>.Failure(GenericErrors.NotFound);
@@ -163,6 +218,28 @@ namespace Hospital_MS.Services.HMS
 
             return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess, response);
 
+        }
+
+        public async Task<PagedResponseModel<DataTable>> GetCountsAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var Params = new SqlParameter[4];
+                var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
+                var FromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
+                var ToDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[1] = new SqlParameter("@Status", Status ?? (object)DBNull.Value);
+                Params[2] = new SqlParameter("@FromDate", FromDate ?? (object)DBNull.Value);
+                Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetStaffTypeCountStatistics", Params);
+
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, 6, dt);
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
         }
 
         public async Task<ErrorResponseModel<string>> GetStaffCountsAsync(CancellationToken cancellationToken = default)

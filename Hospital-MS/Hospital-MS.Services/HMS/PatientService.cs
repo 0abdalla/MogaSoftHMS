@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
@@ -38,6 +39,13 @@ namespace Hospital_MS.Services.HMS
                     int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
                 }
 
+                //Covert Enm to Arabic 
+                foreach (DataRow row in dt.Rows)
+                {
+                    row.TryTranslateEnum<PatientStatus>("Status");
+                    row.TryTranslateEnum<Gender>("Gender");                    
+                }
+
                 return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
             }
             catch (Exception)
@@ -48,8 +56,13 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var patient = await _unitOfWork.Repository<Patient>().GetAll(i => i.Id == id).Include(i => i.InsuranceCompany).Include(i => i.InsuranceCategory)
-                .Include(x => x.CreatedBy).Include(x => x.UpdatedOn).FirstOrDefaultAsync(cancellationToken);
+            var patient = await _unitOfWork.Repository<Patient>()
+                .GetAll(i => i.Id == id)
+                .Include(i => i.InsuranceCompany)
+                .Include(i => i.InsuranceCategory)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (patient is not { })
                 return ErrorResponseModel<PatientResponse>.Failure(GenericErrors.NotFound);
@@ -60,7 +73,7 @@ namespace Hospital_MS.Services.HMS
                 PatientName = patient.FullName,
                 Address = patient.Address,
                 DateOfBirth = patient.DateOfBirth,
-                PatientStatus = patient.Status.ToString(),
+                PatientStatus = patient?.Status?.GetArabicValue(),
                 Phone = patient.Phone,
                 CreatedOn = patient.CreatedOn,
                 CreatedBy = $"{patient.CreatedBy?.FirstName} {patient.CreatedBy?.LastName}",
@@ -95,7 +108,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusRequest request, CancellationToken cancellationToken = default)
         {
-            var patient = await _unitOfWork.Repository<Patient>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
+            var patient = await _unitOfWork.Repository<Patient>().GetAll(i => i.Id == id).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             if (patient is not { })
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);

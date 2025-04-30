@@ -200,36 +200,22 @@ namespace Hospital_MS.Services.HMS
 
             if (request?.InsuranceCategories?.Count > 0)
             {
+                // Remove all existing categories
                 var existingCategories = insurance.Categories.ToList();
+                _unitOfWork.Repository<InsuranceCategory>().DeleteRange(existingCategories);
 
-                // Update or add new categories
+                // Add new categories
                 foreach (var categoryRequest in request.InsuranceCategories)
                 {
-                    var existingCategory = existingCategories.FirstOrDefault(c => c.Name == categoryRequest.Name);
-
-                    if (existingCategory != null)
+                    var newCategory = new InsuranceCategory
                     {
-                        existingCategory.Rate = categoryRequest.Rate;
-                    }
-                    else
-                    {
-                        var newCategory = new InsuranceCategory
-                        {
-                            Name = categoryRequest.Name,
-                            Rate = categoryRequest.Rate,
-                            InsuranceCompanyId = insurance.Id,
-                            IsActive = true
-                        };
-                        await _unitOfWork.Repository<InsuranceCategory>().AddAsync(newCategory, cancellationToken);
-                    }
+                        Name = categoryRequest.Name,
+                        Rate = categoryRequest.Rate,
+                        InsuranceCompanyId = insurance.Id,
+                        IsActive = true
+                    };
+                    await _unitOfWork.Repository<InsuranceCategory>().AddAsync(newCategory, cancellationToken);
                 }
-
-                // Remove categories not in the request
-                var categoryNames = request.InsuranceCategories.Select(c => c.Name).ToList();
-
-                var categoriesToRemove = existingCategories.Where(c => !categoryNames.Contains(c.Name)).ToList();
-
-                _unitOfWork.Repository<InsuranceCategory>().DeleteRange(categoriesToRemove);
             }
 
             _unitOfWork.Repository<InsuranceCompany>().Update(insurance);

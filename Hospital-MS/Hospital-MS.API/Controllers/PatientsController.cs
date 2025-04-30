@@ -17,7 +17,7 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpGet("counts")]
-        public async Task<IActionResult> GetAdmissionsCounts(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAdmissionsCounts([FromQuery]PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
             var count = await _patientService.GetCountsAsync(pagingFilter, cancellationToken);
             return Ok(count);
