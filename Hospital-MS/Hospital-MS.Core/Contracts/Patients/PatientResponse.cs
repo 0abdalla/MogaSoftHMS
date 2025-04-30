@@ -15,6 +15,7 @@ namespace Hospital_MS.Core.Contracts.Patients
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string PatientStatus { get; set; }
+        public string PatientGender { get; set; }
 
         // Audit Information
         public DateTime CreatedOn { get; set; }

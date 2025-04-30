@@ -14,6 +14,7 @@ namespace Hospital_MS.Core.Contracts.Admissions
         public string? PatientNationalId { get; set; }
         public string? PatientAddress { get; set; }
         public string PatientStatus { get; set; }
+        public string PatientGender { get; set; }
 
         public string? EmergencyPhone01 { get; set; } 
         public string? EmergencyContact01 { get; set; } 

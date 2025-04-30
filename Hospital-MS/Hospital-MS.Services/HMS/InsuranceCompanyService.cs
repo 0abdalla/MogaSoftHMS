@@ -181,7 +181,12 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, InsuranceRequest request, CancellationToken cancellationToken = default)
         {
-            var insurance = await _unitOfWork.Repository<InsuranceCompany>().GetByIdAsync(id, cancellationToken);
+            var insurance = await _unitOfWork.Repository<InsuranceCompany>()
+                .GetAll(x => x.Id == id)
+                .Include(x => x.Categories)
+                .Include(x=>x.CreatedBy)
+                .Include(x=>x.UpdatedBy)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (insurance is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -202,6 +207,7 @@ namespace Hospital_MS.Services.HMS
             {
                 // Remove all existing categories
                 var existingCategories = insurance.Categories.ToList();
+
                 _unitOfWork.Repository<InsuranceCategory>().DeleteRange(existingCategories);
 
                 // Add new categories

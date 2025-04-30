@@ -21,6 +21,9 @@ namespace Hospital_MS.Services.HMS
                 if (!Enum.TryParse<PatientStatus>(request.PatientStatus, true, out var patientStatus))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
 
+                if (!Enum.TryParse<Gender>(request.PatientGender, true, out var patientGender))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
+
                 var patient = new Patient
                 {
                     FullName = ArabicNormalizer.NormalizeArabic(request.PatientName),
@@ -36,6 +39,7 @@ namespace Hospital_MS.Services.HMS
                     Status = patientStatus,
                     NationalId = request.PatientNationalId,
                     InsuranceNumber = request.InsuranceNumber,
+                    Gender = patientGender
                 };
 
                 await _unitOfWork.Repository<Patient>().AddAsync(patient, cancellationToken);
