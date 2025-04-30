@@ -106,6 +106,8 @@ export class AppointmentListComponent implements OnInit {
           return patient;
         });
         this.total = data.totalCount;
+        console.log(this.patients);
+        
       },
       error: (err) => {
         console.log(err);
@@ -148,6 +150,9 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getCounts(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.patientServices = data.results;
+        console.log(this.patientServices);
+        console.log(data);
+        
       },
       error: (err) => {
         console.log(err);

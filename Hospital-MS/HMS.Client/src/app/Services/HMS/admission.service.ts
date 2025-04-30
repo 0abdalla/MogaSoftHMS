@@ -9,19 +9,26 @@ import { Observable } from 'rxjs';
 export class AdmissionService {
   baseUrl = environment.baseUrl
   constructor(private http : HttpClient) { }
-  getAddmision(page: number, size: number, search?: string, status?: string, fromDate?: string, toDate?: string): Observable<any> {
+  getAddmision(
+    page: number,
+    size: number,
+    search?: string,
+    status?: string,
+    fromDate?: string,
+    toDate?: string,
+    filterList: any[] = []
+  ): Observable<any> {
     let params = new HttpParams()
-      .set('PageSize', size)
-      .set('PageIndex', page);
+      .set('PageSize', size.toString())
+      .set('CurrentPage', page.toString());
+    if (search) params = params.set('SearchText', search); 
+    params = params.set('FilterList', JSON.stringify(filterList));
   
-    if (search) params = params.set('Search', search);
-    if (status) params = params.set('Status', status);
-    if (fromDate) params = params.set('FromDate', fromDate);
-    if (toDate) params = params.set('ToDate', toDate);
     return this.http.get<any>(`${this.baseUrl}/api/patients`, { params });
-  }  
-  getCounts(){
-    return this.http.get<any>(`${this.baseUrl}/api/patients/counts`)
+  }
+  getCounts(filterList: any[] = []): Observable<any> {
+    let params = new HttpParams().set('FilterList', JSON.stringify(filterList));
+    return this.http.get<any>(`${this.baseUrl}/api/patients/counts`, { params });
   }
   getAddmisionById(id : number): Observable<any> {
     return this.http.get<any>(this.baseUrl + '/api/Admissions/' + id)
@@ -37,18 +44,18 @@ export class AdmissionService {
   }
   // 
   getDepartments(){
-    return this.http.get(this.baseUrl + '/api/Departments')
+    return this.http.get<any>(`${this.baseUrl}/api/Departments`);
   }
   getWards(){
-    return this.http.get(this.baseUrl + '/api/Wards')
+    return this.http.get<any>(`${this.baseUrl}/api/Wards`);
   }
   getRooms(){
-    return this.http.get(this.baseUrl + '/api/Rooms')
+    return this.http.get<any>(`${this.baseUrl}/api/Rooms`);
   }
   getBeds(){
-    return this.http.get(this.baseUrl + '/api/Beds')
+    return this.http.get<any>(`${this.baseUrl}/api/Beds`);
   }
   deleteAdmision(id : number){
-    return this.http.delete(this.baseUrl + '/api/Admissions/' + id)
+    return this.http.delete<any>(this.baseUrl + '/Admissions/' + id);
   }
 }

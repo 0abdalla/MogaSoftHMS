@@ -9,7 +9,7 @@ export class StaffService {
   baseUrl = environment.baseUrl
   constructor(private http: HttpClient) { }
   getStaff(){
-    return this.http.get<any>(`${this.baseUrl}Staff`);
+    return this.http.get<any>(`${this.baseUrl}/api/Staff`);
   }
   getAllStaff(currentPage: number, pageSize: number, type: string, search: string){
     let params = new HttpParams()
@@ -19,10 +19,10 @@ export class StaffService {
         if (type) params = params.set('Type', type);
         if (search) params = params.set('Search', search);
 
-    return this.http.get<any>(`${this.baseUrl}Staff/all`, { params });
+    return this.http.get<any>(`${this.baseUrl}/api/Staff/all`, { params });
   }
   getCounts(){
-    return this.http.get<any>(`${this.baseUrl}Staff/counts`);
+    return this.http.get<any>(`${this.baseUrl}/api/Staff/counts`);
   }
   getStaffById(id: number){
     return this.http.get<any>(`${this.baseUrl}Staff/${id}`);
@@ -37,26 +37,25 @@ export class StaffService {
     return this.http.delete<any>(`${this.baseUrl}Staff/${id}`);
   }
   // ===========================================================================
-  getDoctors(currentPage: number, pageSize: number, type: string, search: string){
+  getDoctors(currentPage: number, pageSize: number, status : string){
     let params = new HttpParams()
           .set('PageSize', pageSize)
           .set('PageIndex', currentPage);
       
-        if (type) params = params.set('Type', type);
-        if (search) params = params.set('Search', search);
+        if (status) params = params.set('Status', status);
 
-    return this.http.get<any>(`${this.baseUrl}Doctors/all`, { params });
+    return this.http.get<any>(`${this.baseUrl}/api/Doctors/all`, { params });
   }
   getDoctorById(id:any){
-    return this.http.get<any>(`${this.baseUrl}Doctors/${id}`);
+    return this.http.get<any>(`${this.baseUrl}/api/Doctors/${id}`);
   }
   postDoctor(doctor: any){
-    return this.http.post<any>(`${this.baseUrl}Doctors`, doctor);
+    return this.http.post<any>(`${this.baseUrl}/api/Doctors`, doctor);
   }
   putDoctor(doctor: any, id: number){
-    return this.http.put<any>(`${this.baseUrl}Doctors/${id}`, doctor);
+    return this.http.put<any>(`${this.baseUrl}/api/Doctors/${id}`, doctor);
   }
   getDoctorsCount(){
-    return this.http.get<any>(`${this.baseUrl}Doctors/counts`);
+    return this.http.get<any>(`${this.baseUrl}/api/Doctors/counts`);
   }
 }
