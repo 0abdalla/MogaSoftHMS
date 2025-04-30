@@ -181,7 +181,12 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, InsuranceRequest request, CancellationToken cancellationToken = default)
         {
-            var insurance = await _unitOfWork.Repository<InsuranceCompany>().GetByIdAsync(id, cancellationToken);
+            var insurance = await _unitOfWork.Repository<InsuranceCompany>()
+                .GetAll(x => x.Id == id)
+                .Include(x => x.Categories)
+                .Include(x=>x.CreatedBy)
+                .Include(x=>x.UpdatedBy)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (insurance is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -200,36 +205,23 @@ namespace Hospital_MS.Services.HMS
 
             if (request?.InsuranceCategories?.Count > 0)
             {
+                // Remove all existing categories
                 var existingCategories = insurance.Categories.ToList();
 
-                // Update or add new categories
+                _unitOfWork.Repository<InsuranceCategory>().DeleteRange(existingCategories);
+
+                // Add new categories
                 foreach (var categoryRequest in request.InsuranceCategories)
                 {
-                    var existingCategory = existingCategories.FirstOrDefault(c => c.Name == categoryRequest.Name);
-
-                    if (existingCategory != null)
+                    var newCategory = new InsuranceCategory
                     {
-                        existingCategory.Rate = categoryRequest.Rate;
-                    }
-                    else
-                    {
-                        var newCategory = new InsuranceCategory
-                        {
-                            Name = categoryRequest.Name,
-                            Rate = categoryRequest.Rate,
-                            InsuranceCompanyId = insurance.Id,
-                            IsActive = true
-                        };
-                        await _unitOfWork.Repository<InsuranceCategory>().AddAsync(newCategory, cancellationToken);
-                    }
+                        Name = categoryRequest.Name,
+                        Rate = categoryRequest.Rate,
+                        InsuranceCompanyId = insurance.Id,
+                        IsActive = true
+                    };
+                    await _unitOfWork.Repository<InsuranceCategory>().AddAsync(newCategory, cancellationToken);
                 }
-
-                // Remove categories not in the request
-                var categoryNames = request.InsuranceCategories.Select(c => c.Name).ToList();
-
-                var categoriesToRemove = existingCategories.Where(c => !categoryNames.Contains(c.Name)).ToList();
-
-                _unitOfWork.Repository<InsuranceCategory>().DeleteRange(categoriesToRemove);
             }
 
             _unitOfWork.Repository<InsuranceCompany>().Update(insurance);

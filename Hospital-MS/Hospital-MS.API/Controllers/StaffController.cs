@@ -1,6 +1,8 @@
-﻿using Hospital_MS.Core.Contracts.Staff;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.HMS;
+using Hospital_MS.Services.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,6 +47,20 @@ namespace Hospital_MS.API.Controllers
         {
             var result = await _staffService.GetByIdAsync(id, cancellationToken);
             return Ok(result);
+        }
+
+        [HttpGet("")]
+        public async Task<IActionResult> GetAllStaff([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        {
+            var result = await _staffService.GetAllAsync(pagingFilter, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("counts")]
+        public async Task<IActionResult> GetStaffCounts([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        {
+            var count = await _staffService.GetCountsAsync(pagingFilter, cancellationToken);
+            return Ok(count);
         }
     }
 }
