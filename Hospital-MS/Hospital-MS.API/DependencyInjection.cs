@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core._Data;
+﻿using Hangfire;
+using Hospital_MS.Core._Data;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
@@ -12,6 +13,7 @@ using Hospital_MS.Services.HMS;
 using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -23,12 +25,19 @@ namespace Hospital_MS.API
     {
         public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+                options.JsonSerializerOptions.WriteIndented = true;
+            }).AddNewtonsoftJson();
+
 
             //var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>();
 
             services.AddCors(options => options.AddDefaultPolicy(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services.AddAuthConfig(configuration);
+
+            services.AddBackgroundJobsConfig(configuration);
 
             var connectionString = configuration.GetConnectionString("DefaultConnection") ??
             throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -60,6 +69,33 @@ namespace Hospital_MS.API
             return services;
 
         }
+
+        private static IServiceCollection AddBackgroundJobsConfig(this IServiceCollection services, IConfiguration configuration)
+        {
+            //RecurringJob.AddOrUpdate<IAppointmentService>(
+            //    recurringJobId: "ProcessBookingsDailyAtMidnight",
+            //    methodCall: service => service.UpdateAppointmentsToCompletedAsync(),
+            //    cronExpression: Cron.Daily(),
+            //    options: new RecurringJobOptions
+            //    {
+            //        TimeZone = TimeZoneInfo.Local,
+            //        // QueueName = "default"
+            //    }
+            //);
+
+
+            services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+
+            return services;
+        }
+
         private static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddSingleton<IJwtProvider, JwtProvider>();
@@ -102,6 +138,8 @@ namespace Hospital_MS.API
                 options.Password.RequiredLength = 8;
                 options.User.RequireUniqueEmail = true;
             });
+
+
 
             return services;
         }

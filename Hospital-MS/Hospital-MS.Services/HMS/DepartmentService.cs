@@ -37,13 +37,13 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<List<DepartmentResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var departments = await _unitOfWork.Repository<Department>().GetAll().ToListAsync();
+            var departments = await _unitOfWork.Repository<Department>().GetAll().ToListAsync(cancellationToken: cancellationToken);
 
             var response = departments.Select(d => new DepartmentResponse
             {
                 Id = d.Id,
                 Name = d.Name,
-
+                
             }).ToList();
 
             return ErrorResponseModel<List<DepartmentResponse>>.Success(GenericErrors.GetSuccess, response);

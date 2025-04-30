@@ -9,6 +9,7 @@ import { AppointmentListComponent } from './appointment-list/appointment-list.co
 import { AppointmentDetailComponent } from './appointment-detail/appointment-detail.component';
 import { AppointmentFormComponent } from './appointment-form/appointment-form.component';
 import { AppointmetSettingsComponent } from './appointmet-settings/appointmet-settings.component';
+import { MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,6 @@ import { AppointmetSettingsComponent } from './appointmet-settings/appointmet-se
     ReactiveFormsModule,
     NgxPaginationModule,
     ToastModule
-  ]
+  ],
 })
 export class AppointmentsModule { }

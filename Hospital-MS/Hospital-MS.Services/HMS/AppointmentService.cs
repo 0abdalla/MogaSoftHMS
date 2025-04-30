@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
 using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
@@ -85,6 +86,13 @@ namespace Hospital_MS.Services.HMS
                     int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
                 }
 
+                //Covert Enm to Arabic 
+                foreach (DataRow row in dt.Rows)
+                {
+                    row.TryTranslateEnum<AppointmentStatus>("Status");
+                    row.TryTranslateEnum<AppointmentType>("Type");
+                }
+
                 return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
             }
             catch (Exception)
@@ -109,8 +117,8 @@ namespace Hospital_MS.Services.HMS
                 DoctorName = appointment?.Doctor?.FullName,
                 AppointmentDate = appointment.AppointmentDateTime,
                 PaymentMethod = appointment.PaymentMethod,
-                Status = appointment.Status.ToString(),
-                Type = appointment.Type.ToString(),
+                Status = appointment.Status.GetArabicValue(),
+                Type = appointment.Type.GetArabicValue(),
                 DoctorId = appointment.DoctorId,
                 PatientId = appointment.PatientId,
                 CreatedOn = appointment.CreatedOn,
@@ -146,10 +154,24 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
+        public async Task UpdateAppointmentsToCompletedAsync()
+        {
+            var appointments = await _unitOfWork.Repository<Appointment>().GetAll()
+            .Where(b => b.Status != AppointmentStatus.Rejected && b.Status != AppointmentStatus.Completed)
+            .ToListAsync();
+
+            foreach (var appointment in appointments)
+            {
+                appointment.Status = AppointmentStatus.Completed;
+            }
+
+            await _unitOfWork.CompleteAsync();
+        }
+
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, UpdateAppointmentRequest request, CancellationToken cancellationToken = default)
         {
 
-            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
+            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             if (appointment == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -172,7 +194,7 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusInEmergencyRequest request, CancellationToken cancellationToken = default)
         {
-            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.Patient).Include(x => x.UpdatedBy).FirstOrDefaultAsync();
+            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.Patient).Include(x => x.UpdatedBy).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             if (appointment is not { })
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);

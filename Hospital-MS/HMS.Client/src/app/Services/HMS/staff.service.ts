@@ -25,25 +25,24 @@ export class StaffService {
     return this.http.get<any>(`${this.baseUrl}/api/Staff/counts`);
   }
   getStaffById(id: number){
-    return this.http.get<any>(`${this.baseUrl}/api/Staff/${id}`);
+    return this.http.get<any>(`${this.baseUrl}Staff/${id}`);
   }
   addStaff(staff: any){
-    return this.http.post<any>(`${this.baseUrl}/api/Staff`, staff);
+    return this.http.post<any>(`${this.baseUrl}Staff`, staff);
   }
   updateStaff(staff: any){
-    return this.http.put<any>(`${this.baseUrl}/api/Staff`, staff);
+    return this.http.put<any>(`${this.baseUrl}Staff`, staff);
   }
   deleteStaff(id: number){
-    return this.http.delete<any>(`${this.baseUrl}/api/Staff/${id}`);
+    return this.http.delete<any>(`${this.baseUrl}Staff/${id}`);
   }
   // ===========================================================================
-  getDoctors(currentPage: number, pageSize: number, type: string, search: string){
+  getDoctors(currentPage: number, pageSize: number, status : string){
     let params = new HttpParams()
           .set('PageSize', pageSize)
           .set('PageIndex', currentPage);
       
-        if (type) params = params.set('Type', type);
-        if (search) params = params.set('Search', search);
+        if (status) params = params.set('Status', status);
 
     return this.http.get<any>(`${this.baseUrl}/api/Doctors/all`, { params });
   }

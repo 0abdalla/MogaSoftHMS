@@ -4,14 +4,14 @@
       <p-toast position="top-left"></p-toast>
       <h4>👤بيانات المريض</h4>
       <div class="row mb-3">
-        <div class="col-lg-4">
+        <div class="col-lg-3">
           <label for="patientName" class="form-label">اسم المريض</label>
           <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName" />
           <div *ngIf="patientForm.get('patientName')?.invalid && patientForm.get('patientName')?.touched" class="text-danger">
             اسم المريض مطلوب
           </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
           <label for="patientNationalId" class="form-label">الرقم القومي</label>
           <input type="text" id="patientNationalId" class="form-control shadow-none" placeholder="أدخل الرقم القومي" formControlName="patientNationalId" />
           <div *ngIf="patientForm.get('patientNationalId')?.invalid && patientForm.get('patientNationalId')?.touched" class="text-danger">
@@ -19,11 +19,22 @@
             <ng-container *ngIf="patientForm.get('patientNationalId')?.errors?.['pattern']">الرقم القومي يجب أن يكون 14 رقمًا</ng-container>
           </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-3">
           <label for="patientBirthDate" class="form-label">تاريخ الميلاد</label>
           <input type="date" id="patientBirthDate" class="form-control shadow-none" formControlName="patientBirthDate" />
           <div *ngIf="patientForm.get('patientBirthDate')?.invalid && patientForm.get('patientBirthDate')?.touched" class="text-danger">
             تاريخ الميلاد مطلوب
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <label for="patientGender" class="form-label">النوع</label>
+          <select id="patientGender" class="form-select shadow-none" formControlName="patientGender">
+            <option selected disabled value="">اختر النوع</option>
+            <option value="Male">ذكر</option>
+            <option value="Female">أنثى</option>
+          </select>
+          <div *ngIf="patientForm.get('patientGender')?.invalid && patientForm.get('patientGender')?.touched" class="text-danger">
+            النوع مطلوب
           </div>
         </div>
         <div class="col-lg-4">
@@ -114,8 +125,8 @@
             رقم السرير مطلوب
           </div>
         </div>
-        <div class="col-lg-12 text-center mt-3">
-          <h5>تكلفة الإقامة باليوم : <span> 60 جنيه</span></h5>
+        <div class="col-lg-12 text-center mt-3" *ngIf="selectedDailyPrice !== null">
+          <h5>تكلفة الإقامة باليوم : <span>{{ selectedDailyPrice !== null ? selectedDailyPrice + ' جنيه' : 'غير محدد' }}</span></h5>
         </div>
       </div>
     
@@ -189,8 +200,7 @@
           <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
           <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
             <option selected disabled value="">اختر شركة التأمين</option>
-            <option value="شركة 1">شركة 1</option>
-            <option value="شركة 2">شركة 2</option>
+            <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{insuranceCompany.name}}</option>
           </select>
           <div *ngIf="patientForm.get('insuranceCompanyId')?.invalid && patientForm.get('insuranceCompanyId')?.touched" class="text-danger">
             شركة التأمين مطلوبة
@@ -200,8 +210,7 @@
           <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
           <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
             <option selected disabled value="">اختر فئة التأمين</option>
-            <option value="فئة 1">فئة 1</option>
-            <option value="فئة 2">فئة 2</option>
+            <option *ngFor="let insuranceCategory of insuranceCategories" [value]="insuranceCategory.id">{{insuranceCategory.name}}</option>
           </select>
           <div *ngIf="patientForm.get('insuranceCategoryId')?.invalid && patientForm.get('insuranceCategoryId')?.touched" class="text-danger">
             فئة التأمين مطلوبة

@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { InsuranceCompany } from '../../Models/HMS/insurance';
 import { Observable } from 'rxjs';
+import { ErrorResponseModel } from '../../Models/Generics/ErrorResponseModel';
 
 @Injectable({
   providedIn: 'root'
@@ -10,8 +11,8 @@ import { Observable } from 'rxjs';
 export class InsuranceService {
   baseUrl = environment.baseUrl;
   constructor(private http: HttpClient) { }
-  getAllInsurances():Observable<InsuranceCompany[]> {
-    return this.http.get<InsuranceCompany[]>(`${this.baseUrl}/api/Insurances/company`);
+  getAllInsurances():Observable<ErrorResponseModel<InsuranceCompany[]>> {
+    return this.http.get<ErrorResponseModel<InsuranceCompany[]>>(`${this.baseUrl}/api/Insurances/company`);
   }
   getInsuranceById(id:number):Observable<InsuranceCompany> {
     return this.http.get<InsuranceCompany>(`${this.baseUrl}/api/Insurances/company/${id}`);

@@ -24,24 +24,24 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 export class AppointmentFormComponent implements OnInit {
   reservationForm: FormGroup;
   // 
-  clinics!:any;
+  clinics!: any;
   filteredClinics: any[] = [];
   // 
-  doctors!:any;
+  doctors!: any;
   filteredDoctors: any[] = [];
   // 
   radiologyTypes: string[] = ['أشعة سينية', 'أشعة مقطعية', 'رنين مغناطيسي', 'موجات صوتية'];
   // 
   showReceipt: boolean = false;
   submittedData: any = {};
-  constructor(private fb: FormBuilder , private appointmentService: AppointmentService , private staffService: StaffService , private messageService: MessageService) {
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', Validators.required],
       appointmentType: ['', Validators.required],
       clinicId: [{ value: '', disabled: true }, Validators.required],
       doctorId: [{ value: '', disabled: true }],
-      radiologyType:[{ value: '', disabled: true }],
+      radiologyType: [{ value: '', disabled: true }],
       appointmentDate: ['', Validators.required],
       insuranceCompanyId: [null],
       insuranceCategoryId: [null],
@@ -52,9 +52,9 @@ export class AppointmentFormComponent implements OnInit {
     });
     this.reservationForm.get('appointmentType')?.valueChanges.subscribe((selectedType) => {
       this.filteredClinics = this.clinics.filter((clinic: any) => clinic.type === selectedType);
-    
+
       const clinicControl = this.reservationForm.get('clinicId');
-    
+
       if (selectedType) {
         clinicControl?.enable();
       } else {
@@ -63,7 +63,7 @@ export class AppointmentFormComponent implements OnInit {
     });
     this.reservationForm.get('clinicId')?.valueChanges.subscribe((clinicId) => {
       const doctorControl = this.reservationForm.get('doctorId');
-    
+
       if (clinicId) {
         this.filteredDoctors = this.doctors.filter((doc: any) => doc.clinicId === +clinicId);
         doctorControl?.enable();
@@ -75,7 +75,7 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getClinics();    
+    this.getClinics();
     this.getStaff();
   }
   onReferredChange(event: Event) {
@@ -88,11 +88,14 @@ export class AppointmentFormComponent implements OnInit {
   onSubmit() {
     this.appointmentService.createAppointment(this.reservationForm.value).subscribe({
       next: (response) => {
-        console.log('Appointment created successfully', response);
-        this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
-        this.submittedData = { ...this.reservationForm.value };
-        this.showReceipt = true;
-        this.reservationForm.reset();
+        if (response.isSuccess) {
+          console.log('Appointment created successfully', response);
+          this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
+          this.submittedData = { ...this.reservationForm.value };
+          this.showReceipt = true;
+          this.reservationForm.reset();
+        } else
+          this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
       },
       error: (error) => {
         console.error('Error creating appointment', error);
@@ -101,13 +104,13 @@ export class AppointmentFormComponent implements OnInit {
       }
     });
   }
-  
+
   getClinics() {
     this.appointmentService.getClinics().subscribe({
       next: (data) => {
         this.clinics = data.results;
         this.filteredClinics = this.clinics;
-        
+
         console.log(this.clinics);
       },
       error: (err) => {
@@ -115,7 +118,7 @@ export class AppointmentFormComponent implements OnInit {
       }
     });
   }
-  getStaff(){
+  getStaff() {
     this.staffService.getStaff().subscribe({
       next: (data) => {
         this.doctors = data.results.filter((staff: any) => staff.type === 'Doctor' && staff.status === 'Active');

@@ -44,7 +44,7 @@ export class DoctorsListComponent implements OnInit {
   }
   getDoctors(){
     const { Search, Status } = this.filterForm.value;
-    this.doctorService.getDoctors(this.currentPage, this.pageSize, Status, Search).subscribe({
+    this.doctorService.getDoctors(this.currentPage, this.pageSize, Status).subscribe({
       next:(res)=>{
         this.doctors = res.results.map((doctor:any) => {
           if (doctor.status === 'Active') {
@@ -82,11 +82,11 @@ export class DoctorsListComponent implements OnInit {
   getDoctorById(id: number) {
     this.doctorService.getDoctorById(id).subscribe(res => {
       this.selectedDoctor = {
-        ...res,
-        gender: this.translateGender(res.gender),
-        maritalStatus: this.translateMaritalStatus(res.maritalStatus),
-        degree: this.translateDegree(res.degree),
-        doctorSchedules: res.doctorSchedules?.map((schedule: any) => ({
+        ...res.results,
+        gender: this.translateGender(res.results.gender),
+        maritalStatus: this.translateMaritalStatus(res.results.maritalStatus),
+        degree: this.translateDegree(res.results.degree),
+        doctorSchedules: res.results.doctorSchedules?.map((schedule: any) => ({
           ...schedule,
           weekDay: this.translateWeekDay(schedule.weekDay)
         }))

@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Doctors;
 using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Common;
@@ -106,7 +107,10 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<List<AllDoctorsResponse>>> GetAllAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default)
         {
-            var doctors = await _unitOfWork.Repository<Doctor>().GetAll().ToListAsync(cancellationToken: cancellationToken);
+            var doctors = await _unitOfWork.Repository<Doctor>()
+                .GetAll()
+                .Include(x => x.Department)
+                .ToListAsync(cancellationToken);
 
             var response = doctors.Select(doc => new AllDoctorsResponse
             {
@@ -114,7 +118,9 @@ namespace Hospital_MS.Services.HMS
                 FullName = doc.FullName,
                 Phone = doc.Phone,
                 Department = doc?.Department?.Name,
-                Status = doc.Status.ToString()
+                Status = doc.Status.ToString(),
+                DepartmentId = doc.DepartmentId,
+                
 
             }).ToList();
 
@@ -123,7 +129,12 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAll().FirstOrDefaultAsync();
+            var doctor = await _unitOfWork.Repository<Doctor>().GetAll()
+                .Include(x => x.Department)
+                .Include(x => x.Specialty)
+                .Include(x => x.Schedules)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy).FirstOrDefaultAsync(cancellationToken);
 
             if (doctor is null)
                 return ErrorResponseModel<DoctorResponse>.Failure(GenericErrors.NotFound);
@@ -147,8 +158,8 @@ namespace Hospital_MS.Services.HMS
                 StartDate = doctor.StartDate,
                 Degree = doctor.Degree,
                 Notes = doctor.Notes,
-                Status = doctor.Status.ToString(),
-                MaritalStatus = doctor.MaritalStatus.ToString(),
+                Status = doctor.Status.GetArabicValue(),
+                MaritalStatus = doctor.MaritalStatus.GetArabicValue(),
 
                 DoctorSchedules = [.. doctor.Schedules.Select(schedule => new DoctorScheduleResponse
                 {

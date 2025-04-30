@@ -1,18 +1,37 @@
-﻿namespace Hospital_MS.Core.Enums
+﻿using System.Runtime.Serialization;
+
+namespace Hospital_MS.Core.Enums
 {
     public enum PatientStatus
     {
+        [EnumMember(Value = "أرشيف")]
         Archived,
+
+        [EnumMember(Value = "معالج")]
         Treated,
+
+        [EnumMember(Value = "حالة حرجة")]
         CriticalCondition,
+
+        [EnumMember(Value = "جراحة")]
         Surgery,
+
+        [EnumMember(Value = "متابعة")]
         FollowUp,
+
+        [EnumMember(Value = "إقامة")]
         Staying,
-        Outpatient, // عيادات خارجية  
 
+        [EnumMember(Value = "عيادات خارجية")]
+        Outpatient,
 
-        IntensiveCare, // عناية مركزة  
-        Emergency, // طوارئ  
-        NeonatalCare, // حضانات الأطفال  
+        [EnumMember(Value = "عناية مركزة")]
+        IntensiveCare,
+
+        [EnumMember(Value = "طوارئ")]
+        Emergency,
+
+        [EnumMember(Value = "حضانات الأطفال")]
+        NeonatalCare,
     }
 }

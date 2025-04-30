@@ -4,6 +4,9 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { MessageService } from 'primeng/api';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
 import { Patients } from '../../../../Models/HMS/patient';
+import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
+import { SharedService } from '../../../../Services/shared.service';
 declare var html2pdf: any;
 
 @Component({
@@ -23,27 +26,31 @@ declare var html2pdf: any;
   ],
 })
 export class AppointmentListComponent implements OnInit {
-  patients:Patients[] = [];
+  pagingFilterModel: PagingFilterModel = {
+    searchText: '',
+    currentPage: 1,
+    pageSize: 16,
+    filterList: []
+  };
+  pagedResponseModel: PagedResponseModel<any> = {};
+  patients: Patients[] = [];
   patientServices: any[] = [];
   filterForm!: FormGroup;
-  updateEmergencyForm!:FormGroup
-  // 
-  pageSize = 16;
-  currentPage = 1;
+  updateEmergencyForm!: FormGroup
   total = 0;
-  fixed = Math.ceil(this.total / this.pageSize);
   // 
   selectedAppointment: any;
   // 
-  clinics!:any;
-  constructor(private appointmentService: AppointmentService , private fb : FormBuilder , private messageService : MessageService) {}
+  clinics!: any;
+  constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService,
+    private sharedService: SharedService) { }
   ngOnInit() {
     this.filterForm = this.fb.group({
       Type: [''],
       Search: ['']
     });
     this.updateEmergencyForm = this.fb.group({
-      newStatus: ['' , Validators.required],
+      newStatus: ['', Validators.required],
       notes: ['']
     });
     this.getPatients();
@@ -56,26 +63,26 @@ export class AppointmentListComponent implements OnInit {
   print() {
     window.print();
   }
-  
+
   exportToPDF() {
     const element = document.getElementById('pdfContent');
-  
+
     const opt = {
-      margin:       0.5,
-      filename:     'booking-details.pdf',
-      image:        { type: 'jpeg', quality: 1 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      margin: 0.5,
+      filename: 'booking-details.pdf',
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-  
+
     html2pdf().set(opt).from(element).save();
   }
   // ==================================================================
   getPatients() {
-    const { Search, Type } = this.filterForm.value;
-    this.appointmentService.getAllAppointments(this.currentPage, this.pageSize, Type, Search).subscribe({
+    this.appointmentService.getAllAppointments(this.pagingFilterModel).subscribe({
       next: (data) => {
-        this.patients = data.data.map((patient:Patients) => {
+        debugger;
+        this.patients = data.results.map((patient: Patients) => {
           switch (patient.type) {
             case 'Emergency':
               patient.type = 'طوارئ';
@@ -98,11 +105,9 @@ export class AppointmentListComponent implements OnInit {
           }
           return patient;
         });
-        this.pageSize = data.pageSize;
-        this.currentPage = data.pageIndex;
-        this.total = data.count;
-        this.fixed = Math.ceil(this.total / this.pageSize);
-        console.log('data', data);
+        this.total = data.totalCount;
+        console.log(this.patients);
+        
       },
       error: (err) => {
         console.log(err);
@@ -111,42 +116,43 @@ export class AppointmentListComponent implements OnInit {
   }
 
   applyFilters() {
-    this.currentPage = 1;
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', this.filterForm.value.Type);
+    this.pagingFilterModel.searchText = this.filterForm.value.Search;
     this.getPatients();
   }
 
   resetFilters() {
     this.filterForm.reset();
-    this.currentPage = 1;
+    this.filterForm.patchValue({ Type: '' });
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = [];
+    this.pagingFilterModel.searchText = '';
     this.getPatients();
   }
 
   onPageChange(page: number) {
-    this.currentPage = page;
+    this.pagingFilterModel.currentPage = page;
     this.getPatients();
   }
   openAppointmentModal(id: number) {
     this.appointmentService.getAppointmentById(id).subscribe({
       next: (data) => {
-        this.selectedAppointment = data;
+        this.selectedAppointment = data.results;
         console.log(this.selectedAppointment);
       },
       error: (err) => {
         console.error('Failed to fetch appointment', err);
       }
     });
-  } 
-  getCounts(){
-    this.appointmentService.getCounts().subscribe({
+  }
+  getCounts() {
+    this.appointmentService.getCounts(this.pagingFilterModel).subscribe({
       next: (data) => {
-        this.patientServices = [
-          { name: 'كشف', value: 'General', count: data.generalCount, color: 'linear-gradient(237.82deg, #1E90FF 30.69%, #A3D4FF 105.5%)', back: '#1E90FF' },
-          { name: 'استشارة', value: 'Consultation', count: data.consultationCount, color: 'linear-gradient(236.62deg, #FFA500 30.14%, #FFDCA3 83.62%)', back: '#FFA500' },
-          { name: 'عمليات', value: 'Surgery', count: data.surgeryCount, color: 'linear-gradient(227.58deg, #8B0000 26.13%, #FFB6B6 115.78%)', back: '#8B0000' },
-          { name: 'تحاليل', value: 'Screening', count: data.screeningCount, color: 'linear-gradient(248.13deg, #FF6347 35.68%, #FFAAA5 99.61%)', back: '#FF6347' },
-          { name: 'أشعة', value: 'Radiology', count: data.radiologyCount, color: 'linear-gradient(236.62deg, #20B2AA 30.14%, #A3E4E0 83.62%)', back: '#20B2AA' },
-          { name: 'طوارئ', value: 'Emergency', count: data.emergencyCount, color: 'linear-gradient(236.62deg, #FF0000 30.14%, #FF9999 83.62%)', back: '#FF0000' },
-        ];
+        this.patientServices = data.results;
+        console.log(this.patientServices);
+        console.log(data);
+        
       },
       error: (err) => {
         console.log(err);
@@ -155,18 +161,22 @@ export class AppointmentListComponent implements OnInit {
   }
   onSubmit() {
     if (this.updateEmergencyForm.invalid || !this.selectedAppointment) return;
-  
+
     const id = this.selectedAppointment.id;
-  
+
     this.appointmentService.updateEmergency(id, this.updateEmergencyForm).subscribe({
       next: (updatedPatient) => {
-        console.log('تم التحديث بنجاح:', updatedPatient);
-        this.messageService.add({ severity: 'success', summary: 'تم التحديث', detail: 'تم التحديث بنجاح' });
-        this.getPatients();
-        this.updateEmergencyForm.reset();
+        if (updatedPatient.isSuccess) {
+          this.messageService.add({ severity: 'success', summary: 'تم التحديث', detail: 'تم التحديث بنجاح' });
+          this.getPatients();
+          this.getCounts();
+          this.updateEmergencyForm.reset();
+        } else
+        this.messageService.add({ severity: 'error', summary: 'فشل التحديث', detail: 'لا يمكن تحديث إلا صاحب الخدمة الطبية طوارئ' });
+
+        this.sharedService.closeModal('updateEmergencyModal');
       },
       error: (err) => {
-        console.error('حدث خطأ أثناء التحديث:', err);
         this.messageService.add({ severity: 'error', summary: 'فشل التحديث', detail: 'حدث خطأ أثناء التحديث' });
       }
     });
@@ -181,5 +191,5 @@ export class AppointmentListComponent implements OnInit {
       General: 'كشف'
     };
     return map[type] || type;
-  }  
+  }
 }

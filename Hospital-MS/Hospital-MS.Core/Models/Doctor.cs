@@ -29,9 +29,9 @@ namespace Hospital_MS.Core.Models
 
 
         // Navigation Properties
-        public Specialty Specialty { get; set; } = null!;
-        public Department Department { get; set; } = null!;
-        public ICollection<DoctorRating> Ratings { get; set; } = new HashSet<DoctorRating>();
+        public Specialty? Specialty { get; set; } = null!;
+        public Department? Department { get; set; } = null!;
+        public ICollection<DoctorRating>? Ratings { get; set; } = new HashSet<DoctorRating>();
         public ICollection<DoctorSchedule> Schedules { get; set; } = new HashSet<DoctorSchedule>();
     }
 }

@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
+import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 
 @Component({
   selector: 'app-patient-form',
@@ -19,16 +20,21 @@ export class PatientFormComponent implements OnInit {
   rooms!:any;
   filteredRooms!:any[];
   beds!:any;
-  filteratedBeds!:any[]
+  filteratedBeds!:any[];
+  insuranceCompanies!:any;
+  insuranceCategories!:any;
   // 
   showSecondContact = false;
   // 
   currentDate!:any
+  // 
+  selectedDailyPrice: number | null = null;
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
     private addmisionService: AdmissionService,
-    private messageService : MessageService
+    private messageService : MessageService,
+    private insuranceService: InsuranceService
   ) {
     this.patientForm = this.fb.group({
       patientName: ['', Validators.required],
@@ -37,6 +43,7 @@ export class PatientFormComponent implements OnInit {
       patientNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       patientAddress: ['', Validators.required],
       patientStatus: ['', Validators.required],
+      patientGender: ['', Validators.required],
       emergencyPhone01: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       emergencyContact01: ['', Validators.required],
       emergencyPhone02: [''], 
@@ -46,7 +53,7 @@ export class PatientFormComponent implements OnInit {
       roomType: ['', Validators.required],
       roomId: [{ value: '', disabled: true }, Validators.required],
       bedId: [{ value: '', disabled: true }, Validators.required],
-      insuranceCompanyId: [null],
+      insuranceCompanyId: [''],
       insuranceCategoryId: [null],
       insuranceNumber: [null],
       healthStatus: ['', Validators.required],
@@ -67,6 +74,10 @@ export class PatientFormComponent implements OnInit {
     this.patientForm.get('emergencyContact02')?.valueChanges.subscribe(() => {
       this.updateSecondContactValidators();
     });
+    this.patientForm.get('insuranceCompanyId')?.valueChanges.subscribe(companyId => {
+      const selectedCompany = this.insuranceCompanies.find(company => company.id === +companyId);
+      this.insuranceCategories = selectedCompany?.insuranceCategories || [];
+    });
   }
   addSecondContact() {
     this.showSecondContact = true;
@@ -77,20 +88,27 @@ export class PatientFormComponent implements OnInit {
   }
   loadAdmissionData() {
     forkJoin({
-      doctors: this.staffService.getStaff(),
+      doctors: this.staffService.getDoctors(1, 100, 'Active'),
       departments: this.addmisionService.getDepartments(),
       rooms: this.addmisionService.getRooms(),
-      beds: this.addmisionService.getBeds()
+      beds: this.addmisionService.getBeds(),
+      insuranceCompanies: this.insuranceService.getAllInsurances()
     }).subscribe({
-      next: (res) => {
-        this.doctors = res.doctors;
-        this.departments = res.departments;
-        this.rooms = res.rooms;
-        this.beds = res.beds;
+      next: (res: any) => {
+        this.doctors = res.doctors.results;
+        this.departments = res.departments.results;
+        this.rooms = res.rooms.results;
+        this.beds = res.beds.results;
+        this.insuranceCompanies = res.insuranceCompanies.results;
+        this.insuranceCategories = this.insuranceCompanies
+          .filter(company => company.insuranceCategories && Array.isArray(company.insuranceCategories))
+          .flatMap(company => company.insuranceCategories);
         console.log('Doctors:', this.doctors);
         console.log('Departments:', this.departments);
         console.log('Rooms:', this.rooms);
         console.log('Beds:', this.beds);
+        console.log('Insurance Companies:', this.insuranceCompanies);
+        console.log('Insurance Categories:', this.insuranceCategories);
       },
       error: (err) => {
         console.error('Error loading admission data', err);
@@ -142,6 +160,8 @@ export class PatientFormComponent implements OnInit {
   }
   onRoomChange(){
     const selectedRoomId = this.patientForm.get('roomId')?.value;
+    const selectedRoom = this.rooms.find(room => room.id === +selectedRoomId);
+    this.selectedDailyPrice = selectedRoom ? selectedRoom.dailyPrice : null;
     if (selectedRoomId) {
       this.filteratedBeds = this.beds.filter((bed:any) => bed.roomId === +selectedRoomId);
       this.patientForm.get('bedId')?.enable();
