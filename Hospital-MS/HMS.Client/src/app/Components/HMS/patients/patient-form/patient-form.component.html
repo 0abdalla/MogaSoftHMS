@@ -125,8 +125,8 @@
             رقم السرير مطلوب
           </div>
         </div>
-        <div class="col-lg-12 text-center mt-3">
-          <h5>تكلفة الإقامة باليوم : <span> 60 جنيه</span></h5>
+        <div class="col-lg-12 text-center mt-3" *ngIf="selectedDailyPrice !== null">
+          <h5>تكلفة الإقامة باليوم : <span>{{ selectedDailyPrice !== null ? selectedDailyPrice + ' جنيه' : 'غير محدد' }}</span></h5>
         </div>
       </div>
     

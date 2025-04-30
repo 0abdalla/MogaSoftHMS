@@ -27,6 +27,8 @@ export class PatientFormComponent implements OnInit {
   showSecondContact = false;
   // 
   currentDate!:any
+  // 
+  selectedDailyPrice: number | null = null;
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
@@ -71,6 +73,10 @@ export class PatientFormComponent implements OnInit {
     });
     this.patientForm.get('emergencyContact02')?.valueChanges.subscribe(() => {
       this.updateSecondContactValidators();
+    });
+    this.patientForm.get('insuranceCompanyId')?.valueChanges.subscribe(companyId => {
+      const selectedCompany = this.insuranceCompanies.find(company => company.id === +companyId);
+      this.insuranceCategories = selectedCompany?.insuranceCategories || [];
     });
   }
   addSecondContact() {
@@ -154,6 +160,8 @@ export class PatientFormComponent implements OnInit {
   }
   onRoomChange(){
     const selectedRoomId = this.patientForm.get('roomId')?.value;
+    const selectedRoom = this.rooms.find(room => room.id === +selectedRoomId);
+    this.selectedDailyPrice = selectedRoom ? selectedRoom.dailyPrice : null;
     if (selectedRoomId) {
       this.filteratedBeds = this.beds.filter((bed:any) => bed.roomId === +selectedRoomId);
       this.patientForm.get('bedId')?.enable();
