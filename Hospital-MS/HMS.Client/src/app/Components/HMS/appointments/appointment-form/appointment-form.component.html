@@ -66,8 +66,7 @@
           <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
           <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
             <option selected disabled value="">اختر شركة التأمين</option>
-            <option value="شركة 1">شركة 1</option>
-            <option value="شركة 2">شركة 2</option>
+            <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{ insuranceCompany.name }}</option>
           </select>
         </div>
         <div class="col-lg-4">

@@ -19,123 +19,112 @@
     <div class="card mt-3 p-2">
       <div class="p-3 mt-4">
         <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-          <div class="row g-2">
-            <div class="col-lg-4">
-              <input
-                type="text"
-                      class="form-control shadow-none"
-                      placeholder="أدخل إسم الموظف أو رقم الهاتف"
-                      formControlName="Search"
-                    />
-                  </div>
-                  <div class="col-lg-4">
-                    <select class="form-select shadow-none" formControlName="Type">
-                      <option selected disabled value="">اختر نوع الموظف</option>
-                      <option value="Doctor">دكتور</option>
-                      <option value="Nurse">ممرض</option>
-                      <option value="Staff">إداري</option>
-                      <option value="Worker">عمال</option>
-                    </select>
-                  </div>
-                  <div class="col-lg-4 d-flex gap-2">
-                    <button type="submit" class="btn-blue w-100">تطبيق</button>
-                    <button type="button" (click)="resetFilters()" class="btn-red w-100">مسح الفلترات</button>
-                  </div>
-                </div>
-              </form>
-            </div>
-        
-            <table class="table table-hover mt-4">
-                <thead>
-                  <tr>
-                    <th>الإسم</th>
-                    <th>الوظيفة</th>
-                    <th>تاريخ التعيين</th>
-                    <th>الحالة</th>
-                    <!-- <th>الإجراءات</th> -->
-                  </tr>
-                </thead>
-                <tbody *ngIf="employees.length > 0">
-                  <tr
-                    *ngFor="let employee of employees | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }"
-                    (click)="openStaffModal(employee.id)"
-                    data-bs-toggle="modal"
-                    data-bs-target="#employeeDetailsModal"
-                    style="cursor: pointer"
-                  >
-                    <td>
-                      <div class="d-flex align-items-center gap-2 justify-content-start">
-                        <div class="avatar-circle">{{ employee.fullName.charAt(0) }}</div>
-                        <span class="fw-bold">{{ employee.fullName }}</span>
-                      </div>
-                    </td>
-              
-                    <td>
-                        <p class="text-white status-pill fw-bold"
-                          *ngIf="employee.type"
-                          [ngStyle]="{ backgroundColor: getEmployeeColor(employee.type) }"
-                        >
-                          {{ employee.type || 'غير محدد' }}
-                        </p>
-                      </td>
-              
-                    <td class="text-secondary fw-semibold">
-                      {{ employee.hireDate | date:'yyyy/MM/dd' }}
-                    </td>
-              
-                    <td>
-                        <span
-                          class="status-pill"
-                          [ngClass]="{
-                            'bg-success': employee.status === 'متاح',
-                            'bg-secondary': employee.status !== 'متاح'
-                          }"
-                        >
-                          {{ employee.status }}
-                        </span>
-                      </td>
-                      
-              
-                    <!-- <td>
-                      <button class="btn btn-outline-warning">
-                        <i class="fa-light fa-pen-to-square"></i>
-                      </button>
-                    </td> -->
-                  </tr>
-                </tbody>
-              
-                <tbody *ngIf="employees.length === 0">
-                  <tr>
-                    <td colspan="5" class="text-center text-muted">لا توجد موظفين حتى الآن</td>
-                  </tr>
-                </tbody>
-            </table>
-            
-        
-            <div class="col-lg-12">
-              <div
-                *ngIf="total > 16"
-                class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
-              >
-                <div class="my-pagination">
-                  <pagination-controls
-                    id="paginate"
-                    (pageChange)="onPageChange($event)"
-                    (pageBoundsCorrection)="onPageChange($event)"
-                    [maxSize]="16"
-                    [directionLinks]="true"
-                    [autoHide]="true"
-                    [responsive]="true"
-                    previousLabel=""
-                    nextLabel=""
-                    screenReaderPageLabel="page"
-                    screenReaderCurrentLabel="You're on page"
-                  >
-                  </pagination-controls>
-                </div>
+          <div class="row justify-content-between align-items-center gap-2">
+            <div class="row col-lg-8">
+              <div class="col-lg-2">
+                <button type="button" (click)="resetFilters()" class="btn-cancel">إزالة الفلترة</button>
+              </div>
+              <div class="col-lg-4">
+                <input
+                  type="text"
+                  class="form-control shadow-none"
+                  placeholder="أدخل إسم الموظف أو رقم الهاتف"
+                  formControlName="Search"
+                />
+              </div>
+              <div class="col-lg-3">
+                <select class="form-select shadow-none" formControlName="Type">
+                  <option selected disabled value="">اختر نوع الموظف</option>
+                  <option value="Doctor">دكتور</option>
+                  <option value="Nurse">ممرض</option>
+                  <option value="Staff">إداري</option>
+                  <option value="Worker">عمال</option>
+                </select>
               </div>
             </div>
+            <div class="col-lg-2">
+              <button type="button" class="btn-purble">إضافة موظف</button>
+            </div>
           </div>
+        </form>
+      </div>
+      <table class="table table-hover mt-4">
+        <thead>
+          <tr>
+            <th>الإسم</th>
+            <th>الوظيفة</th>
+            <th>تاريخ التعيين</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="employees && employees.length > 0; else noData">
+          <tr
+            *ngFor="let employee of employees | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }"
+            (click)="openStaffModal(employee.id)"
+            data-bs-toggle="modal"
+            data-bs-target="#employeeDetailsModal"
+            style="cursor: pointer"
+          >
+            <td>
+              <div class="d-flex align-items-center gap-2 justify-content-start">
+                <div class="avatar-circle">{{ employee.fullName.charAt(0) }}</div>
+                <span class="fw-bold">{{ employee.fullName }}</span>
+              </div>
+            </td>
+            <td>
+              <p
+                class="text-white status-pill fw-bold"
+                *ngIf="employee.type"
+                [ngStyle]="{ backgroundColor: getEmployeeColor(employee.type) }"
+              >
+                {{ employee.type || 'غير محدد' }}
+              </p>
+            </td>
+            <td class="text-secondary fw-semibold">
+              {{ employee.hireDate | date: 'yyyy/MM/dd' }}
+            </td>
+            <td>
+              <span
+                class="status-pill"
+                [ngClass]="{
+                  'bg-success': employee.status === 'متاح',
+                  'bg-secondary': employee.status !== 'متاح'
+                }"
+              >
+                {{ employee.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+        <ng-template #noData>
+          <tbody>
+            <tr>
+              <td colspan="4" class="text-center text-muted">لا توجد موظفين حتى الآن</td>
+            </tr>
+          </tbody>
+        </ng-template>
+      </table>
+    
+      <div class="col-lg-12" *ngIf="total > pageSize">
+        <div class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+          <div class="my-pagination">
+            <pagination-controls
+              id="paginate"
+              (pageChange)="onPageChange($event)"
+              (pageBoundsCorrection)="onPageChange($event)"
+              [maxSize]="16"
+              [directionLinks]="true"
+              [autoHide]="true"
+              [responsive]="true"
+              previousLabel=""
+              nextLabel=""
+              screenReaderPageLabel="page"
+              screenReaderCurrentLabel="You're on page"
+            ></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 
@@ -241,7 +230,7 @@
             <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
           </div>
           <div class="col-3 m-0">
-            <button class="btn col-12 btn-outline-primary" (click)="susbendEmployee()">تعليق مؤقت</button>
+            <button class="btn col-12 btn-outline-primary" (click)="suspendEmployee()">تعليق مؤقت</button>
           </div>
         </div>
       </div>
