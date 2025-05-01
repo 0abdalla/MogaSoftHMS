@@ -11,18 +11,45 @@ export class StaffService {
   getStaff(){
     return this.http.get<any>(`${this.baseUrl}/api/Staff`);
   }
-  getAllStaff(currentPage: number, pageSize: number, type: string, search: string){
+  getAllStaff(
+    page: number,
+    size: number,
+    search?: string,
+    status?: string,
+    fromDate?: string,
+    toDate?: string,
+    filterList: any[] = []
+  ) {
     let params = new HttpParams()
-          .set('PageSize', pageSize)
-          .set('PageIndex', currentPage);
-      
-        if (type) params = params.set('Type', type);
-        if (search) params = params.set('Search', search);
-
-    return this.http.get<any>(`${this.baseUrl}/api/Staff/all`, { params });
+      .set('CurrentPage', page.toString())
+      .set('PageSize', size.toString());
+  
+    if (search) params = params.set('SearchText', search);
+    if (status) params = params.set('Status', status);
+    if (fromDate) params = params.set('FromDate', fromDate);
+    if (toDate) params = params.set('ToDate', toDate);
+    params = params.set('FilterList', JSON.stringify(filterList));
+    return this.http.get<any>(`${this.baseUrl}/api/Staff`, { params });
   }
-  getCounts(){
-    return this.http.get<any>(`${this.baseUrl}/api/Staff/counts`);
+  getCounts() {
+    let params = new HttpParams()
+      .set('CurrentPage', '1')
+      .set('PageSize', '16')  
+      .set('FilterList', JSON.stringify([{
+        categoryName: 'string',
+        itemId: 'string',
+        itemKey: 'string',
+        itemValue: 'string',
+        isChecked: true,
+        fromDate: '2025-05-01T21:50:30.220Z',
+        toDate: '2025-05-01T21:50:30.220Z',
+        filterType: 'string',
+        isVisible: true,
+        filterItems: ['string'],
+        displayOrder: 0
+      }]));
+
+    return this.http.get<any>(`${this.baseUrl}/api/Staff/counts`, { params });
   }
   getStaffById(id: number){
     return this.http.get<any>(`${this.baseUrl}Staff/${id}`);

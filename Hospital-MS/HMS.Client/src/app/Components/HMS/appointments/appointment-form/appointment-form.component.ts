@@ -4,6 +4,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { MessageService } from 'primeng/api';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
 import { StaffService } from '../../../../Services/HMS/staff.service';
+import { InsuranceService } from '../../../../Services/HMS/insurance.service';
+import { AdmissionService } from '../../../../Services/HMS/admission.service';
 
 @Component({
   selector: 'app-appointment-form',
@@ -26,6 +28,8 @@ export class AppointmentFormComponent implements OnInit {
   // 
   clinics!: any;
   filteredClinics: any[] = [];
+  insuranceCompanies!: any;
+  departments!:any;
   // 
   doctors!: any;
   filteredDoctors: any[] = [];
@@ -34,7 +38,7 @@ export class AppointmentFormComponent implements OnInit {
   // 
   showReceipt: boolean = false;
   submittedData: any = {};
-  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService) {
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService , private insuranceService: InsuranceService , private admissionService: AdmissionService) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', Validators.required],
@@ -43,7 +47,7 @@ export class AppointmentFormComponent implements OnInit {
       doctorId: [{ value: '', disabled: true }],
       radiologyType: [{ value: '', disabled: true }],
       appointmentDate: ['', Validators.required],
-      insuranceCompanyId: [null],
+      insuranceCompanyId: [''],
       insuranceCategoryId: [null],
       insuranceNumber: [''],
       referred: ['no'],
@@ -77,6 +81,8 @@ export class AppointmentFormComponent implements OnInit {
   ngOnInit(): void {
     this.getClinics();
     this.getStaff();
+    this.getInsuranceCompanies();
+    this.getDeps();
   }
   onReferredChange(event: Event) {
     const value = (event.target as HTMLSelectElement).value;
@@ -118,10 +124,21 @@ export class AppointmentFormComponent implements OnInit {
       }
     });
   }
-  getStaff() {
-    this.staffService.getStaff().subscribe({
+  getDeps(){
+    this.admissionService.getDepartments().subscribe({
       next: (data) => {
-        this.doctors = data.results.filter((staff: any) => staff.type === 'Doctor' && staff.status === 'Active');
+        this.departments = data.results;
+        console.log(this.departments);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
+  }
+  getStaff() {
+    this.staffService.getDoctors(1, 100, 'Active').subscribe({
+      next: (data) => {
+        this.doctors = data.results;
         console.log(this.doctors);
       },
       error: (err) => {
@@ -150,5 +167,17 @@ export class AppointmentFormComponent implements OnInit {
   closeReceipt() {
     this.showReceipt = false;
     this.submittedData = {};
+  }
+  // 
+  getInsuranceCompanies() {
+    this.insuranceService.getAllInsurances().subscribe({
+      next: (data) => {
+        this.insuranceCompanies = data.results;
+        console.log(this.insuranceCompanies);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    });
   }
 }
