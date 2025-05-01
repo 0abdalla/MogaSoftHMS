@@ -3,49 +3,7 @@
     height: 100vh;
     width: 100%;
     overflow: hidden;
-    background: none;
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        z-index: -1;
-        background-image: url(../../../assets/vendors/imgs/login.png);
-        opacity: 1;
-        animation: fadeImage1 15s infinite;
-    }
-    &::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        z-index: -2;
-        background-image: url(../../../assets/vendors/imgs/login2.png);
-        opacity: 0;
-        animation: fadeImage2 15s infinite;
-    }
-    .bg-layer-3 {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        z-index: -3;
-        background-image: url(../../../assets/vendors/imgs/login3.png);
-        opacity: 0;
-        animation: fadeImage3 15s infinite;
-    }
-
+    background: linear-gradient(252.84deg, #445CA4 -2.46%, #5971BA 43.68%, #3C5190 80.66%, #2D3D6C 109.14%);
     .carde {
         background-image: radial-gradient(160.48% 100.6% at 79.82% 8.55%, rgba(242, 242, 242, 0.95) 0%, rgba(242, 242, 242, 0.55) 100%), 
         url(../../../assets/vendors/imgs/pattern.png);
