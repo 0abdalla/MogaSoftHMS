@@ -35,6 +35,6 @@ export class AppointmentService {
   }
   // 
   getClinics() {
-    return this.http.get<any>(`${this.baseUrl}/api/Clinics`);
+    return this.http.get<any>(`${this.baseUrl}Clinics`);
   }
 }

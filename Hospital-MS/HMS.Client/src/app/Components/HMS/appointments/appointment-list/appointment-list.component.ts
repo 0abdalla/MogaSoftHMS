@@ -81,33 +81,8 @@ export class AppointmentListComponent implements OnInit {
   getPatients() {
     this.appointmentService.getAllAppointments(this.pagingFilterModel).subscribe({
       next: (data) => {
-        debugger;
-        this.patients = data.results.map((patient: Patients) => {
-          switch (patient.type) {
-            case 'Emergency':
-              patient.type = 'طوارئ';
-              break;
-            case 'Radiology':
-              patient.type = 'أشعة';
-              break;
-            case 'Screening':
-              patient.type = 'تحاليل';
-              break;
-            case 'Surgery':
-              patient.type = 'عمليات';
-              break;
-            case 'Consultation':
-              patient.type = 'استشارة';
-              break;
-            case 'General':
-              patient.type = 'كشف';
-              break;
-          }
-          return patient;
-        });
+        this.patients = data.results;
         this.total = data.totalCount;
-        console.log(this.patients);
-        
       },
       error: (err) => {
         console.log(err);
@@ -121,6 +96,21 @@ export class AppointmentListComponent implements OnInit {
     this.pagingFilterModel.searchText = this.filterForm.value.Search;
     this.getPatients();
   }
+  ApplyCardFilter(item: any) {
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
+    this.getPatients();
+    this.getCounts();
+
+  }
+
+  SearchTextChange() {
+    if(this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
+      this.pagingFilterModel.searchText = this.filterForm.value.Search;
+      this.pagingFilterModel.currentPage = 1;
+      this.getPatients();
+    }
+  }
 
   resetFilters() {
     this.filterForm.reset();
@@ -129,6 +119,7 @@ export class AppointmentListComponent implements OnInit {
     this.pagingFilterModel.filterList = [];
     this.pagingFilterModel.searchText = '';
     this.getPatients();
+    this.getCounts();
   }
 
   onPageChange(page: number) {
@@ -150,9 +141,6 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getCounts(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.patientServices = data.results;
-        console.log(this.patientServices);
-        console.log(data);
-        
       },
       error: (err) => {
         console.log(err);
@@ -172,7 +160,7 @@ export class AppointmentListComponent implements OnInit {
           this.getCounts();
           this.updateEmergencyForm.reset();
         } else
-        this.messageService.add({ severity: 'error', summary: 'فشل التحديث', detail: 'لا يمكن تحديث إلا صاحب الخدمة الطبية طوارئ' });
+          this.messageService.add({ severity: 'error', summary: 'فشل التحديث', detail: 'لا يمكن تحديث إلا صاحب الخدمة الطبية طوارئ' });
 
         this.sharedService.closeModal('updateEmergencyModal');
       },

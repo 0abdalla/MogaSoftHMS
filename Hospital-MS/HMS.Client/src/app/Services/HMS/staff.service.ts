@@ -9,7 +9,7 @@ export class StaffService {
   baseUrl = environment.baseUrl
   constructor(private http: HttpClient) { }
   getStaff(){
-    return this.http.get<any>(`${this.baseUrl}/api/Staff`);
+    return this.http.get<any>(`${this.baseUrl}Staff`);
   }
   getAllStaff(
     page: number,
@@ -29,7 +29,7 @@ export class StaffService {
     if (fromDate) params = params.set('FromDate', fromDate);
     if (toDate) params = params.set('ToDate', toDate);
     params = params.set('FilterList', JSON.stringify(filterList));
-    return this.http.get<any>(`${this.baseUrl}/api/Staff`, { params });
+    return this.http.get<any>(`${this.baseUrl}Staff`, { params });
   }
   getCounts() {
     let params = new HttpParams()
@@ -49,7 +49,7 @@ export class StaffService {
         displayOrder: 0
       }]));
 
-    return this.http.get<any>(`${this.baseUrl}/api/Staff/counts`, { params });
+    return this.http.get<any>(`${this.baseUrl}Staff/counts`, { params });
   }
   getStaffById(id: number){
     return this.http.get<any>(`${this.baseUrl}Staff/${id}`);
@@ -71,18 +71,18 @@ export class StaffService {
       
         if (status) params = params.set('Status', status);
 
-    return this.http.get<any>(`${this.baseUrl}/api/Doctors/all`, { params });
+    return this.http.get<any>(`${this.baseUrl}Doctors/all`, { params });
   }
   getDoctorById(id:any){
-    return this.http.get<any>(`${this.baseUrl}/api/Doctors/${id}`);
+    return this.http.get<any>(`${this.baseUrl}Doctors/${id}`);
   }
   postDoctor(doctor: any){
-    return this.http.post<any>(`${this.baseUrl}/api/Doctors`, doctor);
+    return this.http.post<any>(`${this.baseUrl}Doctors`, doctor);
   }
   putDoctor(doctor: any, id: number){
-    return this.http.put<any>(`${this.baseUrl}/api/Doctors/${id}`, doctor);
+    return this.http.put<any>(`${this.baseUrl}Doctors/${id}`, doctor);
   }
   getDoctorsCount(){
-    return this.http.get<any>(`${this.baseUrl}/api/Doctors/counts`);
+    return this.http.get<any>(`${this.baseUrl}Doctors/counts`);
   }
 }
