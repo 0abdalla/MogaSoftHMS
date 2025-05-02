@@ -87,3 +87,14 @@
       display: none;
     }
   }
+  .search-patient{
+    h5{
+      color: #D94A91;
+      font-size: 22px;
+      font-weight: 700;
+      
+    }
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0px 12px 24px -4px #919eab6e !important;
+  }

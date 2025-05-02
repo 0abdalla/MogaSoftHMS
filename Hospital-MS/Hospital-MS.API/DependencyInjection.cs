@@ -128,7 +128,8 @@ namespace Hospital_MS.API
                     ValidateLifetime = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtSettings?.Key!)),
                     ValidIssuer = JwtSettings?.Issuer,
-                    ValidAudience = JwtSettings?.Audience
+                    ValidAudience = JwtSettings?.Audience,
+
                 };
             });
 
@@ -136,6 +137,7 @@ namespace Hospital_MS.API
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 8;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+/ ";
                 options.User.RequireUniqueEmail = true;
             });
 

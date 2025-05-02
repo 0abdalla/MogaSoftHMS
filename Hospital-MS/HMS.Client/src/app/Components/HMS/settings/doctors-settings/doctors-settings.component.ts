@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
@@ -33,13 +33,14 @@ export class DoctorsSettingsComponent implements OnInit {
     private messageService: MessageService,
     private doctorService: StaffService
   ) {
+    const minBirthDate = new Date(1920, 0, 1);
     this.doctorForm = this.fb.group({
       FullName: ['', Validators.required],
-      NationalId: ['', Validators.required],
+      NationalId: ['', [Validators.required , Validators.pattern(/^[0-9]{14}$/)]],
       Gender: ['', Validators.required],
-      DateOfBirth: ['', Validators.required],
+      DateOfBirth: ['', [Validators.required, this.minDateValidator(minBirthDate)]],
       MaritalStatus: ['', Validators.required],
-      Phone: ['', Validators.required],
+      Phone: ['', [Validators.required , Validators.pattern(/^01[0125][0-9]{8}$/)]],
       Email: ['', [Validators.required, Validators.email]],
       Address: ['', Validators.required],
       DepartmentId: ['', Validators.required],
@@ -262,5 +263,18 @@ export class DoctorsSettingsComponent implements OnInit {
   timeToMinutes(time: string): number {
     const [hours, minutes] = time.split(':').map(Number);
     return hours * 60 + minutes;
+  }
+  // 
+  minDateValidator(minDate: Date): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value) {
+        return null;
+      }
+      const inputDate = new Date(control.value);
+      if (inputDate < minDate) {
+        return { minDate: { value: control.value } };
+      }
+      return null;
+    };
   }
 }

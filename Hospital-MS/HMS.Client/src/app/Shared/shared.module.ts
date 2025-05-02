@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { AgePipe } from '../Pipes/age.pipe';
 import { SearchArryPipe } from '../Pipes/search-arry.pipe';
 import { RoleCheckerDirective } from '../Directives/role-checker.directive';
@@ -29,6 +29,7 @@ import { MessageService } from 'primeng/api';
     InterceptorComponent,
     HeaderComponent,
     FooterComponent
-  ]
+  ],
+  providers: [DatePipe]
 })
 export class SharedModule { }

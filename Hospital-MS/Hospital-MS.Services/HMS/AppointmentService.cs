@@ -60,13 +60,20 @@ namespace Hospital_MS.Services.HMS
 
                 await transaction.CommitAsync(cancellationToken);
 
-                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess);
+                int AppointmentNumber = await GetNewAppointmentNumber();
+
+                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, AppointmentNumber.ToString());
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
+        }
+
+        private async Task<int> GetNewAppointmentNumber()
+        {
+            return await _sQLHelper.ExecuteScalarAsync("[dbo].[SP_AppointmentNumberSequences]", Array.Empty<SqlParameter>());
         }
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
@@ -142,7 +149,7 @@ namespace Hospital_MS.Services.HMS
             try
             {
                 var Params = new SqlParameter[2];
-                var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemValue;
+                var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemId;
                 Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
                 Params[1] = new SqlParameter("@Type", Type ?? (object)DBNull.Value);
                 var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAppointmentTypeCountStatistics", Params);

@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row mt-4">
             <div class="col-lg-2" *ngFor="let status of patientServices">
-                <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': status.color }">
+                <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
                     <h4>{{ status.name }}</h4>
                     <p class="mt-0">{{ status.count }} مريض</p>
                     <div class="percentage d-flex align-items-center justify-content-center gap-1">
@@ -16,14 +16,14 @@
 
         <div class="card mt-3 p-2">
             <div class="p-3 mt-4">
-                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+                <form [formGroup]="filterForm">
                     <div class="row justify-content-between align-items-center gap-2">
                         <div class="row col-8">
                             <div class="col-lg-2">
                                 <button type="button" (click)="resetFilters()" class="btn-cancel ">إزالة الفلترة</button>
                             </div>
                             <div class="col-lg-3">
-                                <select class="form-select shadow-none" formControlName="Type">
+                                <select class="form-select shadow-none" formControlName="Type" (change)="applyFilters()">
                                 <option selected disabled value="">اختر نوع الحجز</option>
                                 <option value="General">كشف</option>
                                 <option value="Consultation">استشارة</option>
@@ -34,7 +34,7 @@
                 </select>
                             </div>
                             <div class="col-lg-6">
-                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المريض أو رقم الهاتف" formControlName="Search" />
+                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المريض أو رقم الهاتف" (input)="SearchTextChange()" formControlName="Search" />
                             </div>
                         </div>
 
@@ -188,17 +188,23 @@
             </div>
 
             <div class="modal-footer row">
-                <div class="col-3 m-0">
+                <div class="col-2 m-0">
                     <button class="btn col-12 btn-outline-warning" data-bs-target="#updateEmergencyModal" data-bs-toggle="modal">تحديث الحالة</button>
                 </div>
-                <div class="col-3 m-0">
+                <div class="col-2 m-0">
+                    <button class="btn col-12 btn-outline-success">تعديل الحجز</button>
+                </div>
+                <div class="col-2 m-0">
                     <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
                 </div>
-                <div class="col-3 m-0">
+                <div class="col-2 m-0">
                     <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
                 </div>
-                <div class="col-3 m-0">
+                <div class="col-2 m-0">
                     <button class="btn col-12 btn-outline-warning">تحويل إلى فاتورة</button>
+                </div>
+                <div class="col-2 m-0">
+                    <button class="btn col-12 btn-outline-danger">حذف الحجز</button>
                 </div>
             </div>
         </div>

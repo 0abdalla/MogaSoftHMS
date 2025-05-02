@@ -96,7 +96,7 @@ namespace Hospital_MS.Services.Common
             }
         }
 
-        public int ExecuteScalar(string procName, params SqlParameter[] sqlParameters)
+        public async Task<int> ExecuteScalarAsync(string procName, params SqlParameter[] sqlParameters)
         {
             int value = 0;
             using (var con = new SqlConnection(ConnectionString))
@@ -108,8 +108,9 @@ namespace Hospital_MS.Services.Common
                     sqlCommand.Connection = con;
                     sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlCommand.CommandText = procName;
-                    con.Open();
-                    value = int.Parse(sqlCommand.ExecuteScalar().ToString());
+                    await con.OpenAsync();
+                    var result = await sqlCommand.ExecuteScalarAsync();
+                    value = result != null ? Convert.ToInt32(result) : 0;
                 }
             }
             return value;
