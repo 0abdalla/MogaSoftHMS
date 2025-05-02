@@ -13,11 +13,19 @@
         <div class="col-lg-6">
           <label for="patientName" class="form-label">إسم المريض</label>
           <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName">
+          <div *ngIf="reservationForm.get('patientName')?.invalid && reservationForm.get('patientName')?.touched" class="text-danger">
+            اسم المريض مطلوب
+          </div>
         </div>
+        
         <div class="col-lg-6">
           <label for="patientPhone" class="form-label">رقم الهاتف </label>
           <input type="text" id="patientPhone" class="form-control shadow-none" placeholder="أدخل رقم الهاتف " formControlName="patientPhone">
+          <div *ngIf="reservationForm.get('patientPhone')?.invalid && reservationForm.get('patientPhone')?.touched" class="text-danger">
+            رقم الهاتف مطلوب
+          </div>
         </div>
+        
       </div>
       <hr>
       <h4>🏥بيانات الحجز</h4>
@@ -25,6 +33,9 @@
         <div class="col-lg-3">
           <label for="app-date" class="form-label">تاريخ الحجز</label>
           <input id="app-date" type="datetime-local" formControlName="appointmentDate" class="form-control shadow-none">
+          <div *ngIf="reservationForm.get('appointmentDate')?.invalid && reservationForm.get('appointmentDate')?.touched" class="text-danger">
+            تاريخ الحجز مطلوب
+          </div>
         </div>
         <div class="col-lg-3">
           <label for="clinic-type" class="form-label">نوع الحجز</label>
@@ -36,19 +47,25 @@
             <option value="Screening">تحاليل</option>
             <option value="Radiology">أشعة</option>
           </select>
-                </div>
-                <div class="col-lg-3">
-                    <label for="clinic" class="form-label">الخدمة الطبية</label>
-                    <select id="clinic" class="form-select shadow-none" formControlName="clinicId">
+          <div *ngIf="reservationForm.get('appointmentType')?.invalid && reservationForm.get('appointmentType')?.touched" class="text-danger">
+            نوع الحجز مطلوب
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <label for="clinic" class="form-label">الخدمة الطبية</label>
+          <select id="clinic" class="form-select shadow-none" formControlName="clinicId">
             <option selected disabled value="">اختر الخدمة</option>
             <option *ngFor="let clinic of filteredClinics" [value]="clinic.id">{{ clinic.name }}</option>
           </select>
-                </div>
-                <div class="col-lg-3" *ngIf="selectedAppointmentType !== 'Screening'">
-                    <label for="clinic-doctor" class="form-label">
+          <div *ngIf="reservationForm.get('clinicId')?.invalid && reservationForm.get('clinicId')?.touched" class="text-danger">
+            الخدمة الطبية مطلوبة
+          </div>
+        </div>
+        <div class="col-lg-3" *ngIf="selectedAppointmentType !== 'Screening'">
+          <label for="clinic-doctor" class="form-label">
             {{ selectedAppointmentType === 'Radiology' ? 'نوع الأشعة' : 'الدكتور المختص' }}
           </label>
-                    <select id="clinic-doctor" class="form-select shadow-none" [formControlName]="selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId'">
+          <select id="clinic-doctor" class="form-select shadow-none" [formControlName]="selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId'">
             <option selected disabled value="">
               {{ selectedAppointmentType === 'Radiology' ? 'اختر نوع الأشعة' : 'اختر الدكتور المختص' }}
             </option>
@@ -61,7 +78,10 @@
               <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{ doctor.fullName }}</option>
             </ng-container>
           </select>
-                </div>
+          <div *ngIf="reservationForm.get(selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId')?.invalid && reservationForm.get(selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId')?.touched" class="text-danger">
+            {{ selectedAppointmentType === 'Radiology' ? 'اختر نوع الأشعة' : 'اختر الدكتور المختص' }}
+          </div>
+        </div>
 
             </div>
             <hr>
@@ -75,12 +95,14 @@
           </select>
                 </div>
                 <div class="col-lg-4">
-                    <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
-                    <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
-            <option selected disabled value="">اختر فئة التأمين</option>
-            <option value="1">فئة 1</option>
-            <option value="2">فئة 2</option>
-          </select>
+                  <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
+                  <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
+                    <option selected disabled value="">اختر فئة التأمين</option>
+                    <option *ngFor="let insuranceCategory of insuranceCategories" [value]="insuranceCategory.id">{{insuranceCategory.name}}</option>
+                  </select>
+                  <div *ngIf="reservationForm.get('insuranceCategoryId')?.invalid && reservationForm.get('insuranceCategoryId')?.touched" class="text-danger">
+                    فئة التأمين مطلوبة
+                  </div>
                 </div>
                 <div class="col-lg-4">
                     <label for="insuranceNumber" class="form-label">رقم التأمين</label>

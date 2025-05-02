@@ -50,11 +50,13 @@ export class AppointmentFormComponent implements OnInit {
   showReceipt: boolean = false;
   submittedData: any = {};
   printInvoiceData: any = {};
+  // 
+  insuranceCategories!: any;
   constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService,
     private insuranceService: InsuranceService, private admissionService: AdmissionService, private sharedService: SharedService) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
-      patientPhone: ['', Validators.required],
+      patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       appointmentType: ['', Validators.required],
       clinicId: [{ value: '', disabled: true }, Validators.required],
       doctorId: [{ value: '', disabled: true }],
@@ -88,6 +90,10 @@ export class AppointmentFormComponent implements OnInit {
         doctorControl?.disable();
       }
       doctorControl?.reset();
+    });
+    this.reservationForm.get('insuranceCompanyId')?.valueChanges.subscribe(companyId => {
+      const selectedCompany = this.insuranceCompanies.find(company => company.id === +companyId);
+      this.insuranceCategories = selectedCompany?.insuranceCategories || [];
     });
   }
 

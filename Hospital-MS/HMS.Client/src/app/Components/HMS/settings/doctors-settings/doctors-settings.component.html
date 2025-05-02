@@ -7,22 +7,28 @@
               <div class="col-lg-4 mt-1">
                 <label class="form-label">الاسم بالكامل</label>
                 <input type="text" class="form-control shadow-none" formControlName="FullName" placeholder="أدخل الاسم الكامل">
-                <div *ngIf="doctorForm.get('FullName')?.invalid && doctorForm.get('FullName')?.touched" class="text-danger">
+                <div *ngIf="doctorForm.get('FullName')?.hasError('required') && doctorForm.get('FullName')?.touched" class="text-danger">
                   الاسم مطلوب
                 </div>
               </div>
               <div class="col-lg-4 mt-1">
                 <label class="form-label">الرقم القومي</label>
                 <input type="text" class="form-control shadow-none" formControlName="NationalId" placeholder="أدخل الرقم القومي">
-                <div *ngIf="doctorForm.get('NationalId')?.invalid && doctorForm.get('NationalId')?.touched" class="text-danger">
+                <div *ngIf="doctorForm.get('NationalId')?.hasError('required') && doctorForm.get('NationalId')?.touched" class="text-danger">
                   الرقم القومي مطلوب
+                </div>
+                <div *ngIf="doctorForm.get('NationalId')?.hasError('pattern') && doctorForm.get('NationalId')?.touched" class="text-danger">
+                  الرقم القومي يجب ان يحتوي على 14 رقم
                 </div>
               </div>
               <div class="col-lg-4 mt-1">
                 <label class="form-label">تاريخ الميلاد</label>
                 <input type="date" class="form-control shadow-none" formControlName="DateOfBirth" placeholder="اختر تاريخ الميلاد">
-                <div *ngIf="doctorForm.get('DateOfBirth')?.invalid && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
+                <div *ngIf="doctorForm.get('DateOfBirth')?.hasError('required') && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
                   تاريخ الميلاد مطلوب
+                </div>
+                <div *ngIf="doctorForm.get('DateOfBirth')?.hasError('minDate') && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
+                  تاريخ الميلاد يجب ألا يكون قبل عام 1920
                 </div>
               </div>
               <div class="col-lg-4 mt-1">
@@ -61,14 +67,20 @@
               <div class="col-lg-4 mt-1">
                 <label class="form-label">رقم الهاتف</label>
                 <input type="text" class="form-control shadow-none" formControlName="Phone" placeholder="أدخل رقم الهاتف">
-                <div *ngIf="doctorForm.get('Phone')?.invalid && doctorForm.get('Phone')?.touched" class="text-danger">
+                <div *ngIf="doctorForm.get('Phone')?.hasError('required') && doctorForm.get('Phone')?.touched" class="text-danger">
                   رقم الهاتف مطلوب
+                </div>
+                <div *ngIf="doctorForm.get('Phone')?.hasError('pattern') && doctorForm.get('Phone')?.touched" class="text-danger">
+                  رقم الهاتف يجب ان يحتوي على 11 رقم
                 </div>
               </div>
               <div class="col-lg-4 mt-1">
                 <label class="form-label">البريد الإلكتروني</label>
                 <input type="email" class="form-control shadow-none" formControlName="Email" placeholder="أدخل البريد الإلكتروني">
-                <div *ngIf="doctorForm.get('Email')?.invalid && doctorForm.get('Email')?.touched" class="text-danger">
+                <div *ngIf="doctorForm.get('Email')?.hasError('required') && doctorForm.get('Email')?.touched" class="text-danger">
+                  البريد الإلكتروني مطلوب
+                </div>
+                <div *ngIf="doctorForm.get('Email')?.hasError('email') && doctorForm.get('Email')?.touched" class="text-danger">
                   البريد الإلكتروني غير صحيح
                 </div>
               </div>
