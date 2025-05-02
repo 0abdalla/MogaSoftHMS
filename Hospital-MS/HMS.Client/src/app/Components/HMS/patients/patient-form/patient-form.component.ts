@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { InsuranceService } from '../../../../Services/HMS/insurance.service';
+import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 
 @Component({
   selector: 'app-patient-form',
@@ -12,6 +13,12 @@ import { InsuranceService } from '../../../../Services/HMS/insurance.service';
   styleUrls: ['./patient-form.component.css']
 })
 export class PatientFormComponent implements OnInit {
+  pagingFilterModel: PagingFilterModel = {
+      searchText: '',
+      currentPage: 1,
+      pageSize: 100,
+      filterList: []
+    };
   patientForm: FormGroup;
   // 
   doctors!:any[];
@@ -88,7 +95,7 @@ export class PatientFormComponent implements OnInit {
   }
   loadAdmissionData() {
     forkJoin({
-      doctors: this.staffService.getDoctors(1, 100, 'Active'),
+      doctors: this.staffService.getDoctors(this.pagingFilterModel),
       departments: this.addmisionService.getDepartments(),
       rooms: this.addmisionService.getRooms(),
       beds: this.addmisionService.getBeds(),

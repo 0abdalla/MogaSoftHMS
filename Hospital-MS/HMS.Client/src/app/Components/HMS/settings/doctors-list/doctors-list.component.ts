@@ -3,24 +3,33 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffService } from '../../../../Services/HMS/staff.service';
+import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 declare var bootstrap: any;
 @Component({
   selector: 'app-doctors-list',
   templateUrl: './doctors-list.component.html',
   styleUrl: './doctors-list.component.css',
   animations: [
-      trigger('fadeIn', [
-        transition(':enter', [
-          style({ opacity: 0 }),
-          animate('200ms ease-in', style({ opacity: 1 })),
-        ]),
-        transition(':leave', [
-          animate('200ms ease-out', style({ opacity: 0 })),
-        ])
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-in', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-out', style({ opacity: 0 })),
       ])
-    ],
+    ])
+  ],
 })
 export class DoctorsListComponent implements OnInit {
+  pagingFilterModel: PagingFilterModel = {
+    searchText: '',
+    currentPage: 1,
+    pageSize: 16,
+    filterList: []
+  };
+  pagedResponseModel: PagedResponseModel<any> = {};
   doctorsData!: any[];
   // 
   doctors: any[] = [];
@@ -31,8 +40,8 @@ export class DoctorsListComponent implements OnInit {
   total = 0;
   fixed = Math.ceil(this.total / this.pageSize);
   // 
-  selectedDoctor!:any;
-  constructor(private fb : FormBuilder , private doctorService : StaffService , private router : Router){
+  selectedDoctor!: any;
+  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router) {
     this.filterForm = this.fb.group({
       Search: [null],
       Status: [''],
@@ -42,11 +51,12 @@ export class DoctorsListComponent implements OnInit {
     this.getDoctors();
     this.getCounts();
   }
-  getDoctors(){
-    const { Search, Status } = this.filterForm.value;
-    this.doctorService.getDoctors(this.currentPage, this.pageSize, Status).subscribe({
-      next:(res)=>{
-        this.doctors = res.results.map((doctor:any) => {
+  getDoctors() {
+    this.doctorService.getDoctors(this.pagingFilterModel).subscribe({
+      next: (res) => {
+        debugger;
+        this.doctors = res.results.map((doctor: any) => {
+          
           if (doctor.status === 'Active') {
             doctor.status = 'متاح';
           } else {
@@ -54,29 +64,35 @@ export class DoctorsListComponent implements OnInit {
           }
           return doctor;
         });
-        this.pageSize = res.pageSize;
-        this.currentPage = res.pageIndex;
-        this.total = res.count;
-        this.fixed = Math.ceil(this.total / this.pageSize);
-        console.log('data', res);
+        this.total = res.totalCount;
       },
-      error:()=>{
+      error: () => {
         console.log('error');
       }
     })
   }
   // 
-  applyFilters(){
+  applyFilters() {
     this.currentPage = 1;
     this.getDoctors();
   }
-  resetFilters(){ 
+  resetFilters() {
     this.filterForm.reset();
-    this.currentPage = 1;
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = [];
+    this.pagingFilterModel.searchText = '';
     this.getDoctors();
+  }
+
+  SearchTextChange() {
+    if(this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
+      this.pagingFilterModel.searchText = this.filterForm.value.Search;
+      this.pagingFilterModel.currentPage = 1;
+      this.getDoctors();
+    }
   }
   // 
-  openDoctorModal(id:number){
+  openDoctorModal(id: number) {
     this.getDoctorById(id);
   }
   getDoctorById(id: number) {
@@ -95,29 +111,10 @@ export class DoctorsListComponent implements OnInit {
     });
   }
   // 
-  getCounts(){
+  getCounts() {
     this.doctorService.getDoctorsCount().subscribe({
-      next: (data:any) => {
-        this.doctorsData = [
-          {
-            name: 'عدد الأطباء',
-            count: data.totalDoctors,
-            color: 'linear-gradient(237.82deg, #4A90E2 30.69%, #A2C7F2 105.5%)',
-            back: '#4A90E2'
-          },
-          {
-            name: 'عدد الأطباء النشطين',
-            count: data.totalActiveDoctors,
-            color: 'linear-gradient(236.62deg, #28A745 30.14%, #9BE7B2 83.62%)',
-            back: '#28A745'
-          },
-          {
-            name: 'عدد التخصصات',
-            count: data.totalDepartments,
-            color: 'linear-gradient(237.82deg, #FF9800 30.69%, #FFD180 105.5%)',
-            back: '#FF9800'
-          }
-        ]        
+      next: (data: any) => {
+        this.doctorsData = data.results;
       },
       error: (err) => {
         console.log(err);
@@ -140,16 +137,16 @@ export class DoctorsListComponent implements OnInit {
 
     this.router.navigate(['/hms/settings/doctors', doctorId]);
   }
-  print(){}
-  exportToPDF(){}
-  susbendDoctor(){}
+  print() { }
+  exportToPDF() { }
+  susbendDoctor() { }
   // 
   onPageChange(page: number) {
-    this.currentPage = page;
+    this.pagingFilterModel.currentPage = page;
     this.getDoctors();
   }
   // =======================================================================================
-  
+
   private translateWeekDay(weekDay: string): string {
     const weekDayMap: { [key: string]: string } = {
       'Sunday': 'الأحد',
@@ -162,7 +159,7 @@ export class DoctorsListComponent implements OnInit {
     };
     return weekDayMap[weekDay] || weekDay;
   }
-  
+
   private translateGender(gender: string): string {
     const genderMap: { [key: string]: string } = {
       'Male': 'ذكر',
@@ -170,7 +167,7 @@ export class DoctorsListComponent implements OnInit {
     };
     return genderMap[gender] || gender;
   }
-  
+
   private translateMaritalStatus(status: string): string {
     const maritalStatusMap: { [key: string]: string } = {
       'Single': 'أعزب',
@@ -180,7 +177,7 @@ export class DoctorsListComponent implements OnInit {
     };
     return maritalStatusMap[status] || status;
   }
-  
+
   private translateDegree(degree: string): string {
     const degreeMap: { [key: string]: string } = {
       'PhD': 'دكتوراه',

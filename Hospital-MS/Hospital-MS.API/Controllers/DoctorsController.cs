@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Contracts.Doctors;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Doctors;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +25,10 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("all")]
-        public async Task<IActionResult> GetAllDoctors([FromQuery] GetDoctorsRequest request, CancellationToken cancellationToken)
+        [HttpPost("all")]
+        public async Task<IActionResult> GetAllDoctors(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
-            var result = await _doctorService.GetAllAsync(request, cancellationToken);
+            var result = await _doctorService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
         }
 
