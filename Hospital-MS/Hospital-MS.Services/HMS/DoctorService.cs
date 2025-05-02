@@ -9,20 +9,23 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class DoctorService(IUnitOfWork unitOfWork, IFileService fileService, IWebHostEnvironment webHostEnvironment) : IDoctorService
+    public class DoctorService(IUnitOfWork unitOfWork, IFileService fileService, IWebHostEnvironment webHostEnvironment,ISQLHelper sQLHelper) : IDoctorService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
         private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
+        private readonly ISQLHelper _sQLHelper = sQLHelper;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(DoctorRequest request, CancellationToken cancellationToken = default)
         {
@@ -105,26 +108,27 @@ namespace Hospital_MS.Services.HMS
             throw new NotImplementedException();
         }
 
-        public async Task<ErrorResponseModel<List<AllDoctorsResponse>>> GetAllAsync(GetDoctorsRequest request, CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
-            var doctors = await _unitOfWork.Repository<Doctor>()
-                .GetAll()
-                .Include(x => x.Department)
-                .ToListAsync(cancellationToken);
-
-            var response = doctors.Select(doc => new AllDoctorsResponse
+            try
             {
-                Id = doc.Id,
-                FullName = doc.FullName,
-                Phone = doc.Phone,
-                Department = doc?.Department?.Name,
-                Status = doc.Status.ToString(),
-                DepartmentId = doc.DepartmentId,
-                
+                var Params = new SqlParameter[3];
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+                Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
+                int totalCount = 0;
+                if (dt.Rows.Count > 0)
+                {
+                    int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
+                }
 
-            }).ToList();
-
-            return ErrorResponseModel<List<AllDoctorsResponse>>.Success(GenericErrors.GetSuccess, response);
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
         }
 
         public async Task<ErrorResponseModel<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -180,19 +184,17 @@ namespace Hospital_MS.Services.HMS
 
         }
 
-        public async Task<ErrorResponseModel<DoctorsCountResponse>> GetCountsAsync(CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<DataTable>> GetCountsAsync(CancellationToken cancellationToken = default)
         {
-            var doctors = await _unitOfWork.Repository<Doctor>().GetAll().ToListAsync();
-            var departments = await _unitOfWork.Repository<Department>().GetAll().ToListAsync();
-
-            var response = new DoctorsCountResponse
+            try
             {
-                TotalActiveDoctors = doctors.Count(d => d.Status == StaffStatus.Active),
-                TotalDepartments = departments.Count,
-                TotalDoctors = doctors.Count,
-            };
-
-            return ErrorResponseModel<DoctorsCountResponse>.Success(GenericErrors.GetSuccess, response);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetDoctorTypeCountStatistics", Array.Empty<SqlParameter>());
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, 3, dt);
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
         }
 
 

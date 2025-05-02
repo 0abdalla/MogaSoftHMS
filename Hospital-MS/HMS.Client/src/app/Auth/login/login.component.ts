@@ -21,6 +21,8 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent implements OnInit {
   loignForm!: FormGroup;
+  // 
+  message:string = '';
   constructor(private router : Router , private fb : FormBuilder , private authService : AuthService) { } 
   ngOnInit(): void { 
     this.loignForm = this.fb.group({
@@ -36,6 +38,7 @@ export class LoginComponent implements OnInit {
       },
       error:(err) => {
         console.error('Login failed', err);
+        this.message = 'اسم المستخدم أو كلمة المرور غير صحيحين';
       }
     })
   }

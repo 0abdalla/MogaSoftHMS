@@ -8,7 +8,7 @@ import { User } from '../Models/HMS/user';
   providedIn: 'root'
 })
 export class AuthService {
-  baseUrl = environment.baseUrl;
+  baseUrl = environment.baseUrlLogin;
 
   constructor(private http: HttpClient) { }
 

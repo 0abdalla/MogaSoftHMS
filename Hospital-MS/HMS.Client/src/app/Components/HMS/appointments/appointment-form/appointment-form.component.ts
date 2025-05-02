@@ -9,6 +9,7 @@ import { SharedService } from '../../../../Services/shared.service';
 import { VisitTypeLabels } from '../../../../Models/HMS/enums';
 import { PrintInvoiceComponent } from '../print-invoice/print-invoice.component';
 import { MessageService } from 'primeng/api';
+import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 
 @Component({
   selector: 'app-appointment-form',
@@ -28,6 +29,12 @@ import { MessageService } from 'primeng/api';
 })
 export class AppointmentFormComponent implements OnInit {
   @ViewChild('PrintInvioce', { static: false }) PrintInvoiceComponent: PrintInvoiceComponent;
+  pagingFilterModel: PagingFilterModel = {
+    searchText: '',
+    currentPage: 1,
+    pageSize: 100,
+    filterList: []
+  };
   reservationForm: FormGroup;
   // 
   clinics!: any;
@@ -142,9 +149,10 @@ export class AppointmentFormComponent implements OnInit {
     });
   }
   getStaff() {
-    this.staffService.getDoctors(1, 100, 'Active').subscribe({
+    this.staffService.getDoctors(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.doctors = data.results;
+        console.log(this.doctors);
       },
       error: (err) => {
         console.log(err);

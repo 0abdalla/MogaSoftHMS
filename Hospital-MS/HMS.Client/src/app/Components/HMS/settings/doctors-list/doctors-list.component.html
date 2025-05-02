@@ -1,252 +1,216 @@
-  <main id="doctors-list" @fadeIn>
-      <section class="section1" id="cards">
+<main id="doctors-list" @fadeIn>
+    <section class="section1" id="cards">
         <div class="container-fluid">
-          <div class="row">
-            <div class="col-lg-4" *ngFor="let doctor of doctorsData">
-              <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': doctor.color }">
-                <h4>{{ doctor.name }}</h4>
-                <p class="mt-0">{{ doctor.count }}</p>
-                <div class="percentage d-flex align-items-center justify-content-center gap-1">
-                  <p class="m-0"> 12%</p>
-                  <i class="fa-regular fa-circle-arrow-up"></i>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="section2" id="table-doctors">
-        <div class="card mt-3 p-2">
-          <div class="p-3 mt-4">
-            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-              <div class="row g-2">
-                <div class="col-lg-2">
-                  <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
-                  <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إزالة الفلترة</button>
-                </div>
-                <div class="col-lg-4">
-                  <input
-                    type="text"
-                          class="form-control shadow-none"
-                          placeholder="أدخل إسم الطبيب أو رقم الهاتف"
-                          formControlName="Search"
-                        />
-                      </div>
-                      <!-- <div class="col-lg-4">
-                        <select class="form-select shadow-none" formControlName="Status">
-                          <option selected disabled value="">اختر حالة الطبيب</option>
-                          <option value="Active">متاح</option>
-                          <option value="Inactive">غير متاح</option>
-                        </select>
-                      </div> -->
-                      
+            <div class="row">
+                <div class="col-lg-4" *ngFor="let doctor of doctorsData">
+                    <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': doctor.color }">
+                        <h4>{{ doctor.name }}</h4>
+                        <p class="mt-0">{{ doctor.count }}</p>
+                        <div class="percentage d-flex align-items-center justify-content-center gap-1">
+                            <p class="m-0"> 12%</p>
+                            <i class="fa-regular fa-circle-arrow-up"></i>
+                        </div>
                     </div>
-                  </form>
                 </div>
-            
-                <table class="table table-hover mt-4">
-                    <thead>
-                      <tr>
+            </div>
+        </div>
+    </section>
+    <section class="section2" id="table-doctors">
+        <div class="card mt-3 p-2">
+            <div class="p-3 mt-4">
+                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+                    <div class="row g-2">
+                        <div class="col-lg-2">
+                            <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
+                            <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إزالة الفلترة</button>
+                        </div>
+                        <div class="col-lg-4">
+                            <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الطبيب أو رقم الهاتف" (input)="SearchTextChange()" formControlName="Search" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <table class="table table-hover mt-4">
+                <thead>
+                    <tr>
                         <th>الإسم</th>
                         <th>التخصص</th>
                         <th>رقم الهاتف</th>
                         <th>الحالة</th>
                         <!-- <th>الإجراءات</th> -->
-                      </tr>
-                    </thead>
-                    <tbody *ngIf="doctors!.length > 0">
-                      <tr
-                        *ngFor="let doctor of doctors | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }"
-                        (click)="openDoctorModal(doctor.id)"
-                        data-bs-toggle="modal"
-                        data-bs-target="#doctorDetailsModal"
-                        style="cursor: pointer"
-                      >
+                    </tr>
+                </thead>
+                <tbody *ngIf="doctors!.length > 0">
+                    <tr *ngFor="let doctor of doctors | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openDoctorModal(doctor.id)" data-bs-toggle="modal" data-bs-target="#doctorDetailsModal"
+                        style="cursor: pointer">
                         <td>
-                          <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ doctor.fullName.charAt(0) }}</div>
-                            <span class="fw-bold">{{ doctor.fullName }}</span>
-                          </div>
+                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                                <div class="avatar-circle">{{ doctor?.fullName?.charAt(0) }}</div>
+                                <span class="fw-bold">{{ doctor.fullName }}</span>
+                            </div>
                         </td>
                         <td>
-                          {{ doctor.department }}
+                            {{ doctor.department }}
                         </td>
                         <td>
-                          {{ doctor.phone }}
+                            {{ doctor.phone }}
                         </td>
-                        
-                  
-                  
+
+
+
                         <td>
-                            <span
-                              class="status-pill"
-                              [ngClass]="{
+                            <span class="status-pill" [ngClass]="{
                                 'bg-success': doctor.status === 'متاح',
                                 'bg-secondary': doctor.status == 'غير متاح'
-                              }"
-                            >
+                              }">
                               {{ doctor.status }}
                             </span>
-                          </td>
-                          
-                  
+                        </td>
+
+
                         <!-- <td>
                           <button class="btn btn-outline-warning">
                             <i class="fa-light fa-pen-to-square"></i>
                           </button>
                         </td> -->
-                      </tr>
-                    </tbody>
-                  
-                    <tbody *ngIf="doctors?.length === 0">
-                      <tr>
-                        <td colspan="5" class="text-center text-muted">لا توجد أطباء حتى الآن</td>
-                      </tr>
-                    </tbody>
-                </table>
-                
-            
-                <div class="col-lg-12">
-                  <div
-                    *ngIf="total > 16"
-                    class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
-                  >
-                    <div class="my-pagination">
-                      <pagination-controls
-                        id="paginate"
-                        (pageChange)="onPageChange($event)"
-                        (pageBoundsCorrection)="onPageChange($event)"
-                        [maxSize]="16"
-                        [directionLinks]="true"
-                        [autoHide]="true"
-                        [responsive]="true"
-                        previousLabel=""
-                        nextLabel=""
-                        screenReaderPageLabel="page"
-                        screenReaderCurrentLabel="You're on page"
-                      >
-                      </pagination-controls>
-                    </div>
-                  </div>
-                </div>
-              </div>
-      </section>
-  </main>
-  
-  
-  
-  <div class="modal fade" id="doctorDetailsModal" tabindex="-1" aria-labelledby="doctorDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-        
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="doctorDetailsLabel">تفاصيل الطبيب</h5>
-        </div>
-  
-        <div class="modal-body p-4">
-          <h4>👤 البيانات الشخصية</h4>
-          <div class="row mb-3">
-            <div class="col-lg-4">
-              <strong class="strong">الإسم الكامل:</strong> <span class="span">{{ selectedDoctor?.fullName || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">الرقم القومي:</strong> <span class="span">{{ selectedDoctor?.nationalId || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">النوع:</strong> <span class="span">{{ selectedDoctor?.gender || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">الحالة الاجتماعية:</strong> <span class="span">{{ selectedDoctor?.maritalStatus || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">تاريخ الميلاد:</strong> <span class="span">{{ selectedDoctor?.dateOfBirth || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">الدرجة العلمية:</strong> <span class="span">{{ selectedDoctor?.degree || '---' }}</span>
-            </div>
-          </div>
-  
-          <hr>
-  
-          <h4>💼 معلومات الوظيفة</h4>
-          <div class="row mb-3">
-            <div class="col-lg-4">
-              <strong class="strong">التخصص:</strong> <span class="span">{{ selectedDoctor?.specialty || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">القسم:</strong> <span class="span">{{ selectedDoctor?.department || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">تاريخ التعيين:</strong> <span class="span">{{ selectedDoctor?.startDate || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">الحالة:</strong> <span class="span">{{ selectedDoctor?.status || '---' }}</span>
-            </div>
-          </div>
-  
-          <hr>
-  
-          <h4>📞 معلومات الاتصال</h4>
-          <div class="row mb-3">
-            <div class="col-lg-4">
-              <strong class="strong">رقم الهاتف:</strong> <span class="span">{{ selectedDoctor?.phone || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">البريد الإلكتروني:</strong> <span class="span">{{ selectedDoctor?.email || '---' }}</span>
-            </div>
-            <div class="col-lg-4">
-              <strong class="strong">العنوان:</strong> <span class="span">{{ selectedDoctor?.address || '---' }}</span>
-            </div>
-          </div>
-  
-          <hr>
-  
-          <h4>🕒 مواعيد العمل</h4>
-          <div class="row mb-3">
-            <div class="col-lg-12">
-              <table class="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>اليوم</th>
-                    <th>وقت البدء</th>
-                    <th>وقت الانتهاء</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let schedule of selectedDoctor?.doctorSchedules">
-                    <td>{{ schedule.weekDay || '---' }}</td>
-                    <td>{{ schedule.startTime || '---' }}</td>
-                    <td>{{ schedule.endTime || '---' }}</td>
-                  </tr>
-                  <tr *ngIf="!selectedDoctor?.doctorSchedules?.length">
-                    <td colspan="3" class="text-center">لا توجد مواعيد عمل</td>
-                  </tr>
+                    </tr>
                 </tbody>
-              </table>
+
+                <tbody *ngIf="doctors?.length === 0">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">لا توجد أطباء حتى الآن</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <div class="col-lg-12">
+                <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                    <div class="my-pagination">
+                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                            screenReaderCurrentLabel="You're on page">
+                        </pagination-controls>
+                    </div>
+                </div>
             </div>
-          </div>
-  
-          <hr>
-  
-          <h4>📝 ملاحظات</h4>
-          <p class="text-muted">{{ selectedDoctor?.notes || 'لا يوجد ملاحظات' }}</p>
         </div>
-  
-        <div class="modal-footer row">
-          <div class="col-3 m-0">
-            <button class="btn col-12 btn-outline-warning" (click)="editDoctor(selectedDoctor.id)">تعديل البيانات</button>
-          </div>
-          <div class="col-3 m-0">
-            <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
-          </div>
-          <div class="col-3 m-0">
-            <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
-          </div>
-          <div class="col-3 m-0">
-            <button class="btn col-12 btn-outline-primary" (click)="susbendDoctor()">تعليق مؤقت</button>
-          </div>
+    </section>
+</main>
+
+
+
+<div class="modal fade" id="doctorDetailsModal" tabindex="-1" aria-labelledby="doctorDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="doctorDetailsLabel">تفاصيل الطبيب</h5>
+            </div>
+
+            <div class="modal-body p-4">
+                <h4>👤 البيانات الشخصية</h4>
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <strong class="strong">الإسم الكامل:</strong> <span class="span">{{ selectedDoctor?.fullName || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">الرقم القومي:</strong> <span class="span">{{ selectedDoctor?.nationalId || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">النوع:</strong> <span class="span">{{ selectedDoctor?.gender || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">الحالة الاجتماعية:</strong> <span class="span">{{ selectedDoctor?.maritalStatus || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">تاريخ الميلاد:</strong> <span class="span">{{ selectedDoctor?.dateOfBirth || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">الدرجة العلمية:</strong> <span class="span">{{ selectedDoctor?.degree || '---' }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h4>💼 معلومات الوظيفة</h4>
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <strong class="strong">التخصص:</strong> <span class="span">{{ selectedDoctor?.specialty || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">القسم:</strong> <span class="span">{{ selectedDoctor?.department || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">تاريخ التعيين:</strong> <span class="span">{{ selectedDoctor?.startDate || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">الحالة:</strong> <span class="span">{{ selectedDoctor?.status || '---' }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h4>📞 معلومات الاتصال</h4>
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                        <strong class="strong">رقم الهاتف:</strong> <span class="span">{{ selectedDoctor?.phone || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">البريد الإلكتروني:</strong> <span class="span">{{ selectedDoctor?.email || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">العنوان:</strong> <span class="span">{{ selectedDoctor?.address || '---' }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h4>🕒 مواعيد العمل</h4>
+                <div class="row mb-3">
+                    <div class="col-lg-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>اليوم</th>
+                                    <th>وقت البدء</th>
+                                    <th>وقت الانتهاء</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let schedule of selectedDoctor?.doctorSchedules">
+                                    <td>{{ schedule.weekDay || '---' }}</td>
+                                    <td>{{ schedule.startTime || '---' }}</td>
+                                    <td>{{ schedule.endTime || '---' }}</td>
+                                </tr>
+                                <tr *ngIf="!selectedDoctor?.doctorSchedules?.length">
+                                    <td colspan="3" class="text-center">لا توجد مواعيد عمل</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <hr>
+
+                <h4>📝 ملاحظات</h4>
+                <p class="text-muted">{{ selectedDoctor?.notes || 'لا يوجد ملاحظات' }}</p>
+            </div>
+
+            <div class="modal-footer row">
+                <div class="col-3 m-0">
+                    <button class="btn col-12 btn-outline-warning" (click)="editDoctor(selectedDoctor.id)">تعديل البيانات</button>
+                </div>
+                <div class="col-3 m-0">
+                    <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
+                </div>
+                <div class="col-3 m-0">
+                    <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
+                </div>
+                <div class="col-3 m-0">
+                    <button class="btn col-12 btn-outline-primary" (click)="susbendDoctor()">تعليق مؤقت</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
