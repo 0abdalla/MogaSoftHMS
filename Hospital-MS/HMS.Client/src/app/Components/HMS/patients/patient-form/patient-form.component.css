@@ -2,11 +2,16 @@
   min-height: 100vh;
 }
 h5{
-  color: black;
+  color: #D94A91;
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 700;
   span{
     color: #576CAB;
     font-weight: 700;
   }
+}
+.search-patient{
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0px 12px 24px -4px #919eab6e !important;
 }

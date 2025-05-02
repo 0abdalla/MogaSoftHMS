@@ -145,6 +145,7 @@ export class AppointmentFormComponent implements OnInit {
     this.staffService.getDoctors(1, 100, 'Active').subscribe({
       next: (data) => {
         this.doctors = data.results;
+        console.log(this.doctors);
       },
       error: (err) => {
         console.log(err);

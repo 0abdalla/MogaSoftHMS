@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { StaffService } from '../../../../Services/HMS/staff.service';
@@ -36,10 +36,11 @@ export class PatientFormComponent implements OnInit {
     private messageService : MessageService,
     private insuranceService: InsuranceService
   ) {
+    const minBirthDate = new Date(1920, 0, 1);
     this.patientForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
-      patientBirthDate: ['', Validators.required],
+      patientBirthDate: ['', [Validators.required, this.minDateValidator(minBirthDate)]],
       patientNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       patientAddress: ['', Validators.required],
       patientStatus: ['', Validators.required],
@@ -207,5 +208,18 @@ export class PatientFormComponent implements OnInit {
 
     emergencyPhone02?.updateValueAndValidity();
     emergencyContact02?.updateValueAndValidity();
+  }
+  // 
+  minDateValidator(minDate: Date): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value) {
+        return null;
+      }
+      const inputDate = new Date(control.value);
+      if (inputDate < minDate) {
+        return { minDate: { value: control.value } };
+      }
+      return null;
+    };
   }
 }
