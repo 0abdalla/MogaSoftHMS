@@ -13,7 +13,7 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(data: { email: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/Auth/Login`, data).pipe(
+    return this.http.post<any>(`${this.baseUrl}Auth/Login`, data).pipe(
       tap(response => {
         sessionStorage.setItem('userId', response.results.userId);
         sessionStorage.setItem('token', response.results.token);
@@ -24,7 +24,7 @@ export class AuthService {
   }
 
   register(data: User) {
-    return this.http.post(`${this.baseUrl}/Auth/register`, data);
+    return this.http.post(`${this.baseUrl}Auth/register`, data);
   }
 
   getUserFromSession(): User | null {

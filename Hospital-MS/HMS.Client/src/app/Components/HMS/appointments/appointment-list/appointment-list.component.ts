@@ -100,8 +100,6 @@ export class AppointmentListComponent implements OnInit {
     this.pagingFilterModel.currentPage = 1;
     this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
     this.getPatients();
-    this.getCounts();
-
   }
 
   SearchTextChange() {
@@ -130,7 +128,6 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getAppointmentById(id).subscribe({
       next: (data) => {
         this.selectedAppointment = data.results;
-        console.log(this.selectedAppointment);
       },
       error: (err) => {
         console.error('Failed to fetch appointment', err);

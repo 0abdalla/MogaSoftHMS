@@ -1,28 +1,28 @@
 <main id="add-reservation" @fadeIn>
-  <div class="container-fluid">
-    <form [formGroup]="reservationForm" class="form p-2" (ngSubmit)="onSubmit()">
-      <p-toast position="top-left"></p-toast>
-      <h4>👤بيانات المريض</h4>
-      <div class="row mb-3">
-        <div class="col-lg-6">
-          <label for="patientName" class="form-label">إسم المريض</label>
-          <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName">
-        </div>
-        <div class="col-lg-6">
-          <label for="patientPhone" class="form-label">رقم هاتف المريض</label>
-          <input type="text" id="patientPhone" class="form-control shadow-none" placeholder="أدخل رقم هاتف المريض" formControlName="patientPhone">
-        </div>
-      </div>
-      <hr>
-      <h4>🏥بيانات الحجز</h4>
-      <div class="row mb-3">
-        <div class="col-lg-3">
-          <label for="app-date" class="form-label">تاريخ الحجز</label>
-          <input id="app-date" type="datetime-local" formControlName="appointmentDate" class="form-control shadow-none">
-        </div>
-        <div class="col-lg-3">
-          <label for="clinic-type" class="form-label">نوع الحجز</label>
-          <select id="clinic-type" class="form-select shadow-none" formControlName="appointmentType">
+    <div class="container-fluid">
+        <form [formGroup]="reservationForm" class="form p-2" (ngSubmit)="onSubmit()">
+            <p-toast position="top-left"></p-toast>
+            <h4>👤بيانات المريض</h4>
+            <div class="row mb-3">
+                <div class="col-lg-6">
+                    <label for="patientName" class="form-label">إسم المريض</label>
+                    <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName">
+                </div>
+                <div class="col-lg-6">
+                    <label for="patientPhone" class="form-label">رقم هاتف المريض</label>
+                    <input type="text" id="patientPhone" class="form-control shadow-none" placeholder="أدخل رقم هاتف المريض" formControlName="patientPhone">
+                </div>
+            </div>
+            <hr>
+            <h4>🏥بيانات الحجز</h4>
+            <div class="row mb-3">
+                <div class="col-lg-3">
+                    <label for="app-date" class="form-label">تاريخ الحجز</label>
+                    <input id="app-date" type="datetime-local" formControlName="appointmentDate" class="form-control shadow-none">
+                </div>
+                <div class="col-lg-3">
+                    <label for="clinic-type" class="form-label">نوع الحجز</label>
+                    <select id="clinic-type" class="form-select shadow-none" formControlName="appointmentType">
             <option selected disabled value="">اختر نوع الحجز</option>
             <option value="General">كشف</option>
             <option value="Consultation">استشارة</option>
@@ -30,20 +30,19 @@
             <option value="Screening">تحاليل</option>
             <option value="Radiology">أشعة</option>
           </select>
-        </div>
-        <div class="col-lg-3">
-          <label for="clinic" class="form-label">الخدمة الطبية</label>
-          <select id="clinic" class="form-select shadow-none" formControlName="clinicId">
+                </div>
+                <div class="col-lg-3">
+                    <label for="clinic" class="form-label">الخدمة الطبية</label>
+                    <select id="clinic" class="form-select shadow-none" formControlName="clinicId">
             <option selected disabled value="">اختر الخدمة</option>
             <option *ngFor="let clinic of filteredClinics" [value]="clinic.id">{{ clinic.name }}</option>
           </select>
-        </div>
-        <div class="col-lg-3" *ngIf="selectedAppointmentType !== 'Screening'">
-          <label for="clinic-doctor" class="form-label">
+                </div>
+                <div class="col-lg-3" *ngIf="selectedAppointmentType !== 'Screening'">
+                    <label for="clinic-doctor" class="form-label">
             {{ selectedAppointmentType === 'Radiology' ? 'نوع الأشعة' : 'الدكتور المختص' }}
           </label>
-          <select id="clinic-doctor" class="form-select shadow-none" 
-                  [formControlName]="selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId'">
+                    <select id="clinic-doctor" class="form-select shadow-none" [formControlName]="selectedAppointmentType === 'Radiology' ? 'radiologyType' : 'doctorId'">
             <option selected disabled value="">
               {{ selectedAppointmentType === 'Radiology' ? 'اختر نوع الأشعة' : 'اختر الدكتور المختص' }}
             </option>
@@ -56,53 +55,52 @@
               <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{ doctor.fullName }}</option>
             </ng-container>
           </select>
-        </div>
-        
-      </div>
-      <hr>
-      <h4>📋بيانات إضافية</h4>
-      <div class="row mb-3">
-        <div class="col-lg-4">
-          <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
-          <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
+                </div>
+
+            </div>
+            <hr>
+            <h4>📋بيانات إضافية</h4>
+            <div class="row mb-3">
+                <div class="col-lg-4">
+                    <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
+                    <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
             <option selected disabled value="">اختر شركة التأمين</option>
             <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{ insuranceCompany.name }}</option>
           </select>
-        </div>
-        <div class="col-lg-4">
-          <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
-          <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
+                </div>
+                <div class="col-lg-4">
+                    <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
+                    <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
             <option selected disabled value="">اختر فئة التأمين</option>
-            <option value="فئة 1">فئة 1</option>
-            <option value="فئة 2">فئة 2</option>
+            <option value="1">فئة 1</option>
+            <option value="2">فئة 2</option>
           </select>
-        </div>
-        <div class="col-lg-4">
-          <label for="insuranceNumber" class="form-label">رقم التأمين</label>
-          <input type="text" id="insuranceNumber" class="form-control shadow-none" formControlName="insuranceNumber" placeholder="أدخل رقم التأمين"
-            pattern="[0-9]*">
-        </div>
-      
-        <div class="col-lg-4 mt-3">
-          <label class="form-label">تم تحويله؟</label>
-          <div class="form-check">
-            <input type="radio" id="referredYes" class="form-check-input shadow-none" formControlName="referred" value="yes">
-            <label for="referredYes" class="form-check-label">نعم</label>
-          </div>
-          <div class="form-check">
-            <input type="radio" id="referredNo" class="form-check-input shadow-none" formControlName="referred" value="no">
-            <label for="referredNo" class="form-check-label">لا</label>
-          </div>
-        </div>
-        <div class="col-lg-4 mt-3" *ngIf="reservationForm.get('referred')?.value === 'yes'">
-          <label for="referredClinic" class="form-label">العيادة المحول منها</label>
-          <select [disabled]="!reservationForm.get('referred')?.value" id="referredClinic" class="form-select shadow-none" formControlName="referredClinic">
+                </div>
+                <div class="col-lg-4">
+                    <label for="insuranceNumber" class="form-label">رقم التأمين</label>
+                    <input type="text" id="insuranceNumber" class="form-control shadow-none" formControlName="insuranceNumber" placeholder="أدخل رقم التأمين" pattern="[0-9]*">
+                </div>
+
+                <div class="col-lg-4 mt-3">
+                    <label class="form-label">تم تحويله؟</label>
+                    <div class="form-check">
+                        <input type="radio" id="referredYes" class="form-check-input shadow-none" formControlName="referred" value="yes">
+                        <label for="referredYes" class="form-check-label">نعم</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="referredNo" class="form-check-input shadow-none" formControlName="referred" value="no">
+                        <label for="referredNo" class="form-check-label">لا</label>
+                    </div>
+                </div>
+                <div class="col-lg-4 mt-3" *ngIf="reservationForm.get('referred')?.value === 'yes'">
+                    <label for="referredClinic" class="form-label">العيادة المحول منها</label>
+                    <select [disabled]="!reservationForm.get('referred')?.value" id="referredClinic" class="form-select shadow-none" formControlName="referredClinic">
             <option selected disabled value="">اختر العيادة</option>
             <option value="عيادة العظام">عيادة العظام</option>
             <option value="عيادة الباطنة">عيادة الباطنة</option>
           </select>
-        </div>
-        <!-- <div class="col-lg-4 mt-3">
+                </div>
+                <!-- <div class="col-lg-4 mt-3">
           <label class="form-label">حاصل على تطعيم؟</label>
           <div class="form-check">
             <input type="radio" id="vaccinatedYes" class="form-check-input shadow-none" formControlName="vaccinated" value="yes">
@@ -113,62 +111,64 @@
             <label for="vaccinatedNo" class="form-check-label">لا</label>
           </div>
         </div> -->
-        <div class="col-lg-4 mt-3">
-          <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
-          <select id="paymentMethod" class="form-select shadow-none" formControlName="paymentMethod">
+                <div class="col-lg-4 mt-3">
+                    <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
+                    <select id="paymentMethod" class="form-select shadow-none" formControlName="paymentMethod">
             <option selected disabled value="">اختر وسيلة الدفع</option>
             <option value="Cash">نقدي</option>
             <option value="Instapay">تحويل لحظي</option>
           </select>
-        </div>
-      </div>
-      <div class="row justify-content-center gap-2 px-3">
-          <button type="submit" [disabled]="!reservationForm.valid" class="btn-blue col-2">إضافة</button>
-          <button type="reset" class="btn-outline-blue col-2">الغاء</button>
-        
-      </div>
-    </form>
-  </div>
+                </div>
+            </div>
+            <div class="row justify-content-center gap-2 px-3">
+                <button type="submit" [disabled]="!reservationForm.valid" class="btn-blue col-2">إضافة</button>
+                <button type="reset" class="btn-outline-blue col-2">الغاء</button>
+
+            </div>
+        </form>
+    </div>
 </main>
 
 
 <div *ngIf="showReceipt" class="receipt-container" id="receipt">
-  <div class="receipt">
-    <div class="receipt-header">
-      <img src="assets/images/company-logo.png" alt="Company Logo" class="company-logo" />
-      <h2>إيصال الحجز</h2>
-      <p>شركة الرعاية الصحية</p>
-      <p>تاريخ الحجز: {{ submittedData.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}</p>
-    </div>
-    <hr />
-    <div class="receipt-body">
-      <h4>👤 بيانات المريض</h4>
-      <p><strong>الاسم:</strong> {{ submittedData.patientName }}</p>
-      <p><strong>رقم الهاتف:</strong> {{ submittedData.patientPhone }}</p>
+    <div class="receipt">
+        <div class="receipt-header">
+            <img src="assets/images/company-logo.png" alt="Company Logo" class="company-logo" />
+            <h2>إيصال الحجز</h2>
+            <p>شركة الرعاية الصحية</p>
+            <p>تاريخ الحجز: {{ submittedData.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}</p>
+        </div>
+        <hr />
+        <div class="receipt-body">
+            <h4>👤 بيانات المريض</h4>
+            <p><strong>الاسم:</strong> {{ submittedData.patientName }}</p>
+            <p><strong>رقم الهاتف:</strong> {{ submittedData.patientPhone }}</p>
 
-      <h4>🏥 بيانات الحجز</h4>
-      <p><strong>تاريخ الحجز:</strong> {{ submittedData.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}</p>
-      <p><strong>نوع الحجز:</strong> {{ submittedData.appointmentType }}</p>
-      <p><strong>الخدمة الطبية:</strong> {{ getClinicName(submittedData.clinicId) }}</p>
-      <p *ngIf="submittedData.appointmentType === 'Radiology'"><strong>نوع الأشعة:</strong> {{ submittedData.radiologyType }}</p>
-      <p *ngIf="submittedData.appointmentType !== 'Radiology' && submittedData.doctorId"><strong>الدكتور المختص:</strong> {{ getDoctorName(submittedData.doctorId) }}</p>
+            <h4>🏥 بيانات الحجز</h4>
+            <p><strong>تاريخ الحجز:</strong> {{ submittedData.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}</p>
+            <p><strong>نوع الحجز:</strong> {{ submittedData.appointmentType }}</p>
+            <p><strong>الخدمة الطبية:</strong> {{ getClinicName(submittedData.clinicId) }}</p>
+            <p *ngIf="submittedData.appointmentType === 'Radiology'"><strong>نوع الأشعة:</strong> {{ submittedData.radiologyType }}</p>
+            <p *ngIf="submittedData.appointmentType !== 'Radiology' && submittedData.doctorId"><strong>الدكتور المختص:</strong> {{ getDoctorName(submittedData.doctorId) }}</p>
 
-      <h4>📋 بيانات إضافية</h4>
-      <p><strong>شركة التأمين:</strong> {{ submittedData.insuranceCompanyId || 'غير محدد' }}</p>
-      <p><strong>فئة التأمين:</strong> {{ submittedData.insuranceCategoryId || 'غير محدد' }}</p>
-      <p><strong>رقم التأمين:</strong> {{ submittedData.insuranceNumber || 'غير محدد' }}</p>
-      <p><strong>تم تحويله؟:</strong> {{ submittedData.referred === 'yes' ? 'نعم' : 'لا' }}</p>
-      <p *ngIf="submittedData.referred === 'yes'"><strong>العيادة المحول منها:</strong> {{ submittedData.referredClinic }}</p>
-      <p><strong>وسيلة الدفع:</strong> {{ submittedData.paymentMethod }}</p>
+            <h4>📋 بيانات إضافية</h4>
+            <p><strong>شركة التأمين:</strong> {{ submittedData.insuranceCompanyId || 'غير محدد' }}</p>
+            <p><strong>فئة التأمين:</strong> {{ submittedData.insuranceCategoryId || 'غير محدد' }}</p>
+            <p><strong>رقم التأمين:</strong> {{ submittedData.insuranceNumber || 'غير محدد' }}</p>
+            <p><strong>تم تحويله؟:</strong> {{ submittedData.referred === 'yes' ? 'نعم' : 'لا' }}</p>
+            <p *ngIf="submittedData.referred === 'yes'"><strong>العيادة المحول منها:</strong> {{ submittedData.referredClinic }}</p>
+            <p><strong>وسيلة الدفع:</strong> {{ submittedData.paymentMethod }}</p>
+        </div>
+        <hr />
+        <div class="receipt-footer">
+            <p>شكراً لاختياركم خدماتنا</p>
+            <p>للتواصل: info&#64;healthcare.com | 1234-567-890</p>
+        </div>
     </div>
-    <hr />
-    <div class="receipt-footer">
-      <p>شكراً لاختياركم خدماتنا</p>
-      <p>للتواصل: info&#64;healthcare.com | 1234-567-890</p>
+    <div class="receipt-actions">
+        <button class="btn-blue" (click)="printReceipt()">طباعة الإيصال</button>
+        <button class="btn-outline-blue" (click)="closeReceipt()">إغلاق</button>
     </div>
-  </div>
-  <div class="receipt-actions">
-    <button class="btn-blue" (click)="printReceipt()">طباعة الإيصال</button>
-    <button class="btn-outline-blue" (click)="closeReceipt()">إغلاق</button>
-  </div>
 </div>
+
+<app-print-invoice #PrintInvioce style="display: none;"></app-print-invoice>

@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
-import { MessageService } from 'primeng/api';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
+import { SharedService } from '../../../../Services/shared.service';
+import { VisitTypeLabels } from '../../../../Models/HMS/enums';
+import { PrintInvoiceComponent } from '../print-invoice/print-invoice.component';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-appointment-form',
@@ -24,12 +27,13 @@ import { AdmissionService } from '../../../../Services/HMS/admission.service';
   ],
 })
 export class AppointmentFormComponent implements OnInit {
+  @ViewChild('PrintInvioce', { static: false }) PrintInvoiceComponent: PrintInvoiceComponent;
   reservationForm: FormGroup;
   // 
   clinics!: any;
   filteredClinics: any[] = [];
   insuranceCompanies!: any;
-  departments!:any;
+  departments!: any;
   // 
   doctors!: any;
   filteredDoctors: any[] = [];
@@ -38,7 +42,9 @@ export class AppointmentFormComponent implements OnInit {
   // 
   showReceipt: boolean = false;
   submittedData: any = {};
-  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService , private insuranceService: InsuranceService , private admissionService: AdmissionService) {
+  printInvoiceData: any = {};
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService,
+    private insuranceService: InsuranceService, private admissionService: AdmissionService, private sharedService: SharedService) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', Validators.required],
@@ -98,6 +104,9 @@ export class AppointmentFormComponent implements OnInit {
           console.log('Appointment created successfully', response);
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
           this.submittedData = { ...this.reservationForm.value };
+          this.printInvoiceData = this.createInvoiceObj(response.results);
+          this.PrintInvoiceComponent.invoiceData = this.printInvoiceData;
+          this.PrintInvoiceComponent.generatePdf();
           this.showReceipt = true;
           this.reservationForm.reset();
         } else
@@ -116,19 +125,16 @@ export class AppointmentFormComponent implements OnInit {
       next: (data) => {
         this.clinics = data.results;
         this.filteredClinics = this.clinics;
-
-        console.log(this.clinics);
       },
       error: (err) => {
         console.log(err);
       }
     });
   }
-  getDeps(){
+  getDeps() {
     this.admissionService.getDepartments().subscribe({
       next: (data) => {
         this.departments = data.results;
-        console.log(this.departments);
       },
       error: (err) => {
         console.log(err);
@@ -139,7 +145,6 @@ export class AppointmentFormComponent implements OnInit {
     this.staffService.getDoctors(1, 100, 'Active').subscribe({
       next: (data) => {
         this.doctors = data.results;
-        console.log(this.doctors);
       },
       error: (err) => {
         console.log(err);
@@ -173,11 +178,27 @@ export class AppointmentFormComponent implements OnInit {
     this.insuranceService.getAllInsurances().subscribe({
       next: (data) => {
         this.insuranceCompanies = data.results;
-        console.log(this.insuranceCompanies);
       },
       error: (err) => {
         console.log(err);
       }
     });
+  }
+
+  createInvoiceObj(number: string): any {
+    let obj = {
+      appointmentNumber: number,
+      patientName: this.reservationForm.value.patientName,
+      patientPhone: this.reservationForm.value.patientPhone,
+      appointmentType: VisitTypeLabels[this.reservationForm.value.appointmentType],
+      clinicName: this.getClinicName(this.reservationForm.value.clinicId),
+      doctorName: this.getDoctorName(this.reservationForm.value.doctorId),
+      appointmentDate: this.sharedService.getArabicDayAndTimeRange(this.reservationForm.value.appointmentDate),
+      insuranceNumber: this.reservationForm.value.insuranceNumber,
+      insuranceCompany: this.insuranceCompanies.find((i: any) => i.id == this.reservationForm.value.insuranceCompanyId)?.name,
+      insuranceCategory: this.reservationForm.value.insuranceCategoryId,
+    }
+
+    return obj;
   }
 }

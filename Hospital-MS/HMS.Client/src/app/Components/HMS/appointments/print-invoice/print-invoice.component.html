@@ -1,0 +1,60 @@
+<div class="report-container" #printSection>
+    <div class="report-title">
+        <div class="header-info">
+            <div class="logo-area">
+                <img src="../../../../../assets/vendors/imgs/logo.png">
+            </div>
+            <div>
+                <h1>تذكرة الحجز</h1>
+                <p>اسم المستشفي : نور المحمدي</p>
+            </div>
+        </div>
+        <div class="booking-number">
+            <span>رقم الحجز : {{invoiceData?.appointmentNumber}}</span>
+        </div>
+    </div>
+
+    <table class="patient-info">
+        <tr>
+            <td>كود المريض : {{invoiceData?.patientPhone}}</td>
+            <td colspan="3"></td>
+            <td>الرقم التأميني : {{invoiceData?.insuranceNumber}}</td>
+        </tr>
+        <tr>
+            <td>اسم المريض : {{invoiceData?.patientName}}</td>
+            <td colspan="3"></td>
+            <td>اسم الطبيب : {{invoiceData?.doctorName}}</td>
+        </tr>
+        <tr>
+            <td>الخدمة الطبية : {{invoiceData?.clinicName}}</td>
+            <td colspan="3"></td>
+            <td>ميعاد الحجز : {{invoiceData?.appointmentDate}}</td>
+        </tr>
+        <tr>
+            <td>نوع الخدمة : {{invoiceData?.appointmentType}}</td>
+            <td colspan="3"></td>
+            <td>تكلفة الحجز : 125 جنيها مصرياً</td>
+        </tr>
+        <tr>
+            <td>شركة التأمين : {{invoiceData?.insuranceCompany}}</td>
+            <td colspan="3"></td>
+            <td>الفئة : {{invoiceData?.insuranceCategory}}</td>
+        </tr>
+    </table>
+
+    <div class="address-bar">
+        <div>Address: Al Masala, Arab Al Hoson, El Matareya, Cairo</div>
+        <div>Phone: 02 22517341</div>
+    </div>
+
+    <div class="footer">
+        <div>E-mail: mogasoft.net</div>
+        <div>Site: https://hms.mogasoft.net</div>
+    </div>
+
+    <div class="user-info">
+        <p>اسم المستخدم : محمد كريم</p>
+    </div>
+
+    <div class="page-number">1</div>
+</div>
