@@ -14,6 +14,9 @@
             class="form-control"
             formControlName="email"
           />
+          <div *ngIf="loignForm.get('email')?.invalid && loignForm.get('email')?.touched" class="text-danger">
+             إسم المستخدم مطلوب
+          </div>
         </div>
   
         <div class="mb-3">
@@ -24,8 +27,14 @@
             class="form-control"
             formControlName="password"
           />
+          <div *ngIf="loignForm.get('password')?.invalid && loignForm.get('password')?.touched" class="text-danger">
+            كلمة المرور مطلوبة
+          </div>
+        </div>  
+        
+        <div *ngIf="message" class="text-danger text-center mb-2">
+          {{ message }}
         </div>
-  
         <button type="submit" [disabled]="loignForm.invalid" class="btn-blue w-100">تسجيل الدخول</button>
         <div class="text-center mt-3">
           <p>هل نسيت كلمة المرور ؟ <a href="">تغيير كلمة المرور</a></p>

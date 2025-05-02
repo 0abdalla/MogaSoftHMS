@@ -1,5 +1,11 @@
 <main id="add-inpatient">
   <div class="container-fluid">
+    <div class="card search-patient p-2 col-6 m-auto text-center">
+      <h5 class="text-center">بحث عن مريض موجود</h5>
+      <div class="col-6 m-auto mt-2">
+      <input type="text" class="form-control shadow-none" placeholder="ابحث برقم الهاتف لتعبئة البيانات تلقائيًا .." />
+      </div>
+    </div>
     <form [formGroup]="patientForm" class="form p-2" (ngSubmit)="onSubmit()">
       <p-toast position="top-left"></p-toast>
       <h4>👤بيانات المريض</h4>
@@ -21,9 +27,16 @@
         </div>
         <div class="col-lg-3">
           <label for="patientBirthDate" class="form-label">تاريخ الميلاد</label>
-          <input type="date" id="patientBirthDate" class="form-control shadow-none" formControlName="patientBirthDate" />
-          <div *ngIf="patientForm.get('patientBirthDate')?.invalid && patientForm.get('patientBirthDate')?.touched" class="text-danger">
+          <input 
+            type="date" 
+            id="patientBirthDate" 
+            class="form-control shadow-none" 
+            formControlName="patientBirthDate" />
+          <div *ngIf="patientForm.get('patientBirthDate')?.hasError('required') && patientForm.get('patientBirthDate')?.touched" class="text-danger">
             تاريخ الميلاد مطلوب
+          </div>
+          <div *ngIf="patientForm.get('patientBirthDate')?.hasError('minDate') && patientForm.get('patientBirthDate')?.touched" class="text-danger">
+            تاريخ الميلاد يجب ألا يكون قبل عام 1920
           </div>
         </div>
         <div class="col-lg-3">
@@ -131,7 +144,7 @@
       </div>
     
       <h4 class="mt-4">📞قائمة الاتصال</h4>
-      <div class="row align-items-center">
+      <div class="row align-items-end">
         <div class="col-lg-5">
           <label class="form-label" for="emergencyContact01">الإسم 1</label>
           <input
@@ -242,14 +255,24 @@
         </div>
         <div class="col-lg-4">
           <label for="initialDiagnosis" class="form-label">تشخيص مبدئي</label>
-          <input type="text" id="initialDiagnosis" class="form-control shadow-none" placeholder="أدخل التشخيص المبدئي" formControlName="initialDiagnosis" />
+          <textarea 
+            id="initialDiagnosis" 
+            class="form-control shadow-none" 
+            placeholder="أدخل التشخيص المبدئي" 
+            formControlName="initialDiagnosis" 
+            rows="1"></textarea>
           <div *ngIf="patientForm.get('initialDiagnosis')?.invalid && patientForm.get('initialDiagnosis')?.touched" class="text-danger">
             التشخيص المبدئي مطلوب
           </div>
         </div>
         <div class="col-lg-4">
           <label for="notes" class="form-label">ملاحظات عند الدخول</label>
-          <input type="text" id="notes" class="form-control shadow-none" placeholder="أدخل الملاحظات عند الدخول" formControlName="notes" />
+          <textarea 
+            id="notes" 
+            class="form-control shadow-none" 
+            placeholder="أدخل الملاحظات عند الدخول" 
+            formControlName="notes" 
+            rows="1"></textarea>
         </div>
         <div class="col-lg-12 mt-3">
           <label class="form-label d-block">هل له مرافق؟</label>

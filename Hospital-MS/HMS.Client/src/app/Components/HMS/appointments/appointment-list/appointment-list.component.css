@@ -116,9 +116,6 @@ td{
   text-decoration: none;
   text-align: center !important;
 }
-.col-2{
-  width: calc(95.7% / 6) !important;
-}
 .percentage{
   p{
     font-weight: 700;

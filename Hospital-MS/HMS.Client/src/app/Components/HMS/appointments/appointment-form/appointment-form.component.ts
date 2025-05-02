@@ -152,6 +152,7 @@ export class AppointmentFormComponent implements OnInit {
     this.staffService.getDoctors(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.doctors = data.results;
+        console.log(this.doctors);
       },
       error: (err) => {
         console.log(err);
