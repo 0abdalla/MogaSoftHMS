@@ -43,7 +43,7 @@ export class RegisterComponent {
 
   onRegister() {
 
-    if (this.registerForm.invalid) return;
+    // if (this.registerForm.invalid) return;
 
     this.authService.register(this.registerForm.value).subscribe({
       next: (data:any) => {
