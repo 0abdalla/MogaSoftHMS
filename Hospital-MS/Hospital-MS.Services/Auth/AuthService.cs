@@ -22,7 +22,7 @@ namespace Hospital_MS.Services.Auth
 
         public async Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
-            if (await _userManager.FindByEmailAsync(request.Email) is not { } user)
+            if (await _userManager.FindByNameAsync(request.Email) is not { } user)
                 return ErrorResponseModel<AuthResponse>.Failure(GenericErrors.InvalidCredentials);
 
             var result = await _signInManager.PasswordSignInAsync(user, request.Password, false, false);
@@ -64,11 +64,11 @@ namespace Hospital_MS.Services.Auth
                 LastName = request.LastName,
                 Address = request.Address,
                 Email = request.Email,
-                UserName = request.Email,
+                UserName = request.FirstName+" "+request.LastName,
                 IsActive = true,
             };
 
-            user.UserName = request.Email;
+            //user.UserName = request.Email;
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
