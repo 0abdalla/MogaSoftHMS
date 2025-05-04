@@ -8,6 +8,7 @@
   color: white;
   border-radius: 20px !important;
   overflow: hidden;
+  cursor: pointer;
   h6{
     font-size: 18px;
     font-weight: 700;

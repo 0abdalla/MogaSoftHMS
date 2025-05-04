@@ -30,6 +30,7 @@ export class PatientFormComponent implements OnInit {
   filteratedBeds!:any[];
   insuranceCompanies!:any;
   insuranceCategories!:any;
+  patients!:any;
   // 
   showSecondContact = false;
   // 
@@ -100,7 +101,8 @@ export class PatientFormComponent implements OnInit {
       departments: this.addmisionService.getDepartments(),
       rooms: this.addmisionService.getRooms(),
       beds: this.addmisionService.getBeds(),
-      insuranceCompanies: this.insuranceService.getAllInsurances()
+      insuranceCompanies: this.insuranceService.getAllInsurances(),
+      patients: this.addmisionService.getAddmision(this.pagingFilterModel)
     }).subscribe({
       next: (res: any) => {
         this.doctors = res.doctors.results;
@@ -111,12 +113,14 @@ export class PatientFormComponent implements OnInit {
         this.insuranceCategories = this.insuranceCompanies
           .filter(company => company.insuranceCategories && Array.isArray(company.insuranceCategories))
           .flatMap(company => company.insuranceCategories);
+        this.patients = res.patients.results;
         console.log('Doctors:', this.doctors);
         console.log('Departments:', this.departments);
         console.log('Rooms:', this.rooms);
         console.log('Beds:', this.beds);
         console.log('Insurance Companies:', this.insuranceCompanies);
         console.log('Insurance Categories:', this.insuranceCategories);
+        console.log('Patients:', this.patients);
       },
       error: (err) => {
         console.error('Error loading admission data', err);
@@ -228,5 +232,64 @@ export class PatientFormComponent implements OnInit {
       }
       return null;
     };
+  }
+  // 
+  searchPatientByPhone(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const phoneNumber = input.value.trim();
+    
+    if (phoneNumber.length === 11 && /^01[0125][0-9]{8}$/.test(phoneNumber)) {
+      this.pagingFilterModel.searchText = phoneNumber;
+      this.addmisionService.getAddmision(this.pagingFilterModel).subscribe({
+        next: (data) => {
+          const patientId = data.results[0].patientId;
+          console.log(patientId);
+          if (data.results && data.results.length > 0) {
+            const patient = data.results[0];
+            let genderValue = '';
+            if (patient.patientGender === 'ذكر') {
+              genderValue = 'Male';
+            } else if (patient.patientGender === 'أنثى') {
+              genderValue = 'Female';
+            }
+            const birthDate = patient.dateOfBirth ? patient.dateOfBirth.split('T')[0] : '';
+            this.patientForm.patchValue({
+              patientName: patient.patientName,
+              patientPhone: patient.phone,
+              patientNationalId: patient.patientNationalId,
+              patientBirthDate: birthDate,
+              patientGender: genderValue,
+              patientAddress: patient.address
+            });
+            this.patientForm.get('patientName')?.disable();
+            this.patientForm.get('patientPhone')?.disable();
+            this.patientForm.get('patientNationalId')?.disable();
+            this.patientForm.get('patientBirthDate')?.disable();
+            this.patientForm.get('patientGender')?.disable();
+            
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم العثور على المريض',
+              detail: 'تم تسجيل بيانات المريض تلقائياً',
+            });
+            console.log('Patient:', patient);
+          } else {
+            this.messageService.add({
+              severity: 'info',
+              summary: 'لا يوجد مريض',
+              detail: 'لم يتم العثور على مريض بهذا الرقم',
+            });
+          }
+        },
+        error: (err) => {
+          console.error('Search error:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'خطأ في البحث',
+            detail: 'حدث خطأ أثناء البحث عن المريض',
+          });
+        }
+      });
+    }
   }
 }

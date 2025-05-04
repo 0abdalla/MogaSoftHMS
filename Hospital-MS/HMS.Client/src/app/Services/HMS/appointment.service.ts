@@ -37,4 +37,21 @@ export class AppointmentService {
   getClinics() {
     return this.http.get<any>(`${this.baseUrl}Clinics`);
   }
+  // 
+  getServices(
+    currentPage: number = 1,
+    pageSize: number = 16,
+    searchText: string = '',
+    filterList: any = {
+      
+    }
+  ) {
+    const params = new HttpParams()
+      .set('CurrentPage', currentPage.toString())
+      .set('PageSize', pageSize.toString())
+      .set('SearchText', searchText)
+      .set('FilterList', JSON.stringify(filterList));
+  
+    return this.http.get<any>(`${this.baseUrl}MedicalService`, { params });
+  }
 }

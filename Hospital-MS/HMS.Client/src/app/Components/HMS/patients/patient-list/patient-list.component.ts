@@ -3,6 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
+import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
+import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { SharedService } from '../../../../Services/shared.service';
 
 @Component({
   selector: 'app-patient-list',
@@ -25,7 +28,16 @@ export class PatientListComponent {
   fixed = Math.ceil(this.total / this.pageSize);
   // 
   private destroy$ = new Subject<void>();
-  constructor(private admissionService: AdmissionService , private fb : FormBuilder , private messageService : MessageService) {
+  // 
+  pagingFilterModel: PagingFilterModel = {
+    searchText: '',
+    currentPage: 1,
+    pageSize: 16,
+    filterList: []
+  };
+  pagedResponseModel: PagedResponseModel<any> = {};
+  // 
+  constructor(private admissionService: AdmissionService , private fb : FormBuilder , private messageService : MessageService , private sharedService : SharedService) {
     this.filterForm = this.fb.group({
       Search: [''],
       Status: [''],
@@ -52,17 +64,6 @@ export class PatientListComponent {
         this.currentPage = 1;
         this.loadPatients();
       });
-
-    this.filterForm
-      .get('Status')
-      .valueChanges.pipe(
-        distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(() => {
-        this.currentPage = 1;
-        this.loadPatients();
-      });
   }
 
   ngOnDestroy(): void {
@@ -71,53 +72,9 @@ export class PatientListComponent {
   }
 
   loadPatients() {
-    const { Search, Status, FromDate, ToDate } = this.filterForm.value;
-    const filterList = [];
-    if (Status) {
-      filterList.push({
-        categoryName: 'Status',
-        itemKey: 'patientStatus',
-        itemValue: Status,
-        isChecked: true,
-        fromDate: '',
-        toDate: '',
-        filterType: 'string',
-        isVisible: true,
-        filterItems: [Status],
-      });
-    }
-    if (FromDate) {
-      filterList.push({
-        categoryName: 'Date',
-        itemKey: 'createdOn',
-        itemValue: FromDate,
-        isChecked: true,
-        fromDate: FromDate,
-        toDate: '',
-        filterType: 'date',
-        isVisible: true,
-        filterItems: [],
-      });
-    }
-    if (ToDate) {
-      filterList.push({
-        categoryName: 'Date',
-        itemKey: 'createdOn',
-        itemValue: ToDate,
-        isChecked: true,
-        fromDate: '',
-        toDate: ToDate,
-        filterType: 'date',
-        isVisible: true,
-        filterItems: [],
-      });
-    }
-  
-    this.admissionService
-      .getAddmision(this.currentPage, this.pageSize, Search, Status, FromDate, ToDate, filterList)
-      .subscribe({
-        next: (res: any) => {
-          this.patients = res.results.map((patient: any) => {
+    this.admissionService.getAddmision(this.pagingFilterModel).subscribe({
+      next: (data) => {
+        this.patients = data.results.map((patient: any) => {
             switch (patient.patientStatus) {
               case 'CriticalCondition':
                 patient.patientStatus = 'حالة حرجة';
@@ -140,20 +97,101 @@ export class PatientListComponent {
             }
             return patient;
           });
-          this.total = res.totalCount;
-          this.fixed = Math.ceil(this.total / this.pageSize);
-          this.filteredPatients = [...this.patients];
-        },
-        error: (err) => {
-          console.error('Error loading patients', err);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'فشل التحميل',
-            detail: 'حدث خطأ أثناء تحميل البيانات',
-          });
-        },
-      });
+        this.total = data.total;
+        console.log(this.patients);
+      },
+      error: (err) => {
+        console.log(err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'فشل التحميل',
+          detail: 'حدث خطأ أثناء تحميل البيانات',
+        });
+      },
+    });
   }
+  // 
+  // loadPatients() {
+  //   const { Search, Status, FromDate, ToDate } = this.filterForm.value;
+  //   const filterList = [...this.pagingFilterModel.filterList]; // Use the filterList from pagingFilterModel
+  
+  //   // Add additional filters from filterForm if present
+  //   if (FromDate) {
+  //     filterList.push({
+  //       categoryName: 'Date',
+  //       itemKey: 'createdOn',
+  //       itemValue: FromDate,
+  //       isChecked: true,
+  //       fromDate: FromDate,
+  //       toDate: '',
+  //       filterType: 'date',
+  //       isVisible: true,
+  //       filterItems: [],
+  //     });
+  //   }
+  //   if (ToDate) {
+  //     filterList.push({
+  //       categoryName: 'Date',
+  //       itemKey: 'createdOn',
+  //       itemValue: ToDate,
+  //       isChecked: true,
+  //       fromDate: '',
+  //       toDate: ToDate,
+  //       filterType: 'date',
+  //       isVisible: true,
+  //       filterItems: [],
+  //     });
+  //   }
+  
+  //   this.admissionService
+  //     .getAddmision(
+  //       this.pagingFilterModel.currentPage,
+  //       this.pagingFilterModel.pageSize,
+  //       this.pagingFilterModel.searchText || Search, // Prefer pagingFilterModel.searchText if set
+  //       Status, // Keep Status from filterForm for now (optional, adjust as needed)
+  //       FromDate,
+  //       ToDate,
+  //       filterList
+  //     )
+  //     .subscribe({
+  //       next: (res: any) => {
+  //         this.patients = res.results.map((patient: any) => {
+  //           switch (patient.patientStatus) {
+  //             case 'CriticalCondition':
+  //               patient.patientStatus = 'حالة حرجة';
+  //               break;
+  //             case 'Treated':
+  //               patient.patientStatus = 'تم علاجه';
+  //               break;
+  //             case 'Archived':
+  //               patient.patientStatus = 'أرشيف';
+  //               break;
+  //             case 'Surgery':
+  //               patient.patientStatus = 'عمليات';
+  //               break;
+  //             case 'Outpatient':
+  //               patient.patientStatus = 'عيادات خارجية';
+  //               break;
+  //             case 'Staying':
+  //               patient.patientStatus = 'إقامة';
+  //               break;
+  //           }
+  //           return patient;
+  //         });
+  //         this.total = res.totalCount;
+  //         this.fixed = Math.ceil(this.total / this.pageSize);
+  //         this.filteredPatients = [...this.patients];
+  //       },
+  //       error: (err) => {
+  //         console.error('Error loading patients', err);
+  //         this.messageService.add({
+  //           severity: 'error',
+  //           summary: 'فشل التحميل',
+  //           detail: 'حدث خطأ أثناء تحميل البيانات',
+  //         });
+  //       },
+  //     });
+  // }
 
   getCounts() {
     this.admissionService.getCounts().subscribe({
@@ -218,10 +256,18 @@ export class PatientListComponent {
     });
   }
 
-  applyFilters(event: Event) {
-    event.preventDefault();
-    console.log('Filter Values:', this.filterForm.value);
-    this.currentPage = 1;
+  applyFilters() {
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', this.filterForm.value.Type);
+    this.pagingFilterModel.searchText = this.filterForm.value.Search;
+    this.loadPatients();
+  }
+  ApplyCardFilter(item: any) {
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
+    console.log('Type', item.value);
+    console.log('filterList', this.pagingFilterModel.filterList);
+    console.log('Data:' , this.pagingFilterModel);
     this.loadPatients();
   }
   

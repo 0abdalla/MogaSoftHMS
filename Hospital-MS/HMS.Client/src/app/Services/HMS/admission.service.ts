@@ -2,6 +2,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
+import { PagingFilterModel } from '../../Models/Generics/PagingFilterModel';
+import { PagedResponseModel } from '../../Models/Generics/PagedResponseModel';
 
 @Injectable({
   providedIn: 'root'
@@ -9,22 +11,8 @@ import { Observable } from 'rxjs';
 export class AdmissionService {
   baseUrl = environment.baseUrl
   constructor(private http : HttpClient) { }
-  getAddmision(
-    page: number,
-    size: number,
-    search?: string,
-    status?: string,
-    fromDate?: string,
-    toDate?: string,
-    filterList: any[] = []
-  ): Observable<any> {
-    let params = new HttpParams()
-      .set('PageSize', size.toString())
-      .set('CurrentPage', page.toString());
-    if (search) params = params.set('SearchText', search); 
-    params = params.set('FilterList', JSON.stringify(filterList));
-  
-    return this.http.get<any>(`${this.baseUrl}patients`, { params });
+  getAddmision(pagingFilter: PagingFilterModel): Observable<any> {
+    return this.http.post<PagedResponseModel<any>>(this.baseUrl + 'patients', pagingFilter);
   }
   getCounts(filterList: any[] = []): Observable<any> {
     let params = new HttpParams().set('FilterList', JSON.stringify(filterList));

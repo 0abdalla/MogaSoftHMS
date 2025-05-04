@@ -20,7 +20,7 @@
                     <div class="row justify-content-between align-items-center gap-2">
                         <div class="row col-8">
                             <div class="col-lg-2">
-                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إزالة الفلترة</button>
+                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
                             </div>
                             <div class="col-lg-3">
                                 <select class="form-select shadow-none" formControlName="Type" (change)="applyFilters()">
@@ -31,7 +31,7 @@
                                 <option value="Screening">تحاليل</option>
                                 <option value="Radiology">اشعه</option>
                                 <option value="Emergency">طوارئ</option>
-                </select>
+                                </select>
                             </div>
                             <div class="col-lg-6">
                                 <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المريض أو رقم الهاتف" (input)="SearchTextChange()" formControlName="Search" />

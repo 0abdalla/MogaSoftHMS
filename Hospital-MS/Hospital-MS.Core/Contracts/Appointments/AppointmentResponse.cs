@@ -39,5 +39,8 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public string? CompanionNationalId { get; set; }
         public string? CompanionPhone { get; set; }
 
+        public int? MedicalServiceId { get; set; }
+        public string? MedicalServiceName { get; set; } 
+
     }
 }

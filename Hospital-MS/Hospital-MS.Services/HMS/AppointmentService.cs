@@ -27,6 +27,9 @@ namespace Hospital_MS.Services.HMS
                 if (!Enum.TryParse<AppointmentType>(request.AppointmentType, true, out var appointmentType))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
+                if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
+
                 var patient = new Patient
                 {
                     FullName = ArabicNormalizer.NormalizeArabic(request.PatientName),
@@ -34,6 +37,7 @@ namespace Hospital_MS.Services.HMS
                     InsuranceCompanyId = request.InsuranceCompanyId,
                     InsuranceCategoryId = request.InsuranceCategoryId,
                     Status = PatientStatus.Outpatient,
+                    Gender = gender
                 };
 
                 await _unitOfWork.Repository<Patient>().AddAsync(patient, cancellationToken);
@@ -51,7 +55,9 @@ namespace Hospital_MS.Services.HMS
                     EmergencyLevel = request.EmergencyLevel,
                     CompanionName = request.CompanionName,
                     CompanionNationalId = request.CompanionNationalId,
-                    CompanionPhone = request.CompanionPhone
+                    CompanionPhone = request.CompanionPhone,
+
+                    MedicalServiceId = request.MedicalServiceId
                 };
 
                 await _unitOfWork.Repository<Appointment>().AddAsync(appointment, cancellationToken);
@@ -111,8 +117,17 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<AppointmentResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var appointment = await _unitOfWork.Repository<Appointment>().GetAll(i => i.Id == id).Include(x => x.CreatedBy).Include(x => x.UpdatedBy)
-                .Include(x => x.Patient).Include(x => x.Doctor).Include(x => x.Patient.InsuranceCompany).Include(x => x.Patient.InsuranceCategory).Include(x => x.Clinic).FirstOrDefaultAsync();
+            var appointment = await _unitOfWork.Repository<Appointment>()
+                .GetAll(i => i.Id == id)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
+                .Include(x => x.Patient)
+                .Include(x => x.Doctor)
+                .Include(x => x.Patient.InsuranceCompany)
+                .Include(x => x.Patient.InsuranceCategory)
+                .Include(x => x.Clinic)
+                .Include(x => x.MedicalService)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (appointment == null)
                 return ErrorResponseModel<AppointmentResponse>.Failure(GenericErrors.NotFound);
@@ -139,6 +154,8 @@ namespace Hospital_MS.Services.HMS
                 EmergencyLevel = appointment.EmergencyLevel,
                 ClinicId = appointment.ClinicId,
                 ClinicName = appointment?.Clinic?.Name,
+                MedicalServiceId = appointment.MedicalServiceId,
+                MedicalServiceName = appointment?.MedicalService?.Name,
             };
 
             return ErrorResponseModel<AppointmentResponse>.Success(GenericErrors.GetSuccess, response);

@@ -23,6 +23,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public IFormFile? Photo { get; set; }
         //public bool IsActive { get; set; }
 
+        public int? MedicalServiceId { get; set; }
         public List<DoctorScheduleRequest>? DoctorSchedules { get; set; } = [];
     }
 }
