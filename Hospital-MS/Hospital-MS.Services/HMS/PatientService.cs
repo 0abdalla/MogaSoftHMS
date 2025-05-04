@@ -74,7 +74,7 @@ namespace Hospital_MS.Services.HMS
                 Address = patient.Address,
                 DateOfBirth = patient.DateOfBirth,
                 PatientStatus = patient?.Status?.GetArabicValue(),
-                PatientGender = patient.Gender.GetArabicValue(),
+                PatientGender = patient?.Gender?.GetArabicValue(),
                 Phone = patient.Phone,
                 CreatedOn = patient.CreatedOn,
                 CreatedBy = $"{patient.CreatedBy?.FirstName} {patient.CreatedBy?.LastName}",

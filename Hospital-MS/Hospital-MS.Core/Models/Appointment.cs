@@ -9,6 +9,7 @@ namespace Hospital_MS.Core.Models
         public int PatientId { get; set; }
         public int? DoctorId { get; set; }
         public int? ClinicId { get; set; }
+        public int? MedicalServiceId { get; set; }
 
         public DateTime? AppointmentDateTime { get; set; } 
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
@@ -24,5 +25,6 @@ namespace Hospital_MS.Core.Models
         public Clinic? Clinic { get; set; } = default!;
         public Patient Patient { get; set; } = default!;
         public Staff? Doctor { get; set; } = default!;
+        public MedicalService? MedicalService { get; set; }
     }
 }

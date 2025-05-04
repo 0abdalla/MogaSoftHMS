@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250504111610_AddMedicalServicesTables")]
+    partial class AddMedicalServicesTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -230,9 +233,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<string>("EmergencyLevel")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MedicalServiceId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
@@ -262,8 +262,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("DoctorId");
-
-                    b.HasIndex("MedicalServiceId");
 
                     b.HasIndex("PatientId");
 
@@ -502,7 +500,7 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(55)
                         .HasColumnType("nvarchar(55)");
 
-                    b.Property<int?>("DepartmentId")
+                    b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -527,9 +525,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(55)
                         .HasColumnType("nvarchar(55)");
 
-                    b.Property<int?>("MedicalServiceId")
-                        .HasColumnType("int");
-
                     b.Property<string>("NationalId")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
@@ -546,7 +541,7 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("SpecialtyId")
+                    b.Property<int>("SpecialtyId")
                         .HasColumnType("int");
 
                     b.Property<DateOnly>("StartDate")
@@ -569,13 +564,26 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.HasIndex("MedicalServiceId");
-
                     b.HasIndex("SpecialtyId");
 
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("Doctors");
+                });
+
+            modelBuilder.Entity("Hospital_MS.Core.Models.DoctorMedicalService", b =>
+                {
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MedicalServiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DoctorId", "MedicalServiceId");
+
+                    b.HasIndex("MedicalServiceId");
+
+                    b.ToTable("DoctorMedicalService");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DoctorRating", b =>
@@ -788,14 +796,9 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(70)
-                        .HasColumnType("nvarchar(70)");
-
                     b.HasKey("Id");
 
-                    b.ToTable("MedicalServices");
+                    b.ToTable("MedicalService");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.NurseActivity", b =>
@@ -1504,10 +1507,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("DoctorId");
 
-                    b.HasOne("Hospital_MS.Core.Models.MedicalService", "MedicalService")
-                        .WithMany()
-                        .HasForeignKey("MedicalServiceId");
-
                     b.HasOne("Hospital_MS.Core.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
@@ -1523,8 +1522,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Doctor");
-
-                    b.Navigation("MedicalService");
 
                     b.Navigation("Patient");
 
@@ -1641,15 +1638,15 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasOne("Hospital_MS.Core.Models.Department", "Department")
                         .WithMany("Doctors")
-                        .HasForeignKey("DepartmentId");
-
-                    b.HasOne("Hospital_MS.Core.Models.MedicalService", "MedicalService")
-                        .WithMany("Doctors")
-                        .HasForeignKey("MedicalServiceId");
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Hospital_MS.Core.Models.Specialty", "Specialty")
                         .WithMany("Doctors")
-                        .HasForeignKey("SpecialtyId");
+                        .HasForeignKey("SpecialtyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
@@ -1659,11 +1656,28 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.Navigation("Department");
 
-                    b.Navigation("MedicalService");
-
                     b.Navigation("Specialty");
 
                     b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("Hospital_MS.Core.Models.DoctorMedicalService", b =>
+                {
+                    b.HasOne("Hospital_MS.Core.Models.Doctor", "Doctor")
+                        .WithMany("DoctorMedicalServices")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.MedicalService", "MedicalService")
+                        .WithMany("DoctorMedicalServices")
+                        .HasForeignKey("MedicalServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("MedicalService");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DoctorRating", b =>
@@ -2054,6 +2068,8 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Doctor", b =>
                 {
+                    b.Navigation("DoctorMedicalServices");
+
                     b.Navigation("Ratings");
 
                     b.Navigation("Schedules");
@@ -2068,7 +2084,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.MedicalService", b =>
                 {
-                    b.Navigation("Doctors");
+                    b.Navigation("DoctorMedicalServices");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Patient", b =>
