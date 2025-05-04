@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250504125930_AssignMediacalSericeToDoctor")]
+    partial class AssignMediacalSericeToDoctor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -230,9 +233,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<string>("EmergencyLevel")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("MedicalServiceId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
@@ -262,8 +262,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("DoctorId");
-
-                    b.HasIndex("MedicalServiceId");
 
                     b.HasIndex("PatientId");
 
@@ -1504,10 +1502,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("DoctorId");
 
-                    b.HasOne("Hospital_MS.Core.Models.MedicalService", "MedicalService")
-                        .WithMany()
-                        .HasForeignKey("MedicalServiceId");
-
                     b.HasOne("Hospital_MS.Core.Models.Patient", "Patient")
                         .WithMany()
                         .HasForeignKey("PatientId")
@@ -1523,8 +1517,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("Doctor");
-
-                    b.Navigation("MedicalService");
 
                     b.Navigation("Patient");
 

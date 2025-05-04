@@ -19,8 +19,8 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string Phone { get; set; }
         public string Email { get; set; }
         public string? Address { get; set; }
-        public int SpecialtyId { get; set; }
-        public int DepartmentId { get; set; }
+        public int? SpecialtyId { get; set; }
+        public int? DepartmentId { get; set; }
         public DateOnly StartDate { get; set; }
         public bool IsActive { get; set; }
         public string? PhotoUrl { get; set; }
@@ -33,6 +33,8 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string MaritalStatus { get; set; }
         public string? Degree { get; set; }
 
+        public int? MedicalServiceId { get; set; }
+        public string? MedicalServiceName { get; set; }
         public List<DoctorScheduleResponse> DoctorSchedules { get; set; } = [];
 
         // Audit properties

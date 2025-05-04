@@ -57,6 +57,8 @@ namespace Hospital_MS.Services.HMS
                     Status = staffStatus,
                     Degree = request.Degree,
                     Notes = request.Notes,
+                    MedicalServiceId = request.MedicalServiceId,
+                    
                 };
 
                 if (request.Photo is not null)
@@ -137,6 +139,7 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.Department)
                 .Include(x => x.Specialty)
                 .Include(x => x.Schedules)
+                .Include(x => x.MedicalService)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy).FirstOrDefaultAsync(cancellationToken);
 
@@ -164,6 +167,8 @@ namespace Hospital_MS.Services.HMS
                 Notes = doctor.Notes,
                 Status = doctor.Status.GetArabicValue(),
                 MaritalStatus = doctor.MaritalStatus.GetArabicValue(),
+                MedicalServiceId = doctor.MedicalServiceId,
+                MedicalServiceName = doctor.MedicalService.Name,
 
                 DoctorSchedules = [.. doctor.Schedules.Select(schedule => new DoctorScheduleResponse
                 {
@@ -231,6 +236,7 @@ namespace Hospital_MS.Services.HMS
                 doctor.Status = staffStatus;
                 doctor.Degree = request.Degree;
                 doctor.Notes = request.Notes;
+                doctor.MedicalServiceId = request.MedicalServiceId;
 
                 if (request.Photo != null && request.Photo.Length > 0)
                 {
