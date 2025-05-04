@@ -46,11 +46,17 @@ export class HMSSideMenueComponent {
       '/hms/inventory/purchases': 'inventory',
       '/hms/staff/list': 'staff',
       '/hms/staff/add': 'staff',
+      '/hms/staff/progression': 'staff',
+      '/hms/staff/classification': 'staff',
+      '/hms/staff/department-admin': 'staff',
+      '/hms/staff/job-management': 'staff',
       '/hms/reports/financial': 'reports',
       '/hms/reports/medical': 'reports',
       '/hms/settings/general': 'settings',
       '/hms/settings/doctors': 'settings',
-      '/hms/settings/doctors-list': 'settings'
+      '/hms/settings/doctors-list': 'settings',
+      '/hms/settings/permissions': 'settings',
+      '/hms/settings/apps-managmement': 'settings'
     };
 
     for (const route in routeMenuMap) {

@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row mt-4">
             <div class="col-lg-2" *ngFor="let status of patientStatuses">
-                <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': status.color }" (click)="filterByStatus(status.value)" style="cursor: pointer">
+                <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }" style="cursor: pointer">
                     <h4>{{ status.name }}</h4>
                     <p class="mt-0">{{ status.count }} مريض</p>
                     <div class="percentage d-flex align-items-center justify-content-center gap-1">
@@ -15,11 +15,11 @@
 
         <div class="card mt-3 p-2">
             <div class="p-3 mt-4">
-                <form [formGroup]="filterForm" (ngSubmit)="applyFilters($event)">
+                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
                     <div class="row justify-content-between align-items-center gap-2">
                         <div class="row col-8">
                             <div class="col-lg-2">
-                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إزالة الفلترة</button>
+                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
                             </div>
                             <div class="col-lg-3">
                                 <select class="form-select shadow-none" formControlName="Status" name="Status">
@@ -50,7 +50,7 @@
                     </tr>
                 </thead>
                 <tbody *ngIf="patients?.length > 0">
-                    <tr *ngFor="let patient of patients | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }" (click)="openAdmissionDetails(patient.patientId)" data-bs-toggle="modal" data-bs-target="#inpatientDetailsModal"
+                    <tr *ngFor="let patient of patients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openAdmissionDetails(patient.patientId)" data-bs-toggle="modal" data-bs-target="#inpatientDetailsModal"
                         style="cursor: pointer">
                         <td>
                             <div class="d-flex align-items-center gap-2 justify-content-start">

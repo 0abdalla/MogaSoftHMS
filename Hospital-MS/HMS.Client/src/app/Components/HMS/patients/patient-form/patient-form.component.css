@@ -1,17 +1,46 @@
 #add-patient {
   min-height: 100vh;
 }
-h5{
+h5 {
   color: #D94A91;
   font-size: 22px;
   font-weight: 700;
-  span{
+  span {
     color: #576CAB;
     font-weight: 700;
   }
 }
-.search-patient{
+
+
+.search-patient {
   border: none !important;
   border-radius: 20px !important;
   box-shadow: 0px 12px 24px -4px #919eab6e !important;
+  background: #fff;
+  padding: 10px;
+  
+  .form-control {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    color: #576CAB;
+    font-size: 14px;
+  }
+
+  .input-group-text {
+    background: transparent;
+    border: none;
+    padding: 0 10px;
+    color: #576CAB;
+  }
+
+
+  .input-group {
+    border: 1px solid #D9E1EC;
+    border-radius: 10px !important;
+    box-shadow: 0px 0px 4px 0px #00000026;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
 }
