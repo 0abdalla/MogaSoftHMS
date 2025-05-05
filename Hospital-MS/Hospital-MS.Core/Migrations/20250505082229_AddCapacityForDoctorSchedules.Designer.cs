@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250505082229_AddCapacityForDoctorSchedules")]
+    partial class AddCapacityForDoctorSchedules
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,8 +205,8 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly?>("AppointmentDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("AppointmentDateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("ClinicId")
                         .HasColumnType("int");
@@ -802,29 +805,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MedicalServices");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.MedicalServiceSchedule", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MedicalServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("WeekDay")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("MedicalServiceId");
-
-                    b.ToTable("MedicalServiceSchedules");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.NurseActivity", b =>
@@ -1529,7 +1509,7 @@ namespace Hospital_MS.Reposatories.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hospital_MS.Core.Models.Doctor", "Doctor")
+                    b.HasOne("Hospital_MS.Core.Models.Staff", "Doctor")
                         .WithMany()
                         .HasForeignKey("DoctorId");
 
@@ -1785,17 +1765,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.MedicalServiceSchedule", b =>
-                {
-                    b.HasOne("Hospital_MS.Core.Models.MedicalService", "MedicalService")
-                        .WithMany("Schedules")
-                        .HasForeignKey("MedicalServiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("MedicalService");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.NurseActivity", b =>
@@ -2109,8 +2078,6 @@ namespace Hospital_MS.Reposatories.Migrations
             modelBuilder.Entity("Hospital_MS.Core.Models.MedicalService", b =>
                 {
                     b.Navigation("Doctors");
-
-                    b.Navigation("Schedules");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Patient", b =>

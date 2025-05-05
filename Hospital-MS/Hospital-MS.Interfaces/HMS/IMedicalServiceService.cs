@@ -12,6 +12,9 @@ namespace Hospital_MS.Interfaces.HMS
     public interface IMedicalServiceService
     {
         Task<ErrorResponseModel<string>> CreateMedicalService(MedicalServiceRequest request, CancellationToken cancellationToken = default);
-        Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
+        //Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
+        Task<PagedResponseModel<List<MedicalServiceResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> UpdateAsync(int id, MedicalServiceRequest request, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<MedicalServiceResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     }
 }

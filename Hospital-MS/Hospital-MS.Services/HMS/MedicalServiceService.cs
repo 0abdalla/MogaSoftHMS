@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Doctors;
 using Hospital_MS.Core.Contracts.MedicalServices;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
@@ -7,10 +8,12 @@ using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -23,63 +26,173 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> CreateMedicalService(MedicalServiceRequest request, CancellationToken cancellationToken = default)
         {
-            var isExist = await _unitOfWork.Repository<MedicalService>().AnyAsync(x => x.Name == request.Name, cancellationToken);
+            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var isExist = await _unitOfWork.Repository<MedicalService>().AnyAsync(x => x.Name == request.Name && x.Type == request.Type, cancellationToken);
+
+                if (isExist)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
+
+                var medicalService = new MedicalService
+                {
+                    Name = request.Name,
+                    Price = request.Price,
+                    Type = request.Type,
+                };
+
+                await _unitOfWork.Repository<MedicalService>().AddAsync(medicalService, cancellationToken);
+
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                if (request.MedicalServiceSchedules is not null && request.MedicalServiceSchedules.Count > 0)
+                {
+                    var schedules = new List<MedicalServiceSchedule>();
+
+                    foreach (var schedule in request.MedicalServiceSchedules)
+                    {
+                        var medicalSchedule = new MedicalServiceSchedule
+                        {
+                            MedicalServiceId = medicalService.Id,
+                            WeekDay = schedule.WeekDay,
+                        };
+
+                        schedules.Add(medicalSchedule);
+                    }
+
+                    await _unitOfWork.Repository<MedicalServiceSchedule>().AddRangeAsync(schedules, cancellationToken);
+                    await _unitOfWork.CompleteAsync(cancellationToken);
+                }
+
+                await transaction.CommitAsync(cancellationToken);
+
+                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, medicalService.Id.ToString());
+
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
+        //public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        //{
+        //    try
+        //    {
+        //        // Define SQL parameters
+        //        var parameters = new SqlParameter[6];
+        //        var status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
+        //        var fromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
+        //        var toDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
+
+        //        parameters[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+        //        parameters[1] = new SqlParameter("@Status", status ?? (object)DBNull.Value);
+        //        parameters[2] = new SqlParameter("@FromDate", fromDate ?? (object)DBNull.Value);
+        //        parameters[3] = new SqlParameter("@ToDate", toDate ?? (object)DBNull.Value);
+        //        parameters[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+        //        parameters[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+
+        //        // Execute stored procedure and get DataTable
+        //        var dataTable = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetMedicalServices", parameters);
+
+        //        int totalCount = 0;
+        //        if (dataTable.Rows.Count > 0)
+        //        {
+        //            int.TryParse(dataTable.Rows[0]["TotalCount"]?.ToString(), out totalCount);
+        //        }
+
+        //        // Return paginated response
+        //        return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dataTable);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+        //    }
+
+        //}
+
+        public async Task<PagedResponseModel<List<MedicalServiceResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var Params = new SqlParameter[3];
+                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+                Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetMedicalServices", Params);
+
+                var doctors = dt.AsEnumerable().Select(row => new MedicalServiceResponse
+                {
+                    Id = row.Field<int>("ServiceId"),
+                    Name = row.Field<string>("ServiceName") ?? string.Empty,
+                    Price = row.Field<decimal?>("Price") ?? 0,
+                    Type = row.Field<string>("ServiceType") ?? string.Empty,
+                    MedicalServiceSchedules = JsonConvert.DeserializeObject<List<MedicalServiceScheduleResponse>>(row.Field<string>("MedicalServiceSchedules") ?? "[]")
+                }).ToList(); 
+
+                int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int?>("TotalCount") ?? 0 : 0;
+
+                return PagedResponseModel<List<MedicalServiceResponse>>.Success(GenericErrors.GetSuccess, totalCount, doctors);
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<List<MedicalServiceResponse>>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
+        public Task<ErrorResponseModel<MedicalServiceResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, MedicalServiceRequest request, CancellationToken cancellationToken = default)
+        {
+            var medicalService = await _unitOfWork.Repository<MedicalService>().GetByIdAsync(id, cancellationToken);
+
+            if (medicalService == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            var isExist = await _unitOfWork.Repository<MedicalService>().AnyAsync(x => x.Name == request.Name && x.Type == request.Type && x.Id != id, cancellationToken);
 
             if (isExist)
                 return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
 
-            var medicalService = new MedicalService
-            {
-                Name = request.Name,
-                Price = request.Price,
-                Type = request.Type,
-            };
+            medicalService.Name = request.Name;
+            medicalService.Price = request.Price;
+            medicalService.Type = request.Type;
 
-            await _unitOfWork.Repository<MedicalService>().AddAsync(medicalService, cancellationToken);
+            _unitOfWork.Repository<MedicalService>().Update(medicalService);
+
+            // Handle MedicalServiceSchedules
+
+            var existingSchedules = _unitOfWork.Repository<MedicalServiceSchedule>().GetAll(x => x.MedicalServiceId == id).ToList();
+
+            if (existingSchedules.Count != 0)
+            {
+                _unitOfWork.Repository<MedicalServiceSchedule>().DeleteRange(existingSchedules);
+            }
+
+            if (request.MedicalServiceSchedules is not null && request.MedicalServiceSchedules.Count > 0)
+            {
+                var newSchedules = request.MedicalServiceSchedules.Select(schedule => new MedicalServiceSchedule
+                {
+                    MedicalServiceId = id,
+                    WeekDay = schedule.WeekDay
+
+                }).ToList();
+
+                await _unitOfWork.Repository<MedicalServiceSchedule>().AddRangeAsync(newSchedules, cancellationToken);
+            }
 
             var result = await _unitOfWork.CompleteAsync(cancellationToken);
 
             if (result > 0)
-                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, medicalService.Id.ToString());
+                return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess, medicalService.Id.ToString());
 
-            return ErrorResponseModel<string>.Failure(GenericErrors.GetSuccess);
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
-
-        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                // Define SQL parameters
-                var parameters = new SqlParameter[6];
-                var status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
-                var fromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
-                var toDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
-
-                parameters[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
-                parameters[1] = new SqlParameter("@Status", status ?? (object)DBNull.Value);
-                parameters[2] = new SqlParameter("@FromDate", fromDate ?? (object)DBNull.Value);
-                parameters[3] = new SqlParameter("@ToDate", toDate ?? (object)DBNull.Value);
-                parameters[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-                parameters[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-
-                // Execute stored procedure and get DataTable
-                var dataTable = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetMedicalServices", parameters);
-
-                int totalCount = 0;
-                if (dataTable.Rows.Count > 0)
-                {
-                    int.TryParse(dataTable.Rows[0]["TotalCount"]?.ToString(), out totalCount);
-                }
-             
-                // Return paginated response
-                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dataTable);
-            }
-            catch (Exception)
-            {
-                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
-            }
-
-        }
-
     }
 }

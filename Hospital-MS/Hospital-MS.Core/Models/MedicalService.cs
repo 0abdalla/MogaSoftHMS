@@ -14,5 +14,6 @@ namespace Hospital_MS.Core.Models
         public string Type { get; set; } = string.Empty;
  
         public ICollection<Doctor> Doctors { get; set; } = new HashSet<Doctor>();
+        public ICollection<MedicalServiceSchedule> Schedules { get; set; } = new HashSet<MedicalServiceSchedule>();
     }
 }
