@@ -13,8 +13,8 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string Phone { get; set; } 
         public string? Email { get; set; }
         public string? Address { get; set; }
-        public int SpecialtyId { get; set; }
-        public int DepartmentId { get; set; }
+        //public int? SpecialtyId { get; set; } = null;
+        //public int? DepartmentId { get; set; } = null;
         public DateOnly StartDate { get; set; }
         public string? Notes { get; set; }
         public string Status { get; set; }
@@ -23,7 +23,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public IFormFile? Photo { get; set; }
         //public bool IsActive { get; set; }
 
-        public int? MedicalServiceId { get; set; }
+        public int MedicalServiceId { get; set; }
         public List<DoctorScheduleRequest>? DoctorSchedules { get; set; } = [];
     }
 }

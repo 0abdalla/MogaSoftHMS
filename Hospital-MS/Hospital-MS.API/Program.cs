@@ -27,9 +27,20 @@ app.UseHangfireDashboard("/jobs", new DashboardOptions
 var scopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
 using var scope = scopeFactory.CreateScope();
 var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
-var appointmentService = scope.ServiceProvider.GetRequiredService<IAppointmentService>();
 
-jobManager.AddOrUpdate("UpdateAppointmentStatus", () => appointmentService.UpdateAppointmentsToCompletedAsync(), Cron.Daily);
+var appointmentService = scope.ServiceProvider.GetRequiredService<IAppointmentService>();
+var doctorService = scope.ServiceProvider.GetRequiredService<IDoctorService>();
+
+jobManager.AddOrUpdate(
+    "UpdateAppointmentStatus", 
+    () => appointmentService.UpdateAppointmentsToCompletedAsync(), Cron.Daily
+);
+
+
+jobManager.AddOrUpdate(
+    "ResetDoctorScheduleAppointments",
+    () => doctorService.ResetCurrentAppointmentsAsync(),Cron.Daily  
+);
 
 #endregion
 

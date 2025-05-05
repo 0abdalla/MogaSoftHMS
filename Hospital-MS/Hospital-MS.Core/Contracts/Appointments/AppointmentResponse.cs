@@ -9,11 +9,12 @@ namespace Hospital_MS.Core.Contracts.Appointments
     public class AppointmentResponse
     {
         public int Id { get; set; }
-        public DateTime? AppointmentDate { get; set; }
+        public DateOnly? AppointmentDate { get; set; }
 
         public int PatientId { get; set; }
         public string PatientName { get; set; } = string.Empty;
-        public string? PatientPhone { get; set; } 
+        public string? PatientPhone { get; set; }
+        public string Gender { get; set; }
 
         public int? DoctorId { get; set; }
         public string? DoctorName { get; set; } = string.Empty;
@@ -41,6 +42,7 @@ namespace Hospital_MS.Core.Contracts.Appointments
 
         public int? MedicalServiceId { get; set; }
         public string? MedicalServiceName { get; set; } 
+        public decimal MedicalServicePrice { get; set; } 
 
     }
 }

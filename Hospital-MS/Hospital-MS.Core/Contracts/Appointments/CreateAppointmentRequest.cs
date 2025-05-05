@@ -15,9 +15,9 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public string? AppointmentType { get; set; }
 
 
-        public int? ClinicId { get; set; }
+        //public int? ClinicId { get; set; }
         public int? DoctorId { get; set; }
-        public DateTime? AppointmentDate { get; set; }
+        public DateOnly AppointmentDate { get; set; }
 
         public int? InsuranceCompanyId { get; set; }
         public int? InsuranceCategoryId { get; set; }

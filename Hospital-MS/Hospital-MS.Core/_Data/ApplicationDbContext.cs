@@ -31,6 +31,7 @@ namespace Hospital_MS.Core._Data
         public DbSet<Specialty> Specialties { get; set; }
         public DbSet<StaffAttachments> StaffAttachments { get; set; }
         public DbSet<MedicalService> MedicalServices { get; set; }
+        public DbSet<MedicalServiceSchedule> MedicalServiceSchedules { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
