@@ -11,6 +11,7 @@ using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class DoctorService(IUnitOfWork unitOfWork, IFileService fileService, IWebHostEnvironment webHostEnvironment,ISQLHelper sQLHelper) : IDoctorService
+    public class DoctorService(IUnitOfWork unitOfWork, IFileService fileService, IWebHostEnvironment webHostEnvironment, ISQLHelper sQLHelper) : IDoctorService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
@@ -50,8 +51,8 @@ namespace Hospital_MS.Services.HMS
                     Gender = gender,
                     Phone = request.Phone,
                     NationalId = request.NationalId,
-                    DepartmentId = request.DepartmentId,
-                    SpecialtyId = request.SpecialtyId,
+                    //DepartmentId = request.DepartmentId,
+                    //SpecialtyId = request.SpecialtyId,
                     MaritalStatus = maritalStatus,
                     StartDate = request.StartDate,
                     Status = staffStatus,
@@ -84,6 +85,7 @@ namespace Hospital_MS.Services.HMS
                             WeekDay = schedule.WeekDay,
                             StartTime = schedule.StartTime,
                             EndTime = schedule.EndTime,
+                            Capacity = schedule.Capacity,
                         };
 
                         schedules.Add(doctorSchedule);
@@ -110,7 +112,31 @@ namespace Hospital_MS.Services.HMS
             throw new NotImplementedException();
         }
 
-        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        //public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        //{
+        //    try
+        //    {
+        //        var Params = new SqlParameter[3];
+        //        Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+        //        Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
+        //        Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+        //        var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
+        //        int totalCount = 0;
+        //        if (dt.Rows.Count > 0)
+        //        {
+        //            int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
+        //        }
+
+        //        return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
+
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+        //    }
+        //}
+
+        public async Task<PagedResponseModel<List<AllDoctorsResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -118,30 +144,44 @@ namespace Hospital_MS.Services.HMS
                 Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
                 Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
                 Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
-                int totalCount = 0;
-                if (dt.Rows.Count > 0)
-                {
-                    int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
-                }
 
-                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
+
+                var doctors = dt.AsEnumerable().Select(row => new AllDoctorsResponse
+                {
+                    Id = row.Field<int>("DoctorId"), 
+                    FullName = row.Field<string>("FullName") ?? string.Empty, 
+                    Phone = row.Field<string>("Phone") ?? string.Empty,
+                    Status = row.Field<string>("Status") ?? string.Empty,
+                    DepartmentId = row.Field<int?>("DepartmentId") ?? 0, 
+                    Department = row.Field<string>("Department") ?? string.Empty,
+                    MedicalServiceId = row.Field<int?>("MedicalServiceId") ?? 0,
+                    MedicalServiceName = row.Field<string>("MedicalServiceName") ?? string.Empty,
+                    DoctorSchedules = JsonConvert.DeserializeObject<List<DoctorScheduleResponse>>(row.Field<string>("DoctorSchedules") ?? "[]") 
+                }).ToList();
+
+                int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int?>("TotalCount") ?? 0 : 0;
+
+                return PagedResponseModel<List<AllDoctorsResponse>>.Success(GenericErrors.GetSuccess, totalCount, doctors);
             }
             catch (Exception)
             {
-                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+                return PagedResponseModel<List<AllDoctorsResponse>>.Failure(GenericErrors.TransFailed);
             }
         }
 
+
         public async Task<ErrorResponseModel<DoctorResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var doctor = await _unitOfWork.Repository<Doctor>().GetAll()
+            var doctor = await _unitOfWork.Repository<Doctor>()
+                .GetAll(x => x.Id == id)
                 .Include(x => x.Department)
                 .Include(x => x.Specialty)
                 .Include(x => x.Schedules)
                 .Include(x => x.MedicalService)
                 .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy).FirstOrDefaultAsync(cancellationToken);
+                .Include(x => x.UpdatedBy)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (doctor is null)
                 return ErrorResponseModel<DoctorResponse>.Failure(GenericErrors.NotFound);
@@ -153,14 +193,14 @@ namespace Hospital_MS.Services.HMS
                 DateOfBirth = doctor.DateOfBirth,
                 IsActive = doctor.IsActive,
                 Address = doctor.Address,
-                Department = doctor.Department.Name,
-                DepartmentId = doctor.DepartmentId,
+                Department = doctor?.Department?.Name,
+                DepartmentId = doctor?.DepartmentId,
                 Email = doctor.Email,
                 Gender = doctor.Gender.ToString(),
                 NationalId = doctor.NationalId,
                 Phone = doctor.Phone,
                 PhotoUrl = doctor.PhotoUrl,
-                Specialty = doctor.Specialty.Name,
+                Specialty = doctor?.Specialty?.Name,
                 SpecialtyId = doctor.SpecialtyId,
                 StartDate = doctor.StartDate,
                 Degree = doctor.Degree,
@@ -168,13 +208,15 @@ namespace Hospital_MS.Services.HMS
                 Status = doctor.Status.GetArabicValue(),
                 MaritalStatus = doctor.MaritalStatus.GetArabicValue(),
                 MedicalServiceId = doctor.MedicalServiceId,
-                MedicalServiceName = doctor.MedicalService.Name,
+                MedicalServiceName = doctor?.MedicalService?.Name,
 
                 DoctorSchedules = [.. doctor.Schedules.Select(schedule => new DoctorScheduleResponse
                 {
                     WeekDay = schedule.WeekDay,
                     StartTime = schedule.StartTime,
-                    EndTime = schedule.EndTime
+                    EndTime = schedule.EndTime,
+                    Id = schedule.Id,
+                    Capacity = schedule.Capacity
                 })],
 
                 CreatedAt = doctor.CreatedOn,
@@ -208,7 +250,7 @@ namespace Hospital_MS.Services.HMS
             using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
-                var doctor = await _unitOfWork.Repository<Doctor>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
+                var doctor = await _unitOfWork.Repository<Doctor>().GetAll(i => i.Id == id).FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
                 if (doctor is null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -229,8 +271,8 @@ namespace Hospital_MS.Services.HMS
                 doctor.Gender = gender;
                 doctor.Phone = request.Phone;
                 doctor.NationalId = request.NationalId;
-                doctor.DepartmentId = request.DepartmentId;
-                doctor.SpecialtyId = request.SpecialtyId;
+                //doctor.DepartmentId = request.DepartmentId;
+                //doctor.SpecialtyId = request.SpecialtyId;
                 doctor.MaritalStatus = maritalStatus;
                 doctor.StartDate = request.StartDate;
                 doctor.Status = staffStatus;
@@ -288,6 +330,21 @@ namespace Hospital_MS.Services.HMS
             }
 
             return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+
+        public async Task ResetCurrentAppointmentsAsync()
+        {
+            var schedules = await _unitOfWork.Repository<DoctorSchedule>()
+                .GetAll()
+                .ToListAsync();
+
+            foreach (var schedule in schedules)
+            {
+                schedule.CurrentAppointments = 0;
+                _unitOfWork.Repository<DoctorSchedule>().Update(schedule);
+            }
+
+            await _unitOfWork.CompleteAsync();
         }
     }
 }

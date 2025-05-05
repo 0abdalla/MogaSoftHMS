@@ -11,6 +11,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string WeekDay { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }
+        public int Capacity { get; set; }
         public bool IsWorking { get; set; }
     }
 }

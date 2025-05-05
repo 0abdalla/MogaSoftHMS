@@ -56,7 +56,8 @@ export class HMSSideMenueComponent {
       '/hms/settings/doctors': 'settings',
       '/hms/settings/doctors-list': 'settings',
       '/hms/settings/permissions': 'settings',
-      '/hms/settings/apps-managmement': 'settings'
+      '/hms/settings/apps-managmement': 'settings',
+      '/hms/settings/medical-services-list': 'settings'
     };
 
     for (const route in routeMenuMap) {

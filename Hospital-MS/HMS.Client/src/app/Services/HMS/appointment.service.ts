@@ -23,8 +23,14 @@ export class AppointmentService {
     return this.http.get<ErrorResponseModel<Patients>>(`${this.baseUrl}Appointments/${id}`);
   }
 
-  createAppointment(appointment: FormData): Observable<ErrorResponseModel<string>> {
+  createAppointment(appointment: any): Observable<ErrorResponseModel<string>> {
     return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Appointments`, appointment);
+  }
+  editAppointment(id: number, appointment: any): Observable<ErrorResponseModel<string>> {
+    return this.http.put<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/${id}`, appointment);
+  }
+  deleteAppointment(id: number): Observable<ErrorResponseModel<string>> {
+    return this.http.delete<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/${id}`);
   }
   updateEmergency(id: number, updateEmergencyForm: FormGroup): Observable<ErrorResponseModel<string>> {
     return this.http.put<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/emergency/${id}`, updateEmergencyForm.value);
@@ -53,5 +59,11 @@ export class AppointmentService {
       .set('FilterList', JSON.stringify(filterList));
   
     return this.http.get<any>(`${this.baseUrl}MedicalService`, { params });
+  }
+  addService(service: any){
+    return this.http.post<any>(`${this.baseUrl}MedicalService`, service);
+  }
+  editService(id: number, service: any){
+    return this.http.put<any>(`${this.baseUrl}MedicalService/${id}`, service);
   }
 }

@@ -1,0 +1,208 @@
+<main id="medical-service">
+    <div class="container-fluid">
+        <div class="card p-2">
+            <div class="p-3">
+                <p-toast position="top-left"></p-toast>
+                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+                    <div class="row justify-content-between align-items-center gap-2">
+                        <div class="row col-8">
+                            <div class="col-lg-2">
+                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الخدمة" formControlName="SearchText" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-2">
+                            <button data-bs-toggle="modal" data-bs-target="#addServiceModal" type="button" class="btn-purble">+ إضافة خدمة</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <table class="table table-hover mt-4">
+                <thead>
+                    <tr>
+                        <th>رقم الخدمة</th>
+                        <th>إسم الخدمة</th>
+                        <th>النوع</th>
+                        <th>السعر</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="services?.length > 0">
+                    <tr *ngFor="let service of services | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openServiceDetails(service.serviceId)"
+                        style="cursor: pointer">
+                        <td class="text-secondary">{{ service.serviceId }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                                <div class="avatar-circle">{{ service.serviceName.charAt(0) }}</div>
+                                <span class="fw-bold">{{ service.serviceName }}</span>
+                            </div>
+                        </td>
+                        <td class="text-secondary">{{ service.serviceType }}</td>
+                        <td class="text-secondary">{{ service.price }} <strong> جنيه</strong></td>
+                        <td>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editServiceModal" (click)="openServiceDetails(service.serviceId)">تعديل</button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="services?.length === 0">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">لا يوجد خدمات حتى الآن</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="col-lg-12">
+                <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                    <div class="my-pagination">
+                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                            screenReaderCurrentLabel="You're on page">
+                        </pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<div class="modal fade" id="addServiceModal" tabindex="-1" aria-labelledby="addServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addServiceModalLabel">إضافة خدمة</h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="serviceForm" (ngSubmit)="addService()">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="form-label" for="name">إسم الخدمة</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                                <div *ngIf="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="serviceForm.get('name')?.errors?.['required']">إسم الخدمة مطلوب</ng-container>
+                                    <ng-container *ngIf="serviceForm.get('name')?.errors?.['minlength']">إسم الخدمة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                  </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="form-label" for="price">السعر</label>
+                                <input type="number" class="form-control shadow-none" formControlName="price" id="price">
+                                <div *ngIf="serviceForm.get('price')?.invalid && serviceForm.get('price')?.touched" class="text-danger">
+                                    <ng-container *ngIf="serviceForm.get('price')?.errors?.['required']">السعر مطلوب</ng-container>
+                                    <ng-container *ngIf="serviceForm.get('price')?.errors?.['min']">السعر يجب أن يكون أكثر من 0</ng-container>
+                                    <ng-container *ngIf="serviceForm.get('price')?.errors?.['max']">السعر يجب أن يكون أقل من 1000</ng-container>
+                                  </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="form-label" for="type">نوع الخدمة</label>
+                                <select class="form-select shadow-none" formControlName="type" id="type">
+                                    <option selected disabled value="">اختر نوع الخدمة</option>
+                                    <option value="General">عام</option>
+                                    <option value="Consultation">استشارة</option>
+                                    <option value="Screening">تحاليل</option>
+                                    <option value="Radiology">أشعة</option>
+                                    <option value="Surgery">عمليات</option>
+                                </select>
+                                <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
+                                    <ng-container *ngIf="serviceForm.get('type')?.errors?.['required']">نوع الخدمة مطلوب</ng-container>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="serviceForm.invalid">إضافة الخدمة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="editServiceModalLabel">تعديل الخدمة</h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="serviceForm" (ngSubmit)="editService()">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="form-label" for="name">إسم الخدمة</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                                <div *ngIf="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="serviceForm.get('name')?.errors?.['required']">إسم الخدمة مطلوب</ng-container>
+                                    <ng-container *ngIf="serviceForm.get('name')?.errors?.['minlength']">إسم الخدمة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                  </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="form-label" for="price">السعر</label>
+                                <input type="number" class="form-control shadow-none" formControlName="price" id="price">
+                                <div *ngIf="serviceForm.get('price')?.invalid && serviceForm.get('price')?.touched" class="text-danger">
+                                    <ng-container *ngIf="serviceForm.get('price')?.errors?.['required']">السعر مطلوب</ng-container>
+                                    <ng-container *ngIf="serviceForm.get('price')?.errors?.['min']">السعر يجب أن يكون أكثر من 0</ng-container>
+                                    <ng-container *ngIf="serviceForm.get('price')?.errors?.['max']">السعر يجب أن يكون أقل من 1000</ng-container>
+                                  </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label class="form-label" for="type">نوع الخدمة</label>
+                                <select class="form-select shadow-none" formControlName="type" id="type">
+                                    <option selected disabled value="">اختر نوع الخدمة</option>
+                                    <option value="General">عام</option>
+                                    <option value="Consultation">استشارة</option>
+                                    <option value="Screening">تحاليل</option>
+                                    <option value="Radiology">أشعة</option>
+                                    <option value="Surgery">عمليات</option>
+                                </select>
+                                <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
+                                    <ng-container *ngIf="serviceForm.get('type')?.errors?.['required']">نوع الخدمة مطلوب</ng-container>
+                                  </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="serviceForm.invalid">تعديل الخدمة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="modal fade" id="serviceDetailsModal" tabindex="-1" aria-labelledby="serviceDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="serviceDetailsModalLabel">تفاصيل الخدمة</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <strong class="strong">اسم الخدمة:</strong> <span class="span">{{ serviceDetails?.serviceName || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">السعر:</strong> <span class="span">{{ serviceDetails?.price || '---' }}</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <strong class="strong">نوع الخدمة:</strong> <span class="span">{{ serviceDetails?.serviceType || '---' }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+

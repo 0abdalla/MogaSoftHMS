@@ -54,7 +54,6 @@ export class DoctorsListComponent implements OnInit {
   getDoctors() {
     this.doctorService.getDoctors(this.pagingFilterModel).subscribe({
       next: (res) => {
-        debugger;
         this.doctors = res.results.map((doctor: any) => {
           
           if (doctor.status === 'Active') {
@@ -64,6 +63,8 @@ export class DoctorsListComponent implements OnInit {
           }
           return doctor;
         });
+        console.log(this.doctors);
+        
         this.total = res.totalCount;
       },
       error: () => {

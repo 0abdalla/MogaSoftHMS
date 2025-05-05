@@ -12,6 +12,7 @@ export interface Patients {
     service: string;
     clinicId: number;
     clinicName: string;
+    medicalServiceName: string;
     doctorId: number;
     doctorName: string;
     date: string;

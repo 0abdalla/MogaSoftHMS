@@ -10,6 +10,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { DoctorsSettingsEditComponent } from './doctors-settings-edit/doctors-settings-edit.component';
 import { PermissionsComponent } from './permissions/permissions.component';
 import { AppsManagmementComponent } from './apps-managmement/apps-managmement.component';
+import { MedicalServicesListComponent } from './medical-services-list/medical-services-list.component';
 
 
 @NgModule({
@@ -18,7 +19,9 @@ import { AppsManagmementComponent } from './apps-managmement/apps-managmement.co
     DoctorsListComponent,
     DoctorsSettingsEditComponent,
     PermissionsComponent,
-    AppsManagmementComponent
+    AppsManagmementComponent,
+    MedicalServicesListComponent,
+    
   ],
   imports: [
     CommonModule,

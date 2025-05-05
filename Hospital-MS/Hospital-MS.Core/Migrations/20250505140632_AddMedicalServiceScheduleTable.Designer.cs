@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250505140632_AddMedicalServiceScheduleTable")]
+    partial class AddMedicalServiceScheduleTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -824,7 +827,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("MedicalServiceId");
 
-                    b.ToTable("MedicalServiceSchedules");
+                    b.ToTable("MedicalServiceSchedule");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.NurseActivity", b =>

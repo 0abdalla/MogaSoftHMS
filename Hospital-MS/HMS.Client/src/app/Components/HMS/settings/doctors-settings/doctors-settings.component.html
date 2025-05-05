@@ -95,27 +95,18 @@
           
             <h4 class="mb-3">💼بيانات العمل</h4>
             <div class="row mb-3">
-              <div class="col-lg-3 mt-1">
-                <label class="form-label">القسم الطبي</label>
-                <select class="form-select shadow-none" formControlName="DepartmentId">
-                  <option selected disabled value="">اختر القسم</option>
-                  <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
+              <div class="col-lg-4 mt-1">
+                <label class="form-label">التخصص الطبي</label>
+                <select class="form-select shadow-none" formControlName="MedicalServiceId">
+                  <option selected disabled value="">اختر التخصص</option>
+                  <option *ngFor="let service of services" [ngValue]="service.serviceId">{{ service.serviceName }}</option>
                 </select>
-                <div *ngIf="doctorForm.get('DepartmentId')?.invalid && doctorForm.get('DepartmentId')?.touched" class="text-danger">
-                  القسم مطلوب
+                <div *ngIf="doctorForm.get('MedicalServiceId')?.invalid && doctorForm.get('MedicalServiceId')?.touched" class="text-danger">
+                  التخصص الطبي مطلوب
                 </div>
               </div>
-              <div class="col-lg-3 mt-1">
-                <label class="form-label">العيادة</label>
-                <select class="form-select shadow-none" formControlName="ClinicId">
-                  <option selected disabled value="">اختر العيادة</option>
-                  <option *ngFor="let clinic of clinics" [value]="clinic.id">{{ clinic.name }}</option>
-                </select>
-                <div *ngIf="doctorForm.get('ClinicId')?.invalid && doctorForm.get('ClinicId')?.touched" class="text-danger">
-                  العيادة مطلوب
-                </div>
-              </div>
-              <div class="col-lg-3 mt-1">
+              
+              <div class="col-lg-4 mt-1">
                 <label class="form-label">الدرجة العلمية</label>
                 <select class="form-select shadow-none" formControlName="Degree">
                   <option selected disabled value="">اختر الدرجة العلمية</option>
@@ -130,7 +121,7 @@
                   الدرجة العلمية مطلوبة
                 </div>
               </div>
-              <div class="col-lg-3 mt-1">
+              <div class="col-lg-4 mt-1">
                 <label class="form-label">تاريخ التعيين</label>
                 <input type="date" class="form-control shadow-none" formControlName="StartDate" placeholder="تاريخ التعيين">
                 <div *ngIf="doctorForm.get('StartDate')?.invalid && doctorForm.get('StartDate')?.touched" class="text-danger">
@@ -142,7 +133,7 @@
             <h4 class="mb-3">📅 جدول الحضور</h4>
             <div class="mb-3" formArrayName="DoctorSchedules">
               <div *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
-                <div class="col-lg-4">
+                <div class="col-lg-3">
                   <label class="form-label">اليوم</label>
                   <select class="form-select shadow-none" formControlName="weekDay">
                     <option value="" disabled>اختر اليوم</option>
@@ -152,18 +143,27 @@
                     اليوم مطلوب
                   </div>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                   <label class="form-label">من الساعة</label>
                   <input type="time" class="form-control shadow-none" formControlName="startTime" placeholder="اختر وقت البدء" />
                   <div *ngIf="schedule.get('startTime')?.invalid && schedule.get('startTime')?.touched" class="text-danger">
                     وقت البدء مطلوب
                   </div>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                   <label class="form-label">إلى الساعة</label>
                   <input type="time" class="form-control shadow-none" formControlName="endTime" placeholder="اختر وقت الانتهاء" />
                   <div *ngIf="schedule.get('endTime')?.invalid && schedule.get('endTime')?.touched" class="text-danger">
                     وقت الانتهاء مطلوب
+                  </div>
+                </div>
+                <div class="col-lg-3">
+                  <label class="form-label">عدد الحضور</label>
+                  <input type="number" class="form-control shadow-none" min="1" max="60" formControlName="capacity" placeholder="أدخل عدد الحضور" />
+                  <div *ngIf="schedule.get('capacity')?.invalid && schedule.get('capacity')?.touched" class="text-danger">
+                    <ng-container *ngIf="schedule.get('capacity')?.errors?.['required']">عدد الحضور مطلوب</ng-container>
+                    <ng-container *ngIf="schedule.get('capacity')?.errors?.['min']">عدد الحضور يجب أن يكون أكبر من 1</ng-container>
+                    <ng-container *ngIf="schedule.get('capacity')?.errors?.['max']">عدد الحضور يجب أن يكون أقل من 60</ng-container>
                   </div>
                 </div>
                 

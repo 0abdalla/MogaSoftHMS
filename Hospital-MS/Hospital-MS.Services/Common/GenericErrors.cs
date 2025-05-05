@@ -41,7 +41,10 @@ namespace Hospital_MS.Services.Common
 
         public static Error SuccessRegister = new("تم تسجيل مستخدم جديد بنجاح", Status.Success);
 
-
         public static Error AlreadyExists = new("هذا العنصر موجود بالفعل", Status.Failed);
+
+        public static Error ScheduleFull = new("تم الوصول للحد الاقصي للحجز اليوم", Status.Failed);
+
+        public static Error ScheduleNotFound = new("لا يوجد ميعاد متاح في هذا الوقت", Status.Failed);
     }
 }
