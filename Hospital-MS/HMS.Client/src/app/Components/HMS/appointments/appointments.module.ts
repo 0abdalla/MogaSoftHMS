@@ -11,6 +11,7 @@ import { AppointmentFormComponent } from './appointment-form/appointment-form.co
 import { AppointmetSettingsComponent } from './appointmet-settings/appointmet-settings.component';
 import { MessageService } from 'primeng/api';
 import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
+import { AppointmentEditComponent } from './appointment-edit/appointment-edit.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
     AppointmentDetailComponent,
     AppointmentFormComponent,
     AppointmetSettingsComponent,
-    PrintInvoiceComponent
+    PrintInvoiceComponent,
+    AppointmentEditComponent
   ],
   imports: [
     CommonModule,

@@ -54,7 +54,7 @@
                         <th>رقم الحجز</th>
                     </tr>
                 </thead>
-                <tbody *ngIf="patients.length > 0">
+                <tbody *ngIf="patients?.length > 0">
                     <tr *ngFor="let appointment of patients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openAppointmentModal(appointment.id)" data-bs-toggle="modal" data-bs-target="#bookingDetailsModal"
                         style="cursor: pointer">
                         <td>
@@ -63,7 +63,7 @@
                                 <span class="fw-bold">{{ appointment.patientName }}</span>
                             </div>
                         </td>
-                        <td class="text-secondary fw-semibold">{{ appointment.clinicName || 'طوارئ' }}</td>
+                        <td class="text-secondary fw-semibold">{{ appointment.medicalServiceName || 'طوارئ' }}</td>
                         <td>
                             <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
                                 {{ getServiceName(appointment.type) }}
@@ -72,7 +72,7 @@
                         <td class="text-secondary">{{ appointment.id }}</td>
                     </tr>
                 </tbody>
-                <tbody *ngIf="patients.length === 0">
+                <tbody *ngIf="patients?.length === 0">
                     <tr>
                         <td colspan="5" class="text-center text-muted">لا توجد حجوزات حتى الان</td>
                     </tr>
@@ -137,7 +137,7 @@
                             <strong class="strong">نوع الحجز:</strong> <span class="span"> {{ selectedAppointment?.type || '---' }}</span>
                         </div>
                         <div class="col-lg-3">
-                            <strong class="strong">العيادة:</strong> <span class="span"> {{ selectedAppointment?.clinicName || '---' }}</span>
+                            <strong class="strong">العيادة:</strong> <span class="span"> {{ selectedAppointment?.medicalServiceName || '---' }}</span>
                         </div>
                         <div class="col-lg-3">
                             <strong class="strong">الطبيب:</strong> <span class="span"> {{ selectedAppointment?.doctorName || '---' }}</span>
@@ -172,7 +172,7 @@
                         <strong class="strong">طريقة الدفع:</strong> <span class="span"> {{ selectedAppointment?.paymentMethod || '---' }}</span>
                     </div>
                     <div class="col-lg-4">
-                        <strong class="strong">قيمة الكشف:</strong> <span class="span"> {{ selectedAppointment?.fee || '---' }} جنيه</span>
+                        <strong class="strong">قيمة الكشف:</strong> <span class="span"> {{ selectedAppointment?.medicalServicePrice || '---' }} جنيه</span>
                     </div>
                     <div class="col-lg-4">
                         <strong class="strong">تم الدفع:</strong> <span class="span"> {{ selectedAppointment?.isPaid ? 'نعم' : 'لا' }}</span>
@@ -192,7 +192,7 @@
                     <button class="btn col-12 btn-outline-warning" data-bs-target="#updateEmergencyModal" data-bs-toggle="modal">تحديث الحالة</button>
                 </div>
                 <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-success">تعديل الحجز</button>
+                    <button class="btn col-12 btn-outline-success" routerLink="/hms/appointments/edit/{{selectedAppointment?.id}}">تعديل الحجز</button>
                 </div>
                 <div class="col-2 m-0">
                     <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
@@ -204,7 +204,7 @@
                     <button class="btn col-12 btn-outline-warning">تحويل إلى فاتورة</button>
                 </div>
                 <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-danger">حذف الحجز</button>
+                    <button class="btn col-12 btn-outline-danger" (click)="deleteAppointment(selectedAppointment?.id)">حذف الحجز</button>
                 </div>
             </div>
         </div>

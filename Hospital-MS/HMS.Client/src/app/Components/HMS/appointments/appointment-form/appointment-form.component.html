@@ -82,7 +82,7 @@
         
         <div class="col-lg-3">
           <label for="clinic" class="form-label">الخدمة الطبية</label>
-          <select id="clinic" class="form-select shadow-none" formControlName="clinicId" 
+          <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" 
                   (change)="onServiceSelected()">
             <option selected disabled value="">اختر الخدمة</option>
             <option *ngFor="let service of filteredServices" [value]="service.serviceId">
@@ -92,14 +92,15 @@
               لا توجد خدمات متاحة للنوع المحدد
             </option>
           </select>
-          <div *ngIf="reservationForm.get('clinicId')?.invalid && reservationForm.get('clinicId')?.touched" class="text-danger">
+          <div *ngIf="reservationForm.get('medicalServiceId')?.invalid && reservationForm.get('medicalServiceId')?.touched" class="text-danger">
             الخدمة الطبية مطلوبة
           </div>
         </div>
         
         <div class="col-lg-3" *ngIf="selectedAppointmentType !== 'Screening' && selectedAppointmentType !== 'Radiology'">
           <label for="clinic-doctor" class="form-label">الدكتور المختص</label>
-          <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId">
+          <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId"
+                  (change)="onDoctorSelected()">
             <option selected disabled value="">اختر الدكتور المختص</option>
             <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">
               {{ doctor.fullName }}
@@ -108,11 +109,8 @@
               لا يوجد أطباء متاحين لهذه الخدمة
             </option>
           </select>
-          <div *ngIf="reservationForm.get('doctorId')?.invalid && reservationForm.get('doctorId')?.touched" 
-               class="text-danger">
-            اختر الدكتور المختص
-          </div>
         </div>
+
       </div>
       <div class="col-lg-12 text-center mt-3" *ngIf="showServicePrice">
         <h5>تكلفة الخدمة : <span>{{ selectedServicePrice !== null ? selectedServicePrice + ' جنيه' : 'غير محدد' }}</span></h5>
@@ -175,9 +173,9 @@
                 <div class="col-lg-4 mt-3">
                     <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
                     <select id="paymentMethod" class="form-select shadow-none" formControlName="paymentMethod">
-            <option selected disabled value="">اختر وسيلة الدفع</option>
-            <option value="Cash">نقدي</option>
-            <option value="Instapay">تحويل لحظي</option>
+                    <option selected disabled value="">اختر وسيلة الدفع</option>
+                    <option value="نقدي">نقدي</option>
+                    <option value="تحويل لحظي">تحويل لحظي</option>
           </select>
                 </div>
             </div>
@@ -194,36 +192,38 @@
 <div *ngIf="showReceipt" class="receipt-container" id="receipt">
     <div class="receipt">
         <div class="receipt-header">
-            <img src="assets/images/company-logo.png" alt="Company Logo" class="company-logo" />
+            <img src="assets/vendors/imgs/logo.png" alt="Company Logo" class="company-logo" />
             <h2>إيصال الحجز</h2>
-            <p>شركة الرعاية الصحية</p>
+            <p>مستشفى النور المحمدي</p>
             <p>تاريخ الحجز: {{ submittedData.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}</p>
         </div>
         <hr />
         <div class="receipt-body">
-            <h4>👤 بيانات المريض</h4>
+            <h4>👤 بيانات الزائر</h4>
             <p><strong>الاسم:</strong> {{ submittedData.patientName }}</p>
             <p><strong>رقم الهاتف:</strong> {{ submittedData.patientPhone }}</p>
 
             <h4>🏥 بيانات الحجز</h4>
             <p><strong>تاريخ الحجز:</strong> {{ submittedData.appointmentDate | date: 'dd/MM/yyyy HH:mm' }}</p>
             <p><strong>نوع الحجز:</strong> {{ submittedData.appointmentType }}</p>
-            <p><strong>الخدمة الطبية:</strong> {{ getClinicName(submittedData.clinicId) }}</p>
+            <p><strong>الخدمة الطبية:</strong> {{ getClinicName(submittedData.medicalServiceId) }}</p>
             <p *ngIf="submittedData.appointmentType === 'Radiology'"><strong>نوع الأشعة:</strong> {{ submittedData.radiologyType }}</p>
             <p *ngIf="submittedData.appointmentType !== 'Radiology' && submittedData.doctorId"><strong>الدكتور المختص:</strong> {{ getDoctorName(submittedData.doctorId) }}</p>
 
-            <h4>📋 بيانات إضافية</h4>
-            <p><strong>شركة التأمين:</strong> {{ submittedData.insuranceCompanyId || 'غير محدد' }}</p>
-            <p><strong>فئة التأمين:</strong> {{ submittedData.insuranceCategoryId || 'غير محدد' }}</p>
-            <p><strong>رقم التأمين:</strong> {{ submittedData.insuranceNumber || 'غير محدد' }}</p>
-            <p><strong>تم تحويله؟:</strong> {{ submittedData.referred === 'yes' ? 'نعم' : 'لا' }}</p>
-            <p *ngIf="submittedData.referred === 'yes'"><strong>العيادة المحول منها:</strong> {{ submittedData.referredClinic }}</p>
-            <p><strong>وسيلة الدفع:</strong> {{ submittedData.paymentMethod }}</p>
+            <div *ngIf="submittedData?.insuranceCompanyId">
+              <h4>📋 بيانات إضافية</h4>
+              <p><strong>شركة التأمين:</strong> {{ submittedData.insuranceCompanyId || 'غير محدد' }}</p>
+              <p><strong>فئة التأمين:</strong> {{ submittedData.insuranceCategoryId || 'غير محدد' }}</p>
+              <p><strong>رقم التأمين:</strong> {{ submittedData.insuranceNumber || 'غير محدد' }}</p>
+              <p><strong>تم تحويله؟:</strong> {{ submittedData.referred === 'yes' ? 'نعم' : 'لا' }}</p>
+              <p *ngIf="submittedData.referred === 'yes'"><strong>العيادة المحول منها:</strong> {{ submittedData.referredClinic }}</p>
+              <p><strong>وسيلة الدفع:</strong> {{ submittedData.paymentMethod }}</p>
+            </div>
         </div>
         <hr />
         <div class="receipt-footer">
             <p>شكراً لاختياركم خدماتنا</p>
-            <p>للتواصل: info&#64;healthcare.com | 1234-567-890</p>
+            <p>للتواصل: infinityclinic&#64;mogasoft.com | 0100 0201 499</p>
         </div>
     </div>
     <div class="receipt-actions">

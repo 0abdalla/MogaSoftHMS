@@ -83,9 +83,12 @@ export class AppointmentListComponent implements OnInit {
       next: (data) => {
         this.patients = data.results;
         this.total = data.totalCount;
+        console.log(this.patients);
+        
       },
       error: (err) => {
         console.log(err);
+        this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء جلب البيانات' });
       }
     });
   }
@@ -128,9 +131,11 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getAppointmentById(id).subscribe({
       next: (data) => {
         this.selectedAppointment = data.results;
+        console.log(this.selectedAppointment);
       },
       error: (err) => {
         console.error('Failed to fetch appointment', err);
+        this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء جلب البيانات' });
       }
     });
   }
@@ -141,6 +146,7 @@ export class AppointmentListComponent implements OnInit {
       },
       error: (err) => {
         console.log(err);
+        this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء جلب البيانات' });
       }
     });
   }
@@ -176,5 +182,19 @@ export class AppointmentListComponent implements OnInit {
       General: 'كشف'
     };
     return map[type] || type;
+  }
+  // 
+  deleteAppointment(id:number){
+    this.appointmentService.deleteAppointment(id).subscribe({
+      next: (data) => {
+        this.messageService.add({ severity: 'success', summary: 'تم الإلغاء', detail: 'تم الإلغاء بنجاح' });
+        this.getPatients();
+        this.getCounts();
+      },
+      error: (err) => {
+        console.log(err);
+        this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء الإلغاء' });
+      }
+    });
   }
 }

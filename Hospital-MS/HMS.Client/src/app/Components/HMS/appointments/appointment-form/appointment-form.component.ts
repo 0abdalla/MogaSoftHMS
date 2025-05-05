@@ -59,69 +59,69 @@ export class AppointmentFormComponent implements OnInit {
   selectedServicePrice!:number | null;
   showServicePrice:boolean = false;
   filteredDoctorsByService: any[] = [];
-  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private staffService: StaffService, private messageService: MessageService,
-    private insuranceService: InsuranceService, private admissionService: AdmissionService, private sharedService: SharedService) {
+  constructor(
+    private fb: FormBuilder,
+    private appointmentService: AppointmentService,
+    private staffService: StaffService,
+    private messageService: MessageService,
+    private insuranceService: InsuranceService,
+    private admissionService: AdmissionService,
+    private sharedService: SharedService
+  ) {
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       gender: ['', Validators.required],
       appointmentType: ['', Validators.required],
-      clinicId: [{ value: '', disabled: true }, Validators.required],
+      medicalServiceId: [{ value: '', disabled: true }, Validators.required],
       doctorId: [{ value: '', disabled: true }],
-      radiologyType: [{ value: '', disabled: true }],
       appointmentDate: ['', Validators.required],
-      insuranceCompanyId: [''],
+      insuranceCompanyId: [null],
       insuranceCategoryId: [null],
       insuranceNumber: [''],
       referred: ['no'],
       referredClinic: [''],
-      paymentMethod: ['Cash', Validators.required],
+      paymentMethod: ['نقدي', Validators.required],
+      emergencyLevel: ['Normal'],
+      companionName: [''],
+      companionNationalId: [''],
+      companionPhone: [''],
     });
-
-
-
-
-
+  
     this.reservationForm.get('appointmentType')?.valueChanges.subscribe((selectedType) => {
       this.onAppointmentTypeChange();
       this.filteredClinics = this.clinics.filter((clinic: any) => clinic.type === selectedType);
-      const clinicControl = this.reservationForm.get('clinicId');
+      const clinicControl = this.reservationForm.get('medicalServiceId');
       if (selectedType) {
         clinicControl?.enable();
       } else {
         clinicControl?.disable();
       }
     });
-
-
-
-
   
-  this.reservationForm.get('clinicId')?.valueChanges.subscribe((clinicId) => {
-    if (clinicId) {
-      this.filteredDoctors = this.doctors.filter((doc: any) => 
-        doc.medicalServiceId === +clinicId || doc.medicalServiceId === null
-      );
-      this.reservationForm.get('doctorId')?.enable();
-    } else {
-      this.filteredDoctors = [];
-      this.reservationForm.get('doctorId')?.disable();
-    }
-    this.reservationForm.get('doctorId')?.reset();
+    this.reservationForm.get('medicalServiceId')?.valueChanges.subscribe((medicalServiceId) => {
+      if (medicalServiceId) {
+        this.filteredDoctors = this.doctors.filter(
+          (doc: any) => doc.medicalServiceId === Number(medicalServiceId) || doc.medicalServiceId === null
+        );
+        console.log('Filtered Doctors:', this.filteredDoctors); // Debug
+        this.reservationForm.get('doctorId')?.enable();
+        this.reservationForm.get('doctorId')?.setValue(''); // Set to empty string
+      } else {
+        this.filteredDoctors = [];
+        this.reservationForm.get('doctorId')?.disable();
+        this.reservationForm.get('doctorId')?.setValue('');
+      }
     
-    const selectedService = this.filteredServices.find(
-      (service: any) => service.serviceId == clinicId
-    );
-    this.selectedServicePrice = selectedService ? selectedService.price : null;
-    this.showServicePrice = !!selectedService;
-  });
-
-
-
-
-
-    this.reservationForm.get('insuranceCompanyId')?.valueChanges.subscribe(companyId => {
-      const selectedCompany = this.insuranceCompanies.find(company => company.id === +companyId);
+      const selectedService = this.filteredServices.find(
+        (service: any) => service.serviceId === Number(medicalServiceId)
+      );
+      this.selectedServicePrice = selectedService ? selectedService.price : null;
+      this.showServicePrice = !!selectedService;
+    });
+  
+    this.reservationForm.get('insuranceCompanyId')?.valueChanges.subscribe((companyId) => {
+      const selectedCompany = this.insuranceCompanies.find((company) => company.id === Number(companyId));
       this.insuranceCategories = selectedCompany?.insuranceCategories || [];
     });
   }
@@ -136,50 +136,44 @@ export class AppointmentFormComponent implements OnInit {
     this.showServicePrice = false;
     this.selectedServicePrice = null;
     const selectedType = this.reservationForm.get('appointmentType')?.value;
-    this.reservationForm.get('clinicId')?.setValue('', { emitEvent: false });
+    this.reservationForm.get('medicalServiceId')?.setValue('', { emitEvent: false });
     this.selectedServicePrice = null;
+  
     if (!this.services || this.services.length === 0) {
       this.filteredServices = [];
       return;
     }
+  
     if (selectedType === 'General') {
-      this.filteredServices = this.services.filter(
-        (service: any) => service.serviceType === 'General'
-      );
-    }
-    else if (selectedType === 'Consultation') {
-      this.filteredServices = this.services.filter(
-        (service: any) => service.serviceType === 'Consultation'
-      );
-    }
-    else if (selectedType === 'Screening') {
-      this.filteredServices = this.services.filter(
-        (service: any) => service.serviceType === 'Screening'
-      );
+      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'General');
+    } else if (selectedType === 'Consultation') {
+      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Consultation');
+    } else if (selectedType === 'Screening') {
+      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Screening');
     } else if (selectedType === 'Radiology') {
-      this.filteredServices = this.services.filter(
-        (service: any) => service.serviceType === 'Radiology'
-      );
+      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Radiology');
+    } else if (selectedType === 'Surgery') {
+      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Surgery');
     } else {
       this.filteredServices = [];
     }
   }
   
   onServiceSelected() {
-    const selectedServiceId = this.reservationForm.get('clinicId')?.value;
-
+    const selectedServiceId = this.reservationForm.get('medicalServiceId')?.value;
+    console.log('Selected Service ID:', selectedServiceId); // Debug
+    console.log('Filtered Services:', this.filteredServices); // Debug
+  
     if (selectedServiceId) {
       const selectedService = this.filteredServices.find(
-        (service: any) => service.serviceId == selectedServiceId
+        (service: any) => service.serviceId === Number(selectedServiceId)
       );
       this.filteredDoctorsByService = this.doctors.filter(
-        doctor => doctor.medicalServiceId === selectedServiceId
+        (doctor) => doctor.medicalServiceId === Number(selectedServiceId)
       );
-      this.reservationForm.get('doctorId')?.reset();
+      console.log('Filtered Doctors By Service:', this.filteredDoctorsByService); // Debug
       this.selectedServicePrice = selectedService ? selectedService.price : null;
       this.showServicePrice = true;
-      console.log();
-      
     } else {
       this.filteredDoctorsByService = [];
       this.selectedServicePrice = null;
@@ -188,24 +182,56 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   onSubmit() {
-    this.appointmentService.createAppointment(this.reservationForm.value).subscribe({
+    if (this.reservationForm.invalid) {
+      this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
+      return;
+    }
+  
+    const formData = this.reservationForm.value;
+  
+    const payload = {
+      patientName: formData.patientName,
+      patientPhone: formData.patientPhone,
+      gender: formData.gender,
+      appointmentType: formData.appointmentType,
+      medicalServiceId: Number(formData.medicalServiceId),
+      doctorId: formData.doctorId ? Number(formData.doctorId) : null,
+      appointmentDate: formData.appointmentDate,
+      insuranceCompanyId: formData.insuranceCompanyId || null,
+      insuranceCategoryId: formData.insuranceCategoryId || null,
+      insuranceNumber: formData.insuranceNumber || '',
+      paymentMethod: formData.paymentMethod,
+      emergencyLevel: formData.emergencyLevel,
+      companionName: formData.companionName,
+      companionNationalId: formData.companionNationalId,
+      companionPhone: formData.companionPhone
+    };
+  
+    console.log('Payload before sending:', payload);
+  
+    this.appointmentService.createAppointment(payload).subscribe({
       next: (response) => {
         if (response.isSuccess) {
           console.log('Appointment created successfully', response);
-          this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
-          this.submittedData = { ...this.reservationForm.value };
+          console.log('Appointment Data:', formData);
+          this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
+          this.submittedData = { ...formData };
           this.printInvoiceData = this.createInvoiceObj(response.results);
           this.PrintInvoiceComponent.invoiceData = this.printInvoiceData;
           this.PrintInvoiceComponent.generatePdf();
           this.showReceipt = true;
           this.reservationForm.reset();
-        } else
-          this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
+          console.log('Appointment Data:', formData);
+          console.log('Response:', response);
+        }
       },
       error: (error) => {
-        console.error('Error creating appointment', error);
-        console.error('details:', this.reservationForm.value);
-        this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
+        console.error('Error creating appointment:', error);
+        console.error('Details:', formData);
+        const errorMessage = error.error?.message || 'حدث خطأ أثناء إنشاء الحجز';
+        this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: errorMessage });
       }
     });
   }
@@ -281,8 +307,8 @@ export class AppointmentFormComponent implements OnInit {
     return this.reservationForm.get('appointmentType')?.value;
   }
   // 
-  getClinicName(clinicId: string): string {
-    const clinic = this.clinics.find((c: any) => c.id === +clinicId);
+  getClinicName(medicalServiceId: string): string {
+    const clinic = this.clinics.find((c: any) => c.id === +medicalServiceId);
     return clinic ? clinic.name : 'غير محدد';
   }
 
@@ -316,7 +342,7 @@ export class AppointmentFormComponent implements OnInit {
       patientName: this.reservationForm.value.patientName,
       patientPhone: this.reservationForm.value.patientPhone,
       appointmentType: VisitTypeLabels[this.reservationForm.value.appointmentType],
-      clinicName: this.getClinicName(this.reservationForm.value.clinicId),
+      clinicName: this.getClinicName(this.reservationForm.value.medicalServiceId),
       doctorName: this.getDoctorName(this.reservationForm.value.doctorId),
       appointmentDate: this.sharedService.getArabicDayAndTimeRange(this.reservationForm.value.appointmentDate),
       insuranceNumber: this.reservationForm.value.insuranceNumber,
@@ -370,5 +396,10 @@ export class AppointmentFormComponent implements OnInit {
         }
       });
     }
+  }
+  // 
+  onDoctorSelected() {
+    const doctorId = this.reservationForm.get('doctorId')?.value;
+    console.log('Selected Doctor ID:', doctorId);
   }
 }

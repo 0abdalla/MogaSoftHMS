@@ -14,6 +14,8 @@ export class DoctorsSettingsComponent implements OnInit {
   departments!: any;
   clinics!: any;
   doctorForm!: FormGroup;
+  // 
+  services!:any;
   days = [
     { value: 'Friday', label: 'الجمعة' },
     { value: 'Saturday', label: 'السبت' },
@@ -43,9 +45,10 @@ export class DoctorsSettingsComponent implements OnInit {
       Phone: ['', [Validators.required , Validators.pattern(/^01[0125][0-9]{8}$/)]],
       Email: ['', [Validators.required, Validators.email]],
       Address: ['', Validators.required],
-      DepartmentId: ['', Validators.required],
-      SpecialtyId: ['1'],
-      ClinicId: [''], //Not added yet
+      // DepartmentId: [null],
+      // SpecialtyId: [null],
+      // ClinicId: [''],
+      MedicalServiceId: ['', Validators.required],
       Degree: ['', Validators.required],
       Status: ['Active', Validators.required],
       StartDate: ['', Validators.required],
@@ -58,6 +61,7 @@ export class DoctorsSettingsComponent implements OnInit {
     this.getClinics();
     this.getDepartments();
     this.addSchedule();
+    this.getServices();
   }
 
   getClinics() {
@@ -82,6 +86,22 @@ export class DoctorsSettingsComponent implements OnInit {
     });
   }
 
+  getServices() {
+    const filterParams = {
+    };
+  
+    this.appointmentService.getServices(1, 100, '', filterParams).subscribe({
+      next: (data) => {
+        this.services = data.results.filter((service:any) => service.serviceType !== 'Radiology' && service.serviceType !== 'Screening') || [];
+        console.log('Services', this.services);
+      },
+      error: (err) => {
+        console.log(err);
+        this.services = [];
+      }
+    });
+  }
+
   get schedules(): FormArray {
     return this.doctorForm.get('DoctorSchedules') as FormArray;
   }
@@ -92,6 +112,7 @@ export class DoctorsSettingsComponent implements OnInit {
         weekDay: ['', Validators.required],
         startTime: ['', Validators.required],
         endTime: ['', Validators.required],
+        capacity: ['', [Validators.required, Validators.min(1), Validators.max(60)]],
       },
       { validators: [this.timeRangeValidator.bind(this)] }
     );
@@ -140,8 +161,7 @@ export class DoctorsSettingsComponent implements OnInit {
       formData.append('Phone', this.doctorForm.value.Phone);
       formData.append('Email', this.doctorForm.value.Email);
       formData.append('Address', this.doctorForm.value.Address);
-      formData.append('DepartmentId', this.doctorForm.value.DepartmentId);
-      formData.append('SpecialtyId', this.doctorForm.value.SpecialtyId);
+      formData.append('MedicalServiceId', this.doctorForm.value.MedicalServiceId);
       formData.append('Degree', this.doctorForm.value.Degree);
       formData.append('Status', this.doctorForm.value.Status);
       formData.append('StartDate', this.doctorForm.value.StartDate);
@@ -155,12 +175,15 @@ export class DoctorsSettingsComponent implements OnInit {
           formData.append(`DoctorSchedules[${index}].weekDay`, schedule.weekDay);
           formData.append(`DoctorSchedules[${index}].startTime`, schedule.startTime);
           formData.append(`DoctorSchedules[${index}].endTime`, schedule.endTime);
+          formData.append(`DoctorSchedules[${index}].capacity`, schedule.capacity);
         }
       });
 
       this.doctorService.postDoctor(formData).subscribe({
         next: (res) => {
           console.log('Doctor added successfully', res);
+          console.log('Data Sent:',this.doctorForm.value);
+          
           this.messageService.add({
             severity: 'success',
             summary: 'عملية ناجحة',
