@@ -59,6 +59,7 @@ export class AppointmentFormComponent implements OnInit {
   selectedServicePrice!:number | null;
   showServicePrice:boolean = false;
   filteredDoctorsByService: any[] = [];
+  selectedDate: Date | null = null;
   constructor(
     private fb: FormBuilder,
     private appointmentService: AppointmentService,
@@ -97,16 +98,21 @@ export class AppointmentFormComponent implements OnInit {
       } else {
         clinicControl?.disable();
       }
+      this.selectedDate = this.reservationForm.get('appointmentDate')?.value ? new Date(this.reservationForm.get('appointmentDate')?.value) : null;
+      console.log('Selected Date:', this.selectedDate);
+      this.filterServicesByDay();
+      this.filterDoctorsByDay();
     });
+    
   
     this.reservationForm.get('medicalServiceId')?.valueChanges.subscribe((medicalServiceId) => {
       if (medicalServiceId) {
         this.filteredDoctors = this.doctors.filter(
           (doc: any) => doc.medicalServiceId === Number(medicalServiceId) || doc.medicalServiceId === null
         );
-        console.log('Filtered Doctors:', this.filteredDoctors); // Debug
+        console.log('Filtered Doctors:', this.filteredDoctors);
         this.reservationForm.get('doctorId')?.enable();
-        this.reservationForm.get('doctorId')?.setValue(''); // Set to empty string
+        this.reservationForm.get('doctorId')?.setValue('');
       } else {
         this.filteredDoctors = [];
         this.reservationForm.get('doctorId')?.disable();
@@ -125,60 +131,69 @@ export class AppointmentFormComponent implements OnInit {
       this.insuranceCategories = selectedCompany?.insuranceCategories || [];
     });
   }
-
+  filterServicesByDay() {
+    if (!this.selectedDate || !this.services.length) {
+      return;
+    }
+  
+    const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
+    
+    this.filteredServices = this.filteredServices.filter(service => {
+      if (!service.medicalServiceSchedules || !service.medicalServiceSchedules.length) {
+        console.log('No schedules found for service:', service);
+        return false;
+      }
+      return service.medicalServiceSchedules.some((schedule: any) => {
+        console.log('Schedule:', schedule);
+        return schedule.weekDay === dayOfWeek;
+      });
+    });
+  }
+  
+  filterDoctorsByDay() {
+    if (!this.selectedDate || !this.doctors.length) {
+      return;
+    }
+  
+    const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
+    
+    this.filteredDoctors = this.filteredDoctors.filter(doctor => {
+      if (!doctor.doctorSchedules || !doctor.doctorSchedules.length) {
+        return false;
+      }
+      return doctor.doctorSchedules.some((schedule: any) => {
+        console.log('Schedule:', schedule);
+        return schedule.weekDay === dayOfWeek;
+      });
+    });
+  }
+  getArabicDayOfWeek(date: Date): string {
+    const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    return days[date.getDay()];
+  }
+  
   ngOnInit(): void {
     this.getStaff();
     this.getInsuranceCompanies();
     this.loadPatients();
     this.getServices();
   }
-  onAppointmentTypeChange() {
-    this.showServicePrice = false;
-    this.selectedServicePrice = null;
-    const selectedType = this.reservationForm.get('appointmentType')?.value;
-    this.reservationForm.get('medicalServiceId')?.setValue('', { emitEvent: false });
-    this.selectedServicePrice = null;
-  
-    if (!this.services || this.services.length === 0) {
-      this.filteredServices = [];
-      return;
-    }
-  
-    if (selectedType === 'General') {
-      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'General');
-    } else if (selectedType === 'Consultation') {
-      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Consultation');
-    } else if (selectedType === 'Screening') {
-      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Screening');
-    } else if (selectedType === 'Radiology') {
-      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Radiology');
-    } else if (selectedType === 'Surgery') {
-      this.filteredServices = this.services.filter((service: any) => service.serviceType === 'Surgery');
-    } else {
-      this.filteredServices = [];
-    }
+  onDayChange(): void {
+    this.filterServicesByDay();
+    this.filterDoctorsByDay();
+  }
+  onAppointmentTypeChange(): void {
+    this.filterServices();
+    this.reservationForm.get('medicalServiceId')?.setValue('');
   }
   
-  onServiceSelected() {
-    const selectedServiceId = this.reservationForm.get('medicalServiceId')?.value;
-    console.log('Selected Service ID:', selectedServiceId); // Debug
-    console.log('Filtered Services:', this.filteredServices); // Debug
-  
-    if (selectedServiceId) {
-      const selectedService = this.filteredServices.find(
-        (service: any) => service.serviceId === Number(selectedServiceId)
-      );
-      this.filteredDoctorsByService = this.doctors.filter(
-        (doctor) => doctor.medicalServiceId === Number(selectedServiceId)
-      );
-      console.log('Filtered Doctors By Service:', this.filteredDoctorsByService); // Debug
-      this.selectedServicePrice = selectedService ? selectedService.price : null;
-      this.showServicePrice = true;
-    } else {
-      this.filteredDoctorsByService = [];
-      this.selectedServicePrice = null;
-      this.showServicePrice = false;
-    }
+  onServiceSelected(): void {
+    this.filterDoctors();
+    const selectedService = this.filteredServices.find(
+      service => service.id === Number(this.reservationForm.get('medicalServiceId')?.value)
+    );
+    this.selectedServicePrice = selectedService?.price || null;
+    this.showServicePrice = !!selectedService;
   }
 
   onSubmit() {
@@ -402,4 +417,60 @@ export class AppointmentFormComponent implements OnInit {
     const doctorId = this.reservationForm.get('doctorId')?.value;
     console.log('Selected Doctor ID:', doctorId);
   }
+  // 
+  private filterDoctors(): void {
+    const selectedServiceId = this.reservationForm.get('medicalServiceId')?.value;
+    
+    if (!selectedServiceId) {
+      this.filteredDoctorsByService = [];
+      return;
+    }
+
+    let doctors = this.doctors.filter(doctor => 
+      doctor.medicalServiceId === Number(selectedServiceId)
+    );
+
+    if (this.selectedDate) {
+      const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
+      doctors = doctors.filter(doctor => {
+        if (!doctor.doctorSchedules || doctor.doctorSchedules.length === 0) {
+          return true;
+        }
+        return doctor.doctorSchedules.some(schedule => 
+          schedule.weekDay === dayOfWeek
+        );
+      });
+    }
+
+    this.filteredDoctorsByService = doctors;
+  }
+  private getEnglishDayOfWeek(date: Date): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[date.getDay()];
+  }
+
+  private filterServices(): void {
+    const selectedType = this.reservationForm.get('appointmentType')?.value;
+    
+    if (!selectedType) {
+      this.filteredServices = [];
+      return;
+    }
+    let services = this.services.filter(service => service.type === selectedType);
+
+    if (this.selectedDate) {
+      const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
+      services = services.filter(service => {
+        if (!service.medicalServiceSchedules || service.medicalServiceSchedules.length === 0) {
+          return true;
+        }
+        return service.medicalServiceSchedules.some(schedule => 
+          schedule.weekDay === dayOfWeek
+        );
+      });
+    }
+
+    this.filteredServices = services;
+  }
+
 }

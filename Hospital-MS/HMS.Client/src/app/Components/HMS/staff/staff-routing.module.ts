@@ -8,6 +8,7 @@ import { StaffProgressionManagmentComponent } from './staff-progression-managmen
 import { StaffClassManagmentComponent } from './staff-class-managment/staff-class-managment.component';
 import { StaffDepManagmentComponent } from './staff-dep-managment/staff-dep-managment.component';
 import { StaffJobManagementComponent } from './staff-job-management/staff-job-management.component';
+import { StaffLevelsComponent } from './staff-levels/staff-levels.component';
 
 const routes: Routes = [
   { path: '', redirectTo : 'list' , pathMatch:"full" },
@@ -18,7 +19,8 @@ const routes: Routes = [
   { path: 'progression' , component:StaffProgressionManagmentComponent , canActivate: [authGuard] },
   { path: 'classification' , component : StaffClassManagmentComponent , canActivate:[authGuard]},
   { path: 'department-admin' , component:StaffDepManagmentComponent , canActivate:[authGuard]},
-  { path: 'job-management' , component:StaffJobManagementComponent , canActivate:[authGuard]}
+  { path: 'job-management' , component:StaffJobManagementComponent , canActivate:[authGuard]},
+  { path: 'job-levels' , component:StaffLevelsComponent , canActivate:[authGuard]}
 ];
 
 @NgModule({

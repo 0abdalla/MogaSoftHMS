@@ -58,7 +58,7 @@
       <div class="row mb-3">
         <div class="col-lg-3">
           <label for="app-date" class="form-label">تاريخ الحجز</label>
-          <input id="app-date" type="date" formControlName="appointmentDate" class="form-control shadow-none">
+          <input id="app-date" type="date" formControlName="appointmentDate" class="form-control shadow-none" (change)="onDayChange()">
           <div *ngIf="reservationForm.get('appointmentDate')?.invalid && reservationForm.get('appointmentDate')?.touched" class="text-danger">
             تاريخ الحجز مطلوب
           </div>
@@ -85,11 +85,11 @@
           <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" 
                   (change)="onServiceSelected()">
             <option selected disabled value="">اختر الخدمة</option>
-            <option *ngFor="let service of filteredServices" [value]="service.serviceId">
-              {{ service.serviceName }}
+            <option *ngFor="let service of filteredServices" [value]="service.id">
+              {{ service.name }}
             </option>
             <option *ngIf="filteredServices.length === 0" disabled>
-              لا توجد خدمات متاحة للنوع المحدد
+              {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
             </option>
           </select>
           <div *ngIf="reservationForm.get('medicalServiceId')?.invalid && reservationForm.get('medicalServiceId')?.touched" class="text-danger">
@@ -102,11 +102,11 @@
           <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId"
                   (change)="onDoctorSelected()">
             <option selected disabled value="">اختر الدكتور المختص</option>
-            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">
+            <option *ngFor="let doctor of filteredDoctorsByService" [value]="doctor.id">
               {{ doctor.fullName }}
             </option>
-            <option *ngIf="filteredDoctors.length === 0" disabled>
-              لا يوجد أطباء متاحين لهذه الخدمة
+            <option *ngIf="filteredDoctorsByService.length === 0" disabled>
+              {{ selectedDate ? 'لا يوجد أطباء متاحين في اليوم المحدد' : 'لا يوجد أطباء متاحين لهذه الخدمة' }}
             </option>
           </select>
         </div>

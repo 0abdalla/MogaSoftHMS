@@ -30,7 +30,7 @@ export class AppointmentService {
     return this.http.put<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/${id}`, appointment);
   }
   deleteAppointment(id: number): Observable<ErrorResponseModel<string>> {
-    return this.http.delete<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/${id}`);
+    return this.http.delete<ErrorResponseModel<string>>(`${this.baseUrl}Appointments?id=${id}`);
   }
   updateEmergency(id: number, updateEmergencyForm: FormGroup): Observable<ErrorResponseModel<string>> {
     return this.http.put<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/emergency/${id}`, updateEmergencyForm.value);

@@ -12,6 +12,7 @@ import { StaffClassManagmentComponent } from './staff-class-managment/staff-clas
 import { StaffDepManagmentComponent } from './staff-dep-managment/staff-dep-managment.component';
 import { StaffProgressionManagmentComponent } from './staff-progression-managment/staff-progression-managment.component';
 import { StaffJobManagementComponent } from './staff-job-management/staff-job-management.component';
+import { StaffLevelsComponent } from './staff-levels/staff-levels.component';
 
 
 @NgModule({
@@ -22,7 +23,8 @@ import { StaffJobManagementComponent } from './staff-job-management/staff-job-ma
     StaffClassManagmentComponent,
     StaffDepManagmentComponent,
     StaffProgressionManagmentComponent,
-    StaffJobManagementComponent
+    StaffJobManagementComponent,
+    StaffLevelsComponent
   ],
   imports: [
     CommonModule,

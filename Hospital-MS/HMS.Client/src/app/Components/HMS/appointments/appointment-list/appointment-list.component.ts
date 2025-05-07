@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MessageService } from 'primeng/api';
@@ -43,7 +43,7 @@ export class AppointmentListComponent implements OnInit {
   // 
   clinics!: any;
   constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService,
-    private sharedService: SharedService) { }
+    private sharedService: SharedService, private cdr: ChangeDetectorRef) { }
   ngOnInit() {
     this.filterForm = this.fb.group({
       Type: [''],
@@ -84,7 +84,7 @@ export class AppointmentListComponent implements OnInit {
         this.patients = data.results;
         this.total = data.totalCount;
         console.log(this.patients);
-        
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.log(err);
@@ -190,6 +190,7 @@ export class AppointmentListComponent implements OnInit {
         this.messageService.add({ severity: 'success', summary: 'تم الإلغاء', detail: 'تم الإلغاء بنجاح' });
         this.getPatients();
         this.getCounts();
+        this.sharedService.closeModal('deleteAppointmentModal');
       },
       error: (err) => {
         console.log(err);

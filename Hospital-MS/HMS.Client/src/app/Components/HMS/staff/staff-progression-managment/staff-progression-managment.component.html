@@ -1,1 +1,176 @@
-<p>staff-progression-managment works!</p>
+<main id="job-titles">
+    <div class="container-fluid">
+        <div class="card p-2">
+            <div class="p-3">
+                <p-toast position="top-left"></p-toast>
+                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+                    <div class="row justify-content-between align-items-center gap-2">
+                        <div class="row col-8">
+                            <div class="col-lg-2">
+                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المسمى" formControlName="SearchText" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 d-flex justify-content-end">
+                            <button data-bs-toggle="modal" data-bs-target="#addjobTitleModal" type="button" class="btn-purble">+ إضافة مسمى وظيفي</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <p-toast position="top-left"></p-toast>
+            <table class="table table-hover mt-4">
+                <thead>
+                    <tr>
+                        <th>رقم المسمى الوظيفي</th>
+                        <th>إسم المسمى الوظيفي</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="jobTitles?.length > 0">
+                    <tr *ngFor="let jobTitle of jobTitles | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openjobTitleDetails(jobTitle.id)"
+                        style="cursor: pointer">
+                        <td class="text-secondary">{{ jobTitle.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                                <div class="avatar-circle">{{ jobTitle.name?.charAt(0) }}</div>
+                                <span class="fw-bold">{{ jobTitle.name }}</span>
+                            </div>
+                        </td>
+                        <td class="text-secondary" [ngClass]="jobTitle.status === 'نشط' ? 'text-success' : 'text-danger'">{{ jobTitle.status }}</td>
+                        <td>
+                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editjobTitleModal" (click)="openjobTitleDetails(jobTitle.id)">
+                              <i class="fa-solid fa-pen"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="jobTitles?.length === 0">
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">لا يوجد فئات حتى الآن</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="col-lg-12">
+                <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                    <div class="my-pagination">
+                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                            screenReaderCurrentLabel="You're on page">
+                        </pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<div class="modal fade" id="addjobTitleModal" tabindex="-1" aria-labelledby="addjobTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="addjobTitleModalLabel">إضافة مسمى وظيفي</h5>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="jobTitleForm" (ngSubmit)="addjobTitle()">
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-label" for="name">إسم المسمى الوظيفي</label>
+                  <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                  <div *ngIf="jobTitleForm.get('name')?.invalid && jobTitleForm.get('name')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['required']">إسم المسمى الوظيفي مطلوب</ng-container>
+                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['minlength']">إسم المسمى الوظيفي يجب أن يكون أكثر من 3 حروف</ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="form-group">
+                  <label class="form-label" for="status">الحالة</label>
+                  <select class="form-select shadow-none" formControlName="status" id="status">
+                    <option selected disabled value="">اختر الحالة</option>
+                    <option value="Active">نشط</option>
+                    <option value="Inactive">غير نشط</option>
+                  </select>
+                  <div *ngIf="jobTitleForm.get('status')?.invalid && jobTitleForm.get('status')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobTitleForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <div class="form-group">
+                  <label class="form-label" for="description">الوصف</label>
+                  <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
+                  <div *ngIf="jobTitleForm.get('description')?.invalid && jobTitleForm.get('description')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobTitleForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            <div class="text-center mt-3">
+              <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">إضافة الخدمة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="editjobTitleModal" tabindex="-1" aria-labelledby="editjobTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="editjobTitleModalLabel">تعديل المسمى الوظيفي</h5>
+        </div>
+        <div class="modal-body">
+          <form [formGroup]="jobTitleForm" (ngSubmit)="editjobTitle()">
+            <div class="row">
+              <div class="col-lg-6 mb-2">
+                <div class="form-group">
+                  <label class="form-label" for="name">إسم المسمى الوظيفي</label>
+                  <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                  <div *ngIf="jobTitleForm.get('name')?.invalid && jobTitleForm.get('name')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['required']">إسم المسمى الوظيفي مطلوب</ng-container>
+                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['minlength']">إسم المسمى الوظيفي يجب أن يكون أكثر من 3 حروف</ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6 mb-2">
+                <div class="form-group">
+                  <label class="form-label" for="status">الحالة</label>
+                  <select class="form-select shadow-none" formControlName="status" id="status">
+                    <option selected disabled value="">اختر الحالة</option>
+                    <option value="Active">نشط</option>
+                    <option value="Inactive">غير نشط</option>
+                  </select>
+                  <div *ngIf="jobTitleForm.get('status')?.invalid && jobTitleForm.get('status')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobTitleForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12 mb-2">
+                <div class="form-group">
+                  <label class="form-label" for="description">الوصف</label>
+                  <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
+                  <div *ngIf="jobTitleForm.get('description')?.invalid && jobTitleForm.get('description')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobTitleForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+            <div class="text-center mt-3">
+              <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">تعديل الخدمة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -74,6 +74,7 @@ export class PatientListComponent {
   loadPatients() {
     this.admissionService.getAddmision(this.pagingFilterModel).subscribe({
       next: (data) => {
+        console.log("Data : " , data);
         this.patients = data.results.map((patient: any) => {
             switch (patient.patientStatus) {
               case 'CriticalCondition':
@@ -97,8 +98,8 @@ export class PatientListComponent {
             }
             return patient;
           });
-        this.total = data.total;
-        console.log(this.patients);
+        this.total = data.totalCount;
+        console.log("Patients : " , this.patients);
       },
       error: (err) => {
         console.log(err);
