@@ -145,16 +145,8 @@ td{
   font-weight: 500;
 }
 
-.avatar-circle {
-  width: 40px;
-  height: 40px;
-  background-color: #576CAB;
-  color: #fff;
-  border-radius: 50%;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 34px;
-  letter-spacing: 0px;
-  text-align: center;
-}
 
+.table.table-striped tr.canceled-row {
+  background-color: red !important;
+  color: white !important;
+}

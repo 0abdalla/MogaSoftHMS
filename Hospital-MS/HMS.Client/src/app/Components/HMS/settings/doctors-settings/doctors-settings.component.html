@@ -99,7 +99,7 @@
                 <label class="form-label">التخصص الطبي</label>
                 <select class="form-select shadow-none" formControlName="MedicalServiceId">
                   <option selected disabled value="">اختر التخصص</option>
-                  <option *ngFor="let service of services" [ngValue]="service.serviceId">{{ service.serviceName }}</option>
+                  <option *ngFor="let service of services" [ngValue]="service.id">{{ service.name }}</option>
                 </select>
                 <div *ngIf="doctorForm.get('MedicalServiceId')?.invalid && doctorForm.get('MedicalServiceId')?.touched" class="text-danger">
                   التخصص الطبي مطلوب

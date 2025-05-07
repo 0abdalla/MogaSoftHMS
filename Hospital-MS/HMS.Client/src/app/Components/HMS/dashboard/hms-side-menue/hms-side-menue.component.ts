@@ -50,6 +50,7 @@ export class HMSSideMenueComponent {
       '/hms/staff/classification': 'staff',
       '/hms/staff/department-admin': 'staff',
       '/hms/staff/job-management': 'staff',
+      '/hms/staff/job-levels': 'staff',
       '/hms/reports/financial': 'reports',
       '/hms/reports/medical': 'reports',
       '/hms/settings/general': 'settings',
@@ -57,7 +58,7 @@ export class HMSSideMenueComponent {
       '/hms/settings/doctors-list': 'settings',
       '/hms/settings/permissions': 'settings',
       '/hms/settings/apps-managmement': 'settings',
-      '/hms/settings/medical-services-list': 'settings'
+      '/hms/settings/medical-services-list': 'settings',
     };
 
     for (const route in routeMenuMap) {

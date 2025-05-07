@@ -1,4 +1,4 @@
-<main id="job-types">
+<main id="job-levels">
     <div class="container-fluid">
         <div class="card p-2">
             <div class="p-3">
@@ -10,12 +10,12 @@
                                 <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
                             </div>
                             <div class="col-lg-6">
-                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الفئة" formControlName="SearchText" />
+                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المستوى" formControlName="SearchText" />
                             </div>
                         </div>
 
-                        <div class="col-lg-2">
-                            <button data-bs-toggle="modal" data-bs-target="#addjobTypeModal" type="button" class="btn-purble">+ إضافة فئة</button>
+                        <div class="col-lg-2 d-flex align-items-end">
+                            <button data-bs-toggle="modal" data-bs-target="#addjobLevelModal" type="button" class="btn-purble">+ إضافة مستوى</button>
                         </div>
                     </div>
                 </form>
@@ -24,31 +24,31 @@
             <table class="table table-hover mt-4">
                 <thead>
                     <tr>
-                        <th>رقم الفئة</th>
-                        <th>إسم الفئة</th>
+                        <th>رقم المستوى</th>
+                        <th>إسم المستوى</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
-                <tbody *ngIf="jobTypes?.length > 0">
-                    <tr *ngFor="let jobType of jobTypes | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openjobTypeDetails(jobType.id)"
+                <tbody *ngIf="jobLevels?.length > 0">
+                    <tr *ngFor="let jobLevel of jobLevels | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openjobLevelDetails(jobLevel.id)"
                         style="cursor: pointer">
-                        <td class="text-secondary">{{ jobType.id }}</td>
+                        <td class="text-secondary">{{ jobLevel.id }}</td>
                         <td>
                             <div class="d-flex align-items-center gap-2 justify-content-start">
-                                <div class="avatar-circle">{{ jobType.name?.charAt(0) }}</div>
-                                <span class="fw-bold">{{ jobType.name }}</span>
+                                <div class="avatar-circle">{{ jobLevel.name?.charAt(0) }}</div>
+                                <span class="fw-bold">{{ jobLevel.name }}</span>
                             </div>
                         </td>
-                        <td class="text-secondary" [ngClass]="jobType.status ==='نشط' ? 'text-success' : 'text-danger'">{{ jobType.status }}</td>
+                        <td class="text-secondary" [ngClass]="jobLevel.status ==='نشط' ? 'text-success' : 'text-danger'">{{ jobLevel.status }}</td>
                         <td>
-                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editjobTypeModal" (click)="openjobTypeDetails(jobType.id)">
+                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editjobLevelModal" (click)="openjobLevelDetails(jobLevel.id)">
                               <i class="fa-solid fa-pen"></i>
                             </button>
                         </td>
                     </tr>
                 </tbody>
-                <tbody *ngIf="jobTypes?.length === 0">
+                <tbody *ngIf="jobLevels?.length === 0">
                     <tr>
                         <td colspan="4" class="text-center text-muted">لا يوجد فئات حتى الآن</td>
                     </tr>
@@ -69,23 +69,23 @@
 </main>
 
 
-<div class="modal fade" id="addjobTypeModal" tabindex="-1" aria-labelledby="addjobTypeModalLabel" aria-hidden="true">
+<div class="modal fade" id="addjobLevelModal" tabindex="-1" aria-labelledby="addjobLevelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
         <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addjobTypeModalLabel">إضافة فئة</h5>
+          <h5 class="modal-title" id="addjobLevelModalLabel">إضافة مستوى</h5>
         </div>
         <div class="modal-body">
-          <form [formGroup]="jobTypeForm" (ngSubmit)="addJobType()">
+          <form [formGroup]="jobLevelForm" (ngSubmit)="addjobLevel()">
             <div class="row">
               <div class="col-lg-6">
                 <div class="form-group">
-                  <label class="form-label" for="name">إسم الخدمة</label>
+                  <label class="form-label" for="name">إسم المستوى</label>
                   <input type="text" class="form-control shadow-none" formControlName="name" id="name">
-                  <div *ngIf="jobTypeForm.get('name')?.invalid && jobTypeForm.get('name')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['required']">إسم الخدمة مطلوب</ng-container>
-                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['minlength']">إسم الخدمة يجب أن يكون أكثر من 3 حروف</ng-container>
+                  <div *ngIf="jobLevelForm.get('name')?.invalid && jobLevelForm.get('name')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['required']">إسم المستوى مطلوب</ng-container>
+                    <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['minlength']">إسم المستوى يجب أن يكون أكثر من 3 حروف</ng-container>
                   </div>
                 </div>
               </div>
@@ -97,8 +97,8 @@
                     <option value="Active">نشط</option>
                     <option value="Inactive">غير نشط</option>
                   </select>
-                  <div *ngIf="jobTypeForm.get('status')?.invalid && jobTypeForm.get('status')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTypeForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
+                  <div *ngIf="jobLevelForm.get('status')?.invalid && jobLevelForm.get('status')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobLevelForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                   </div>
                 </div>
               </div>
@@ -106,15 +106,15 @@
                 <div class="form-group">
                   <label class="form-label" for="description">الوصف</label>
                   <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
-                  <div *ngIf="jobTypeForm.get('description')?.invalid && jobTypeForm.get('description')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTypeForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                  <div *ngIf="jobLevelForm.get('description')?.invalid && jobLevelForm.get('description')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobLevelForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
                   </div>
                 </div>
               </div>
             </div>
   
             <div class="text-center mt-3">
-              <button type="submit" class="btn-blue" [disabled]="jobTypeForm.invalid">إضافة الخدمة</button>
+              <button type="submit" class="btn-blue" [disabled]="jobLevelForm.invalid">إضافة المستوى</button>
             </div>
           </form>
         </div>
@@ -122,23 +122,23 @@
     </div>
   </div>
 
-  <div class="modal fade" id="editjobTypeModal" tabindex="-1" aria-labelledby="editjobTypeModalLabel" aria-hidden="true">
+  <div class="modal fade" id="editjobLevelModal" tabindex="-1" aria-labelledby="editjobLevelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
         <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="editjobTypeModalLabel">تعديل الفئة</h5>
+          <h5 class="modal-title" id="editjobLevelModalLabel">تعديل المستوى</h5>
         </div>
         <div class="modal-body">
-          <form [formGroup]="jobTypeForm" (ngSubmit)="editJobType()">
+          <form [formGroup]="jobLevelForm" (ngSubmit)="editjobLevel()">
             <div class="row">
               <div class="col-lg-6 mb-2">
                 <div class="form-group">
-                  <label class="form-label" for="name">إسم الخدمة</label>
+                  <label class="form-label" for="name">إسم المستوى</label>
                   <input type="text" class="form-control shadow-none" formControlName="name" id="name">
-                  <div *ngIf="jobTypeForm.get('name')?.invalid && jobTypeForm.get('name')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['required']">إسم الخدمة مطلوب</ng-container>
-                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['minlength']">إسم الخدمة يجب أن يكون أكثر من 3 حروف</ng-container>
+                  <div *ngIf="jobLevelForm.get('name')?.invalid && jobLevelForm.get('name')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['required']">إسم المستوى مطلوب</ng-container>
+                    <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['minlength']">إسم المستوى يجب أن يكون أكثر من 3 حروف</ng-container>
                   </div>
                 </div>
               </div>
@@ -150,8 +150,8 @@
                     <option value="Active">نشط</option>
                     <option value="Inactive">غير نشط</option>
                   </select>
-                  <div *ngIf="jobTypeForm.get('status')?.invalid && jobTypeForm.get('status')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTypeForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
+                  <div *ngIf="jobLevelForm.get('status')?.invalid && jobLevelForm.get('status')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobLevelForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                   </div>
                 </div>
               </div>
@@ -159,15 +159,15 @@
                 <div class="form-group">
                   <label class="form-label" for="description">الوصف</label>
                   <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
-                  <div *ngIf="jobTypeForm.get('description')?.invalid && jobTypeForm.get('description')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTypeForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                  <div *ngIf="jobLevelForm.get('description')?.invalid && jobLevelForm.get('description')?.touched" class="text-danger">
+                    <ng-container *ngIf="jobLevelForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
                   </div>
                 </div>
               </div>
               
             </div>
             <div class="text-center mt-3">
-              <button type="submit" class="btn-blue" [disabled]="jobTypeForm.invalid">تعديل الخدمة</button>
+              <button type="submit" class="btn-blue" [disabled]="jobLevelForm.invalid">تعديل المستوى</button>
             </div>
           </form>
         </div>

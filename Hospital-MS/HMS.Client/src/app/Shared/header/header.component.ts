@@ -84,6 +84,12 @@ export class HeaderComponent {
         return 'إعدادات الأطباء';
       case '/hms/settings/doctors-list':
         return 'إدارة الأطباء';
+      case '/hms/settings/medical-services-list':
+        return 'إدارة الخدمات الطبية';
+      case '/hms/staff/progression':
+        return 'إدارة التدرج الوظيفي';
+      case '/hms/staff/classification':
+        return 'إدارة التصنيف الوظيفي';
       case '/hms/insurance/insurance-list':
         return 'إدارة التأمينات';
       case '/hms/insurance/add-insurance':
