@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Core.Models.HR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,10 @@ namespace Hospital_MS.Core._Data
         public DbSet<StaffAttachments> StaffAttachments { get; set; }
         public DbSet<MedicalService> MedicalServices { get; set; }
         public DbSet<MedicalServiceSchedule> MedicalServiceSchedules { get; set; }
+
+        public DbSet<JobType> JobTypes { get; set; }
+        public DbSet<JobTitle> JobTitles { get; set; }
+        public DbSet<JobLevel> JobLevels { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

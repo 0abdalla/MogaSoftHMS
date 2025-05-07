@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Models.HR;
 
 namespace Hospital_MS.Core.Models
 {
@@ -20,11 +21,17 @@ namespace Hospital_MS.Core.Models
         public string? Notes { get; set; }
 
         public int? ClinicId { get; set; }
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
+        public int? JobTitleId { get; set; }
+        public int? JobTypeId { get; set; }
+        public int? JobLevelId { get; set; }
 
         // Navigation Property
         public Clinic? Clinic { get; set; }
-        public Department Department { get; set; } = default!;
+        public Department? Department { get; set; } = default!;
+        public JobTitle? JobTitle { get; set; } = default!;
+        public JobType? JobType { get; set; } = default!;
+        public JobLevel? JobLevel { get; set; } = default!;
         public ICollection<StaffAttachments> StaffAttachments { get; set; } = new HashSet<StaffAttachments>();
     }
 }

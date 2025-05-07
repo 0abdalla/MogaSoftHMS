@@ -37,5 +37,12 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("medical-history/{id}")]
+        public async Task<IActionResult> GetPatientMedicalHistory(int id, CancellationToken cancellationToken)
+        {
+            var result = await _patientService.GetPatientAdmissionsByIdAsync(id, cancellationToken);
+            return Ok(result);
+        }
+
     }
 }

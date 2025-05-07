@@ -15,5 +15,7 @@ namespace Hospital_MS.Interfaces.HMS
         Task<PagedResponseModel<DataTable>> GetCountsAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusRequest request, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+
+        Task<ErrorResponseModel<PatientAdmissionsWithAppointmentsResponse>> GetPatientAdmissionsByIdAsync(int id, CancellationToken cancellationToken = default);
     }
 }

@@ -21,7 +21,7 @@ namespace Hospital_MS.Core.Contracts.Staff
         public int? ClinicId { get; set; }
         public string? ClinicName { get; set; }
         public string? DepartmentName { get; set; }
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
 
         public string? MaritalStatus { get; set; }
         public string? Address { get; set; }
