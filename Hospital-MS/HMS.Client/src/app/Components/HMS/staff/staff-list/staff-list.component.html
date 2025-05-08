@@ -1,11 +1,11 @@
 <main id="staff-list" @fadeIn>
-  <section class="section1" id="cards">
+  <!-- <section class="section1" id="cards">
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-3" *ngFor="let employee of employeesData">
           <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': employee.color }">
-            <h4>{{ employee.name }}</h4>
-            <p class="mt-0">{{ employee.count }} فرد</p>
+            <h4>{{ employee?.name }}</h4>
+            <p class="mt-0">{{ employee?.count }} فرد</p>
             <div class="percentage d-flex align-items-center justify-content-center gap-1">
               <p class="m-0"> 12%</p>
               <i class="fa-regular fa-circle-arrow-up"></i>
@@ -14,10 +14,10 @@
         </div>
       </div>
     </div>
-  </section>
+  </section> -->
   <section class="section2" id="table-employees">
-    <div class="card mt-3 p-2">
-      <div class="p-3 mt-4">
+    <div class="card p-2">
+      <div class="p-3">
         <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
           <div class="row justify-content-between align-items-center gap-2">
             <div class="row col-lg-8">
@@ -28,11 +28,11 @@
                 <input
                   type="text"
                   class="form-control shadow-none"
-                  placeholder="أدخل إسم الموظف أو رقم الهاتف"
+                  placeholder="أدخل إسم الموظف"
                   formControlName="Search"
                 />
               </div>
-              <div class="col-lg-3">
+              <!-- <div class="col-lg-3">
                 <select class="form-select shadow-none" formControlName="Type">
                   <option selected disabled value="">اختر نوع الموظف</option>
                   <option value="Doctor">دكتور</option>
@@ -40,10 +40,10 @@
                   <option value="Staff">إداري</option>
                   <option value="Worker">عمال</option>
                 </select>
-              </div>
+              </div> -->
             </div>
-            <div class="col-lg-2">
-              <button type="button" class="btn-purble">إضافة موظف</button>
+            <div class="col-lg-2 d-flex justify-content-end">
+              <button type="button" routerLink="/hms/staff/add" class="btn-purble">إضافة موظف</button>
             </div>
           </div>
         </form>
@@ -72,34 +72,25 @@
               </div>
             </td>
             <td>
-              <p
-                class="text-white status-pill fw-bold"
-                *ngIf="employee.type"
-                [ngStyle]="{ backgroundColor: getEmployeeColor(employee.type) }"
-              >
-                {{ employee.type || 'غير محدد' }}
-              </p>
+              {{ employee.jobTitle || 'غير محدد' }}
             </td>
             <td class="text-secondary fw-semibold">
               {{ employee.hireDate | date: 'yyyy/MM/dd' }}
             </td>
             <td>
-              <span
-                class="status-pill"
-                [ngClass]="{
-                  'bg-success': employee.status === 'متاح',
-                  'bg-secondary': employee.status !== 'متاح'
-                }"
-              >
-                {{ employee.status }}
-              </span>
+                <span [ngClass]="{
+                  'text-success': employee.status === 'متاح',
+                  'text-secondary': employee.status !== 'متاح'
+                }">
+                  {{ employee.status }}
+                </span>
             </td>
           </tr>
         </tbody>
         <ng-template #noData>
           <tbody>
             <tr>
-              <td colspan="4" class="text-center text-muted">لا توجد موظفين حتى الآن</td>
+              <td colspan="4" class="text-center text-muted">لا يوجد موظفين حتى الآن</td>
             </tr>
           </tbody>
         </ng-template>

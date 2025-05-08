@@ -79,33 +79,20 @@
         <div class="modal-body">
           <form [formGroup]="jobLevelForm" (ngSubmit)="addjobLevel()">
             <div class="row">
-              <div class="col-lg-6">
+              <div class="col-lg-12">
                 <div class="form-group">
                   <label class="form-label" for="name">إسم المستوى</label>
-                  <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                  <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم المستوى">
                   <div *ngIf="jobLevelForm.get('name')?.invalid && jobLevelForm.get('name')?.touched" class="text-danger">
                     <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['required']">إسم المستوى مطلوب</ng-container>
                     <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['minlength']">إسم المستوى يجب أن يكون أكثر من 3 حروف</ng-container>
                   </div>
                 </div>
               </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label class="form-label" for="status">الحالة</label>
-                  <select class="form-select shadow-none" formControlName="status" id="status">
-                    <option selected disabled value="">اختر الحالة</option>
-                    <option value="Active">نشط</option>
-                    <option value="Inactive">غير نشط</option>
-                  </select>
-                  <div *ngIf="jobLevelForm.get('status')?.invalid && jobLevelForm.get('status')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobLevelForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
-                  </div>
-                </div>
-              </div>
               <div class="col-lg-12">
                 <div class="form-group">
                   <label class="form-label" for="description">الوصف</label>
-                  <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
+                  <textarea class="form-control shadow-none" formControlName="description" id="description" placeholder="أدخل الوصف"></textarea>
                   <div *ngIf="jobLevelForm.get('description')?.invalid && jobLevelForm.get('description')?.touched" class="text-danger">
                     <ng-container *ngIf="jobLevelForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
                   </div>
@@ -135,7 +122,7 @@
               <div class="col-lg-6 mb-2">
                 <div class="form-group">
                   <label class="form-label" for="name">إسم المستوى</label>
-                  <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                  <input type="text" class="form-control shadow-none" formControlName="name" id="name" >
                   <div *ngIf="jobLevelForm.get('name')?.invalid && jobLevelForm.get('name')?.touched" class="text-danger">
                     <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['required']">إسم المستوى مطلوب</ng-container>
                     <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['minlength']">إسم المستوى يجب أن يكون أكثر من 3 حروف</ng-container>

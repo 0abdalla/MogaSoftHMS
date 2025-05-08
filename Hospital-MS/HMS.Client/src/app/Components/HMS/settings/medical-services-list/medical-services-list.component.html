@@ -106,11 +106,11 @@
                   <label class="form-label" for="type">نوع الخدمة</label>
                   <select class="form-select shadow-none" formControlName="type" id="type">
                     <option selected disabled value="">اختر نوع الخدمة</option>
-                    <option value="General">عام</option>
+                    <option value="General">كشف</option>
                     <option value="Consultation">استشارة</option>
+                    <option value="Surgery">عمليات</option>
                     <option value="Screening">تحاليل</option>
                     <option value="Radiology">أشعة</option>
-                    <option value="Surgery">عمليات</option>
                   </select>
                   <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
                     <ng-container *ngIf="serviceForm.get('type')?.errors?.['required']">نوع الخدمة مطلوب</ng-container>
@@ -188,11 +188,11 @@
                   <label class="form-label" for="type">نوع الخدمة</label>
                   <select class="form-select shadow-none" formControlName="type" id="type">
                     <option selected disabled value="">اختر نوع الخدمة</option>
-                    <option value="General">عام</option>
+                    <option value="General">كشف</option>
                     <option value="Consultation">استشارة</option>
+                    <option value="Surgery">عمليات</option>
                     <option value="Screening">تحاليل</option>
                     <option value="Radiology">أشعة</option>
-                    <option value="Surgery">عمليات</option>
                   </select>
                   <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
                     <ng-container *ngIf="serviceForm.get('type')?.errors?.['required']">نوع الخدمة مطلوب</ng-container>

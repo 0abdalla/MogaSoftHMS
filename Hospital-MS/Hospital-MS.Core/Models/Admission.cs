@@ -25,7 +25,7 @@
         public Patient Patient { get; set; } = default!;
         public Bed Bed { get; set; } = default!;
         public Room Room { get; set; } = default!;
-        public Staff Doctor { get; set; } = default!;
+        public Doctor Doctor { get; set; } = default!;
         public Department Department { get; set; } = default!;
     }
 }

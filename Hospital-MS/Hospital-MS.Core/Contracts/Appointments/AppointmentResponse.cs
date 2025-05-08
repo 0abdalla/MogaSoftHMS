@@ -42,7 +42,8 @@ namespace Hospital_MS.Core.Contracts.Appointments
 
         public int? MedicalServiceId { get; set; }
         public string? MedicalServiceName { get; set; } 
-        public decimal MedicalServicePrice { get; set; } 
+        public decimal MedicalServicePrice { get; set; }
+        public int AppointmentNumber { get; set; }
 
     }
 }

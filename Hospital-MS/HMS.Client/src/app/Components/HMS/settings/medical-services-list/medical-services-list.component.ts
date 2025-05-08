@@ -88,7 +88,7 @@ export class MedicalServicesListComponent implements OnInit {
         this.services = data.results.map((service: any) => {
           switch (service.type) {
             case 'General':
-              service.serviceType = 'عام';
+              service.serviceType = 'كشف';
               break;
             case 'Consultation':
               service.serviceType = 'استشارة';

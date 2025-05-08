@@ -11,13 +11,13 @@ namespace Hospital_MS.Core.Enums
     {
         [EnumMember(Value = "كشف")]
         General, 
-        [EnumMember(Value = "استشاره")]
+        [EnumMember(Value = "استشارة")]
         Consultation, 
-        [EnumMember(Value = "عمليه")]
+        [EnumMember(Value = "عمليات")]
         Surgery, 
         [EnumMember(Value = "تحاليل")]
         Screening, 
-        [EnumMember(Value = "اشعه")]
+        [EnumMember(Value = "أشعة")]
         Radiology ,
         [EnumMember(Value = "طوارئ")]
         Emergency

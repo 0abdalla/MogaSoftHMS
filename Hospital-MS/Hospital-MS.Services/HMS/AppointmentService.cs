@@ -24,7 +24,6 @@ namespace Hospital_MS.Services.HMS
 
             try
             {
-                // Validate the schedule capacity
                 var schedule = await _unitOfWork.Repository<DoctorSchedule>()
                     .GetAll(s => s.DoctorId == request.DoctorId && s.WeekDay == request.AppointmentDate.DayOfWeek.ToString())
                     .FirstOrDefaultAsync(cancellationToken);
@@ -35,25 +34,47 @@ namespace Hospital_MS.Services.HMS
                 if (schedule.CurrentAppointments >= schedule.Capacity)
                     return ErrorResponseModel<string>.Failure(GenericErrors.ScheduleFull);
 
-
                 if (!Enum.TryParse<AppointmentType>(request.AppointmentType, true, out var appointmentType))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
                 if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
-                var patient = new Patient
-                {
-                    FullName = ArabicNormalizer.NormalizeArabic(request.PatientName),
-                    Phone = request.PatientPhone,
-                    InsuranceCompanyId = request.InsuranceCompanyId,
-                    InsuranceCategoryId = request.InsuranceCategoryId,
-                    Status = PatientStatus.Outpatient,
-                    Gender = gender
-                };
+                var existingPatient = await _unitOfWork.Repository<Patient>()
+                    .GetAll(p => p.Phone == request.PatientPhone)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-                await _unitOfWork.Repository<Patient>().AddAsync(patient, cancellationToken);
+                Patient patient;
+
+                if (existingPatient != null)
+                {
+                    existingPatient.FullName = ArabicNormalizer.NormalizeArabic(request.PatientName);
+                    existingPatient.InsuranceCompanyId = request.InsuranceCompanyId;
+                    existingPatient.InsuranceCategoryId = request.InsuranceCategoryId;
+                    existingPatient.Gender = gender;
+
+                    _unitOfWork.Repository<Patient>().Update(existingPatient);
+                    patient = existingPatient;
+                }
+                else
+                {
+                    patient = new Patient
+                    {
+                        FullName = ArabicNormalizer.NormalizeArabic(request.PatientName),
+                        Phone = request.PatientPhone,
+                        InsuranceCompanyId = request.InsuranceCompanyId,
+                        InsuranceCategoryId = request.InsuranceCategoryId,
+                        Status = PatientStatus.Outpatient,
+                        Gender = gender
+                    };
+
+                    await _unitOfWork.Repository<Patient>().AddAsync(patient, cancellationToken);
+                }
+
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
+                var appointmentNumber = await _unitOfWork.Repository<Appointment>()
+                                .CountAsync(a => a.MedicalServiceId == request.MedicalServiceId && a.AppointmentDate == request.AppointmentDate, cancellationToken) + 1;
 
                 var appointment = new Appointment
                 {
@@ -62,30 +83,23 @@ namespace Hospital_MS.Services.HMS
                     AppointmentDate = request.AppointmentDate,
                     PaymentMethod = request.PaymentMethod,
                     Type = appointmentType,
-                    //ClinicId = request.ClinicId,
-
+                    MedicalServiceId = request.MedicalServiceId,
+                    AppointmentNumber = appointmentNumber, 
                     EmergencyLevel = request.EmergencyLevel,
                     CompanionName = request.CompanionName,
                     CompanionNationalId = request.CompanionNationalId,
-                    CompanionPhone = request.CompanionPhone,
-
-                    MedicalServiceId = request.MedicalServiceId
+                    CompanionPhone = request.CompanionPhone
                 };
 
                 await _unitOfWork.Repository<Appointment>().AddAsync(appointment, cancellationToken);
 
-                // Increment the current appointments count for the schedule
                 schedule.CurrentAppointments++;
-
                 _unitOfWork.Repository<DoctorSchedule>().Update(schedule);
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
-
                 await transaction.CommitAsync(cancellationToken);
 
-                int AppointmentNumber = await GetNewAppointmentNumber();
-
-                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, AppointmentNumber.ToString());
+                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, appointmentNumber.ToString());
             }
             catch (Exception)
             {
@@ -93,7 +107,6 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
-
         private async Task<int> GetNewAppointmentNumber()
         {
             return await _sQLHelper.ExecuteScalarAsync("[dbo].[SP_AppointmentNumberSequences]", Array.Empty<SqlParameter>());
@@ -174,7 +187,8 @@ namespace Hospital_MS.Services.HMS
                 MedicalServiceId = appointment?.MedicalServiceId,
                 MedicalServiceName = appointment?.MedicalService?.Name,
                 MedicalServicePrice = appointment?.MedicalService?.Price ?? 0,
-                Gender = appointment.Patient.Gender.GetArabicValue()
+                Gender = appointment.Patient.Gender.GetArabicValue(),
+                AppointmentNumber = appointment.AppointmentNumber
             };
 
             return ErrorResponseModel<AppointmentResponse>.Success(GenericErrors.GetSuccess, response);
@@ -206,6 +220,7 @@ namespace Hospital_MS.Services.HMS
             foreach (var appointment in appointments)
             {
                 appointment.Status = AppointmentStatus.Completed;
+                _unitOfWork.Repository<Appointment>().Update(appointment);
             }
 
             await _unitOfWork.CompleteAsync();

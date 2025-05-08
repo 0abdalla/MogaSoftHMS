@@ -15,6 +15,9 @@ namespace Hospital_MS.Core.Services
         Task<ErrorResponseModel<string>> CreateAsync(CreateAdmissionRequest request, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
+        // add GetPatientAdmissionsByIdAsync
+        Task<ErrorResponseModel<IReadOnlyList<PatientAdmissionsResponse>>> GetPatientAdmissionsByIdAsync(int id, CancellationToken cancellationToken = default);
+
         //Task<Result<IReadOnlyList<PatientResponse>>> GetAllAsync(GetPatientsRequest request, CancellationToken cancellationToken = default);
 
         //Task<int> GetAdmissionsCountAsync(GetPatientsRequest request, CancellationToken cancellationToken = default);

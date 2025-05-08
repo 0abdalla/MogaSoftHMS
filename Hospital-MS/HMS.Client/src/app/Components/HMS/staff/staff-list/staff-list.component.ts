@@ -25,7 +25,7 @@ export class StaffListComponent implements OnInit, OnDestroy {
   employees: any[] = [];
   employeesData: any[] = [];
   filterForm: FormGroup;
-  pageSize = 4;
+  pageSize = 16;
   currentPage = 1;
   total = 0;
   fixed = 0;
@@ -41,7 +41,7 @@ export class StaffListComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.getCounts();
+    // this.getCounts();
     this.setupRealTimeSearch();
     this.getEmployees();
   }
@@ -105,10 +105,11 @@ export class StaffListComponent implements OnInit, OnDestroy {
 
   getEmployees() {
     const { Search, Type } = this.filterForm.value;
-    const mappedType = this.mapType(Type); 
+    const mappedType = this.mapType(Type);
     this.staffService.getAllStaff(this.currentPage, this.pageSize, Search, mappedType, undefined, undefined, []).subscribe({
       next: (res) => {
-        this.employees = res.results.map((employee: any) => {
+        const results = Array.isArray(res?.results) ? res.results : [];
+        this.employees = results.map((employee: any) => {
           switch (employee.type) {
             case 'ممرض':
               employee.type = 'ممرضين';
@@ -129,12 +130,15 @@ export class StaffListComponent implements OnInit, OnDestroy {
           }
           return employee;
         });
-        this.total = res.totalCount;
-        this.fixed = Math.ceil(this.total / this.pageSize);
-        console.log('employees data', res);
+        this.total = res?.totalCount || 0;
+        this.fixed = Math.ceil(this.total / this.pageSize) || 1;
+        console.log('employees data', res, 'mapped employees', this.employees);
       },
       error: (err) => {
         console.error('GetEmployees Error:', err);
+        this.employees = [];
+        this.total = 0;
+        this.fixed = 1;
       }
     });
   }
@@ -142,36 +146,43 @@ export class StaffListComponent implements OnInit, OnDestroy {
   getCounts() {
     this.staffService.getCounts().subscribe({
       next: (data: any) => {
+        const results = Array.isArray(data?.results) ? data.results : [];
         this.employeesData = [
           {
             name: 'أطباء',
-            count: data.results.find((r: any) => r.type === 'Doctor')?.count || 0,
+            count: results.find((r: any) => r.type === 'Doctor')?.count || 0,
             color: 'linear-gradient(237.82deg, #0D6EFD 30.69%, #B6D4FE 105.5%)',
             back: '#0D6EFD'
           },
           {
             name: 'ممرضين',
-            count: data.results.find((r: any) => r.type === 'Nurse')?.count || 0,
+            count: results.find((r: any) => r.type === 'Nurse')?.count || 0,
             color: 'linear-gradient(236.62deg, #20B2AA 30.14%, #A3E4E0 83.62%)',
             back: '#20B2AA'
           },
           {
             name: 'إداريين',
-            count: data.results.find((r: any) => r.type === 'Administrator')?.count || 0,
+            count: results.find((r: any) => r.type === 'Administrator')?.count || 0,
             color: 'linear-gradient(237.82deg, #FFC107 30.69%, #FFE082 105.5%)',
             back: '#FFC107'
           },
           {
             name: 'عمال',
-            count: data.results.find((r: any) => r.type === 'Worker')?.count || 0,
+            count: results.find((r: any) => r.type === 'Worker')?.count || 0,
             color: 'linear-gradient(237.82deg, #6C757D 30.69%, #CED4DA 105.5%)',
             back: '#6C757D'
           }
         ];
-        console.log('counts data', this.employeesData);
+        console.log('counts data', this.employeesData, 'raw response', data);
       },
       error: (err) => {
         console.error('GetCounts Error:', err);
+        this.employeesData = [
+          { name: 'أطباء', count: 0, color: '...', back: '#0D6EFD' },
+          { name: 'ممرضين', count: 0, color: '...', back: '#20B2AA' },
+          { name: 'إداريين', count: 0, color: '...', back: '#FFC107' },
+          { name: 'عمال', count: 0, color: '...', back: '#6C757D' }
+        ];
       }
     });
   }

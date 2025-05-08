@@ -82,8 +82,9 @@ export class StaffService {
     return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Doctors/counts`);
   }
   // ===========================================================================
-  getJobTypes(currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobTypes(searchText : string ,currentPage: number, pageSize: number , filterList: any[] = []){
     let params = new HttpParams()
+      .set('SearchText' , searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
@@ -99,8 +100,9 @@ export class StaffService {
     return this.http.put<any>(`${this.baseUrl}JobTypes/${id}`, jobType);
   }
   // 
-  getJobTitles(currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobTitles(searchText : string , currentPage: number, pageSize: number , filterList: any[] = []){
     let params = new HttpParams()
+      .set('SearchText' , searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
@@ -116,8 +118,9 @@ export class StaffService {
     return this.http.put<any>(`${this.baseUrl}JobTitles/${id}`, jobTitle);
   }
   // 
-  getJobLevels(currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobLevels(searchText : string ,currentPage: number, pageSize: number , filterList: any[] = []){
     let params = new HttpParams()
+      .set('SearchText' , searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
@@ -131,5 +134,23 @@ export class StaffService {
   }
   updateJobLevel(id: number, jobLevel: any){
     return this.http.put<any>(`${this.baseUrl}JobLevels/${id}`, jobLevel);
+  }
+  // 
+  getJobDepartment( searchText : string , currentPage: number, pageSize: number , filterList: any[] = []){
+    let params = new HttpParams()
+      .set('SearchText' , searchText.toString())
+      .set('CurrentPage', currentPage.toString())
+      .set('PageSize', pageSize.toString())
+      .set('FilterList', JSON.stringify(filterList));
+    return this.http.get<any>(`${this.baseUrl}JobDepartment`, { params });
+  }
+  getJobDepartmentById(id: number){
+    return this.http.get<any>(`${this.baseUrl}JobDepartment/${id}`);
+  }
+  addJobDepartment(jobDepartment:any){
+    return this.http.post<any>(`${this.baseUrl}JobDepartment` , jobDepartment)
+  }
+  updateJobDeprtment(id:number , jobDepartment : any){
+    return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}` , jobDepartment)
   }
 }

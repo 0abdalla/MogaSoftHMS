@@ -39,14 +39,15 @@ export class StaffProgressionManagmentComponent implements OnInit {
                 debounceTime(300),
                 distinctUntilChanged(),
               )
-              .subscribe(() => {
+              .subscribe((value:any) => {
                 this.pagingFilterModel.currentPage = 1;
+                this.pagingFilterModel.searchText = value
                 this.getJobTitles();
               });
   }
   
   getJobTitles(){
-    this.staffService.getJobTitles(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe({
+    this.staffService.getJobTitles(this.pagingFilterModel.searchText , this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe({
       next:(res)=>{
         this.jobTitles=res.results;
         this.total=res.totalCount;

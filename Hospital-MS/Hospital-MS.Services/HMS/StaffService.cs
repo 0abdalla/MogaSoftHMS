@@ -1,21 +1,17 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services;
+using Hospital_MS.Core.Models.HR;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -34,9 +30,6 @@ namespace Hospital_MS.Services.HMS
                 if (!Enum.TryParse<StaffStatus>(request.Status, true, out var staffStatus))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
 
-                if (!Enum.TryParse<StaffType>(request.Type, true, out var staffType))
-                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
-
                 if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidGender);
 
@@ -48,19 +41,18 @@ namespace Hospital_MS.Services.HMS
                 {
                     FullName = ArabicNormalizer.NormalizeArabic(request.FullName),
                     Email = request.Email,
-                    Specialization = request.Specialization,
                     PhoneNumber = request.PhoneNumber,
                     HireDate = request.HireDate,
-                    ClinicId = request.ClinicId,
-                    DepartmentId = request.DepartmentId,
                     NationalId = request.NationalId,
                     MaritalStatus = maritalStatus,
                     Gender = gender,
                     Notes = request.Notes,
                     Address = request.Address,
-                    Type = staffType,
                     Status = staffStatus,
-
+                    JobDepartmentId = request.JobDepartmentId,
+                    JobLevelId = request.JobLevelId,
+                    JobTitleId = request.JobTitleId,
+                    JobTypeId = request.JobTypeId
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
@@ -107,7 +99,7 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var Params = new SqlParameter[6];
+                var Params = new SqlParameter[6];   
 
                 var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
 
@@ -188,7 +180,16 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<StaffResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            var staff = await _unitOfWork.Repository<Staff>().GetAll(i => i.Id == id).Include(x => x.Clinic).Include(x => x.Department).Include(x => x.StaffAttachments).FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            var staff = await _unitOfWork.Repository<Staff>()
+                .GetAll(i => i.Id == id)
+                .Include(x => x.JobDepartment)
+                .Include(x => x.JobLevel)
+                .Include(x => x.JobTitle)
+                .Include(x => x.JobType)
+                .Include(x => x.StaffAttachments)
+                .Include(x => x.UpdatedBy)
+                .Include(x => x.CreatedBy)
+                .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
             if (staff is not { })
                 return ErrorResponseModel<StaffResponse>.Failure(GenericErrors.NotFound);
@@ -198,15 +199,14 @@ namespace Hospital_MS.Services.HMS
                 Id = staff.Id,
                 FullName = staff.FullName,
                 Email = staff.Email,
-                Specialization = staff.Specialization,
+                //Specialization = staff.Specialization,
                 PhoneNumber = staff.PhoneNumber,
                 HireDate = staff.HireDate,
                 Status = staff.Status.ToString(),
-                Type = staff.Type.ToString(),
-                ClinicId = staff.ClinicId,
-                DepartmentId = staff.DepartmentId,
-                ClinicName = staff.Clinic?.Name,
-                DepartmentName = staff.Department?.Name,
+                //ClinicId = staff.ClinicId,
+                //DepartmentId = staff.DepartmentId,
+                //ClinicName = staff.Clinic?.Name,
+                //DepartmentName = staff.Department?.Name,
                 NationalId = staff.NationalId,
                 Address = staff.Address,
                 Notes = staff.Notes,
@@ -214,6 +214,23 @@ namespace Hospital_MS.Services.HMS
                 MaritalStatus = staff.MaritalStatus.ToString(),
 
                 AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
+
+                Audit = new AuditResponse
+                {
+                    CreatedBy = $"{staff.CreatedBy.FirstName} {staff.CreatedBy.LastName}",
+                    CreatedOn = staff.CreatedOn,
+                    UpdatedBy = $"{staff?.UpdatedBy?.FirstName} {staff?.UpdatedBy?.LastName}",
+                    UpdatedOn = staff?.UpdatedOn,
+                },
+
+                JobDepartmentId = staff?.JobDepartmentId,
+                JobDepartmentName = staff?.JobDepartment?.Name,
+                JobLevelId = staff?.JobLevelId,
+                JobLevelName = staff?.JobLevel?.Name,
+                JobTitleId = staff?.JobTitleId,
+                JobTitleName = staff?.JobTitle?.Name,
+                JobTypeId = staff?.JobTypeId,
+                JobTypeName = staff?.JobType?.Name
             };
 
             return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess, response);
@@ -244,15 +261,15 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> GetStaffCountsAsync(CancellationToken cancellationToken = default)
         {
-            var staffs = await _unitOfWork.Repository<Staff>().GetAll().ToListAsync();
+            //var staffs = await _unitOfWork.Repository<Staff>().GetAll().ToListAsync();
 
-            var response = new
-            {
-                AdministratorsCount = staffs.Count(s => s.Type == StaffType.Administrator),
-                DoctorsCount = staffs.Count(s => s.Type == StaffType.Doctor),
-                NursesCount = staffs.Count(s => s.Type == StaffType.Nurse),
-                WorkersCount = staffs.Count(s => s.Type == StaffType.Worker),
-            };
+            //var response = new
+            //{
+            //    AdministratorsCount = staffs.Count(s => s.Type == StaffType.Administrator),
+            //    DoctorsCount = staffs.Count(s => s.Type == StaffType.Doctor),
+            //    NursesCount = staffs.Count(s => s.Type == StaffType.Nurse),
+            //    WorkersCount = staffs.Count(s => s.Type == StaffType.Worker),
+            //};
 
             return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
         }

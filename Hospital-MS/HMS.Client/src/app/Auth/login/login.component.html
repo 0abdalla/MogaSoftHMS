@@ -10,11 +10,11 @@
           <label class="form-label">إسم المستخدم</label>
           <input
             placeholder="إسم المستخدم"
-            type="email"
+            type="text"
             class="form-control"
-            formControlName="email"
+            formControlName="userName"
           />
-          <div *ngIf="loignForm.get('email')?.invalid && loignForm.get('email')?.touched" class="text-danger">
+          <div *ngIf="loignForm.get('userName')?.invalid && loignForm.get('userName')?.touched" class="text-danger">
              إسم المستخدم مطلوب
           </div>
         </div>

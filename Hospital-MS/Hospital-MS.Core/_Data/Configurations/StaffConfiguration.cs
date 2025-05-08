@@ -17,9 +17,6 @@ namespace Hospital_MS.Core._Data.Configurations
                   .IsRequired()
                   .HasMaxLength(100);
 
-            builder.Property(s => s.Specialization)
-                .IsRequired()
-                .HasMaxLength(250);
 
             builder.Property(s => s.PhoneNumber)
                 .IsRequired()
@@ -46,10 +43,10 @@ namespace Hospital_MS.Core._Data.Configurations
                      (type) => type.ToString(),
                      (stu) => Enum.Parse<StaffStatus>(stu, true)).HasMaxLength(55);
 
-            builder.Property(p => p.Type)
-                     .HasConversion(
-                     (type) => type.ToString(),
-                     (stu) => Enum.Parse<StaffType>(stu, true)).HasMaxLength(55);
+            //builder.Property(p => p.Type)
+            //         .HasConversion(
+            //         (type) => type.ToString(),
+            //         (stu) => Enum.Parse<StaffType>(stu, true)).HasMaxLength(55);
 
             builder.Property(p => p.Gender)
                      .HasConversion(

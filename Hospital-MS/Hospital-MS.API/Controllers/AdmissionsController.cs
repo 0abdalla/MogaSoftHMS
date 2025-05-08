@@ -26,5 +26,12 @@ namespace Hospital_MS.API.Controllers
             var result = await _admissionService.GetByIdAsync(patientId, cancellationToken);
             return Ok(result);
         }
+
+        //[HttpGet("patient/{id}")]
+        //public async Task<IActionResult> GetPatientAdmissionsById(int id, CancellationToken cancellationToken)
+        //{
+        //    var result = await _admissionService.GetPatientAdmissionsByIdAsync(id, cancellationToken);
+        //    return Ok(result);
+        //}
     }
 }

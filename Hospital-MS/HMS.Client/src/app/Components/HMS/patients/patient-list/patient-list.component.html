@@ -92,9 +92,9 @@
             <div class="modal-header justify-content-center text-center">
                 <h5 class="modal-title" id="inpatientDetailsLabel">بيانات المريض الداخلي</h5>
             </div>
+            <img src="assets/vendors/imgs/pattern.png" alt="pattern" class="img-fluid">
 
             <div class="modal-body p-4">
-                <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
                 <h4 class="mb-3 ">
                     👤 بيانات المريض</h4>
                 <div class="row bg-white mb-3">
@@ -224,7 +224,7 @@
                     <button class="btn col-12 btn-outline-info" data-bs-toggle="modal" data-bs-target="#patientModal" (click)="openStatusUpdateModal()">تحديث الحالة</button>
                 </div>
                 <div class="col-2">
-                    <button class="btn col-12 btn-outline-info">التاريخ الطبي</button>
+                    <button class="btn col-12 btn-outline-info" data-bs-toggle="modal" data-bs-target="#medicalHistoryModal">التاريخ الطبي</button>
                 </div>
                 <div class="col-2">
                     <button class="btn col-12 btn-outline-primary">ترتيب مواعيد</button>
@@ -285,3 +285,88 @@
         </div>
     </div>
 </div>
+
+  <div class="modal fade" id="medicalHistoryModal" tabindex="-1" aria-labelledby="medicalHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content custom-modal">
+        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
+        </div>
+        <div class="modal-body">
+          <div class="patient-info mb-4">
+            <strong class="strong">👤 الاسم:</strong> <span class="span"> {{ admissionDetails?.patientName }}</span>
+            <br>
+            <strong class="strong">📞 الهاتف:</strong> <span class="span"> {{ admissionDetails?.phone }}</span>
+          </div>
+          <h4 class="section-title">🛏️ العيادات الداخلية</h4>
+          <div class="table-responsive mb-4">
+            <table class="table table-hover text-center">
+              <thead class="table-primary">
+                <tr class="text-end">
+                  <th>التاريخ</th>
+                  <th>الطبيب</th>
+                  <th>الغرفة</th>
+                  <th>السرير</th>
+                  <th>القسم</th>
+                  <th>الحالة</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="medicalHistory?.admissions?.length > 0">
+                <tr *ngFor="let history of medicalHistory?.admissions">
+                  <td>{{ history.admissionDate | date : 'yyyy-MM-dd' }}</td>
+                  <td>{{ history.doctorName }}</td>
+                  <td>{{ history.roomNumber }}</td>
+                  <td>{{ history.bedNumber }}</td>
+                  <td>{{ history.departmentName }}</td>
+                  <td>{{ mapStatusToArabic(history.patientStatus) }}</td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="medicalHistory?.admissions?.length === 0">
+                <tr>
+                  <td colspan="6" class="text-center text-muted">لا يوجد سجل عيادات داخلية لهذا الشخص</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+  
+          <h4 class="section-title">📅 العيادات الخارجية</h4>
+          <div class="table-responsive">
+            <table class="table table-hover text-center">
+              <thead class="table-secondary">
+                <tr class="text-end">
+                  <th>التاريخ</th>
+                  <th>الطبيب</th>
+                  <th>الخدمة الطبية</th>
+                  <th>الحالة</th>
+                  <th>النوع</th>
+                </tr>
+              </thead>
+              <tbody *ngIf="medicalHistory?.appointments?.length > 0">
+                <tr *ngFor="let history of medicalHistory?.appointments">
+                  <td>{{ history.appointmentDate | date : 'yyyy-MM-dd' }}</td>
+                  <td>{{ history.doctorName }}</td>
+                  <td>{{ history.medicalServiceName }}</td>
+                  <td>{{ mapTypeToArabic(history.type) }}</td>
+                  <td [ngClass]="{
+                    'text-warning': history.status === 'Pending',
+                    'text-success': history.status === 'Completed',
+                    'text-danger': history.status === 'Cancelled'
+                  }">
+                    {{ mapStatusToArabic(history.status) }}
+                  </td>
+                </tr>
+              </tbody>
+              <tbody *ngIf="medicalHistory?.appointments?.length === 0">
+                <tr>
+                  <td colspan="5" class="text-center text-muted">لا يوجد سجل عيادات خارجية لهذا الشخص</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  

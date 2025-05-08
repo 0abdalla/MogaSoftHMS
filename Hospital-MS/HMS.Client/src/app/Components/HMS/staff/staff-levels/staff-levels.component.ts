@@ -3,6 +3,7 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-staff-levels',
@@ -29,14 +30,22 @@ export class StaffLevelsComponent implements OnInit {
     this.filterForm = this.fb.group({
       SearchText: [''],
     });
+    this.filterForm.get('SearchText')?.valueChanges.pipe(
+          debounceTime(300),
+          distinctUntilChanged()
+        ).subscribe((value: string) => {
+          this.pagingFilterModel.currentPage = 1;
+          this.pagingFilterModel.searchText = value
+          this.getJobLevels();
+        });
     this.jobLevelForm = this.fb.group({
       name: ['' , [Validators.required , Validators.minLength(3)]],
-      status: ['' , Validators.required],
+      status: ['Active' , Validators.required],
       description: [''],
     });
   }
   getJobLevels(){
-    this.staffService.getJobLevels(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe((res:any)=>{
+    this.staffService.getJobLevels( this.pagingFilterModel.searchText ,this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe((res:any)=>{
       this.jobLevels=res.results;
       console.log(this.jobLevels);
       
@@ -48,6 +57,8 @@ export class StaffLevelsComponent implements OnInit {
   }
   resetFilters(){
     this.filterForm.reset();
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.searchText = '';
     this.getJobLevels();
   }
   // 

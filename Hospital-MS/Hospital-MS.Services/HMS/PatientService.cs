@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Admissions;
 using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Extensions;
@@ -126,6 +127,64 @@ namespace Hospital_MS.Services.HMS
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+
+
+        public async Task<ErrorResponseModel<PatientAdmissionsWithAppointmentsResponse>> GetPatientAdmissionsByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var admissions = await _unitOfWork.Repository<Admission>()
+                .GetAll(i => i.PatientId == id)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
+                .Include(x => x.Patient)
+                .Include(x => x.Bed)
+                .Include(x => x.Room)
+                .Include(x => x.Doctor)
+                .Include(x => x.Department)
+                .ToListAsync(cancellationToken);
+
+            var appointments = await _unitOfWork.Repository<Appointment>()
+                .GetAll(a => a.PatientId == id)
+                .Include(a => a.Doctor)
+                .Include(a => a.Clinic)
+                .Include(a => a.MedicalService)
+                .ToListAsync(cancellationToken);
+
+            var admissionsResponse = admissions.Select(x => new PatientAdmissionsResponse
+            {
+                PatientName = x.Patient.FullName,
+                PatientId = x.PatientId,
+                PatientStatus = x.Patient.Status.ToString(),
+                AdmissionDate = x.AdmissionDate,
+                RoomNumber = x.Room.Number,
+                BedNumber = x.Bed.Number,
+                DepartmentName = x.Department.Name,
+                DoctorName = x.Doctor.FullName,
+                HealthStatus = x.HealthStatus,
+                Notes = x.Notes,
+                PatientPhoneNumber = x.Patient.Phone,
+            }).ToList().AsReadOnly();
+
+            var appointmentsResponse = appointments.Select(a => new PatientAppointmentResponse
+            {
+                AppointmentId = a.Id,
+                AppointmentDate = a.AppointmentDate,
+                DoctorName = a.Doctor.FullName,
+                ClinicName = a.Clinic?.Name,
+                MedicalServiceName = a.MedicalService?.Name,
+                Status = a.Status.ToString(),
+                Type = a.Type.ToString(),
+
+            }).ToList().AsReadOnly();
+
+            var response = new PatientAdmissionsWithAppointmentsResponse
+            {
+                Admissions = admissionsResponse,
+                Appointments = appointmentsResponse,
+                HasAppointments = appointmentsResponse.Any()
+            };
+
+            return ErrorResponseModel<PatientAdmissionsWithAppointmentsResponse>.Success(GenericErrors.GetSuccess, response);
         }
     }
 }
