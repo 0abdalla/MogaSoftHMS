@@ -2,9 +2,8 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { AdmissionService } from '../../../../Services/HMS/admission.service';
-import { AppointmentService } from '../../../../Services/HMS/appointment.service';
 import { StaffService } from '../../../../Services/HMS/staff.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-staff-form',
@@ -21,54 +20,69 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 })
 export class StaffFormComponent implements OnInit {
   employeeForm: FormGroup;
-  departments: any;
-  clinics: any;
   selectedFiles: File[] = [];
-
+  // 
+  jobDepartments: any;
+  jobTitles: any;
+  jobTypes: any;
+  jobLevels: any;
+  filteredJobTitles: any;
   constructor(
     private fb: FormBuilder,
-    private admissionService: AdmissionService,
-    private appointmentService: AppointmentService,
     private staffService: StaffService,
     private messageService: MessageService
   ) {
     this.employeeForm = this.fb.group({
       fullName: ['', Validators.required],
-      nationalId: ['', Validators.required],
+      nationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       gender: ['', Validators.required],
-      phoneNumber: ['', Validators.required],
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       email: ['', [Validators.required, Validators.email]],
       address: ['', Validators.required],
-      specialization: ['', Validators.required],
-      type: ['', Validators.required],
-      jobTitle: [''],
+      type: [''],
       hireDate: ['', Validators.required],
-      status: ['', Validators.required],
-      departmentId: [''],
-      clinicId: [''],
+      status: ['Active', Validators.required],
       maritalStatus: ['', Validators.required],
       notes: [''],
       Files: [null],
+      JobDepartmentId: ['', Validators.required],
+      JobLevelId: ['', Validators.required],
+      JobTitleId: [{value : '' , disabled : true}, Validators.required],
+      JobTypeId: ['', Validators.required],
+      userName: [''],
+      password: [''],
+      isAuthorized: [null, Validators.required]
     });
   }
 
   ngOnInit() {
-    this.getDepartments();
-    this.getClinics();
-    this.employeeForm.get('type')?.valueChanges.subscribe((type) => {
-      if (type === 'Doctor' || type === 'Nurse') {
-        this.employeeForm.get('departmentId')?.setValidators([Validators.required]);
-        this.employeeForm.get('clinicId')?.setValidators([Validators.required]);
-        this.employeeForm.get('jobTitle')?.clearValidators();
+    this.employeeForm.get('isAuthorized')?.valueChanges.subscribe(value => {
+      const userNameControl = this.employeeForm.get('userName');
+      const passwordControl = this.employeeForm.get('password');
+      if (value === true) {
+        userNameControl?.setValidators([Validators.required]);
+        passwordControl?.setValidators([Validators.required]);
       } else {
-        this.employeeForm.get('departmentId')?.clearValidators();
-        this.employeeForm.get('clinicId')?.clearValidators();
-        this.employeeForm.get('jobTitle')?.setValidators([Validators.required]);
+        userNameControl?.clearValidators();
+        passwordControl?.clearValidators();
+        userNameControl?.reset();
+        passwordControl?.reset();
       }
-      this.employeeForm.get('departmentId')?.updateValueAndValidity();
-      this.employeeForm.get('clinicId')?.updateValueAndValidity();
-      this.employeeForm.get('jobTitle')?.updateValueAndValidity();
+      userNameControl?.updateValueAndValidity();
+      passwordControl?.updateValueAndValidity();
     });
+    this.employeeForm.get('JobDepartmentId')?.valueChanges.subscribe(value => {
+      const jobTitleControl = this.employeeForm.get('JobTitleId');
+      jobTitleControl?.setValue('');
+      if (value) {
+        this.filteredJobTitles = this.jobTitles.filter((title : any) => title.jobDepartmentId === parseInt(value));
+        jobTitleControl?.enable();
+      } else {
+        this.filteredJobTitles = [];
+        jobTitleControl?.disable();
+      }
+    });
+    this.loadStaffData();
   }
 
   onFileSelected(event: Event) {
@@ -92,9 +106,11 @@ export class StaffFormComponent implements OnInit {
       }
     }
   }
-
   onSubmit() {
     if (this.employeeForm.invalid) {
+      console.log('Form is invalid', this.employeeForm.errors);
+      console.log(this.employeeForm.value);
+      
       this.messageService.add({
         severity: 'error',
         summary: 'فشل',
@@ -116,28 +132,28 @@ export class StaffFormComponent implements OnInit {
     this.selectedFiles.forEach((file, index) => {
       formData.append(`Files[${index}]`, file, file.name);
     });
-
     formData.append('fullName', this.employeeForm.get('fullName')?.value || '');
     formData.append('nationalId' , this.employeeForm.get('nationalId')?.value || '')
     formData.append('gender', this.employeeForm.get('gender')?.value || '');
     formData.append('phoneNumber', this.employeeForm.get('phoneNumber')?.value || '');
     formData.append('email', this.employeeForm.get('email')?.value || '');
     formData.append('address', this.employeeForm.get('address')?.value || '');
-    formData.append('specialization', this.employeeForm.get('specialization')?.value || '');
     formData.append('type', this.employeeForm.get('type')?.value || '');
-    formData.append('jobTitle', this.employeeForm.get('jobTitle')?.value || '');
     formData.append('hireDate', this.employeeForm.get('hireDate')?.value || '');
     formData.append('status', this.employeeForm.get('status')?.value || '');
-    formData.append('departmentId', this.employeeForm.get('departmentId')?.value || '');
-    formData.append('clinicId', this.employeeForm.get('clinicId')?.value || '');
     formData.append('maritalStatus', this.employeeForm.get('maritalStatus')?.value || '');
     formData.append('notes', this.employeeForm.get('notes')?.value || '');
-
+    formData.append('JobDepartmentId', (Number(this.employeeForm.get('JobDepartmentId')?.value) || 0).toString());
+    formData.append('JobLevelId', (Number(this.employeeForm.get('JobLevelId')?.value) || 0).toString());
+    formData.append('JobTitleId', (Number(this.employeeForm.get('JobTitleId')?.value) || 0).toString());
+    formData.append('JobTypeId', (Number(this.employeeForm.get('JobTypeId')?.value) || 0).toString());
+    formData.append('isAuthorized', this.employeeForm.get('isAuthorized')?.value?.toString() || 'false');
+    formData.append('userName', this.employeeForm.get('userName')?.value || '');
+    formData.append('password', this.employeeForm.get('password')?.value || '');
     this.staffService.addStaff(formData).subscribe({
       next: (data) => {
         console.log(data);
         console.log(formData);
-        console.log(this.employeeForm.value);
         this.employeeForm.reset();
         this.selectedFiles = [];
         this.messageService.add({
@@ -156,26 +172,27 @@ export class StaffFormComponent implements OnInit {
       },
     });
   }
-
-  getDepartments() {
-    this.admissionService.getDepartments().subscribe({
+  loadStaffData(){
+    forkJoin({
+      jobDepartments: this.staffService.getJobDepartment('',1,100),
+      jobTitles: this.staffService.getJobTitles('',1,100),
+      jobTypes: this.staffService.getJobTypes('',1,100),
+      jobLevels: this.staffService.getJobLevels('',1,100)
+    }).subscribe({
       next: (data) => {
-        this.departments = data;
+        this.jobDepartments = data.jobDepartments.results;
+        this.jobTypes = data.jobTypes.results;
+        this.jobTitles = data.jobTitles.results;
+        this.filteredJobTitles = [];
+        this.jobLevels = data.jobLevels.results;
+        console.log('Departments : ',this.jobDepartments);
+        console.log('Titles : ',this.jobTitles);
+        console.log('Types : ',this.jobTypes);
+        console.log('Levels : ',this.jobLevels);
       },
       error: (error) => {
         console.error(error);
-      },
-    });
-  }
-
-  getClinics() {
-    this.appointmentService.getClinics().subscribe({
-      next: (data) => {
-        this.clinics = data;
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
+      }
+    })
   }
 }

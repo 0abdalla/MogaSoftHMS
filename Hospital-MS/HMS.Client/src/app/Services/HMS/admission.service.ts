@@ -46,4 +46,8 @@ export class AdmissionService {
   deleteAdmision(id : number){
     return this.http.delete<any>(this.baseUrl + 'Admissions/' + id);
   }
+  // 
+  getMedicalHistory(id:number){
+    return this.http.get(`${this.baseUrl}Patients/medical-history/${id}`)
+  }
 }

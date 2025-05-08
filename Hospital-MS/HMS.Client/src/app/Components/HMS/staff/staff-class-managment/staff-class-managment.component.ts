@@ -37,19 +37,20 @@ export class StaffClassManagmentComponent implements OnInit {
             distinctUntilChanged(),
             takeUntil(this.destroy$)
           )
-          .subscribe(() => {
+          .subscribe((value:any) => {
             this.pagingFilterModel.currentPage = 1;
+            this.pagingFilterModel.searchText = value
             this.getTypes();
           });
     this.jobTypeForm=this.fb.group({
       name:['',[Validators.required , Validators.minLength(3)]],
-      status:['',Validators.required],
+      status:['Active',Validators.required],
       description:[''],
     })
     this.getTypes();
   }
   getTypes(){
-    this.staffService.getJobTypes(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe({
+    this.staffService.getJobTypes(this.pagingFilterModel.searchText,this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe({
       next:(res)=>{
         this.jobTypes=res.results;
         this.total=res.totalCount;
@@ -66,6 +67,8 @@ export class StaffClassManagmentComponent implements OnInit {
   }
   resetFilters(){
     this.filterForm.reset();
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.searchText = '';
     this.getTypes();
   }
   openjobTypeDetails(id:number){

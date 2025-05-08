@@ -4,6 +4,8 @@ export interface PagingFilterModel {
     currentPage: number;
     pageSize: number;
     filterList: FilterModel[];
+    filterType?: string;
+    filterItems?: string[]
 }
 
 
