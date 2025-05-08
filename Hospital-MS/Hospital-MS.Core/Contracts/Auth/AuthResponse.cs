@@ -14,6 +14,7 @@ namespace Hospital_MS.Core.Contracts.Auth
         string? Address,
         bool IsActive,
         DateTime? LoginDate,
+        string UserName,
         string Token,
         int ExpiresIn
     );

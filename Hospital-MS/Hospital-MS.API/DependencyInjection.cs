@@ -69,6 +69,7 @@ namespace Hospital_MS.API
             services.AddScoped<IJobTitleService, JobTitleService>();
             services.AddScoped<IJobTypeService, JobTypeService>();
             services.AddScoped<IJobLevelService, JobLevelService>();
+            services.AddScoped<IJobDepartmentService, JobDepartmentService>();
 
 
             return services;

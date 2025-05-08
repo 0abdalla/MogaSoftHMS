@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250508075705_AddAppointmentNumber")]
+    partial class AddAppointmentNumber
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -678,50 +681,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.ToTable("DoctorSchedules");
                 });
 
-            modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobDepartment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(55)
-                        .HasColumnType("nvarchar(55)");
-
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("JobDepartment");
-                });
-
             modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobLevel", b =>
                 {
                     b.Property<int>("Id")
@@ -781,12 +740,12 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
-
-                    b.Property<int?>("JobDepartmentId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -808,7 +767,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("JobDepartmentId");
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("UpdatedById");
 
@@ -1381,6 +1340,9 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -1398,9 +1360,6 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.Property<DateOnly>("HireDate")
                         .HasColumnType("date");
-
-                    b.Property<int?>("JobDepartmentId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("JobLevelId")
                         .HasColumnType("int");
@@ -1428,7 +1387,17 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
 
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
                     b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(55)
+                        .HasColumnType("nvarchar(55)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasMaxLength(55)
                         .HasColumnType("nvarchar(55)");
@@ -1445,7 +1414,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("JobDepartmentId");
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("JobLevelId");
 
@@ -1934,23 +1903,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobDepartment", b =>
-                {
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("UpdatedBy");
-                });
-
             modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobLevel", b =>
                 {
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
@@ -1976,9 +1928,9 @@ namespace Hospital_MS.Reposatories.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hospital_MS.Core.Models.HR.JobDepartment", "JobDepartment")
+                    b.HasOne("Hospital_MS.Core.Models.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("JobDepartmentId");
+                        .HasForeignKey("DepartmentId");
 
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
@@ -1986,7 +1938,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("JobDepartment");
+                    b.Navigation("Department");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -2233,7 +2185,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Staff", b =>
                 {
-                    b.HasOne("Hospital_MS.Core.Models.Clinic", null)
+                    b.HasOne("Hospital_MS.Core.Models.Clinic", "Clinic")
                         .WithMany("Doctors")
                         .HasForeignKey("ClinicId");
 
@@ -2243,9 +2195,9 @@ namespace Hospital_MS.Reposatories.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Hospital_MS.Core.Models.HR.JobDepartment", "JobDepartment")
+                    b.HasOne("Hospital_MS.Core.Models.Department", "Department")
                         .WithMany()
-                        .HasForeignKey("JobDepartmentId");
+                        .HasForeignKey("DepartmentId");
 
                     b.HasOne("Hospital_MS.Core.Models.HR.JobLevel", "JobLevel")
                         .WithMany("Staffs")
@@ -2263,9 +2215,11 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
+                    b.Navigation("Clinic");
+
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("JobDepartment");
+                    b.Navigation("Department");
 
                     b.Navigation("JobLevel");
 

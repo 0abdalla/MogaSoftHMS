@@ -14,7 +14,8 @@ namespace Hospital_MS.Core.Models
         public DateOnly? AppointmentDate { get; set; } 
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public AppointmentType Type { get; set; }
-        public string? PaymentMethod { get; set; } 
+        public string? PaymentMethod { get; set; }
+        public int AppointmentNumber { get; set; }
 
         // بيانات الطوارئ
         public string? EmergencyLevel { get; set; }

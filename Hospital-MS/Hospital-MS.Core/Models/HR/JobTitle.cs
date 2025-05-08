@@ -14,8 +14,8 @@ namespace Hospital_MS.Core.Models.HR
         public string? Description { get; set; }
         public StatusTypes Status { get; set; }
 
-        public int? DepartmentId { get; set; }
-        public Department? Department { get; set; } = default!;
+        public int? JobDepartmentId { get; set; }
+        public JobDepartment? JobDepartment { get; set; } = default!;
 
         public ICollection<Staff> Staffs { get; set; } = new HashSet<Staff>();
     }

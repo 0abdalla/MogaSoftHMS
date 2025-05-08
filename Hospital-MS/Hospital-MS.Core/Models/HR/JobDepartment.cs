@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Core.Contracts.JobTitle
+namespace Hospital_MS.Core.Models.HR
 {
-    public class JobTitleRequest
+    public class JobDepartment : AuditableEntity
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }
-        public string Status { get; set; }
 
-        public int? JobDepartmentId { get; set; }
+        public StatusTypes Status { get; set; }
     }
 }

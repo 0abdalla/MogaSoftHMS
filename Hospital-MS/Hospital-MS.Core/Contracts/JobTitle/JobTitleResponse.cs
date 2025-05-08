@@ -16,8 +16,8 @@ namespace Hospital_MS.Core.Contracts.JobTitle
         public string? Description { get; set; }
         public string Status { get; set; }
 
-        public int? DepartmentId { get; set; }
-        public string? DepartmentName { get; set; } = default!;
+        public int? JobDepartmentId { get; set; }
+        public string? JobDepartmentName { get; set; } = default!;
 
         public AuditResponse Audit { get; set; }
     }

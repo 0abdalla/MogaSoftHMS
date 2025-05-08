@@ -11,6 +11,7 @@ namespace Hospital_MS.Core.Contracts.Auth
        string Password,
        string FirstName,
        string LastName,
-       string? Address
+       string? Address,
+       string UserName
    );
 }

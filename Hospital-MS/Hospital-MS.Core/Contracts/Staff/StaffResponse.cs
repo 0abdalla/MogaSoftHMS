@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Enums;
+﻿using Hospital_MS.Core.Contracts.Common;
+using Hospital_MS.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,6 @@ namespace Hospital_MS.Core.Contracts.Staff
         public string PhoneNumber { get; set; } = string.Empty;
         public DateOnly HireDate { get; set; }
         public string Status { get; set; } = string.Empty;
-        public string Type { get; set; } = string.Empty;
         public string? NationalId { get; set; }
         public int? ClinicId { get; set; }
         public string? ClinicName { get; set; }
@@ -29,5 +29,17 @@ namespace Hospital_MS.Core.Contracts.Staff
         public string? Notes { get; set; }
 
         public List<string> AttachmentsUrls { get; set; } = new List<string>();
+
+        public int? JobTitleId { get; set; }
+        public string? JobTitleName { get; set; }
+        public int? JobTypeId { get; set; }
+        public string? JobTypeName { get; set; }
+        public int? JobLevelId { get; set; }
+        public string? JobLevelName { get; set; }
+        public int? JobDepartmentId { get; set; }
+        public string? JobDepartmentName { get; set; }
+
+        public AuditResponse Audit { get; set; }
+
     }
 }

@@ -1,34 +1,35 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Common;
-using Hospital_MS.Core.Contracts.JobTitle;
+using Hospital_MS.Core.Contracts;
+using Hospital_MS.Core.Contracts.JobDepartment;
 using Hospital_MS.Core.Enums;
-using Hospital_MS.Core.Extensions;
-using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Models.HR;
-using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.HMS;
-using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Interfaces.Common;
+using Microsoft.EntityFrameworkCore;
+using Hospital_MS.Core.Contracts.Common;
+using Hospital_MS.Core.Contracts.JobTitle;
+using Hospital_MS.Core.Extensions;
+using Microsoft.Data.SqlClient;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class JobTitleService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IJobTitleService
+    public class JobDepartmentService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IJobDepartmentService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
 
-        public async Task<ErrorResponseModel<string>> CreateAsync(JobTitleRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> CreateAsync(JobDepartmentRequest request, CancellationToken cancellationToken = default)
         {
-            var isExists = await _unitOfWork.Repository<JobTitle>()
+            var isExists = await _unitOfWork.Repository<JobDepartment>()
                 .AnyAsync(x => x.Name == request.Name, cancellationToken);
 
             if (isExists)
@@ -37,24 +38,16 @@ namespace Hospital_MS.Services.HMS
             if (!Enum.TryParse<StatusTypes>(request.Status, true, out var status))
                 return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
 
-            var depIsExists = await _unitOfWork.Repository<JobDepartment>()
-                .AnyAsync(x => x.Id == request.JobDepartmentId, cancellationToken);
-
-            if (!depIsExists)
-                return ErrorResponseModel<string>.Failure(new Error("هذا القسم غير موجود", Status.NotFound));
-
-            var title = new JobTitle
+            var dep = new JobDepartment
             {
                 Name = request.Name,
                 Description = request.Description,
-                JobDepartmentId = request.JobDepartmentId,
                 Status = status
-
             };
 
             try
             {
-                await _unitOfWork.Repository<JobTitle>().AddAsync(title, cancellationToken);
+                await _unitOfWork.Repository<JobDepartment>().AddAsync(dep, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
                 return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
             }
@@ -62,38 +55,6 @@ namespace Hospital_MS.Services.HMS
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
-        }
-
-        public async Task<ErrorResponseModel<JobTitleResponse>> GetAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var jobTitle = await _unitOfWork.Repository<JobTitle>()
-                .GetAll(x => x.Id == id)
-                .Include(x => x.JobDepartment)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (jobTitle is not { })
-                return ErrorResponseModel<JobTitleResponse>.Failure(GenericErrors.NotFound);
-
-            var response = new JobTitleResponse
-            {
-                Id = jobTitle.Id,
-                Name = jobTitle.Name,
-                JobDepartmentId = jobTitle.JobDepartmentId,
-                JobDepartmentName = jobTitle?.JobDepartment?.Name,
-                Description = jobTitle.Description,
-                Status = jobTitle.Status.GetArabicValue(),
-                Audit = new AuditResponse
-                {
-                    CreatedBy = $"{jobTitle.CreatedBy.FirstName} {jobTitle.CreatedBy.LastName}",
-                    CreatedOn = jobTitle.CreatedOn,
-                    UpdatedBy = $"{jobTitle?.UpdatedBy?.FirstName} {jobTitle?.UpdatedBy?.LastName}",
-                    UpdatedOn = jobTitle?.UpdatedOn,
-                }
-            };
-
-            return ErrorResponseModel<JobTitleResponse>.Success(GenericErrors.GetSuccess, response);
         }
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
@@ -110,7 +71,7 @@ namespace Hospital_MS.Services.HMS
                 Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);
                 Params[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
                 Params[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllJobTitles", Params);
+                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllJobDepartments", Params);
                 int totalCount = 0;
                 if (dt.Rows.Count > 0)
                 {
@@ -130,33 +91,54 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, JobTitleRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<JobDepartmentResponse>> GetAsync(int id, CancellationToken cancellationToken = default)
         {
-            var jobTitle = await _unitOfWork.Repository<JobTitle>()
+            var jobTitle = await _unitOfWork.Repository<JobDepartment>()
+               .GetAll(x => x.Id == id)
+               .Include(x => x.CreatedBy)
+               .Include(x => x.UpdatedBy)
+               .FirstOrDefaultAsync(cancellationToken);
+
+            if (jobTitle is not { })
+                return ErrorResponseModel<JobDepartmentResponse>.Failure(GenericErrors.NotFound);
+
+            var response = new JobDepartmentResponse
+            {
+                Id = jobTitle.Id,
+                Name = jobTitle.Name,
+                Description = jobTitle.Description,
+                Status = jobTitle.Status.GetArabicValue(),
+                Audit = new AuditResponse
+                {
+                    CreatedBy = $"{jobTitle.CreatedBy.FirstName} {jobTitle.CreatedBy.LastName}",
+                    CreatedOn = jobTitle.CreatedOn,
+                    UpdatedBy = $"{jobTitle?.UpdatedBy?.FirstName} {jobTitle?.UpdatedBy?.LastName}",
+                    UpdatedOn = jobTitle?.UpdatedOn,
+                }
+            };
+
+            return ErrorResponseModel<JobDepartmentResponse>.Success(GenericErrors.GetSuccess, response);
+        }
+
+        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, JobDepartmentRequest request, CancellationToken cancellationToken = default)
+        {
+            var jobDepartment = await _unitOfWork.Repository<JobDepartment>()
                 .GetAll(x => x.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (jobTitle is null)
+            if (jobDepartment is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
             if (!Enum.TryParse<StatusTypes>(request.Status, true, out var newStatus))
                 return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
 
-            var depIsExists = await _unitOfWork.Repository<Department>()
-                .AnyAsync(x => x.Id == request.JobDepartmentId, cancellationToken);
-
-            if (!depIsExists)
-                return ErrorResponseModel<string>.Failure(new Error("هذا القسم غير موجود", Status.NotFound));
-
-            jobTitle.Name = request.Name;
-            jobTitle.JobDepartmentId = request.JobDepartmentId;
-            jobTitle.Description = request.Description;
-            jobTitle.Status = newStatus;
-
+            jobDepartment.Name = request.Name;
+            jobDepartment.Description = request.Description;
+            jobDepartment.Status = newStatus;
 
             try
             {
-                _unitOfWork.Repository<JobTitle>().Update(jobTitle);
+                _unitOfWork.Repository<JobDepartment>().Update(jobDepartment);
                 await _unitOfWork.CompleteAsync(cancellationToken);
                 return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
             }

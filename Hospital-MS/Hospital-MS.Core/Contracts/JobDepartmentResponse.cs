@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Contracts
 {
-    public class JobLevelResponse
+    public class JobDepartmentResponse
     {
         public int Id { get; set; }
-        public string Name { get; set; } 
-        public string? Description { get; set; } 
+        public string Name { get; set; }
+        public string? Description { get; set; }
         public string Status { get; set; }
 
         public AuditResponse Audit { get; set; }

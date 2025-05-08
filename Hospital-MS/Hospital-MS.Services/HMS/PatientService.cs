@@ -132,7 +132,6 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<PatientAdmissionsWithAppointmentsResponse>> GetPatientAdmissionsByIdAsync(int id, CancellationToken cancellationToken = default)
         {
-            // Fetch admissions for the patient
             var admissions = await _unitOfWork.Repository<Admission>()
                 .GetAll(i => i.PatientId == id)
                 .Include(x => x.CreatedBy)
@@ -144,7 +143,6 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.Department)
                 .ToListAsync(cancellationToken);
 
-            // Fetch appointments for the patient
             var appointments = await _unitOfWork.Repository<Appointment>()
                 .GetAll(a => a.PatientId == id)
                 .Include(a => a.Doctor)
@@ -152,7 +150,6 @@ namespace Hospital_MS.Services.HMS
                 .Include(a => a.MedicalService)
                 .ToListAsync(cancellationToken);
 
-            // Map admissions to response
             var admissionsResponse = admissions.Select(x => new PatientAdmissionsResponse
             {
                 PatientName = x.Patient.FullName,
@@ -168,7 +165,6 @@ namespace Hospital_MS.Services.HMS
                 PatientPhoneNumber = x.Patient.Phone,
             }).ToList().AsReadOnly();
 
-            // Map appointments to response
             var appointmentsResponse = appointments.Select(a => new PatientAppointmentResponse
             {
                 AppointmentId = a.Id,
@@ -181,7 +177,6 @@ namespace Hospital_MS.Services.HMS
 
             }).ToList().AsReadOnly();
 
-            // Create the final response
             var response = new PatientAdmissionsWithAppointmentsResponse
             {
                 Admissions = admissionsResponse,

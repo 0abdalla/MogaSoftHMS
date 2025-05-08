@@ -1,5 +1,4 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.JobLevel;
 using Hospital_MS.Core.Enums;
