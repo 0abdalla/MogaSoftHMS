@@ -58,8 +58,8 @@ namespace Hospital_MS.Services.HMS
                     Status = staffStatus,
                     Degree = request.Degree,
                     Notes = request.Notes,
-                    MedicalServiceId = request.MedicalServiceId,
-                    
+
+
                 };
 
                 if (request.Photo is not null)
@@ -72,6 +72,19 @@ namespace Hospital_MS.Services.HMS
 
                 await _unitOfWork.Repository<Doctor>().AddAsync(doctor, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
+                if (request.MedicalServiceIds != null && request.MedicalServiceIds.Count != 0)
+                {
+                    var doctorMedicalServices = request.MedicalServiceIds.Select(serviceId => new DoctorMedicalService
+                    {
+                        DoctorId = doctor.Id,
+                        MedicalServiceId = serviceId
+
+                    }).ToList();
+
+                    await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(doctorMedicalServices, cancellationToken);
+                    await _unitOfWork.CompleteAsync(cancellationToken);
+                }
 
                 if (request.DoctorSchedules is not null && request.DoctorSchedules.Count > 0)
                 {
@@ -149,14 +162,13 @@ namespace Hospital_MS.Services.HMS
 
                 var doctors = dt.AsEnumerable().Select(row => new AllDoctorsResponse
                 {
-                    Id = row.Field<int>("DoctorId"), 
-                    FullName = row.Field<string>("FullName") ?? string.Empty, 
+                    Id = row.Field<int>("DoctorId"),
+                    FullName = row.Field<string>("FullName") ?? string.Empty,
                     Phone = row.Field<string>("Phone") ?? string.Empty,
                     Status = row.Field<string>("Status") ?? string.Empty,
-                    DepartmentId = row.Field<int?>("DepartmentId") ?? 0, 
+                    DepartmentId = row.Field<int?>("DepartmentId") ?? 0,
                     Department = row.Field<string>("Department") ?? string.Empty,
-                    MedicalServiceId = row.Field<int?>("MedicalServiceId") ?? 0,
-                    MedicalServiceName = row.Field<string>("MedicalServiceName") ?? string.Empty,
+                    MedicalServices = JsonConvert.DeserializeObject<List<DoctorMedicalServiceResponse>>(row.Field<string>("MedicalServiceNames") ?? "[]"), 
                     DoctorSchedules = JsonConvert.DeserializeObject<List<DoctorScheduleResponse>>(row.Field<string>("DoctorSchedules") ?? "[]") 
                 }).ToList();
 
@@ -178,7 +190,7 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.Department)
                 .Include(x => x.Specialty)
                 .Include(x => x.Schedules)
-                .Include(x => x.MedicalService)
+                .Include(x => x.DoctorMedicalServices).ThenInclude(dms => dms.MedicalService)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -207,8 +219,16 @@ namespace Hospital_MS.Services.HMS
                 Notes = doctor.Notes,
                 Status = doctor.Status.GetArabicValue(),
                 MaritalStatus = doctor.MaritalStatus.GetArabicValue(),
-                MedicalServiceId = doctor.MedicalServiceId,
-                MedicalServiceName = doctor?.MedicalService?.Name,
+
+
+                DoctorMedicalServices = [.. doctor.DoctorMedicalServices.Select(dms => new DoctorMedicalServiceResponse
+                {
+                    Id = dms.MedicalServiceId,
+                    Name = dms.MedicalService.Name,
+                    Price = dms.MedicalService.Price,
+                    Type = dms.MedicalService.Type,
+
+                })],
 
                 DoctorSchedules = [.. doctor.Schedules.Select(schedule => new DoctorScheduleResponse
                 {
@@ -271,14 +291,13 @@ namespace Hospital_MS.Services.HMS
                 doctor.Gender = gender;
                 doctor.Phone = request.Phone;
                 doctor.NationalId = request.NationalId;
-                //doctor.DepartmentId = request.DepartmentId;
-                //doctor.SpecialtyId = request.SpecialtyId;
                 doctor.MaritalStatus = maritalStatus;
                 doctor.StartDate = request.StartDate;
                 doctor.Status = staffStatus;
                 doctor.Degree = request.Degree;
                 doctor.Notes = request.Notes;
-                doctor.MedicalServiceId = request.MedicalServiceId;
+                
+
 
                 if (request.Photo != null && request.Photo.Length > 0)
                 {
@@ -318,6 +337,31 @@ namespace Hospital_MS.Services.HMS
                         .ToList();
 
                     await _unitOfWork.Repository<DoctorSchedule>().AddRangeAsync(newSchedules, cancellationToken);
+                    await _unitOfWork.CompleteAsync(cancellationToken);
+                }
+
+
+
+                var existingMedicalServices = await _unitOfWork.Repository<DoctorMedicalService>()
+                    .GetAll()
+                    .Where(ds => ds.DoctorId == doctor.Id)
+                    .ToListAsync(cancellationToken);
+
+                _unitOfWork.Repository<DoctorMedicalService>().DeleteRange(existingMedicalServices);
+
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                if (request.MedicalServiceIds is not null && request.MedicalServiceIds.Count > 0)
+                {
+                    var newMedicalServices = request.MedicalServiceIds
+                        .Select(Id => new DoctorMedicalService
+                        {
+                            DoctorId = doctor.Id,
+                            MedicalServiceId = Id
+                        })
+                        .ToList();
+
+                    await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(newMedicalServices, cancellationToken);
                     await _unitOfWork.CompleteAsync(cancellationToken);
                 }
 

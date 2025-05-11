@@ -12,8 +12,8 @@ namespace Hospital_MS.Core.Models
         public string Name { get; set; } = string.Empty;
         public decimal Price { get; set; } = 0M;
         public string Type { get; set; } = string.Empty;
- 
-        public ICollection<Doctor> Doctors { get; set; } = new HashSet<Doctor>();
+
+        public ICollection<DoctorMedicalService> DoctorMedicalServices { get; set; } = new HashSet<DoctorMedicalService>();
         public ICollection<MedicalServiceSchedule> Schedules { get; set; } = new HashSet<MedicalServiceSchedule>();
     }
 }

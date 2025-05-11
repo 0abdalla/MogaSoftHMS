@@ -72,6 +72,11 @@ namespace Hospital_MS.API
             services.AddScoped<IJobDepartmentService, JobDepartmentService>();
 
 
+
+            services.AddHealthChecks()
+            .AddSqlServer(name: "database", connectionString: connectionString)
+            .AddHangfire(options => { options.MinimumAvailableServers = 1; });
+
             return services;
 
         }

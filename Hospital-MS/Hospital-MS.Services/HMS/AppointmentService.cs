@@ -18,27 +18,27 @@ namespace Hospital_MS.Services.HMS
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
 
-        public async Task<ErrorResponseModel<string>> CreateAsync(CreateAppointmentRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsync(CreateAppointmentRequest request, CancellationToken cancellationToken = default)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
             try
             {
                 var schedule = await _unitOfWork.Repository<DoctorSchedule>()
-                    .GetAll(s => s.DoctorId == request.DoctorId && s.WeekDay == request.AppointmentDate.DayOfWeek.ToString())
+                    .GetAll(s =>/* => s.DoctorId == request.DoctorId &&*/ s.WeekDay == request.AppointmentDate.DayOfWeek.ToString())
                     .FirstOrDefaultAsync(cancellationToken);
 
                 if (schedule == null)
-                    return ErrorResponseModel<string>.Failure(GenericErrors.ScheduleNotFound);
+                    return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.ScheduleNotFound);
 
                 if (schedule.CurrentAppointments >= schedule.Capacity)
-                    return ErrorResponseModel<string>.Failure(GenericErrors.ScheduleFull);
+                    return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.ScheduleFull);
 
                 if (!Enum.TryParse<AppointmentType>(request.AppointmentType, true, out var appointmentType))
-                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
+                    return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.InvalidType);
 
                 if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
-                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
+                    return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.InvalidType);
 
                 var existingPatient = await _unitOfWork.Repository<Patient>()
                     .GetAll(p => p.Phone == request.PatientPhone)
@@ -84,7 +84,7 @@ namespace Hospital_MS.Services.HMS
                     PaymentMethod = request.PaymentMethod,
                     Type = appointmentType,
                     MedicalServiceId = request.MedicalServiceId,
-                    AppointmentNumber = appointmentNumber, 
+                    AppointmentNumber = appointmentNumber,
                     EmergencyLevel = request.EmergencyLevel,
                     CompanionName = request.CompanionName,
                     CompanionNationalId = request.CompanionNationalId,
@@ -97,14 +97,26 @@ namespace Hospital_MS.Services.HMS
                 _unitOfWork.Repository<DoctorSchedule>().Update(schedule);
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
+                var createdAppointment = await _unitOfWork.Repository<Appointment>()
+                    .GetAll(a => a.Id == appointment.Id)
+                    .Include(a => a.MedicalService)
+                    .FirstOrDefaultAsync(cancellationToken);
+
                 await transaction.CommitAsync(cancellationToken);
 
-                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, appointmentNumber.ToString());
+                var response = new AppointmentToReturnResponse
+                {
+                    AppointmentNumber = createdAppointment?.AppointmentNumber ?? 0,
+                    MedicalServiceName = createdAppointment?.MedicalService?.Name,
+                };
+
+                return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess, response);
             }
             catch (Exception)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+                return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.TransFailed);
             }
         }
         private async Task<int> GetNewAppointmentNumber()

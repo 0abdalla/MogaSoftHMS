@@ -10,7 +10,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string FullName { get; set; }
         public DateOnly DateOfBirth { get; set; }
         public string Gender { get; set; }
-        public string Phone { get; set; } 
+        public string Phone { get; set; }
         public string? Email { get; set; }
         public string? Address { get; set; }
         //public int? SpecialtyId { get; set; } = null;
@@ -23,7 +23,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public IFormFile? Photo { get; set; }
         //public bool IsActive { get; set; }
 
-        public int MedicalServiceId { get; set; }
+        public List<int> MedicalServiceIds { get; set; } = []; 
         public List<DoctorScheduleRequest>? DoctorSchedules { get; set; } = [];
     }
 }

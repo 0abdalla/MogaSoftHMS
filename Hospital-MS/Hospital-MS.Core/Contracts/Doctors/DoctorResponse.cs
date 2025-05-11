@@ -33,9 +33,10 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string MaritalStatus { get; set; }
         public string? Degree { get; set; }
 
-        public int? MedicalServiceId { get; set; }
-        public string? MedicalServiceName { get; set; }
+        //public int? MedicalServiceId { get; set; }
+        //public string? MedicalServiceName { get; set; }
         public List<DoctorScheduleResponse> DoctorSchedules { get; set; } = [];
+        public List<DoctorMedicalServiceResponse> DoctorMedicalServices { get; set; } = [];
 
         // Audit properties
         public DateTime CreatedAt { get; set; }

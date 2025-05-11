@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Enums;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,14 +27,15 @@ namespace Hospital_MS.Core.Models
         public bool IsActive { get; set; } = true;
         public string? Notes { get; set; }
         public string? PhotoUrl { get; set; }
-        public int? MedicalServiceId { get; set; }
+        //public int? MedicalServiceId { get; set; }
+        //public MedicalService? MedicalService { get; set; } = null!;
 
 
         // Navigation Properties
         public Specialty? Specialty { get; set; } = null!;
         public Department? Department { get; set; } = null!;
-        public MedicalService? MedicalService { get; set; } = null!;
 
+        public ICollection<DoctorMedicalService> DoctorMedicalServices { get; set; } = new List<DoctorMedicalService>();
         public ICollection<DoctorRating>? Ratings { get; set; } = new HashSet<DoctorRating>();
         public ICollection<DoctorSchedule> Schedules { get; set; } = new HashSet<DoctorSchedule>();
     }

@@ -1,6 +1,8 @@
 using Hangfire;
+using HealthChecks.UI.Client;
 using Hospital_MS.API;
 using Hospital_MS.Interfaces.HMS;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +48,16 @@ jobManager.AddOrUpdate(
 
 
 app.UseCors();
+
 app.UseStaticFiles();
+
 app.UseAuthorization();
+
 app.MapControllers();
+
+app.MapHealthChecks("_health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
 app.Run();
