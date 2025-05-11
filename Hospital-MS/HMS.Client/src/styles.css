@@ -188,6 +188,56 @@ select{
     pointer-events: none !important;
     cursor: not-allowed !important;
   }
+  .ng-select .ng-select-container {
+    background: #EFF1F999 !important;
+    color: #A1A7C4 !important;
+    border: 1px solid transparent !important;
+    background-position: left 0.6rem center !important;
+    background-repeat: no-repeat !important;
+    background-size: 25px !important;
+    min-height: 38px;
+    border-radius: 0.25rem;
+  }
+  
+  .ng-select.ng-select-focused .ng-select-container {
+    border: 1px solid var(--main-color) !important;
+  }
+  
+  .ng-select.ng-select-disabled .ng-select-container {
+    background: #EFF1F999 !important;
+    color: #A1A7C4 !important;
+    border: 1px solid transparent !important;
+    cursor: not-allowed !important;
+  }
+  
+  /* Style for multiple select tags */
+  .ng-select.ng-select-multiple .ng-select-container .ng-value {
+    background-color: #007bff;
+    color: white;
+    border-radius: 0.25rem;
+    padding: 2px 8px;
+  }
+  
+  .ng-select.ng-select-multiple .ng-value .ng-value-icon {
+    color: white;
+  }
+  
+  /* Dropdown menu */
+  .ng-select .ng-dropdown-panel {
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+  }
+  
+  .ng-select .ng-option {
+    color: #A1A7C4;
+  }
+  
+  .ng-select .ng-option.ng-option-selected,
+  .ng-select .ng-option.ng-option-marked {
+    background: #EFF1F999;
+    color: #A1A7C4;
+  }
   .form-select{
     background: #EFF1F999 !important;
     color: #A1A7C4 !important;

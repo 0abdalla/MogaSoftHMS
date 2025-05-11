@@ -2,60 +2,82 @@
     <div class="report-title">
         <div class="header-info">
             <div class="logo-area">
-                <img src="../../../../../assets/vendors/imgs/logo.png">
+                <img src="assets/vendors/imgs/logo.png">
             </div>
             <div>
                 <h1>تذكرة الحجز</h1>
-                <p>اسم المستشفي : نور المحمدي</p>
+                <p>اسم المستشفي : النور المحمدي</p>
             </div>
         </div>
         <div class="booking-number">
-            <span>رقم الحجز : {{invoiceData?.appointmentNumber}}</span>
+            <span>رقم الحجز : {{invoiceData?.appointmentNumber || '1'}}</span>
         </div>
     </div>
 
     <table class="patient-info">
         <tr>
-            <td>كود المريض : {{invoiceData?.patientPhone}}</td>
-            <td colspan="3"></td>
-            <td>الرقم التأميني : {{invoiceData?.insuranceNumber}}</td>
+            <td>اسم المريض : <strong>{{invoiceData?.patientName}}</strong></td>
         </tr>
         <tr>
-            <td>اسم المريض : {{invoiceData?.patientName}}</td>
-            <td colspan="3"></td>
-            <td>اسم الطبيب : {{invoiceData?.doctorName}}</td>
+            <td>رقم الهاتف : <strong> {{invoiceData?.patientPhone}}</strong></td>
+        </tr> 
+        <!-- <tr>
+            <td>نوع الخدمة : <strong> {{invoiceData?.appointmentType}}</strong></td>
+        </tr>  -->
+        <tr>
+            <td>الخدمة الطبية : <strong> {{invoiceData?.medicalServiceName}}</strong></td>
+        </tr>
+        <tr *ngIf="invoiceData?.doctorName">
+            <td>اسم الطبيب : <strong> {{invoiceData?.doctorName}}</strong></td>
         </tr>
         <tr>
-            <td>الخدمة الطبية : {{invoiceData?.clinicName}}</td>
-            <td colspan="3"></td>
-            <td>ميعاد الحجز : {{invoiceData?.appointmentDate}}</td>
+            <td>ميعاد الحجز : <strong> {{invoiceData?.appointmentDate}}</strong></td>
         </tr>
         <tr>
-            <td>نوع الخدمة : {{invoiceData?.appointmentType}}</td>
-            <td colspan="3"></td>
-            <td>تكلفة الحجز : 125 جنيها مصرياً</td>
+            <td>تكلفة الحجز : <strong> {{invoiceData?.selectedServicePrice || '0'}} جنيه</strong></td>
         </tr>
-        <tr>
-            <td>شركة التأمين : {{invoiceData?.insuranceCompany}}</td>
-            <td colspan="3"></td>
-            <td>الفئة : {{invoiceData?.insuranceCategory}}</td>
+        <tr *ngIf="invoiceData?.insuranceCompanyId">
+            <td>شركة التأمين : <strong> {{invoiceData?.insuranceCompany || 'لا يوجد'}}</strong></td>
+        </tr>
+        <tr *ngIf="invoiceData?.insuranceCompanyId">
+            <td>الرقم التأميني : <strong> {{invoiceData?.insuranceNumber || 'لا يوجد'}}</strong></td>
+        </tr>
+        <tr *ngIf="invoiceData?.insuranceCategoryId">
+            <td>الفئة : <strong> {{invoiceData?.insuranceCategory || 'لا يوجد'}}</strong></td>
         </tr>
     </table>
+    <hr>
 
-    <div class="address-bar">
-        <div>Address: Al Masala, Arab Al Hoson, El Matareya, Cairo</div>
-        <div>Phone: 02 22517341</div>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="phone-info">
+                <small>الهاتف: {{invoiceData?.hospitalPhone || '01000201499'}}</small>
+            </div>
+        </div>
+    
+        <div class="col-lg-6">
+            <div class="email-info">
+                <small>البريد الالكتروني: {{invoiceData?.hospitalEmail || 'info@elnourelmohamady.com'}}</small>
+            </div>
+        </div>
+    
+        <div class="col-lg-6">
+            <div class="user-info">
+                <small>اسم المستخدم : {{userName}}</small>
+            </div>
+        </div>
+    
+        <div class="col-lg-6">
+            <div class="date-info">
+                <small>تاريخ الطباعة : {{ currentDate | date:'yyyy-MM-dd HH:mm:ss' }}</small>
+            </div>
+        </div>
+        
     </div>
-
-    <div class="footer">
-        <div>E-mail: mogasoft.net</div>
-        <div>Site: https://hms.mogasoft.net</div>
+    <hr />
+    <div class="receipt-footer">
+        <p>شكرًا لإختياركم خدماتنا</p>
     </div>
-
-    <div class="user-info">
-      <p>اسم المستخدم : محمد كريم</p>
-  </div>
-
 
     <!-- <div class="page-number">1</div> -->
 </div>

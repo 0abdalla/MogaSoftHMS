@@ -2,17 +2,17 @@
     <div class="container-fluid">
         <div class="row mt-4">
             <div class="col-lg-2" *ngFor="let status of patientServices">
-                <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
-                    <h4>{{ status.name }}</h4>
-                    <p class="mt-0">{{ status.count }} مريض</p>
-                    <div class="percentage d-flex align-items-center justify-content-center gap-1">
-                        <p class="m-0"> 12%</p>
-                        <i class="fa-regular fa-circle-arrow-up"></i>
-                    </div>
-                    <!-- <img src="assets/vendors/imgs/Group 2.png" alt=""> -->
+              <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
+                <h4>{{ status.name }}</h4>
+                <p class="mt-0">{{ status.count }} مريض</p>
+                <div class="percentage d-flex align-items-center justify-content-center gap-1">
+                  <p class="m-0">12%</p>
+                  <i class="fa-regular fa-circle-arrow-up"></i>
                 </div>
+                <img [src]="status.img" alt="" class="vector" />
+              </div>
             </div>
-        </div>
+          </div>
 
         <div class="card mt-3 p-2">
             <div class="p-3 mt-4">

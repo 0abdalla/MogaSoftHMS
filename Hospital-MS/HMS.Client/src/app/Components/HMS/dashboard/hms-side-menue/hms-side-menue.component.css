@@ -215,3 +215,7 @@
 .fa-circle{
   font-size: 8px !important;
 }
+.form-check-input {
+  width: 3em;
+  height: 1.5em;
+}

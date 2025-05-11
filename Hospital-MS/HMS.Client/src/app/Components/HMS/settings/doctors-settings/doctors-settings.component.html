@@ -97,15 +97,23 @@
             <div class="row mb-3">
               <div class="col-lg-4 mt-1">
                 <label class="form-label">التخصص الطبي</label>
-                <select class="form-select shadow-none" formControlName="MedicalServiceId">
-                  <option selected disabled value="">اختر التخصص</option>
-                  <option *ngFor="let service of services" [ngValue]="service.id">{{ service.name }}</option>
-                </select>
-                <div *ngIf="doctorForm.get('MedicalServiceId')?.invalid && doctorForm.get('MedicalServiceId')?.touched" class="text-danger">
+                <ng-select
+                  [items]="services"
+                  bindLabel="name"
+                  bindValue="id"
+                  [multiple]="true"
+                  placeholder="اختر التخصصات"
+                  formControlName="MedicalServiceIds"
+                  [searchable]="true"
+                  [clearable]="true"
+                  class="shadow-none">
+                </ng-select>
+                <div
+                  *ngIf="doctorForm.get('MedicalServiceIds')?.invalid && doctorForm.get('MedicalServiceIds')?.touched"
+                  class="text-danger">
                   التخصص الطبي مطلوب
                 </div>
               </div>
-              
               <div class="col-lg-4 mt-1">
                 <label class="form-label">الدرجة العلمية</label>
                 <select class="form-select shadow-none" formControlName="Degree">
@@ -183,7 +191,7 @@
             </div>
           
             <div class="row justify-content-center gap-2 px-3">
-              <button type="submit" [disabled]="!doctorForm.valid" class="btn-blue col-2">حفظ البيانات</button>
+              <button type="submit"  class="btn-blue col-2">حفظ البيانات</button>
               <button type="reset" class="btn-outline-blue col-2">إلغاء</button>
             </div>
         </form>

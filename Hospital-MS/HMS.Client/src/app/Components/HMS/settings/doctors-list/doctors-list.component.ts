@@ -107,6 +107,7 @@ export class DoctorsListComponent implements OnInit {
           ...schedule,
           weekDay: this.translateWeekDay(schedule.weekDay)
         }))
+        
       };
       console.log(this.selectedDoctor);
     });
@@ -187,5 +188,12 @@ export class DoctorsListComponent implements OnInit {
       'Diploma': 'دبلوم'
     };
     return degreeMap[degree] || degree;
+  }
+  getGeneralServiceName(medicalServices: any[]): string {
+    const generalService = medicalServices.find(service => service.type === 'General');
+    if (generalService) {
+      return generalService.name.replace('كشف', '').trim();
+    }
+    return '---';
   }
 }

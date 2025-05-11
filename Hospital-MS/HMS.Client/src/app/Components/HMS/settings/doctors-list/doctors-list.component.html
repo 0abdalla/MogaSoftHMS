@@ -37,20 +37,22 @@
                         <th>التخصص</th>
                         <th>رقم الهاتف</th>
                         <th>الحالة</th>
+                        <th>الرقم</th>
                         <!-- <th>الإجراءات</th> -->
                     </tr>
                 </thead>
                 <tbody *ngIf="doctors!.length > 0">
-                    <tr *ngFor="let doctor of doctors | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openDoctorModal(doctor.doctorId)" data-bs-toggle="modal" data-bs-target="#doctorDetailsModal"
+                    <tr *ngFor="let doctor of doctors | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openDoctorModal(doctor.id)" data-bs-toggle="modal" data-bs-target="#doctorDetailsModal"
                         style="cursor: pointer">
+                        
                         <td>
                             <div class="d-flex align-items-center gap-2 justify-content-start">
-                                <div class="avatar-circle">{{ doctor?.fullName?.charAt(0) }}</div>
+                            <div class="avatar-circle">{{ doctor?.fullName?.charAt(0) }}</div>
                                 <span class="fw-bold">{{ doctor.fullName }}</span>
                             </div>
                         </td>
                         <td>
-                            {{ doctor.medicalServiceName }}
+                            {{ getGeneralServiceName(doctor?.medicalServices) }}
                         </td>
                         <td>
                             {{ doctor.phone }}
@@ -67,7 +69,9 @@
                             </span>
                         </td>
 
-
+                        <td>
+                            {{ doctor.id }}
+                        </td>
                         <!-- <td>
                           <button class="btn btn-outline-warning">
                             <i class="fa-light fa-pen-to-square"></i>
@@ -136,7 +140,8 @@
                 <h4>💼 معلومات الوظيفة</h4>
                 <div class="row mb-3">
                     <div class="col-lg-4">
-                        <strong class="strong">التخصص الطبي:</strong> <span class="span">  {{ selectedDoctor?.medicalServiceName || '---' }}</span>
+                        <strong class="strong">التخصص الطبي:</strong>
+                        <span class="span"> {{ selectedDoctor?.doctorMedicalServices ? getGeneralServiceName(selectedDoctor?.doctorMedicalServices) : '---' }}</span>
                     </div>
                     <div class="col-lg-4">
                         <strong class="strong">تاريخ التعيين:</strong> <span class="span">  {{ selectedDoctor?.startDate || '---' }}</span>

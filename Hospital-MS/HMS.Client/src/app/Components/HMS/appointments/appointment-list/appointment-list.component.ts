@@ -142,7 +142,37 @@ export class AppointmentListComponent implements OnInit {
   getCounts() {
     this.appointmentService.getCounts(this.pagingFilterModel).subscribe({
       next: (data) => {
-        this.patientServices = data.results;
+        this.patientServices = data.results.map((service: any) => {
+          let imgPath: string;
+          switch (service.name) {
+            case 'كشف':
+              imgPath = '../../../../../assets/vendors/imgs/blue.png';
+              break;
+            case 'استشارة':
+              imgPath = '../../../../../assets/vendors/imgs/yellow.png';
+              break;
+            case 'عمليات':
+              imgPath = '../../../../../assets/vendors/imgs/red.png';
+              break;
+            case 'تحاليل':
+              imgPath = '../../../../../assets/vendors/imgs/redd.png';
+              break;
+            case 'أشعة':
+              imgPath = '../../../../../assets/vendors/imgs/bluee.png';
+              break;
+            case 'طوارئ':
+              imgPath = '../../../../../assets/vendors/imgs/reddd.png';
+              break;
+            default:
+              imgPath = '';
+          }
+          return {
+            ...service,
+            img: imgPath
+          };
+        });
+        console.log(this.patientServices);
+        
       },
       error: (err) => {
         console.log(err);
