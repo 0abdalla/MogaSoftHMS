@@ -7,10 +7,14 @@ import { SharedService } from '../../../../Services/shared.service';
   styleUrl: './print-invoice.component.css'
 })
 export class PrintInvoiceComponent {
+  userName: any;
+  currentDate = new Date();
   @ViewChild('printSection', { static: false }) printSectionRef: ElementRef;
   invoiceData: any;
 
-  constructor(private sharedService: SharedService) { }
+  constructor(private sharedService: SharedService) { 
+    this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');    
+  }
 
   generatePdf() {
     setTimeout(() => {

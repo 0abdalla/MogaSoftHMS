@@ -154,6 +154,7 @@ export class PatientListComponent {
             count: statusCounts['CriticalCondition'] || 0,
             color: 'linear-gradient(237.82deg, #F12B43 30.69%, #FCD5D9 105.5%)',
             back: '#F12B43',
+            img: '../../../../../assets/vendors/imgs/Vector 2.png'
           },
           {
             name: 'عمليات',
@@ -161,6 +162,7 @@ export class PatientListComponent {
             count: statusCounts['Surgery'] || 0,
             color: 'linear-gradient(236.62deg, #6A4C93 30.14%, #A98ECD 83.62%)',
             back: '#6A4C93',
+            img: '../../../../../assets/vendors/imgs/purble.png'
           },
           {
             name: 'تم علاجه',
@@ -168,6 +170,7 @@ export class PatientListComponent {
             count: statusCounts['Treated'] || 0,
             color: 'linear-gradient(227.58deg, #06A561 26.13%, #C4F8E2 115.78%)',
             back: '#06A561',
+            img: '../../../../../assets/vendors/imgs/green.png'
           },
           {
             name: 'إقامة',
@@ -175,6 +178,7 @@ export class PatientListComponent {
             count: statusCounts['Staying'] || 0,
             color: 'linear-gradient(248.13deg, #3A86FF 35.68%, #87BFFF 99.61%)',
             back: '#3A86FF',
+            img: '../../../../../assets/vendors/imgs/blue.png'
           },
           {
             name: 'عيادات خارجية',
@@ -182,6 +186,7 @@ export class PatientListComponent {
             count: statusCounts['Outpatient'] || 0,
             color: 'linear-gradient(243.59deg, #00ACCE 33.41%, #7EDDF0 96.19%)',
             back: '#00ACCE',
+            img: '../../../../../assets/vendors/imgs/bluee.png'
           },
           {
             name: 'حضانات الأطفال',
@@ -189,6 +194,7 @@ export class PatientListComponent {
             count: statusCounts['Archived'] || 0,
             color: 'linear-gradient(236.62deg, #6C757D 30.14%, #ADB5BD 83.62%)',
             back: '#6C757D',
+            img: '../../../../../assets/vendors/imgs/grey.png'
           },
         ];
       },

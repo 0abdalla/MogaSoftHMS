@@ -66,4 +66,19 @@ export class SharedService {
     //   window.open(pdfUrl, '_blank');
     // });
   }
+  generatePdfForPrint(data: HTMLElement) {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Appointment</title>
+          <link rel="stylesheet" href="styles.css">
+        </head>
+        <body onload="window.print(); window.close();">
+          ${data.innerHTML}
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }
 }

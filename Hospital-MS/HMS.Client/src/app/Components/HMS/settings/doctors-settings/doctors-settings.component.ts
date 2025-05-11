@@ -45,10 +45,7 @@ export class DoctorsSettingsComponent implements OnInit {
       Phone: ['', [Validators.required , Validators.pattern(/^01[0125][0-9]{8}$/)]],
       Email: ['', [Validators.required, Validators.email]],
       Address: ['', Validators.required],
-      // DepartmentId: [null],
-      // SpecialtyId: [null],
-      // ClinicId: [''],
-      MedicalServiceId: ['', Validators.required],
+      MedicalServiceIds: [[], Validators.required],
       Degree: ['', Validators.required],
       Status: ['Active', Validators.required],
       StartDate: ['', Validators.required],
@@ -152,7 +149,7 @@ export class DoctorsSettingsComponent implements OnInit {
   onSubmit() {
     if (this.doctorForm.valid && !this.photoError && !this.doctorForm.hasError('overlappingSchedule')) {
       const formData = new FormData();
-
+  
       formData.append('FullName', this.doctorForm.value.FullName);
       formData.append('NationalId', this.doctorForm.value.NationalId);
       formData.append('Gender', this.doctorForm.value.Gender);
@@ -161,15 +158,19 @@ export class DoctorsSettingsComponent implements OnInit {
       formData.append('Phone', this.doctorForm.value.Phone);
       formData.append('Email', this.doctorForm.value.Email);
       formData.append('Address', this.doctorForm.value.Address);
-      formData.append('MedicalServiceId', this.doctorForm.value.MedicalServiceId);
       formData.append('Degree', this.doctorForm.value.Degree);
       formData.append('Status', this.doctorForm.value.Status);
       formData.append('StartDate', this.doctorForm.value.StartDate);
       formData.append('Notes', this.doctorForm.value.Notes);
 
+      this.doctorForm.value.MedicalServiceIds.forEach((id: number, index: number) => {
+        formData.append(`MedicalServiceIds[${index}]`, id.toString());
+      });
+
       if (this.photoFile) {
         formData.append('Photo', this.photoFile);
       }
+
       this.doctorForm.value.DoctorSchedules.forEach((schedule: any, index: number) => {
         if (schedule.weekDay && schedule.startTime && schedule.endTime) {
           formData.append(`DoctorSchedules[${index}].weekDay`, schedule.weekDay);
@@ -182,8 +183,8 @@ export class DoctorsSettingsComponent implements OnInit {
       this.doctorService.postDoctor(formData).subscribe({
         next: (res) => {
           console.log('Doctor added successfully', res);
-          console.log('Data Sent:',this.doctorForm.value);
-          
+          console.log('Data Sent:', this.doctorForm.value);
+  
           this.messageService.add({
             severity: 'success',
             summary: 'عملية ناجحة',
@@ -200,6 +201,7 @@ export class DoctorsSettingsComponent implements OnInit {
             summary: 'حدث خطأ',
             detail: 'حدث خطأ في تسجيل البيانات',
           });
+          console.log('Form Value:', this.doctorForm.value);
         },
       });
     } else {

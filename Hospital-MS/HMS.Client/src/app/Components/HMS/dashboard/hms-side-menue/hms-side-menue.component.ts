@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../../Auth/auth.service';
+import { AppsService } from '../../../../Services/Permissions/apps.service';
 
 @Component({
   selector: 'app-hms-side-menue',
@@ -13,10 +14,11 @@ export class HMSSideMenueComponent {
   isCollapsed: boolean = false;
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
+  permissions: { [key: string]: boolean } = {};
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private authService: AuthService , private permissionService: AppsService) {}
 
   ngOnInit() {
     this.router.events
@@ -26,6 +28,9 @@ export class HMSSideMenueComponent {
       });
 
     this.setActiveMenuBasedOnRoute();
+    this.permissionService.permissions$.subscribe(permissions => {
+      this.permissions = permissions;
+    });
   }
 
   setActiveMenuBasedOnRoute() {

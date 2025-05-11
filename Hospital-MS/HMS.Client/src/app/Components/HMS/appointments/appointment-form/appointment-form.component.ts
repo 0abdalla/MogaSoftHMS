@@ -107,20 +107,21 @@ export class AppointmentFormComponent implements OnInit {
   
     this.reservationForm.get('medicalServiceId')?.valueChanges.subscribe((medicalServiceId) => {
       if (medicalServiceId) {
-        this.filteredDoctors = this.doctors.filter(
-          (doc: any) => doc.medicalServiceId === Number(medicalServiceId) || doc.medicalServiceId === null
+        this.filteredDoctors = this.doctors.filter((doc: any) =>
+          doc.medicalServices?.some((service: any) => service.id === Number(medicalServiceId))
         );
         console.log('Filtered Doctors:', this.filteredDoctors);
         this.reservationForm.get('doctorId')?.enable();
         this.reservationForm.get('doctorId')?.setValue('');
       } else {
         this.filteredDoctors = [];
+        console.log('Cleared Filtered Doctors');
         this.reservationForm.get('doctorId')?.disable();
         this.reservationForm.get('doctorId')?.setValue('');
       }
     
       const selectedService = this.filteredServices.find(
-        (service: any) => service.serviceId === Number(medicalServiceId)
+        (service: any) => service.id === Number(medicalServiceId) // Adjust to service.id if serviceId is not used
       );
       this.selectedServicePrice = selectedService ? selectedService.price : null;
       this.showServicePrice = !!selectedService;
@@ -152,6 +153,8 @@ export class AppointmentFormComponent implements OnInit {
   
   filterDoctorsByDay() {
     if (!this.selectedDate || !this.doctors.length) {
+      this.filteredDoctors = [];
+      this.filteredDoctorsByService = [];
       return;
     }
   
@@ -166,7 +169,9 @@ export class AppointmentFormComponent implements OnInit {
         return schedule.weekDay === dayOfWeek;
       });
     });
+    this.filteredDoctorsByService = [...this.filteredDoctors];
   }
+
   getArabicDayOfWeek(date: Date): string {
     const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     return days[date.getDay()];
@@ -178,10 +183,13 @@ export class AppointmentFormComponent implements OnInit {
     this.loadPatients();
     this.getServices();
   }
-  onDayChange(): void {
-    this.filterServicesByDay();
-    this.filterDoctorsByDay();
-  }
+  onDayChange() {
+  this.selectedDate = this.reservationForm.get('appointmentDate')?.value
+    ? new Date(this.reservationForm.get('appointmentDate')?.value)
+    : null;
+  this.filterServicesByDay();
+  this.filterDoctorsByDay();
+}
   onAppointmentTypeChange(): void {
     this.filterServices();
     this.reservationForm.get('medicalServiceId')?.setValue('');
@@ -351,21 +359,24 @@ export class AppointmentFormComponent implements OnInit {
     });
   }
 
-  createInvoiceObj(number: string): any {
-    let obj = {
-      appointmentNumber: number,
-      patientName: this.reservationForm.value.patientName,
-      patientPhone: this.reservationForm.value.patientPhone,
-      appointmentType: VisitTypeLabels[this.reservationForm.value.appointmentType],
-      clinicName: this.getClinicName(this.reservationForm.value.medicalServiceId),
+  createInvoiceObj(apiData: any): any {
+    const formData = this.submittedData;
+    
+    return {
+      appointmentNumber: apiData.appointmentNumber,
+      patientName: formData.patientName,
+      patientPhone: formData.patientPhone,
+      // appointmentType: formData.appointmentType,
+      medicalServiceName: apiData.medicalServiceName,
       doctorName: this.getDoctorName(this.reservationForm.value.doctorId),
+      selectedServicePrice: formData.selectedServicePrice || 0,
       appointmentDate: this.sharedService.getArabicDayAndTimeRange(this.reservationForm.value.appointmentDate),
-      insuranceNumber: this.reservationForm.value.insuranceNumber,
-      insuranceCompany: this.insuranceCompanies.find((i: any) => i.id == this.reservationForm.value.insuranceCompanyId)?.name,
-      insuranceCategory: this.reservationForm.value.insuranceCategoryId,
-    }
-
-    return obj;
+      insuranceCompany: formData.insuranceCompany,
+      insuranceNumber: formData.insuranceNumber,
+      insuranceCategory: formData.insuranceCategory,
+      hospitalPhone: '01000201499',
+      hospitalEmail: 'info@elnourelmohamady.com',
+    };
   }
   // 
   searchPatientByPhone(event: Event) {

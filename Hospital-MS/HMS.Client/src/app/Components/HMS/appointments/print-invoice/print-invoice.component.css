@@ -13,6 +13,8 @@ body {
     max-width: 456px;
     margin: 0 auto;
     background-color: white;
+    border: 1px solid #eee;
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
@@ -42,7 +44,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #eee;
     margin-left: 20px;
 }
 
@@ -59,21 +60,21 @@ body {
 
 .patient-info {
     margin-top: 20px;
-    border: 1px solid #000;
+    border: 1px solid #eee;
     border-collapse: collapse;
     width: 100%;
 }
 
 .patient-info td {
     padding: 12px;
-    border: 1px solid #000;
+    border: 1px solid #eee;
     vertical-align: middle;
     font-size: 14px;
 }
 
-.address-bar {
+.date-info , .phone-info , .user-info , .email-info {
     margin-top: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #eee;
     border-radius: 10px;
     padding: 10px;
     display: flex;
@@ -81,25 +82,12 @@ body {
     background-color: #f9f9f9;
 }
 
-.footer {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
-    background-color: #f9f9f9;
-}
 
 .page-number {
     text-align: left;
     margin-top: 10px;
 }
 
-.user-info {
-    text-align: left;
-    margin-top: 10px;
-}
 
 
 /* Print-friendly styles */

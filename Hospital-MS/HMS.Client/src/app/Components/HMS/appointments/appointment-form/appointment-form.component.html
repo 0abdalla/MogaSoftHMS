@@ -102,10 +102,10 @@
           <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId"
                   (change)="onDoctorSelected()">
             <option selected disabled value="">اختر الدكتور المختص</option>
-            <option *ngFor="let doctor of filteredDoctorsByService" [value]="doctor.id">
+            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">
               {{ doctor.fullName }}
             </option>
-            <option *ngIf="filteredDoctorsByService.length === 0" disabled>
+            <option *ngIf="filteredDoctors.length === 0" disabled>
               {{ selectedDate ? 'لا يوجد أطباء متاحين في اليوم المحدد' : 'لا يوجد أطباء متاحين لهذه الخدمة' }}
             </option>
           </select>
