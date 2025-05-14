@@ -117,6 +117,8 @@ export class DoctorsListComponent implements OnInit {
     this.doctorService.getDoctorsCount().subscribe({
       next: (data: any) => {
         this.doctorsData = data.results;
+        console.log(this.doctorsData);
+        
       },
       error: (err) => {
         console.log(err);

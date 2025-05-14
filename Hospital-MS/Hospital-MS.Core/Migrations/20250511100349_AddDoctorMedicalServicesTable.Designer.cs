@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250511100349_AddDoctorMedicalServicesTable")]
+    partial class AddDoctorMedicalServicesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1543,11 +1546,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasMaxLength(21)
-                        .HasColumnType("nvarchar(21)");
-
                     b.Property<string>("Name")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -1564,10 +1562,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasDiscriminator().HasValue("IdentityRole");
-
-                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1674,98 +1668,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.ApplicationRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.HasDiscriminator().HasValue("ApplicationRole");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "0196ce06-a35d-764c-8e7f-5296e1c570a9",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-7024b78b0f4d",
-                            Name = "SystemAdmin",
-                            NormalizedName = "SYSTEMADMIN",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-893f262003e5",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-702596f53eb7",
-                            Name = "TopManagement",
-                            NormalizedName = "TOPMANAGEMENT",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-89401c1a99a6",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-7026d200cb76",
-                            Name = "FinanceManager",
-                            NormalizedName = "FINANCEMANAGER",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-8941805b5a7e",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-70271213664d",
-                            Name = "TechnicalManager",
-                            NormalizedName = "TECHNICALMANAGER",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-89425e3c917f",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-7028b1911846",
-                            Name = "HRManager",
-                            NormalizedName = "HRMANAGER",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-89431c9fe61b",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-702986ab7a2b",
-                            Name = "Accountant",
-                            NormalizedName = "ACCOUNTANT",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-89441848d7b0",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-702a00ae8e82",
-                            Name = "StoreKeeper",
-                            NormalizedName = "STOREKEEPER",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-89455dd69d96",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-702b6aab3540",
-                            Name = "ReservationEmployee",
-                            NormalizedName = "RESERVATIONEMPLOYEE",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce06-a360-71e0-b597-894637b7ca29",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-702cb2a84a7b",
-                            Name = "Cashier",
-                            NormalizedName = "CASHIER",
-                            IsDeleted = false
-                        },
-                        new
-                        {
-                            Id = "0196ce0b-5aab-766e-9cb1-4e205c0013c7",
-                            ConcurrencyStamp = "0196ce08-5df8-732f-9f84-702d6b892289",
-                            Name = "Auditor",
-                            NormalizedName = "AUDITOR",
-                            IsDeleted = false
-                        });
                 });
 
             modelBuilder.Entity("DoctorMedicalService", b =>

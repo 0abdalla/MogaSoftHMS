@@ -30,6 +30,10 @@
                 <div *ngIf="doctorForm.get('DateOfBirth')?.hasError('minDate') && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
                   تاريخ الميلاد يجب ألا يكون قبل عام 1920
                 </div>
+                <div *ngIf="doctorForm.get('DateOfBirth')?.hasError('maxDate') && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
+                  تاريخ الميلاد يجب ألا يكون بعد اليوم
+                </div>
+
               </div>
               <div class="col-lg-4 mt-1">
                 <label class="form-label">النوع</label>
@@ -118,12 +122,12 @@
                 <label class="form-label">الدرجة العلمية</label>
                 <select class="form-select shadow-none" formControlName="Degree">
                   <option selected disabled value="">اختر الدرجة العلمية</option>
-                  <option value="PhD">دكتوراة</option>
-                  <option value="Consultant">استشاري</option>
-                  <option value="Specialist">أخصائي</option>
-                  <option value="Fellowship">زمالة</option>
-                  <option value="Master">ماجستير</option>
-                  <option value="Bachelor">بكالوريوس</option>
+                  <ng-container *ngFor="let jobLevel of jobLevels">
+                    <option [value]="jobLevel.name">{{ jobLevel.name }}</option>
+                  </ng-container>
+                  <ng-container *ngIf="jobLevels?.length === 0">
+                    <option disabled>لا يوجد درجات</option>
+                  </ng-container>
                 </select>
                 <div *ngIf="doctorForm.get('Degree')?.invalid && doctorForm.get('Degree')?.touched" class="text-danger">
                   الدرجة العلمية مطلوبة
@@ -191,7 +195,7 @@
             </div>
           
             <div class="row justify-content-center gap-2 px-3">
-              <button type="submit"  class="btn-blue col-2">حفظ البيانات</button>
+              <button type="submit" [disabled]="doctorForm.invalid" class="btn-blue col-2">حفظ البيانات</button>
               <button type="reset" class="btn-outline-blue col-2">إلغاء</button>
             </div>
         </form>

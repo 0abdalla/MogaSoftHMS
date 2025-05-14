@@ -1,5 +1,4 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts;
 using Hospital_MS.Core.Contracts.JobDepartment;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models.HR;

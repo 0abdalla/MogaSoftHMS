@@ -31,6 +31,8 @@ namespace Hospital_MS.Services.Auth
             {
                 var (token, expiresIn) = _jwtProvider.GenerateToken(user);
 
+                var roles = await _userManager.GetRolesAsync(user);
+
                 await _userManager.UpdateAsync(user);
 
                 var response = new AuthResponse(
@@ -43,7 +45,8 @@ namespace Hospital_MS.Services.Auth
                     user.LoginDate,
                     user.UserName!,
                     token,
-                    expiresIn
+                    expiresIn,
+                    roles.FirstOrDefault() 
                 );
 
                 return ErrorResponseModel<AuthResponse>.Success(GenericErrors.SuccessLogin, response);
@@ -68,6 +71,7 @@ namespace Hospital_MS.Services.Auth
                 //UserName = request.FirstName+" "+request.LastName,
                 UserName = request.UserName,
                 IsActive = true,
+               
             };
 
             //user.UserName = request.Email;

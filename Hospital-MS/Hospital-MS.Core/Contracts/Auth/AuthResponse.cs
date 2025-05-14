@@ -16,7 +16,8 @@ namespace Hospital_MS.Core.Contracts.Auth
         DateTime? LoginDate,
         string UserName,
         string Token,
-        int ExpiresIn
+        int ExpiresIn,
+        string? Role
     );
 
 }

@@ -4,6 +4,7 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { forkJoin } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-staff-form',
@@ -30,7 +31,8 @@ export class StaffFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router : Router
   ) {
     this.employeeForm = this.fb.group({
       fullName: ['', Validators.required],
@@ -154,13 +156,15 @@ export class StaffFormComponent implements OnInit {
       next: (data) => {
         console.log(data);
         console.log(formData);
-        this.employeeForm.reset();
-        this.selectedFiles = [];
+        // this.selectedFiles = [];
         this.messageService.add({
           severity: 'success',
           summary: 'نجاح',
           detail: 'تم إضافة الموظف بنجاح',
         });
+        // setTimeout(() => {
+        //   this.router.navigate(['/hms/staff/list']);
+        // }, 1000);
       },
       error: (error) => {
         console.error(error);
