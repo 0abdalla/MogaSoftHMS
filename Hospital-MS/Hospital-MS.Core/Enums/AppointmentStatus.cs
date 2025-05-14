@@ -6,8 +6,6 @@ namespace Hospital_MS.Core.Enums
     {
         [EnumMember(Value = "معلق")]
         Pending,
-        [EnumMember(Value = "مؤكد")]
-        Approved,
         [EnumMember(Value = "ملغي")]
         Rejected,
         [EnumMember(Value = "مكتمل")]

@@ -38,5 +38,7 @@ namespace Hospital_MS.Core.Models
         public ICollection<DoctorMedicalService> DoctorMedicalServices { get; set; } = new List<DoctorMedicalService>();
         public ICollection<DoctorRating>? Ratings { get; set; } = new HashSet<DoctorRating>();
         public ICollection<DoctorSchedule> Schedules { get; set; } = new HashSet<DoctorSchedule>();
+        public ICollection<Appointment> Appointments { get; set; } = new HashSet<Appointment>();
+        public ICollection<Admission> Admissions { get; set; } = new HashSet<Admission>();
     }
 }
