@@ -19,13 +19,17 @@
         <div class="card mt-3 p-2">
             <div class="p-3 mt-4">
                 <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-                    <div class="row g-2">
-                        <div class="col-lg-2">
-                            <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
-                            <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إظهار الكل</button>
+                    <div class="row justify-content-between align-items-center gap-2">
+                        <div class="row col-lg-8">
+                            <div class="col-lg-2">
+                                <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إظهار الكل</button>
+                            </div>
+                            <div class="col-lg-4">
+                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الطبيب أو رقم الهاتف" (input)="SearchTextChange()" formControlName="Search" />
+                            </div>
                         </div>
-                        <div class="col-lg-4">
-                            <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الطبيب أو رقم الهاتف" (input)="SearchTextChange()" formControlName="Search" />
+                        <div class="col-lg-2 d-flex justify-content-end">
+                            <button type="button" routerLink="/hms/settings/doctors/add" class="btn-purble">+ إضافة طبيب</button>
                         </div>
                     </div>
                 </form>
@@ -60,13 +64,11 @@
 
 
 
-                        <td>
-                            <span class="status-pill" [ngClass]="{
-                                'bg-success': doctor.status === 'متاح',
-                                'bg-secondary': doctor.status == 'غير متاح'
+                        <td [ngClass]="{
+                                'text-success': doctor.status === 'متاح',
+                                'text-secondary': doctor.status == 'غير متاح'
                               }">
                               {{ doctor.status }}
-                            </span>
                         </td>
 
                         <td>

@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Chart } from 'angular-highcharts';
 import { trigger, transition, style, animate } from '@angular/animations';
-
+import { DashboardService } from '../../../../Services/HMS/dashboard.service';
+import { Home } from '../../../../Models/HMS/home';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -19,96 +20,173 @@ import { trigger, transition, style, animate } from '@angular/animations';
   ],
 })
 export class HomeComponent {
+  home: Home = new Home();
+  topDoctors : any[] = [];
+  medicalServices : any[] = [];
+  // 
+  appointmentNumsChart : Chart
+  completedAppsChart : Chart
+  doctorsChart : Chart
+  clinicChart : Chart
+  // 
+  months = [
+    { value: 'January', name: 'يناير' },
+    { value: 'February', name: 'فبراير' },
+    { value: 'March', name: 'مارس' },
+    { value: 'April', name: 'أبريل' },
+    { value: 'May', name: 'مايو' },
+    { value: 'June', name: 'يونيو' },
+    { value: 'July', name: 'يوليو' },
+    { value: 'August', name: 'أغسطس' },
+    { value: 'September', name: 'سبتمبر' },
+    { value: 'October', name: 'أكتوبر' },
+    { value: 'November', name: 'نوفمبر' },
+    { value: 'December', name: 'ديسمبر' }
+  ];
+  // 
+  selectedMonth: string;
+  selectedYear: string;
+  // 
+  constructor(private dashboardService:DashboardService){
+    const currentMonth = new Date().getMonth();
+    this.selectedMonth = this.months[currentMonth].value;
+    this.selectedYear = new Date().getFullYear().toString();
+    this.getDataForHome(this.selectedMonth);
+    this.getTopDoctors(this.selectedMonth);
+    this.getMedicalServices();
+  }
+  getDataForHome(month:string){
+    this.dashboardService.getHome(month).subscribe((res:Home)=>{
+      this.home = res.results;
+      console.log('Home : ',this.home);
+      this.updateChart();
+    })
+  }
+  getTopDoctors(month:string){
+    this.dashboardService.getTopDoctors(month).subscribe((res:any)=>{
+      this.topDoctors = res;
+      console.log('Top Doctors : ',this.topDoctors);
+      this.updateChart();
+    })
+  }
+  getMedicalServices(){
+    this.dashboardService.getMedicalServices().subscribe((res:any)=>{
+      this.medicalServices = res;
+      console.log('Medical Services : ',this.medicalServices);
+      this.updateChart();
+    })
+  }
+  onMonthChange(event: any) {
+    this.selectedMonth = event.target.value;
+    this.getDataForHome(this.selectedMonth);
+    this.getTopDoctors(this.selectedMonth);
+  }
   
-  appointmentNumsChart = new Chart({ 
-    chart: {
-      type: 'areaspline',
-      renderTo: 'appointments-line',
-      style: {
-        fontFamily: 'Tajawal'
-      }
-    },
-    title: {
-      text: 'أعداد الحجوزات',
-      align: 'right',
-      margin:0,
-      style:{
-        fontFamily:"Tajawal",
-        fontSize: '20px',
-        fontWeight: 'bold',
-        color:'Black'
-      }
-    },
-    subtitle: {
-      text: 'مقارنة بين الشهر الحالي والماضي',
-      align: 'right',
-      style:{
-        fontFamily:"Tajawal",
-        fontSize: '16px',
-        fontWeight: '500',
-        color:'#7C8FAC',
-      }
-    },
-    xAxis: {
-      categories: ['10/04', '13/04', '16/04', '19/04', '22/04', '25/04', '28/04'],
-      reversed: true
-    },
-    yAxis: {
-      title: { text: '' }
-    },
-    tooltip: {
-      shared: true
-    },
-    plotOptions: {
-      areaspline: {
-        fillOpacity: 0.3
-      }
-    },
-    series: [
-      {
-        name: 'الشهر الحالي',
-        data: [45, 80, 65, 90, 60, 70, 100],
+  updateChart() {
+    const currentMonth = this.home.currentMonthAppointments;
+    const previousMonth = this.home.previousMonthAppointments;
+    const categories = Object.keys(currentMonth)
+    const currentMonthData = categories.map((date) => currentMonth[date]);
+    const previousMonthData = Object.keys(previousMonth)
+      .map((date) => previousMonth[date]);
+    // 
+    const completedAppointmentsRate = this.home.completedAppointmentsRate;
+    // 
+    const topDoctorsData = this.topDoctors[0]?.topDoctors || [];
+    const seriesData = topDoctorsData.map(doctor => {
+      return {
+        name: doctor.doctorName,
+        type: 'bar',
+        data: [
+          doctor.weeklyActivityCounts['Week 1'] || 0,
+          doctor.weeklyActivityCounts['Week 2'] || 0,
+          doctor.weeklyActivityCounts['Week 3'] || 0,
+          doctor.weeklyActivityCounts['Week 4'] || 0
+        ],
+        color: this.getRandomColor()
+      };
+    });
+    const doctorColors = ['#D94A91', '#435AA0', '#70A1FF'];
+    // 
+    const medicalServicesData  = this.medicalServices || [];
+    const servicesArray = Object.keys(medicalServicesData).map(key => ({
+      name: key,
+      value: medicalServicesData[key]
+    }));
+    servicesArray.sort((a, b) => b.value - a.value);
+    const serviceCategories = servicesArray.map(service => service.name);
+    const serviceData = servicesArray.map(service => service.value);
+
+
+    this.appointmentNumsChart = new Chart({
+      chart: {
         type: 'areaspline',
-        color: '#3D5DA7'
-      },
-      {
-        name: 'الشهر الماضي',
-        data: [30, 40, 35, 55, 45, 50, 75],
-        type: 'areaspline',
-        color: '#ED3B93'
-      }
-    ],
-    legend: {
-      events: {
-        itemClick: function (event) {
-          return false;
+        renderTo: 'appointments-line',
+        style: {
+          fontFamily: 'Tajawal',
         },
       },
-    },
-    credits: {
-      enabled: false
-    }
-  });
+      title: {
+        text: '',
+        
+      },
+      subtitle: {
+        text: ' ',
+        
+      },
+      xAxis: {
+        categories: categories.reverse(), 
+        reversed: true,
+      },
+      yAxis: {
+        title: { text: '' },
+      },
+      tooltip: {
+        shared: true,
+      },
+      plotOptions: {
+        areaspline: {
+          fillOpacity: 0.3,
+        },
+      },
+      series: [
+        {
+          name: 'الشهر الحالي',
+          data: currentMonthData.reverse(),
+          type: 'areaspline',
+          color: '#3D5DA7',
+        },
+        {
+          name: 'الشهر الماضي',
+          data: previousMonthData.reverse(),
+          type: 'areaspline',
+          color: '#ED3B93',
+        },
+      ],
+      legend: {
+        events: {
+          itemClick: function (event) {
+            return false; 
+          },
+        },
+      },
+      credits: {
+        enabled: false,
+      },
+    });
 
-  completedAppsChart = new Chart({
-    chart: {
+    this.completedAppsChart = new Chart({
+      chart: {
         type: 'pie',
         renderTo: 'appointments-donut',
         backgroundColor: 'transparent',
     },
     title: {
-        text: 'المواعيد المنجزة',
-        align: 'center',
-        verticalAlign: 'top',
-        style: {
-            fontSize: '23px',
-            fontWeight: 'bold',
-            fontFamily: 'Tajawal, sans-serif',
-            color: 'Black',
-        }
+        text: '',
+        
     },
     subtitle: {
-        text: '<span style="font-size: 40px; font-weight: bold; color: #5A6A85; font-family: Roboto, sans-serif;">77%</span>',
+        text: '<span style="font-size: 40px; font-weight: bold; color: #5A6A85; font-family: Roboto, sans-serif;">' + completedAppointmentsRate + '%</span>',
         floating: true,
         useHTML: true,
         align: 'center',
@@ -133,12 +211,12 @@ export class HomeComponent {
         data: [
             {
                 name: 'تم إنجازها',
-                y: 77,
+                y: completedAppointmentsRate,
                 color: '#3D5DA7'
             },
             {
                 name: 'لم يتم إنجازها',
-                y: 23,
+                y: 100 - completedAppointmentsRate,
                 color: '#ED3B93'
             }
         ]
@@ -151,202 +229,173 @@ export class HomeComponent {
         },
       },
     }
-  });
+    })
 
-  doctorsChart = new Chart({
-    chart: {
-      type: 'bar',
-      renderTo: 'doctors-stacked-bar',
-      backgroundColor: 'transparent'
-    },
-    title: {
-      text: 'أفضل الأطباء',
-      align: 'right',
-      style: {
-        fontSize: '20px',
-        fontWeight: 'bold',
-        fontFamily: 'Tajawal, sans-serif',
-        color: 'Black',
-      }
-    },
-    subtitle:{
-      text: 'عدد الحالات اللتي أنجزها الطبيب',
-      align: 'right',
-      style:{
-        fontSize: '16px',
-        fontWeight: 'bold',
-        fontFamily: 'Tajawal, sans-serif',
-        color: '#7C8FAC',
-      }
-    },
-    xAxis: {
-      categories: ['الأسبوع الأول', 'الأسبوع الثاني', 'الأسبوع الثالث', 'الأسبوع الرابع'],
-      title: { text: null },
-      labels: {
-        style: {
-          fontFamily: 'Tajawal, sans-serif'
-        }
-      }
-    },
-    yAxis: {
-      min: 0,
+    this.doctorsChart = new Chart({
+      chart: {
+        type: 'bar',
+        renderTo: 'doctors-stacked-bar',
+        backgroundColor: 'transparent'
+      },
       title: {
         text: '',
-        align: 'high'
       },
-      labels: {
-        overflow: 'justify',
-        style: {
-          fontFamily: 'Tajawal, sans-serif'
-        }
-      }
-    },
-    tooltip: {
-      shared: true,
-      valueSuffix: 'مرضى'
-    },
-    plotOptions: {
-      series: {
-        stacking: 'normal'
+      subtitle: {
+        text: '',
       },
-      bar: {
-        pointWidth: 35,
-        dataLabels: {
-          enabled: true,
+      xAxis: {
+        categories: ['الأسبوع الأول', 'الأسبوع الثاني', 'الأسبوع الثالث', 'الأسبوع الرابع'],
+        title: { text: null },
+        labels: {
           style: {
-            fontFamily: 'Tajawal, sans-serif',
-            color: '#fff',
-            fontSize: '16px'
+            fontFamily: 'Tajawal, sans-serif'
           }
         }
-      }
-    },
-    legend: {
-      layout: 'horizontal',
-      align: 'center',
-      verticalAlign: 'bottom',
-      itemStyle: {
-        fontFamily: 'Tajawal, sans-serif',
-        fontSize: '16px',
-        color: '#7C8FAC'
       },
-      events: {
-        itemClick: function (event) {
-          return false;
+      yAxis: {
+        min: 0,
+        title: {
+          text: '',
+          align: 'high'
+        },
+        labels: {
+          overflow: 'justify',
+          style: {
+            fontFamily: 'Tajawal, sans-serif'
+          }
+        }
+      },
+      tooltip: {
+        shared: true,
+        valueSuffix: 'مرضى'
+      },
+      plotOptions: {
+        series: {
+          stacking: 'normal'
+        },
+        bar: {
+          pointWidth: 35,
+          dataLabels: {
+            enabled: true,
+            style: {
+              fontFamily: 'Tajawal, sans-serif',
+              color: '#fff',
+              fontSize: '16px'
+            }
+          }
+        }
+      },
+      legend: {
+        layout: 'horizontal',
+        align: 'center',
+        verticalAlign: 'bottom',
+        itemStyle: {
+          fontFamily: 'Tajawal, sans-serif',
+          fontSize: '16px',
+          color: '#7C8FAC'
+        },
+        events: {
+          itemClick: function (event) {
+            return false;
+          },
         },
       },
-    },
-    credits: {
-      enabled: false
-    },
-    
-    series: [
-      {
-        name: 'د. أحمد',
-        type: 'bar',
-        data: [5, 7, 6, 5],
-        color: '#D94A91',
-        
+      credits: {
+        enabled: false
       },
-      {
-        name: 'د. ندى',
+      series: topDoctorsData.map((doctor, index) => ({
+        name: doctor.doctorName,
         type: 'bar',
-        data: [3, 5, 4, 6],
-        color: '#435AA0'
-      },
-      {
-        name: 'د. سالم',
-        type: 'bar',
-        data: [7, 3, 5, 4],
-        color: '#70A1FF'
-      }
-    ]
-  });
+        data: [
+          doctor.weeklyActivityCounts['Week 1'] || 0,
+          doctor.weeklyActivityCounts['Week 2'] || 0,
+          doctor.weeklyActivityCounts['Week 3'] || 0,
+          doctor.weeklyActivityCounts['Week 4'] || 0
+        ],
+        color: doctorColors[index] || this.getRandomColor()
+      }))
+    });
 
-  clinicChart = new Chart({
-    chart: {
-      type: 'column'
-    },
-    title: {
-      text: 'توزيع ضغط الحجوزات',
-      align: 'right',
-      style:{
-        fontFamily:"Tajawal",
-        fontSize: '20px',
-        fontWeight: 'bold',
-        color:'Black'
-      }
-    },
-    subtitle:{
-      text: 'في هذا القسم يتم حساب ضغط الحجوزات على مدار الشهر الحالى على خدماتك الطبية ',
-      align: 'right',
-      style:{
-        fontSize: '16px',
-        fontWeight: '500',
-        fontFamily: 'Tajawal, sans-serif',
-        color:'#7C8FAC',
-      }
-    },
-    xAxis: {
-      categories: [
-        'العظام',
-        'الباطنة',
-        'الجلدية',
-        'الأسنان',
-        'القلب',
-        'النساء',
-        'الأطفال',
-        'تحاليل دم',
-        'تحاليل بول',
-        'أشعة سينية',
-        'أشعة رنين',
-        'عيادة تغذية'
-      ],
-      labels:{
-        style: {
-          fontFamily: 'Tajawal, sans-serif',
-          color:"#A1A7C4",
-          fontSize:'12px',
-          fontWeight:'500'
-        }
-      }
-    },
-    yAxis: {
-      min: 0,
-      labels:{
-        style: {
-          fontFamily: 'Tajawal, sans-serif',
-          color:"#A1A7C4",
-          fontSize:'12px',
-          fontWeight:'500'
-        }
+    this.clinicChart = new Chart({
+      chart: {
+        type: 'column'
       },
       title: {
-        text: ''
+        text: 'توزيع ضغط الحجوزات',
+        align: 'right',
+        style: {
+          fontFamily: "Tajawal",
+          fontSize: '20px',
+          fontWeight: 'bold',
+          color: 'Black'
+        }
+      },
+      subtitle: {
+        text: 'في هذا القسم يتم حساب ضغط الحجوزات على مدار الشهر الحالى على خدماتك الطبية',
+        align: 'right',
+        style: {
+          fontSize: '16px',
+          fontWeight: '500',
+          fontFamily: 'Tajawal, sans-serif',
+          color: '#7C8FAC',
+        }
+      },
+      xAxis: {
+        categories: serviceCategories, // Use dynamic categories from API
+        labels: {
+          style: {
+            fontFamily: 'Tajawal, sans-serif',
+            color: "#A1A7C4",
+            fontSize: '12px',
+            fontWeight: '500'
+          }
+        }
+      },
+      yAxis: {
+        min: 0,
+        labels: {
+          style: {
+            fontFamily: 'Tajawal, sans-serif',
+            color: "#A1A7C4",
+            fontSize: '12px',
+            fontWeight: '500'
+          }
+        },
+        title: {
+          text: ''
+        }
+      },
+      tooltip: {
+        pointFormat: 'عدد الحجوزات: <b>{point.y}</b>'
+      },
+      plotOptions: {
+        column: {
+          borderRadius: 8,
+          pointPadding: 0.2,
+          borderWidth: 0
+        }
+      },
+      series: [{
+        name: 'الحجوزات',
+        type: 'column',
+        data: serviceData, // Use dynamic data from API
+        color: '#435AA0',
+      }],
+      legend: {
+        enabled: false
+      },
+      credits: {
+        enabled: false
       }
-    },
-    tooltip: {
-      pointFormat: 'عدد الحجوزات: <b>{point.y}</b>'
-    },
-    plotOptions: {
-      column: {
-        borderRadius: 8,
-        pointPadding: 0.2,
-        borderWidth: 0
-      }
-    },
-    series: [{
-      name: 'الحجوزات',
-      type: 'column',
-      data: [320, 250, 180, 440, 350, 270, 190, 220, 180, 300, 280, 240],
-      color: '#435AA0',
-      
-    }],
-    legend: {
-      enabled:false
-    },
-    credits: {
-      enabled: false
+    });
+  }
+
+  getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
     }
-  });
+    return color;
+  }
 }

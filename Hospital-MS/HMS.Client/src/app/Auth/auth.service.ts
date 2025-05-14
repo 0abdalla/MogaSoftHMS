@@ -15,10 +15,11 @@ export class AuthService {
   login(data: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}Auth/Login`, data).pipe(
       tap(response => {
-       sessionStorage.setItem('userId', response.results.userId);
+        sessionStorage.setItem('userId', response.results.userId);
         sessionStorage.setItem('token', response.results.token);
         sessionStorage.setItem('firstName', response.results.firstName);
         sessionStorage.setItem('lastName', response.results.lastName);
+        sessionStorage.setItem('role', response.results.role);
       })
     );
   }
@@ -33,21 +34,18 @@ export class AuthService {
   }
 
   logout(): void {
-    sessionStorage.removeItem('userId');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('firstName');
-    sessionStorage.removeItem('lastName');
+    sessionStorage.clear();
   }
   getToken(): string | null {
     return sessionStorage.getItem('token');
   }
 
   isInRole(roles: string[]): boolean {
-    let userModel = JSON.parse(localStorage.getItem('UserModel'));
-    if (!userModel)
+    let role = sessionStorage.getItem('role');
+    if (!role)
       return false;
 
-    let ckeckRole = roles.some(i => i == userModel?.role);
+    let ckeckRole = roles.some(i => i == role);
     return ckeckRole;
   }
 }

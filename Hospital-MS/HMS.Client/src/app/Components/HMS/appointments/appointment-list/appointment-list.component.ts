@@ -217,9 +217,10 @@ export class AppointmentListComponent implements OnInit {
   deleteAppointment(id:number){
     this.appointmentService.deleteAppointment(id).subscribe({
       next: (data) => {
-        this.messageService.add({ severity: 'success', summary: 'تم الإلغاء', detail: 'تم الإلغاء بنجاح' });
         this.getPatients();
         this.getCounts();
+        this.openAppointmentModal(id);
+        this.messageService.add({ severity: 'success', summary: 'تم الإلغاء', detail: 'تم الإلغاء بنجاح' });
         this.sharedService.closeModal('deleteAppointmentModal');
       },
       error: (err) => {

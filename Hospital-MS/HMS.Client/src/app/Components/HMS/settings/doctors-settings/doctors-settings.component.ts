@@ -13,6 +13,7 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 export class DoctorsSettingsComponent implements OnInit {
   departments!: any;
   clinics!: any;
+  jobLevels!:any;
   doctorForm!: FormGroup;
   // 
   services!:any;
@@ -36,11 +37,12 @@ export class DoctorsSettingsComponent implements OnInit {
     private doctorService: StaffService
   ) {
     const minBirthDate = new Date(1920, 0, 1);
+    const maxBirthDate = new Date();
     this.doctorForm = this.fb.group({
       FullName: ['', Validators.required],
       NationalId: ['', [Validators.required , Validators.pattern(/^[0-9]{14}$/)]],
       Gender: ['', Validators.required],
-      DateOfBirth: ['', [Validators.required, this.minDateValidator(minBirthDate)]],
+      DateOfBirth: ['', [Validators.required, this.minDateValidator(minBirthDate), this.maxDateValidator(maxBirthDate)]],
       MaritalStatus: ['', Validators.required],
       Phone: ['', [Validators.required , Validators.pattern(/^01[0125][0-9]{8}$/)]],
       Email: ['', [Validators.required, Validators.email]],
@@ -59,6 +61,7 @@ export class DoctorsSettingsComponent implements OnInit {
     this.getDepartments();
     this.addSchedule();
     this.getServices();
+    this.getJobLevels();
   }
 
   getClinics() {
@@ -89,13 +92,25 @@ export class DoctorsSettingsComponent implements OnInit {
   
     this.appointmentService.getServices(1, 100, '', filterParams).subscribe({
       next: (data) => {
-        this.services = data.results.filter((service:any) => service.serviceType !== 'Radiology' && service.serviceType !== 'Screening') || [];
+        this.services = data.results.filter((service:any) => service.type !== 'Radiology' && service.type !== 'Screening') || [];
         console.log('Services', this.services);
       },
       error: (err) => {
         console.log(err);
         this.services = [];
       }
+    });
+  }
+
+  getJobLevels() {
+    this.doctorService.getJobLevels('', 1, 100, []).subscribe({
+      next: (data:any) => {
+        this.jobLevels = data.results;
+        console.log('Job Levels', this.jobLevels);
+      },
+      error: (error) => {
+        console.error(error);
+      },
     });
   }
 
@@ -298,6 +313,18 @@ export class DoctorsSettingsComponent implements OnInit {
       const inputDate = new Date(control.value);
       if (inputDate < minDate) {
         return { minDate: { value: control.value } };
+      }
+      return null;
+    };
+  }
+  maxDateValidator(maxDate: Date): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value) {
+        return null;
+      }
+      const inputDate = new Date(control.value);
+      if (inputDate > maxDate) {
+        return { maxDate: { value: control.value } };
       }
       return null;
     };
