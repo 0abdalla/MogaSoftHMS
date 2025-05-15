@@ -48,10 +48,8 @@ export class InsuranceListComponent implements OnInit {
     this.insuranceService.getAllInsurances().subscribe({
       next: (res: any) => {
         this.insurnaces = res.results;
-        console.log(this.insurnaces);
       },
       error: (err) => {
-        console.log(err);
       }
     })
   }
@@ -59,10 +57,8 @@ export class InsuranceListComponent implements OnInit {
     this.insuranceService.getInsuranceById(id).subscribe({
       next: (res: any) => {
         this.selectedInsurance = res.results;
-        console.log(this.selectedInsurance);
       },
       error: (err) => {
-        console.log(err);
       }
     })
   }

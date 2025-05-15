@@ -3,17 +3,17 @@
     <div class="container-fluid">
         <div class="row mt-4">
             <div class="col-lg-2" *ngFor="let status of patientServices">
-              <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
-                <h4>{{ status.name }}</h4>
-                <p class="mt-0">{{ status.count }} مريض</p>
-                <div class="percentage d-flex align-items-center justify-content-center gap-1">
-                  <p class="m-0">12%</p>
-                  <i class="fa-regular fa-circle-arrow-up"></i>
+                <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
+                    <h4>{{ status.name }}</h4>
+                    <p class="mt-0">{{ status.count }} مريض</p>
+                    <div class="percentage d-flex align-items-center justify-content-center gap-1">
+                        <p class="m-0">12%</p>
+                        <i class="fa-regular fa-circle-arrow-up"></i>
+                    </div>
+                    <img [src]="status.img" alt="" class="vector" />
                 </div>
-                <img [src]="status.img" alt="" class="vector" />
-              </div>
             </div>
-          </div>
+        </div>
 
         <div class="card mt-3 p-2">
             <div class="p-3 mt-4">
@@ -56,27 +56,23 @@
                     </tr>
                 </thead>
                 <tbody *ngIf="patients?.length > 0">
-                    <tr *ngFor="let appointment of patients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" 
-                        [ngClass]="{'canceled-row': appointment.status === 'ملغي'}"
-                        (click)="openAppointmentModal(appointment.id)" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#bookingDetailsModal"
-                        style="cursor: pointer; background-color: red !important;">
-                      <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                          <div class="avatar-circle">{{ appointment.patientName.charAt(0) }}</div>
-                          <span class="fw-bold">{{ appointment.patientName }}</span>
-                        </div>
-                      </td>
-                      <td class="text-secondary fw-semibold">{{ appointment.medicalServiceName || 'طوارئ' }}</td>
-                      <td>
-                        <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
-                          {{ getServiceName(appointment.type) }}
-                        </p>
-                      </td>
-                      <td class="text-secondary">{{ appointment.id }}</td>
+                    <tr *ngFor="let appointment of patients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" [ngClass]="{'canceled-row': appointment.status === 'ملغي'}" (click)="openAppointmentModal(appointment.id)"
+                        data-bs-toggle="modal" data-bs-target="#bookingDetailsModal" style="cursor: pointer; background-color: red !important;">
+                        <td>
+                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                                <div class="avatar-circle">{{ appointment.patientName.charAt(0) }}</div>
+                                <span class="fw-bold">{{ appointment.patientName }}</span>
+                            </div>
+                        </td>
+                        <td class="text-secondary fw-semibold">{{ appointment.medicalServiceName || 'طوارئ' }}</td>
+                        <td>
+                            <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
+                                {{ getServiceName(appointment.type) }}
+                            </p>
+                        </td>
+                        <td class="text-secondary">{{ appointment.id }}</td>
                     </tr>
-                  </tbody>
+                </tbody>
                 <tbody *ngIf="patients?.length === 0">
                     <tr>
                         <td colspan="5" class="text-center text-muted">لا توجد حجوزات حتى الان</td>

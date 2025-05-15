@@ -58,21 +58,18 @@ export class HomeComponent {
   getDataForHome(month:string){
     this.dashboardService.getHome(month).subscribe((res:Home)=>{
       this.home = res.results;
-      console.log('Home : ',this.home);
       this.updateChart();
     })
   }
   getTopDoctors(month:string){
     this.dashboardService.getTopDoctors(month).subscribe((res:any)=>{
       this.topDoctors = res;
-      console.log('Top Doctors : ',this.topDoctors);
       this.updateChart();
     })
   }
   getMedicalServices(){
     this.dashboardService.getMedicalServices().subscribe((res:any)=>{
       this.medicalServices = res;
-      console.log('Medical Services : ',this.medicalServices);
       this.updateChart();
     })
   }

@@ -93,10 +93,8 @@ export class DoctorsSettingsComponent implements OnInit {
     this.appointmentService.getServices(1, 100, '', filterParams).subscribe({
       next: (data) => {
         this.services = data.results.filter((service:any) => service.type !== 'Radiology' && service.type !== 'Screening') || [];
-        console.log('Services', this.services);
       },
       error: (err) => {
-        console.log(err);
         this.services = [];
       }
     });
@@ -106,7 +104,6 @@ export class DoctorsSettingsComponent implements OnInit {
     this.doctorService.getJobLevels('', 1, 100, []).subscribe({
       next: (data:any) => {
         this.jobLevels = data.results;
-        console.log('Job Levels', this.jobLevels);
       },
       error: (error) => {
         console.error(error);
@@ -197,8 +194,6 @@ export class DoctorsSettingsComponent implements OnInit {
 
       this.doctorService.postDoctor(formData).subscribe({
         next: (res) => {
-          console.log('Doctor added successfully', res);
-          console.log('Data Sent:', this.doctorForm.value);
   
           this.messageService.add({
             severity: 'success',
@@ -216,7 +211,6 @@ export class DoctorsSettingsComponent implements OnInit {
             summary: 'حدث خطأ',
             detail: 'حدث خطأ في تسجيل البيانات',
           });
-          console.log('Form Value:', this.doctorForm.value);
         },
       });
     } else {

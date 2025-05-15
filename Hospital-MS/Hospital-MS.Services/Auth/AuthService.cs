@@ -1,12 +1,18 @@
 ﻿
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Auth;
+using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Auth;
+using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.Text;
 
 namespace Hospital_MS.Services.Auth
@@ -14,11 +20,14 @@ namespace Hospital_MS.Services.Auth
     public class AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        IJwtProvider jwtProvider) : IAuthService
+        IJwtProvider jwtProvider, ISQLHelper _sQLHelper,
+        RoleManager<IdentityRole> _roleManager) : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
+        private readonly ISQLHelper sQLHelper = _sQLHelper;
+        private readonly RoleManager<IdentityRole> roleManager = _roleManager;
 
         public async Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
@@ -35,6 +44,16 @@ namespace Hospital_MS.Services.Auth
 
                 await _userManager.UpdateAsync(user);
 
+                string roleId = null;
+
+                if (!string.IsNullOrEmpty(roles.FirstOrDefault()))
+                {
+                    var role = await _roleManager.FindByNameAsync(roles?.FirstOrDefault());
+                    roleId = role?.Id;
+                }
+
+                var Pages = GetPagesByRoleId(roleId);
+
                 var response = new AuthResponse(
                     user.Id,
                     user.Email!,
@@ -46,7 +65,8 @@ namespace Hospital_MS.Services.Auth
                     user.UserName!,
                     token,
                     expiresIn,
-                    roles.FirstOrDefault() 
+                    roles.FirstOrDefault(),
+                    Pages.Select(i => i.PageName).ToList()
                 );
 
                 return ErrorResponseModel<AuthResponse>.Success(GenericErrors.SuccessLogin, response);
@@ -71,7 +91,7 @@ namespace Hospital_MS.Services.Auth
                 //UserName = request.FirstName+" "+request.LastName,
                 UserName = request.UserName,
                 IsActive = true,
-               
+
             };
 
             //user.UserName = request.Email;
@@ -86,6 +106,14 @@ namespace Hospital_MS.Services.Auth
             var error = result.Errors.First();
 
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+
+        public List<RolePages> GetPagesByRoleId(string RoleId)
+        {
+            var Params = new SqlParameter[1];
+            Params[0] = new SqlParameter("@RoleId", RoleId);
+            var dt = _sQLHelper.SQLQuery<RolePages>("[dbo].[SP_GetPagesByRoleId]", Params);
+            return dt;
         }
     }
 }

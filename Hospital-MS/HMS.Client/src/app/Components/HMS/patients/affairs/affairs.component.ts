@@ -40,7 +40,6 @@ export class AffairsComponent {
     this.filteredPatients = this.patients.filter((patient) => {
       const matchesName = name ? patient.name.includes(name) : true;
       const matchesStatus = status ? patient.status === status : true;
-      console.log('work')
       return matchesName && matchesStatus;
     });
   }

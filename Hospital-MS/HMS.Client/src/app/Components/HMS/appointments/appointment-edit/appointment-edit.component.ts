@@ -165,7 +165,6 @@ export class AppointmentEditComponent {
       this.reservationForm.get('doctorId')?.reset();
       this.selectedServicePrice = selectedService ? selectedService.price : null;
       this.showServicePrice = true;
-      console.log('Selected Service', selectedService);
       
     } else {
       this.filteredDoctorsByService = [];
@@ -179,10 +178,8 @@ export class AppointmentEditComponent {
       next: (data) => {
         this.services = data.results || [];
         this.filteredServices = this.services;
-        console.log('Services', this.services);
       },
       error: (err) => {
-        console.log(err);
         this.services = [];
         this.filteredServices = [];
       }
@@ -194,10 +191,8 @@ export class AppointmentEditComponent {
       next: (data) => {
         this.doctors = data.results;
         this.filteredDoctors = this.doctors
-        console.log('Doctors',this.doctors);
       },
       error: (err) => {
-        console.log(err);
       }
     });
   }
@@ -208,7 +203,6 @@ export class AppointmentEditComponent {
         this.insuranceCompanies = data.results;
       },
       error: (err) => {
-        console.log(err);
       }
     });
   }
@@ -216,7 +210,6 @@ export class AppointmentEditComponent {
   getAppointmentById() {
     this.appointmentService.getAppointmentById(this.appointmentId).subscribe((res: any) => {
       const appointmentData = res.results;
-      console.log('Appointment Data', appointmentData);
       if (!this.filteredServices) {
         this.filteredServices = [];
       }
@@ -243,7 +236,6 @@ export class AppointmentEditComponent {
       this.selectedServicePrice = appointmentData.medicalServicePrice;
       this.showServicePrice = !!appointmentData.medicalServicePrice;
   
-      console.log('Patched Form Value:', this.reservationForm.value);
     });
   }
   
@@ -269,14 +261,11 @@ export class AppointmentEditComponent {
   }
   onSubmit(){
     const formData = this.reservationForm.value;
-    console.log('Form Data:', formData);
     this.appointmentService.editAppointment(this.appointmentId, formData).subscribe({
       next: (data) => {
-        console.log('Appointment Updated:', data);
         this.messageService.add({ severity: 'success', summary: 'تم تحديث الحجز', detail: 'تم تحديث الحجز بنجاح' });
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({ severity: 'error', summary: 'فشل تحديث الحجز', detail: 'حدث خطأ أثناء تحديث الحجز' });
       }
     });

@@ -12,15 +12,15 @@ import { StaffLevelsComponent } from './staff-levels/staff-levels.component';
 
 const routes: Routes = [
   { path: '', redirectTo : 'list' , pathMatch:"full" },
-  { path: 'list' , component : StaffListComponent, canActivate: [authGuard]},
-  { path: 'detail/:id', component: StaffDetailComponent, canActivate: [authGuard] },
-  { path: 'add', component: StaffFormComponent, canActivate: [authGuard] },
-  { path: 'edit/:id', component: StaffFormComponent, canActivate: [authGuard] },
+  { path: 'list' , component : StaffListComponent, canActivate: [authGuard], data: { pageName: 'staff-list' } },
+  { path: 'detail/:id', component: StaffDetailComponent, canActivate: [authGuard], data: { pageName: 'staff-list' } },
+  { path: 'add', component: StaffFormComponent, canActivate: [authGuard], data: { pageName: 'staff-add' } },
+  { path: 'edit/:id', component: StaffFormComponent, canActivate: [authGuard], data: { pageName: 'staff-add' } },
   { path: 'progression' , component:StaffProgressionManagmentComponent , canActivate: [authGuard] },
-  { path: 'classification' , component : StaffClassManagmentComponent , canActivate:[authGuard]},
-  { path: 'department-admin' , component:StaffDepManagmentComponent , canActivate:[authGuard]},
-  { path: 'job-management' , component:StaffJobManagementComponent , canActivate:[authGuard]},
-  { path: 'job-levels' , component:StaffLevelsComponent , canActivate:[authGuard]}
+  { path: 'classification' , component : StaffClassManagmentComponent , canActivate:[authGuard], data: { pageName: 'classification' } },
+  { path: 'department-admin' , component:StaffDepManagmentComponent , canActivate:[authGuard], data: { pageName: 'department-admin' } },
+  { path: 'job-management' , component:StaffJobManagementComponent , canActivate:[authGuard], data: { pageName: 'job-management' } },
+  { path: 'job-levels' , component:StaffLevelsComponent , canActivate:[authGuard] },
 ];
 
 @NgModule({

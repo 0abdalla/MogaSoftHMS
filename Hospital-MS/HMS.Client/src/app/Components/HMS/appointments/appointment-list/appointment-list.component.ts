@@ -60,8 +60,35 @@ export class AppointmentListComponent implements OnInit {
     const serviceObj = this.patientServices.find((s) => s.name === type);
     return serviceObj ? serviceObj.back : '#000';
   }
+
   print() {
-    window.print();
+    const printContent = document.getElementById('pdfContent');
+    if (!printContent) return;
+
+    const content = printContent.outerHTML;
+    const printWindow = window.open('', '', 'width=800,height=600');
+    if (!printWindow) return;
+
+    printWindow.document.open();
+    printWindow.document.write(`
+    <html dir="rtl">
+      <head>
+        <title>تفاصيل الحجز</title>
+        <style>
+          body { font-family: Arial; padding: 20px; direction: rtl; }
+          .strong { font-weight: bold; }
+          .span { margin-right: 5px; }
+        </style>
+      </head>
+      <body>${content}</body>
+    </html>
+  `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.onafterprint = () => {
+      printWindow.close();
+    };
+    printWindow.print();
   }
 
   exportToPDF() {
@@ -83,11 +110,9 @@ export class AppointmentListComponent implements OnInit {
       next: (data) => {
         this.patients = data.results;
         this.total = data.totalCount;
-        console.log(this.patients);
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء جلب البيانات' });
       }
     });
@@ -106,7 +131,7 @@ export class AppointmentListComponent implements OnInit {
   }
 
   SearchTextChange() {
-    if(this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
+    if (this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
       this.pagingFilterModel.searchText = this.filterForm.value.Search;
       this.pagingFilterModel.currentPage = 1;
       this.getPatients();
@@ -131,7 +156,6 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getAppointmentById(id).subscribe({
       next: (data) => {
         this.selectedAppointment = data.results;
-        console.log(this.selectedAppointment);
       },
       error: (err) => {
         console.error('Failed to fetch appointment', err);
@@ -171,11 +195,9 @@ export class AppointmentListComponent implements OnInit {
             img: imgPath
           };
         });
-        console.log(this.patientServices);
-        
+
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء جلب البيانات' });
       }
     });
@@ -214,7 +236,7 @@ export class AppointmentListComponent implements OnInit {
     return map[type] || type;
   }
   // 
-  deleteAppointment(id:number){
+  deleteAppointment(id: number) {
     this.appointmentService.deleteAppointment(id).subscribe({
       next: (data) => {
         this.getPatients();
@@ -224,7 +246,6 @@ export class AppointmentListComponent implements OnInit {
         this.sharedService.closeModal('deleteAppointmentModal');
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء الإلغاء' });
       }
     });

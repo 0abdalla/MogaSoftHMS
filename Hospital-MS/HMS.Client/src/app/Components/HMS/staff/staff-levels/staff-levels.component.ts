@@ -47,7 +47,6 @@ export class StaffLevelsComponent implements OnInit {
   getJobLevels(){
     this.staffService.getJobLevels( this.pagingFilterModel.searchText ,this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.pagingFilterModel.filterList).subscribe((res:any)=>{
       this.jobLevels=res.results;
-      console.log(this.jobLevels);
       
     })
   }
@@ -67,10 +66,8 @@ export class StaffLevelsComponent implements OnInit {
       next:(res)=>{
         this.selectedJobLevel=res.results;
         this.jobLevelForm.patchValue(this.selectedJobLevel);
-        console.log(this.selectedJobLevel);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }
@@ -82,13 +79,11 @@ export class StaffLevelsComponent implements OnInit {
   addjobLevel(){
     this.staffService.addJobLevel(this.jobLevelForm.value).subscribe({
       next:(res)=>{
-        console.log(res);
         this.jobLevelForm.reset();
         this.getJobLevels();
         this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة المستوى بنجاح' });
       },
       error:(err)=>{
-        console.log(err);
         this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة المستوى' });
       }
     })
@@ -96,13 +91,11 @@ export class StaffLevelsComponent implements OnInit {
   editjobLevel(){
     this.staffService.updateJobLevel(this.selectedJobLevel.id,this.jobLevelForm.value).subscribe({
       next:(res)=>{
-        console.log(res);
         this.jobLevelForm.reset();
         this.getJobLevels();
         this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل المستوى بنجاح' });
       },
       error:(err)=>{
-        console.log(err);
         this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل المستوى' });
       }
     })

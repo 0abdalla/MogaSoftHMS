@@ -62,11 +62,7 @@ export class AppointmentsComponent {
 
   onSubmit(): void {
     if (this.admissionsForm.valid) {
-      console.log(this.admissionsForm.value);
-      console.log('Selected Attachments:', this.selectedAttachments);
-      console.log('Selected Scans and X-Rays:', this.selectedScansAndXRays);
     } else {
-      console.log('Form is invalid');
     }
   }
 }

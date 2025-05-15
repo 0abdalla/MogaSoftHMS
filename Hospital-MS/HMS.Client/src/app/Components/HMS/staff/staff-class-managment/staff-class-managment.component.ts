@@ -54,10 +54,8 @@ export class StaffClassManagmentComponent implements OnInit {
       next:(res)=>{
         this.jobTypes=res.results;
         this.total=res.totalCount;
-        console.log(this.jobTypes);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }
@@ -76,10 +74,8 @@ export class StaffClassManagmentComponent implements OnInit {
       next:(res)=>{
         this.selectedJobType=res.results;
         this.jobTypeForm.patchValue(this.selectedJobType);
-        console.log(this.selectedJobType);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }
@@ -91,13 +87,11 @@ export class StaffClassManagmentComponent implements OnInit {
   addJobType(){
     this.staffService.addJobType(this.jobTypeForm.value).subscribe({
       next:(res)=>{
-        console.log(res);
         this.jobTypeForm.reset();
         this.getTypes();
         this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة الفئة بنجاح' });
       },
       error:(err)=>{
-        console.log(err);
         this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة الفئة' });
       }
     })
@@ -107,11 +101,9 @@ export class StaffClassManagmentComponent implements OnInit {
       next:(res)=>{
         this.jobTypeForm.patchValue(res.results);
         this.getTypes();
-        console.log(res);
         this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل الفئة بنجاح' });
       },
       error:(err)=>{
-        console.log(err);
         this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل الفئة' });
       }
     })

@@ -125,38 +125,16 @@ namespace Hospital_MS.Services.HMS
             throw new NotImplementedException();
         }
 
-        //public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
-        //{
-        //    try
-        //    {
-        //        var Params = new SqlParameter[3];
-        //        Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
-        //        Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-        //        Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-        //        var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
-        //        int totalCount = 0;
-        //        if (dt.Rows.Count > 0)
-        //        {
-        //            int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
-        //        }
-
-        //        return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
-
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
-        //    }
-        //}
-
         public async Task<PagedResponseModel<List<AllDoctorsResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
             try
             {
-                var Params = new SqlParameter[3];
+                var Params = new SqlParameter[4];
+                var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemValue;
                 Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
                 Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
                 Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+                Params[3] = new SqlParameter("@Type", Type ?? (object)DBNull.Value);
 
                 var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
 

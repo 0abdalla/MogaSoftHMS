@@ -1,7 +1,6 @@
-<main id="apps">
+<!-- <main id="apps">
     <div class="container-fluid">
         <div class="row">
-            <!-- Patients -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">المرضى</h5>
@@ -14,9 +13,7 @@
                                     {{ permissions['patients_list'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['patients_list']"
-                                           (change)="updatePermission('patients_list')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['patients_list']" (change)="updatePermission('patients_list')">
                                 </div>
                             </div>
                         </div>
@@ -27,9 +24,7 @@
                                     {{ permissions['patients_add'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['patients_add']"
-                                           (change)="updatePermission('patients_add')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['patients_add']" (change)="updatePermission('patients_add')">
                                 </div>
                             </div>
                         </div>
@@ -37,7 +32,6 @@
                 </div>
             </div>
 
-            <!-- Appointments -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">الحجوزات</h5>
@@ -50,9 +44,7 @@
                                     {{ permissions['appointments_list'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['appointments_list']"
-                                           (change)="updatePermission('appointments_list')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['appointments_list']" (change)="updatePermission('appointments_list')">
                                 </div>
                             </div>
                         </div>
@@ -63,9 +55,7 @@
                                     {{ permissions['appointments_add'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['appointments_add']"
-                                           (change)="updatePermission('appointments_add')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['appointments_add']" (change)="updatePermission('appointments_add')">
                                 </div>
                             </div>
                         </div>
@@ -76,9 +66,7 @@
                                     {{ permissions['appointments_settings'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['appointments_settings']"
-                                           (change)="updatePermission('appointments_settings')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['appointments_settings']" (change)="updatePermission('appointments_settings')">
                                 </div>
                             </div>
                         </div>
@@ -86,7 +74,6 @@
                 </div>
             </div>
 
-            <!-- Emergency -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">الطوارئ</h5>
@@ -99,9 +86,7 @@
                                     {{ permissions['emergency_reception'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['emergency_reception']"
-                                           (change)="updatePermission('emergency_reception')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['emergency_reception']" (change)="updatePermission('emergency_reception')">
                                 </div>
                             </div>
                         </div>
@@ -109,7 +94,6 @@
                 </div>
             </div>
 
-            <!-- Insurance -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">وكلاء التأمين</h5>
@@ -122,9 +106,7 @@
                                     {{ permissions['insurance_list'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['insurance_list']"
-                                           (change)="updatePermission('insurance_list')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['insurance_list']" (change)="updatePermission('insurance_list')">
                                 </div>
                             </div>
                         </div>
@@ -135,9 +117,7 @@
                                     {{ permissions['insurance_add'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['insurance_add']"
-                                           (change)="updatePermission('insurance_add')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['insurance_add']" (change)="updatePermission('insurance_add')">
                                 </div>
                             </div>
                         </div>
@@ -145,7 +125,6 @@
                 </div>
             </div>
 
-            <!-- Finance -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">الحسابات</h5>
@@ -158,9 +137,7 @@
                                     {{ permissions['finance_accounts'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['finance_accounts']"
-                                           (change)="updatePermission('finance_accounts')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['finance_accounts']" (change)="updatePermission('finance_accounts')">
                                 </div>
                             </div>
                         </div>
@@ -171,9 +148,7 @@
                                     {{ permissions['finance_transactions'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['finance_transactions']"
-                                           (change)="updatePermission('finance_transactions')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['finance_transactions']" (change)="updatePermission('finance_transactions')">
                                 </div>
                             </div>
                         </div>
@@ -181,7 +156,6 @@
                 </div>
             </div>
 
-            <!-- Inventory -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">المشتريات</h5>
@@ -194,9 +168,7 @@
                                     {{ permissions['inventory_stock'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['inventory_stock']"
-                                           (change)="updatePermission('inventory_stock')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['inventory_stock']" (change)="updatePermission('inventory_stock')">
                                 </div>
                             </div>
                         </div>
@@ -207,9 +179,7 @@
                                     {{ permissions['inventory_purchases'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['inventory_purchases']"
-                                           (change)="updatePermission('inventory_purchases')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['inventory_purchases']" (change)="updatePermission('inventory_purchases')">
                                 </div>
                             </div>
                         </div>
@@ -217,7 +187,6 @@
                 </div>
             </div>
 
-            <!-- Staff -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">الموارد البشرية</h5>
@@ -230,9 +199,7 @@
                                     {{ permissions['staff_list'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['staff_list']"
-                                           (change)="updatePermission('staff_list')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['staff_list']" (change)="updatePermission('staff_list')">
                                 </div>
                             </div>
                         </div>
@@ -243,9 +210,7 @@
                                     {{ permissions['staff_add'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['staff_add']"
-                                           (change)="updatePermission('staff_add')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['staff_add']" (change)="updatePermission('staff_add')">
                                 </div>
                             </div>
                         </div>
@@ -256,9 +221,7 @@
                                     {{ permissions['staff_department'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['staff_department']"
-                                           (change)="updatePermission('staff_department')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['staff_department']" (change)="updatePermission('staff_department')">
                                 </div>
                             </div>
                         </div>
@@ -269,9 +232,7 @@
                                     {{ permissions['staff_job_levels'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['staff_job_levels']"
-                                           (change)="updatePermission('staff_job_levels')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['staff_job_levels']" (change)="updatePermission('staff_job_levels')">
                                 </div>
                             </div>
                         </div>
@@ -282,9 +243,7 @@
                                     {{ permissions['staff_classification'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['staff_classification']"
-                                           (change)="updatePermission('staff_classification')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['staff_classification']" (change)="updatePermission('staff_classification')">
                                 </div>
                             </div>
                         </div>
@@ -295,9 +254,7 @@
                                     {{ permissions['staff_job_management'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['staff_job_management']"
-                                           (change)="updatePermission('staff_job_management')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['staff_job_management']" (change)="updatePermission('staff_job_management')">
                                 </div>
                             </div>
                         </div>
@@ -305,7 +262,6 @@
                 </div>
             </div>
 
-            <!-- Reports -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">التقارير</h5>
@@ -318,9 +274,7 @@
                                     {{ permissions['reports_financial'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['reports_financial']"
-                                           (change)="updatePermission('reports_financial')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['reports_financial']" (change)="updatePermission('reports_financial')">
                                 </div>
                             </div>
                         </div>
@@ -331,9 +285,7 @@
                                     {{ permissions['reports_medical'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['reports_medical']"
-                                           (change)="updatePermission('reports_medical')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['reports_medical']" (change)="updatePermission('reports_medical')">
                                 </div>
                             </div>
                         </div>
@@ -341,7 +293,6 @@
                 </div>
             </div>
 
-            <!-- Settings -->
             <div class="col-lg-6 mb-3">
                 <div class="card">
                     <h5 class="m-0 p-2">الاعدادات</h5>
@@ -354,9 +305,7 @@
                                     {{ permissions['settings_general'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['settings_general']"
-                                           (change)="updatePermission('settings_general')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['settings_general']" (change)="updatePermission('settings_general')">
                                 </div>
                             </div>
                         </div>
@@ -367,9 +316,7 @@
                                     {{ permissions['settings_doctors_list'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['settings_doctors_list']"
-                                           (change)="updatePermission('settings_doctors_list')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['settings_doctors_list']" (change)="updatePermission('settings_doctors_list')">
                                 </div>
                             </div>
                         </div>
@@ -380,9 +327,7 @@
                                     {{ permissions['settings_doctors'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['settings_doctors']"
-                                           (change)="updatePermission('settings_doctors')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['settings_doctors']" (change)="updatePermission('settings_doctors')">
                                 </div>
                             </div>
                         </div>
@@ -393,9 +338,7 @@
                                     {{ permissions['settings_medical_services'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['settings_medical_services']"
-                                           (change)="updatePermission('settings_medical_services')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['settings_medical_services']" (change)="updatePermission('settings_medical_services')">
                                 </div>
                             </div>
                         </div>
@@ -406,9 +349,7 @@
                                     {{ permissions['settings_permissions'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['settings_permissions']"
-                                           (change)="updatePermission('settings_permissions')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['settings_permissions']" (change)="updatePermission('settings_permissions')">
                                 </div>
                             </div>
                         </div>
@@ -419,9 +360,7 @@
                                     {{ permissions['settings_apps_management'] ? 'تم التفعيل' : 'تم التعطيل' }}
                                 </span>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch"
-                                           [(ngModel)]="permissions['settings_apps_management']"
-                                           (change)="updatePermission('settings_apps_management')">
+                                    <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="permissions['settings_apps_management']" (change)="updatePermission('settings_apps_management')">
                                 </div>
                             </div>
                         </div>
@@ -430,4 +369,42 @@
             </div>
         </div>
     </div>
-</main>
+</main> -->
+
+
+<div class="row">
+    <div class="col-lg-6 mb-3">
+        <label for="patientGender" class="form-label">الصلاحيات</label>
+        <select id="patientGender" class="form-select shadow-none" [(ngModel)]="RoleId" (change)="GetPagesByRoleId()">
+            <option selected disabled value="">اختر صلاحية</option>
+            <option [value]="role.roleId" *ngFor="let role of Roles">{{role.roleNameAr}}</option>
+          </select>
+    </div>
+    <div class="col-lg-6 mt-4">
+        <button type="submit" class="btn-blue col-2" (click)="AssignRoleToPages()">إضافة</button>
+    </div>
+    <main id="apps">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6 mb-3" *ngFor="let app of Pages">
+                    <div class="card">
+                        <h5 class="m-0 p-2">{{ app.nameAR }}</h5>
+                        <hr class="m-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2" *ngFor="let perm of app.children">
+                                <p class="m-0 fw-bold">{{ perm.nameAR }}</p>
+                                <div class="d-flex align-items-center">
+                                    <span class="mx-2" [ngClass]="perm.isSelected ? 'text-success' : 'text-danger'">
+                                    {{ perm.isSelected ? 'تم التفعيل' : 'تم التعطيل' }}
+                                </span>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" role="switch" [(ngModel)]="perm.isSelected">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>

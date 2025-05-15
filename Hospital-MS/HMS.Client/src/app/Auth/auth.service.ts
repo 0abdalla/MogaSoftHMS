@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../Models/HMS/user';
 
@@ -9,6 +9,7 @@ import { User } from '../Models/HMS/user';
 })
 export class AuthService {
   baseUrl = environment.baseUrl;
+  private allowedPagesCache = new Map<string, Observable<any>>();
 
   constructor(private http: HttpClient) { }
 
@@ -20,6 +21,7 @@ export class AuthService {
         sessionStorage.setItem('firstName', response.results.firstName);
         sessionStorage.setItem('lastName', response.results.lastName);
         sessionStorage.setItem('role', response.results.role);
+        sessionStorage.setItem('pages', response.results.pages);
       })
     );
   }
@@ -33,11 +35,47 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
+  GetManageRolePages() {
+    return this.http.get(`${this.baseUrl}ManageRoles/GetManageRolePages`);
+  }
+
+  AssignRoleToPages(Model: any) {
+    return this.http.post(`${this.baseUrl}ManageRoles/AssignRoleToPages`, Model);
+  }
+
+  GetAllRoles() {
+    return this.http.get(`${this.baseUrl}ManageRoles/GetAllRoles`);
+  }
+
+  GetPagesByRoleId(RoleId: any) {
+    return this.http.get(`${this.baseUrl}ManageRoles/GetPagesByRoleId?RoleId=${RoleId}`);
+  }
+
+  GetAllowedPagesByRoleName(RoleName: any): Observable<any> {
+    if (this.allowedPagesCache.has(RoleName)) {
+      return this.allowedPagesCache.get(RoleName)!;
+    }
+
+    const request = this.http
+      .get(`${this.baseUrl}ManageRoles/GetAllowedPagesByRoleName?RoleName=${RoleName}`)
+      .pipe(
+        shareReplay(1)
+      );
+
+    this.allowedPagesCache.set(RoleName, request);
+    return request;
+  }
+
   logout(): void {
     sessionStorage.clear();
   }
   getToken(): string | null {
     return sessionStorage.getItem('token');
+  }
+
+  CheckUserAllowed(pageName: string): boolean {
+    let pages = sessionStorage.getItem('pages').split(',');
+    return pages ? pages.some(i => i == pageName) : false;
   }
 
   isInRole(roles: string[]): boolean {

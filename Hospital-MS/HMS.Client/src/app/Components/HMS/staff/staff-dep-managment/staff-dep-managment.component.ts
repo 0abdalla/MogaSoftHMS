@@ -50,9 +50,7 @@ export class StaffDepManagmentComponent implements OnInit {
       next:(data:any)=>{
         this.jobDeps = data.results;
         this.total = data.totalCount;
-        console.log(this.jobDeps);
       },error:(err)=>{
-        console.log('Error' , err);
       }
     })
   }
@@ -61,7 +59,6 @@ export class StaffDepManagmentComponent implements OnInit {
       next:(data:any)=>{
         this.jobDepartment = data.results;
         this.jobDepsForm.patchValue(this.jobDepartment)
-        console.log(this.jobDepartment);
       }
     })
   }
@@ -87,7 +84,6 @@ export class StaffDepManagmentComponent implements OnInit {
         this.jobDepsForm.reset();
         this.messageService.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة الفئة بنجاح' });
       },error:(err)=>{
-        console.log('Error' , err);
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة القسم' });
 
       }
@@ -101,7 +97,6 @@ export class StaffDepManagmentComponent implements OnInit {
         this.messageService.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل القسم بنجاح' });
 
       },error:(err)=>{
-        console.log('Error' , err);
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل القسم' });
 
       }

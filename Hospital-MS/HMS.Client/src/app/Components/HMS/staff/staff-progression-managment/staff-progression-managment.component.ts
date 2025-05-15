@@ -51,10 +51,8 @@ export class StaffProgressionManagmentComponent implements OnInit {
       next:(res)=>{
         this.jobTitles=res.results;
         this.total=res.totalCount;
-        console.log(this.jobTitles);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }
@@ -74,7 +72,6 @@ export class StaffProgressionManagmentComponent implements OnInit {
         this.jobTitleForm.patchValue(this.selectedJobTitle);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }

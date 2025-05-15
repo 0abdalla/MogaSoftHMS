@@ -132,10 +132,8 @@ export class StaffListComponent implements OnInit, OnDestroy {
         });
         this.total = res?.totalCount || 0;
         this.fixed = Math.ceil(this.total / this.pageSize) || 1;
-        console.log('employees data', res, 'mapped employees', this.employees);
       },
       error: (err) => {
-        console.error('GetEmployees Error:', err);
         this.employees = [];
         this.total = 0;
         this.fixed = 1;
@@ -173,7 +171,6 @@ export class StaffListComponent implements OnInit, OnDestroy {
             back: '#6C757D'
           }
         ];
-        console.log('counts data', this.employeesData, 'raw response', data);
       },
       error: (err) => {
         console.error('GetCounts Error:', err);
@@ -191,10 +188,8 @@ export class StaffListComponent implements OnInit, OnDestroy {
     this.staffService.getStaffById(id).subscribe({
       next: (res) => {
         this.selectedEmployee = res;
-        console.log('selected employee', this.selectedEmployee);
       },
       error: (err) => {
-        console.error('GetEmployeeById Error:', err);
       }
     });
   }
@@ -211,7 +206,6 @@ export class StaffListComponent implements OnInit, OnDestroy {
 
   editEmployee() {
     if (this.selectedEmployee) {
-      console.log('Editing employee:', this.selectedEmployee);
     }
   }
 
@@ -220,12 +214,10 @@ export class StaffListComponent implements OnInit, OnDestroy {
   }
 
   exportToPDF() {
-    console.log('Exporting to PDF...');
   }
 
   suspendEmployee() {
     if (this.selectedEmployee) {
-      console.log('Suspending employee:', this.selectedEmployee);
     }
   }
 }

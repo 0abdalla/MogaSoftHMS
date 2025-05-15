@@ -101,7 +101,6 @@ export class PatientListComponent {
   };
     this.admissionService.getAddmision(requestModel).subscribe({
       next: (data) => {
-        console.log("Data : " , data);
         this.patients = data.results.map((patient: any) => {
             switch (patient.patientStatus) {
               case 'CriticalCondition':
@@ -126,10 +125,8 @@ export class PatientListComponent {
             return patient;
           });
         this.total = data.totalCount;
-        console.log("Patients : " , this.patients);
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({
           severity: 'error',
           summary: 'فشل التحميل',
@@ -199,7 +196,6 @@ export class PatientListComponent {
         ];
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({
           severity: 'error',
           summary: 'فشل التحميل',
@@ -248,7 +244,6 @@ export class PatientListComponent {
     this.admissionService.getPatientById(id).subscribe({
       next: (res) => {
         this.admissionDetails = res.results;
-        console.log('Admission data:', this.admissionDetails);
         this.getMedicalHistory(id);
       },
       error: (err) => {
@@ -261,7 +256,6 @@ export class PatientListComponent {
     this.admissionService.getMedicalHistory(id).subscribe({
       next: (res:any) => {
         this.medicalHistory = res.results;
-        console.log('Medical history:', this.medicalHistory);
       },
       error: (err) => {
         console.error('Failed to fetch medical history', err);
@@ -310,7 +304,6 @@ export class PatientListComponent {
     if (this.statusForm.valid) {
       this.admissionService.updateAdmision(this.admissionDetails.patientId, this.statusForm.value).subscribe({
         next: (res) => {
-          console.log('Status updated successfully', res);
           this.messageService.add({ severity: 'success', summary: 'تم التحديث', detail: 'تم التحديث بنجاح' });
           this.loadPatients();
           this.statusForm.reset();

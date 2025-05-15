@@ -17,7 +17,8 @@ namespace Hospital_MS.Core.Contracts.Auth
         string UserName,
         string Token,
         int ExpiresIn,
-        string? Role
+        string? Role,
+        List<string> Pages
     );
 
 }
