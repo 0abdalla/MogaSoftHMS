@@ -110,6 +110,7 @@ namespace Hospital_MS.Services.Auth
                                    IsActive = page.IsActive
                                }).ToList();
                 var ParentIds = results.Select(i => i.ParentId).Distinct().ToList();
+                var PermissionPageIds = Permission.Select(i => i.PageId).Distinct().ToList();
                 var ParentPages = FlatPage.Where(i => ParentIds.Contains(i.Id) && i.IsActive).OrderBy(i => i.DisplayOrder).ToList();
                 foreach (var page in ParentPages)
                 {
@@ -121,7 +122,7 @@ namespace Hospital_MS.Services.Auth
                     Page.Route = page.Route;
                     Page.DisplayOrder = page.DisplayOrder;
                     Page.IsActive = page.IsActive;
-                    Page.Children = FlatPage.Where(i => i.ParentId == page.Id && i.IsActive).OrderBy(i => i.DisplayOrder).ToList();
+                    Page.Children = FlatPage.Where(i => i.ParentId == page.Id && i.IsActive && PermissionPageIds.Contains(i.Id)).OrderBy(i => i.DisplayOrder).ToList();
 
                     Pages.Add(Page);
                 }
