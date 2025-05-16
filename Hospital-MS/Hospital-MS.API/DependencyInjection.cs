@@ -73,6 +73,7 @@ namespace Hospital_MS.API
             services.AddScoped<IJobDepartmentService, JobDepartmentService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IManageRolesService, ManageRolesService>();
+            services.AddScoped<IUserService, UserService>();
 
 
 

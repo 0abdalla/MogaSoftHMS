@@ -17,12 +17,11 @@ using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, ISQLHelper sQLHelper, IAuthService authService) : IStaffService
+    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, ISQLHelper sQLHelper) : IStaffService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
-        private readonly IAuthService _authService = authService;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(CreateStaffRequest request, CancellationToken cancellationToken = default)
         {
@@ -60,27 +59,6 @@ namespace Hospital_MS.Services.HMS
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
-
-                // Handle account creation if IsAuthorized is true
-                if (request.IsAuthorized)
-                {
-                    if (string.IsNullOrWhiteSpace(request.UserName) || string.IsNullOrWhiteSpace(request.Password))
-                        return ErrorResponseModel<string>.Failure(new Error("اسم المستخدم وكلمة المرور مطلوبين", Status.Failed));
-
-                    var registerRequest = new RegisterRequest(
-                        Email: request.Email,
-                        Password: request.Password,
-                        FirstName: request.FullName.Split(' ').FirstOrDefault() ?? request.FullName,
-                        LastName: request.FullName.Split(' ').Skip(1).FirstOrDefault() ?? string.Empty,
-                        Address: request.Address,
-                        UserName: request.UserName
-                    );
- 
-                    var accountCreationResult = await _authService.RegisterAsync(registerRequest, cancellationToken);
-
-                    if (!accountCreationResult.IsSuccess)
-                        return ErrorResponseModel<string>.Failure(new Error(accountCreationResult.Message, Status.Failed));
-                }
 
                 var AttachmentItems = new List<StaffAttachments>();
                 var AttachmentURLs = new List<string>();

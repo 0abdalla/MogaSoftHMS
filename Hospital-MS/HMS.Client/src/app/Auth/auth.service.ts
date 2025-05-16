@@ -3,6 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../Models/HMS/user';
+import { PagingFilterModel } from '../Models/Generics/PagingFilterModel';
+import { PagedResponseModel } from '../Models/Generics/PagedResponseModel';
+import { ErrorResponseModel } from '../Models/Generics/ErrorResponseModel';
 
 @Injectable({
   providedIn: 'root'
@@ -26,13 +29,17 @@ export class AuthService {
     );
   }
 
-  register(data: User) {
-    return this.http.post(`${this.baseUrl}Auth/register`, data);
+  register(data: any) {
+    return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Auth/register`, data);
   }
 
   getUserFromSession(): User | null {
     const user = sessionStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  }
+
+  GetAllUsers(pagingFilter: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<any>>(`${this.baseUrl}Users/GetAllUsers`, pagingFilter);
   }
 
   GetManageRolePages() {
@@ -44,11 +51,15 @@ export class AuthService {
   }
 
   GetAllRoles() {
-    return this.http.get(`${this.baseUrl}ManageRoles/GetAllRoles`);
+    return this.http.get<any>(`${this.baseUrl}ManageRoles/GetAllRoles`);
   }
 
   GetPagesByRoleId(RoleId: any) {
     return this.http.get(`${this.baseUrl}ManageRoles/GetPagesByRoleId?RoleId=${RoleId}`);
+  }
+
+  GetAllEmployees() {
+    return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Users/GetAllEmployees`);
   }
 
   GetAllowedPagesByRoleName(RoleName: any): Observable<any> {

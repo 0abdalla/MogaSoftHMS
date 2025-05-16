@@ -19,7 +19,7 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> Register([FromBody] RegisterUser request, CancellationToken cancellationToken)
         {
             var authResult = await _authService.RegisterAsync(request, cancellationToken);
             return Ok(authResult);

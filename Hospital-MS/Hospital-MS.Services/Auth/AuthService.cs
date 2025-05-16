@@ -1,17 +1,14 @@
 ﻿
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Auth;
-using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Data.SqlClient;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Text;
 
@@ -21,12 +18,14 @@ namespace Hospital_MS.Services.Auth
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IJwtProvider jwtProvider, ISQLHelper _sQLHelper,
+        IUnitOfWork _unitOfWork,
         RoleManager<IdentityRole> _roleManager) : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
         private readonly IJwtProvider _jwtProvider = jwtProvider;
         private readonly ISQLHelper sQLHelper = _sQLHelper;
+        private readonly IUnitOfWork unitOfWork = _unitOfWork;
         private readonly RoleManager<IdentityRole> roleManager = _roleManager;
 
         public async Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
@@ -75,7 +74,7 @@ namespace Hospital_MS.Services.Auth
             return ErrorResponseModel<AuthResponse>.Failure(GenericErrors.InvalidCredentials);
         }
 
-        public async Task<ErrorResponseModel<string>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> RegisterAsync(RegisterUser request, CancellationToken cancellationToken = default)
         {
             var emailIsExists = await _userManager.FindByEmailAsync(request.Email) is not null;
 
@@ -84,22 +83,24 @@ namespace Hospital_MS.Services.Auth
 
             var user = new ApplicationUser
             {
+                Address = request.Address,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Address = request.Address,
                 Email = request.Email,
-                //UserName = request.FirstName+" "+request.LastName,
-                UserName = request.UserName,
+                UserName = request.Email,
+                StaffId = request.StaffId,
                 IsActive = true,
-
             };
-
-            //user.UserName = request.Email;
 
             var result = await _userManager.CreateAsync(user, request.Password);
 
             if (result.Succeeded)
             {
+                var roleAssignResult = await _userManager.AddToRoleAsync(user, request.RoleName);
+
+                if (!roleAssignResult.Succeeded)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+
                 return ErrorResponseModel<string>.Success(GenericErrors.SuccessRegister);
             }
 
