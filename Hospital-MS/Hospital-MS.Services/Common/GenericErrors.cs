@@ -46,5 +46,15 @@ namespace Hospital_MS.Services.Common
         public static Error ScheduleFull = new("تم الوصول للحد الاقصي للحجز اليوم", Status.Failed);
 
         public static Error ScheduleNotFound = new("لا يوجد ميعاد متاح في هذا الوقت", Status.Failed);
+
+        public static Error UserNotFound = new("هذا المستخدم غير موجود", Status.Failed);
+
+        public static Error EmailAlreadyExists = new("تم استخدام البريد الإلكتروني بالفعل بواسطة مستخدم آخر", Status.Failed);
+
+        public static Error FailedToUpdateEmail = new("فشل في تعديل البريد الإلكتروني", Status.Failed);
+
+        public static Error FailedToUpdatePassword = new("فشل في تعديل كلمة المرور", Status.Failed);
+
+        public static Error FailedToAssignNewRole = new("فشل في تعيين صلاحية جديدة", Status.Failed);
     }
 }

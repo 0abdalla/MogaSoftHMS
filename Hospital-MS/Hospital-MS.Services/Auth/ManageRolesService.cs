@@ -103,7 +103,7 @@ namespace Hospital_MS.Services.Auth
                                {
                                    Id = page.Id,
                                    NameAR = page.NameAR,
-                                   ParentId = page.ParentId,
+                                   ParentId = page.ParentId ?? page.Id,
                                    Icon = page.Icon,
                                    Route = page.Route,
                                    DisplayOrder = page.DisplayOrder,

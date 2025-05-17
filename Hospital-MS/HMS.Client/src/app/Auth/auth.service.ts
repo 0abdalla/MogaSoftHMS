@@ -33,6 +33,10 @@ export class AuthService {
     return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Auth/register`, data);
   }
 
+  UpdateUserAsync(data: any) {
+    return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Auth/UpdateUserAsync`, data);
+  }
+
   getUserFromSession(): User | null {
     const user = sessionStorage.getItem('user');
     return user ? JSON.parse(user) : null;

@@ -23,5 +23,13 @@ namespace Hospital_MS.Core.Contracts.Auth
       string Password,
       string? Address,
       string RoleName
-  );
+    );
+
+    public record UpdateUserRequest(
+     string UserId,
+     string Email,
+     string? Address,
+     string RoleName,
+     string? Password
+    );
 }

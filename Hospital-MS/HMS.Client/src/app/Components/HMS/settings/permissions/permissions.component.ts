@@ -35,6 +35,7 @@ export class PermissionsComponent implements OnInit {
   RolesList: any[] = [];
   Total = 0;
   showPassword = false;
+  isEdit = false;
 
   constructor(private authService: AuthService, private fb: FormBuilder, private sharedService: SharedService, private messageService: MessageService) {
     this.UserForm = this.fb.group({
@@ -43,10 +44,9 @@ export class PermissionsComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')]],
-      password: ['', [Validators.required, Validators.minLength(6), Validators.pattern(
-        '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};:"\\\\|,.<>\\/?]).{8,}$'
-      ),]],
-      Address: ['']
+      password: ['', []],
+      address: [''],
+      userId:['']
     });
   }
 
@@ -54,6 +54,59 @@ export class PermissionsComponent implements OnInit {
     this.GetAllUsers();
     this.GetAllEmployees();
     this.GetAllRoles();
+  }
+
+  openAddEditUserModal(user: any) {
+    debugger;
+    this.UserForm.reset();
+    this.UserForm.patchValue({ staffId: '', roleName: '' });
+    if (user) {
+      this.isEdit = true;
+      this.UserForm.patchValue({
+        staffId: user?.id,
+        userId: user?.userId,
+        roleName: user?.roleNAmeEn,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        email: user?.email,
+        address: user?.address
+      });
+      this.UserForm.get('staffId')?.disable();
+      this.UserForm.get('firstName')?.disable();
+      this.UserForm.get('lastName')?.disable();
+      this.setPasswordValidators(true);
+    } else {
+      this.isEdit = false;
+      this.UserForm.get('staffId')?.enable();
+      this.UserForm.get('firstName')?.enable();
+      this.UserForm.get('lastName')?.enable();
+      this.setPasswordValidators(false);
+    }
+  }
+
+  setPasswordValidators(isEditMode: boolean) {
+    const passwordControl = this.UserForm.get('password');
+
+    if (!passwordControl) return;
+
+    if (!isEditMode) {
+      passwordControl.setValidators([
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(
+          '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};:"\\\\|,.<>\\/?]).{8,}$'
+        )
+      ]);
+    } else {
+      passwordControl.setValidators([
+        Validators.minLength(6),
+        Validators.pattern(
+          '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\-=\\[\\]{};:"\\\\|,.<>\\/?]).{8,}$'
+        )
+      ]);
+    }
+
+    passwordControl.updateValueAndValidity();
   }
 
   GetAllUsers() {
@@ -90,16 +143,26 @@ export class PermissionsComponent implements OnInit {
       return;
     }
 
-    this.authService.register(this.UserForm.value).subscribe(response => {
-      if (response.isSuccess) {
-        this.UserForm.reset();
-        this.GetAllUsers();
-        this.sharedService.closeModal('UserModal');
-        this.messageService.add({ severity: 'success', summary: 'تم التسجيل', detail: response.message });
-      } else
-        this.messageService.add({ severity: 'error', summary: 'فشل التسجيل', detail: response.message });
-    });
+    if (!this.isEdit) {
+      this.authService.register(this.UserForm.value).subscribe(response => {
+        if (response.isSuccess) {
+          this.UserForm.reset();
+          this.GetAllUsers();
+          this.sharedService.closeModal('UserModal');
+          this.messageService.add({ severity: 'success', summary: 'تم التسجيل', detail: response.message });
+        } else
+          this.messageService.add({ severity: 'error', summary: 'فشل التسجيل', detail: response.message });
+      });
+    } else {
+      this.authService.UpdateUserAsync(this.UserForm.value).subscribe(response => {
+        if (response.isSuccess) {
+          this.UserForm.reset();
+          this.GetAllUsers();
+          this.sharedService.closeModal('UserModal');
+          this.messageService.add({ severity: 'success', summary: 'تم التعديل', detail: response.message });
+        } else
+          this.messageService.add({ severity: 'error', summary: 'فشل التعديل', detail: response.message });
+      });
+    }
   }
-
-
 }

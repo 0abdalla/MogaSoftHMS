@@ -109,6 +109,58 @@ namespace Hospital_MS.Services.Auth
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
 
+        public async Task<ErrorResponseModel<string>> UpdateUserAsync(UpdateUserRequest request, CancellationToken cancellationToken = default)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            if (user == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.UserNotFound);
+
+            if (!string.Equals(user.Email, request.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                var emailExists = await _userManager.FindByEmailAsync(request.Email);
+                if (emailExists != null && emailExists.Id != request.UserId)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.EmailAlreadyExists);
+
+                var emailUpdateResult = await _userManager.SetEmailAsync(user, request.Email);
+                if (!emailUpdateResult.Succeeded)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.FailedToUpdateEmail);
+
+                user.UserName = request.Email;
+            }
+
+            user.Address = request.Address;
+
+            if (!string.IsNullOrWhiteSpace(request.Password))
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResult = await _userManager.ResetPasswordAsync(user, resetToken, request.Password);
+                if (!passwordResult.Succeeded)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.FailedToUpdatePassword);
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var currentRole = currentRoles.FirstOrDefault();
+            if (!string.Equals(currentRole, request.RoleName, StringComparison.OrdinalIgnoreCase))
+            {
+                if (!string.IsNullOrEmpty(currentRole))
+                {
+                    var removeRoleResult = await _userManager.RemoveFromRoleAsync(user, currentRole);
+                    if (!removeRoleResult.Succeeded)
+                        return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+                }
+
+                var addRoleResult = await _userManager.AddToRoleAsync(user, request.RoleName);
+                if (!addRoleResult.Succeeded)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.FailedToAssignNewRole);
+            }
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+
         public List<RolePages> GetPagesByRoleId(string RoleId)
         {
             var Params = new SqlParameter[1];

@@ -24,5 +24,12 @@ namespace Hospital_MS.API.Controllers
             var authResult = await _authService.RegisterAsync(request, cancellationToken);
             return Ok(authResult);
         }
+
+        [HttpPost("UpdateUserAsync")]
+        public async Task<IActionResult> UpdateUserAsync(UpdateUserRequest request, CancellationToken cancellationToken = default)
+        {
+            var authResult = await _authService.UpdateUserAsync(request, cancellationToken);
+            return Ok(authResult);
+        }
     }
 }
