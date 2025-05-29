@@ -99,7 +99,6 @@ export class AppointmentFormComponent implements OnInit {
         clinicControl?.disable();
       }
       this.selectedDate = this.reservationForm.get('appointmentDate')?.value ? new Date(this.reservationForm.get('appointmentDate')?.value) : null;
-      console.log('Selected Date:', this.selectedDate);
       this.filterServicesByDay();
       this.filterDoctorsByDay();
     });
@@ -110,12 +109,10 @@ export class AppointmentFormComponent implements OnInit {
         this.filteredDoctors = this.doctors.filter((doc: any) =>
           doc.medicalServices?.some((service: any) => service.id === Number(medicalServiceId))
         );
-        console.log('Filtered Doctors:', this.filteredDoctors);
         this.reservationForm.get('doctorId')?.enable();
         this.reservationForm.get('doctorId')?.setValue('');
       } else {
         this.filteredDoctors = [];
-        console.log('Cleared Filtered Doctors');
         this.reservationForm.get('doctorId')?.disable();
         this.reservationForm.get('doctorId')?.setValue('');
       }
@@ -141,11 +138,9 @@ export class AppointmentFormComponent implements OnInit {
     
     this.filteredServices = this.filteredServices.filter(service => {
       if (!service.medicalServiceSchedules || !service.medicalServiceSchedules.length) {
-        console.log('No schedules found for service:', service);
         return false;
       }
       return service.medicalServiceSchedules.some((schedule: any) => {
-        console.log('Schedule:', schedule);
         return schedule.weekDay === dayOfWeek;
       });
     });
@@ -165,7 +160,6 @@ export class AppointmentFormComponent implements OnInit {
         return false;
       }
       return doctor.doctorSchedules.some((schedule: any) => {
-        console.log('Schedule:', schedule);
         return schedule.weekDay === dayOfWeek;
       });
     });
@@ -230,13 +224,10 @@ export class AppointmentFormComponent implements OnInit {
       companionPhone: formData.companionPhone
     };
   
-    console.log('Payload before sending:', payload);
   
     this.appointmentService.createAppointment(payload).subscribe({
       next: (response) => {
         if (response.isSuccess) {
-          console.log('Appointment created successfully', response);
-          console.log('Appointment Data:', formData);
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
           this.submittedData = { ...formData };
           this.printInvoiceData = this.createInvoiceObj(response.results);
@@ -246,8 +237,6 @@ export class AppointmentFormComponent implements OnInit {
           this.reservationForm.reset();
         } else {
           this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
-          console.log('Appointment Data:', formData);
-          console.log('Response:', response);
         }
       },
       error: (error) => {
@@ -263,10 +252,8 @@ export class AppointmentFormComponent implements OnInit {
     this.staffService.getDoctors(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.doctors = data.results;
-        console.log('Doctors',this.doctors);
       },
       error: (err) => {
-        console.log(err);
       }
     });
   }
@@ -297,11 +284,8 @@ export class AppointmentFormComponent implements OnInit {
             }
             return patient;
           });
-        // this.total = data.total;
-        console.log('Patients : ',this.patients);
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({
           severity: 'error',
           summary: 'فشل التحميل',
@@ -317,10 +301,8 @@ export class AppointmentFormComponent implements OnInit {
     this.appointmentService.getServices(1, 100, '', filterParams).subscribe({
       next: (data) => {
         this.services = data.results || [];
-        console.log('Services', this.services);
       },
       error: (err) => {
-        console.log(err);
         this.services = [];
       }
     });
@@ -354,7 +336,6 @@ export class AppointmentFormComponent implements OnInit {
         this.insuranceCompanies = data.results;
       },
       error: (err) => {
-        console.log(err);
       }
     });
   }
@@ -402,7 +383,6 @@ export class AppointmentFormComponent implements OnInit {
               summary: 'تم العثور على المريض',
               detail: 'تم تسجيل بيانات المريض تلقائياً',
             });
-            console.log('Patient : ',patient);
             
           } else {
             this.messageService.add({
@@ -413,7 +393,6 @@ export class AppointmentFormComponent implements OnInit {
           }
         },
         error: (err) => {
-          console.log(err);
           this.messageService.add({
             severity: 'error',
             summary: 'خطأ في البحث',
@@ -426,7 +405,6 @@ export class AppointmentFormComponent implements OnInit {
   // 
   onDoctorSelected() {
     const doctorId = this.reservationForm.get('doctorId')?.value;
-    console.log('Selected Doctor ID:', doctorId);
   }
   // 
   private filterDoctors(): void {

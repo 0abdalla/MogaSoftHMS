@@ -114,13 +114,6 @@ export class PatientFormComponent implements OnInit {
           .filter(company => company.insuranceCategories && Array.isArray(company.insuranceCategories))
           .flatMap(company => company.insuranceCategories);
         this.patients = res.patients.results;
-        console.log('Doctors:', this.doctors);
-        console.log('Departments:', this.departments);
-        console.log('Rooms:', this.rooms);
-        console.log('Beds:', this.beds);
-        console.log('Insurance Companies:', this.insuranceCompanies);
-        console.log('Insurance Categories:', this.insuranceCategories);
-        console.log('Patients:', this.patients);
       },
       error: (err) => {
         console.error('Error loading admission data', err);
@@ -131,7 +124,6 @@ export class PatientFormComponent implements OnInit {
     if (this.patientForm.valid) {
       this.addmisionService.addAdmision(this.patientForm.value).subscribe({
         next: () => {
-          console.log("Done");
           this.patientForm.reset();
           this.showSecondContact = false;
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
@@ -143,7 +135,6 @@ export class PatientFormComponent implements OnInit {
         }
       });
     }else{
-      console.log("error");
     }
   }
   onDepartmentChange() {
@@ -152,7 +143,6 @@ export class PatientFormComponent implements OnInit {
       this.filteredDoctors = this.doctors.filter(doctor => doctor.departmentId === +selectedDeptId);
       this.patientForm.get('doctorId')?.enable();
     } else {
-      console.log("error");
       this.filteredDoctors = [];
       this.patientForm.get('doctorId')?.disable();
     }
@@ -164,7 +154,6 @@ export class PatientFormComponent implements OnInit {
       this.filteredRooms = this.rooms.filter((room:any) => room.type === selectedRoomType);
       this.patientForm.get('roomId')?.enable();
     } else {
-      console.log("error");
       this.filteredRooms = [];
       this.patientForm.get('roomId')?.disable();
     }
@@ -178,7 +167,6 @@ export class PatientFormComponent implements OnInit {
       this.filteratedBeds = this.beds.filter((bed:any) => bed.roomId === +selectedRoomId);
       this.patientForm.get('bedId')?.enable();
     } else {
-      console.log("error");
       this.filteratedBeds = [];
       this.patientForm.get('bedId')?.disable();
     }
@@ -243,7 +231,6 @@ export class PatientFormComponent implements OnInit {
       this.addmisionService.getAddmision(this.pagingFilterModel).subscribe({
         next: (data) => {
           const patientId = data.results[0].patientId;
-          console.log(patientId);
           if (data.results && data.results.length > 0) {
             const patient = data.results[0];
             let genderValue = '';
@@ -272,7 +259,6 @@ export class PatientFormComponent implements OnInit {
               summary: 'تم العثور على المريض',
               detail: 'تم تسجيل بيانات المريض تلقائياً',
             });
-            console.log('Patient:', patient);
           } else {
             this.messageService.add({
               severity: 'info',

@@ -56,10 +56,8 @@ export class StaffJobManagementComponent {
       next:(res)=>{
         this.jobTitles=res.results;
         this.total=res.totalCount;
-        console.log(this.jobTitles);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }
@@ -81,20 +79,17 @@ export class StaffJobManagementComponent {
         this.jobTitleForm.patchValue(this.selectedJobTitle);
       },
       error:(err)=>{
-        console.log(err);
       }
     })
   }
   addjobTitle(){
     this.staffService.addJobTitle(this.jobTitleForm.value).subscribe({
       next:(data:any)=>{
-        console.log('Submitted' , data);
         this.getJobTitles();
         this.jobTitleForm.reset();
         this.messageService.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة الوظيفة بنجاح' });
       },
       error:(err)=>{
-        console.log('Error' , err);
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة الوظيفة' });
       }
     })
@@ -102,13 +97,11 @@ export class StaffJobManagementComponent {
   editjobTitle(){
     this.staffService.updateJobTitle(this.selectedJobTitle.id , this.jobTitleForm.value).subscribe({
       next:(data:any)=>{
-        console.log('Submitted' , data);
         this.getJobTitles();
         this.jobTitleForm.reset();
         this.messageService.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل الوظيفة بنجاح' });
       },
       error:(err)=>{
-        console.log('Error' , err);
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل الوظيفة' });
       }
     })
@@ -122,7 +115,6 @@ export class StaffJobManagementComponent {
     this.staffService.getJobDepartment('', 1 , 100).subscribe({
       next:(data:any)=>{
         this.jobDeps = data.results;
-        console.log(this.jobDeps);
       }
     })
   }

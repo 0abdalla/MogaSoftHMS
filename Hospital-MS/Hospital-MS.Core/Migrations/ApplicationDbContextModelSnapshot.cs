@@ -1126,6 +1126,42 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.ToTable("NurseShifts");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.Page", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameAR")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PageName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Route")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pages", "config");
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.Patient", b =>
                 {
                     b.Property<int>("Id")
@@ -1304,6 +1340,25 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("PatientMedicalHistories");
+                });
+
+            modelBuilder.Entity("Hospital_MS.Core.Models.RolePermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PageId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RolePermissions", "config");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Room", b =>
@@ -1496,6 +1551,115 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("StaffId");
 
                     b.ToTable("StaffAttachments");
+                });
+
+            modelBuilder.Entity("Hospital_MS.Core.Models.Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AccountCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Fax1")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Fax2")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("Job")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Phone1")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("Phone2")
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.Property<string>("ResponsibleName1")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ResponsibleName2")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TaxNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("UpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Website")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountCode")
+                        .IsUnique();
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Phone1");
+
+                    b.HasIndex("TaxNumber")
+                        .IsUnique();
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("Suppliers", "finance");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Ward", b =>
@@ -1808,7 +1972,7 @@ namespace Hospital_MS.Reposatories.Migrations
                         .IsRequired();
 
                     b.HasOne("Hospital_MS.Core.Models.Doctor", "Doctor")
-                        .WithMany()
+                        .WithMany("Admissions")
                         .HasForeignKey("DoctorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1857,7 +2021,7 @@ namespace Hospital_MS.Reposatories.Migrations
                         .IsRequired();
 
                     b.HasOne("Hospital_MS.Core.Models.Doctor", "Doctor")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("DoctorId");
 
                     b.HasOne("Hospital_MS.Core.Models.MedicalService", "MedicalService")
@@ -2419,6 +2583,23 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("Staff");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.Supplier", b =>
+                {
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.Ward", b =>
                 {
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
@@ -2503,6 +2684,10 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Doctor", b =>
                 {
+                    b.Navigation("Admissions");
+
+                    b.Navigation("Appointments");
+
                     b.Navigation("DoctorMedicalServices");
 
                     b.Navigation("Ratings");

@@ -11,7 +11,25 @@ namespace Hospital_MS.Core.Contracts.Auth
        string Password,
        string FirstName,
        string LastName,
-       string? Address,
-       string UserName
+       string UserName,
+       string? Address
    );
+
+    public record RegisterUser(
+      int? StaffId,
+      string FirstName,
+      string LastName,
+      string Email,
+      string Password,
+      string? Address,
+      string RoleName
+    );
+
+    public record UpdateUserRequest(
+     string UserId,
+     string Email,
+     string? Address,
+     string RoleName,
+     string? Password
+    );
 }

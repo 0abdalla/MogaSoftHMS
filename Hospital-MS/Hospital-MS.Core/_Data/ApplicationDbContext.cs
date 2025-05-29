@@ -33,11 +33,12 @@ namespace Hospital_MS.Core._Data
         public DbSet<StaffAttachments> StaffAttachments { get; set; }
         public DbSet<MedicalService> MedicalServices { get; set; }
         public DbSet<MedicalServiceSchedule> MedicalServiceSchedules { get; set; }
-
         public DbSet<JobType> JobTypes { get; set; }
         public DbSet<JobTitle> JobTitles { get; set; }
         public DbSet<JobLevel> JobLevels { get; set; }
-
+        public DbSet<Page> Pages { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<Supplier> Suppliers  { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

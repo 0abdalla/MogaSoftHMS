@@ -1,0 +1,164 @@
+<main id="accounts">
+    <div class="container-fluid">
+        <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-md-8 row">
+                        <input type="text" formControlName="SearchText" placeholder="إبحث بإستخادم رقم الخزينة أو اسم الخزينة" class="form-control text-end shadow-none">
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <button data-bs-toggle="modal" data-bs-target="#addAccountModal" type="button" class="btn-red w-100 mx-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>كود الحساب</th>
+                    <th>اسم الحساب</th>
+                    <th>الحساب الرئيسي</th>
+                    <th>اسم المستخدم</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="accounts?.length > 0">
+                <tr *ngFor="let account of accounts | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(account.id)" style="cursor: pointer">
+                    <td>
+                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <div class="avatar-circle">{{ account.name.charAt(0) }}</div>
+                            <span class="fw-bold">{{ account.name }}</span>
+                        </div>
+                    </td>
+                    <td>{{ account.parentAccount }}</td>
+                    <td>{{ account.user }}</td>
+                    <td>{{ account.createdAt }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="accounts?.length === 0">
+                <tr>
+                    <td colspan="6" class="text-center text-muted">لا يوجد حسابات حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="addAccountModalLabel">إضافة حساب جديد</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="code" class="form-label">كود الحساب</label>
+                <input type="text" class="form-control shadow-none" formControlName="code" id="code" placeholder="كود الحساب">
+                <div *ngIf="accountForm.get('code')?.invalid && accountForm.get('code')?.touched" class="text-danger">
+                  <ng-container *ngIf="accountForm.get('code')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="name" class="form-label">اسم الحساب</label>
+                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الحساب">
+                <div *ngIf="accountForm.get('name')?.invalid && accountForm.get('name')?.touched" class="text-danger">
+                  <ng-container *ngIf="accountForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="level" class="form-label">مستوى الحساب</label>
+                <select class="form-select shadow-none" formControlName="level" id="level">
+                  <option selected disabled value="">اختر مستوى الحساب</option>
+                  <option value="1">المستوى الأول</option>
+                  <option value="2">المستوى الثاني</option>
+                  <option value="3">المستوى الثالث</option>
+                  <option value="4">المستوى الرابع</option>
+                  <option value="5">المستوى الخامس</option>
+                  <option value="6">المستوى السادس</option>
+                </select>
+                <div *ngIf="accountForm.get('level')?.invalid && accountForm.get('level')?.touched" class="text-danger">
+                  <ng-container *ngIf="accountForm.get('level')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+
+              <div class="col-md-6 mb-2 d-flex align-items-center">
+                <label for="isMain" class="form-label me-2">هل الحساب رئيسي؟</label>
+                <br>
+                <input type="checkbox" class="form-check-input" formControlName="isMain" id="isMain">
+              </div>
+
+              <div class="col-md-4 mb-2">
+                <label for="mainAccount" class="form-label">الحساب الرئيسي</label>
+                <input type="text" class="form-control shadow-none" formControlName="mainAccount" id="mainAccount" placeholder="الحساب الرئيسي">
+              </div>
+  
+              <div class="col-md-4 mb-2">
+                <label for="type" class="form-label">نوع الحساب</label>
+                <select class="form-select shadow-none" formControlName="type" id="type">
+                  <option selected disabled value="">اختر نوع الحساب</option>
+                  <option value="مركز مالي">قائمة المركز المالي</option>
+                  <option value="مخزون">قائمة المخزون</option>
+                </select>
+                <div *ngIf="accountForm.get('type')?.invalid && accountForm.get('type')?.touched" class="text-danger">
+                  <ng-container *ngIf="accountForm.get('type')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-4 mb-2">
+                <label for="nature" class="form-label">طبيعة الحساب</label>
+                <select class="form-select shadow-none" formControlName="nature" id="nature">
+                  <option selected disabled value="">اختر طبيعة الحساب</option>
+                  <option value="مدين">مدين</option>
+                  <option value="دائن">دائن</option>
+                </select>
+                <div *ngIf="accountForm.get('nature')?.invalid && accountForm.get('nature')?.touched" class="text-danger">
+                  <ng-container *ngIf="accountForm.get('nature')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+
+              <div class="col-md-12 mb-2">
+                <label for="notes" class="form-label">ملاحظات</label>
+                <textarea class="form-control shadow-none" formControlName="notes" id="notes" rows="3" placeholder="ملاحظات إضافية..."></textarea>
+              </div>
+            </div>
+  
+            <div class="text-center mt-3">
+              <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">إضافة الحساب</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

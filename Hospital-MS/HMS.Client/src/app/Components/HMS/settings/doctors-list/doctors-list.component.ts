@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
+import { SharedService } from '../../../../Services/shared.service';
 declare var bootstrap: any;
 @Component({
   selector: 'app-doctors-list',
@@ -41,7 +42,7 @@ export class DoctorsListComponent implements OnInit {
   fixed = Math.ceil(this.total / this.pageSize);
   // 
   selectedDoctor!: any;
-  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router) {
+  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router,private sharedService: SharedService) {
     this.filterForm = this.fb.group({
       Search: [null],
       Status: [''],
@@ -63,12 +64,10 @@ export class DoctorsListComponent implements OnInit {
           }
           return doctor;
         });
-        console.log(this.doctors);
         
         this.total = res.totalCount;
       },
       error: () => {
-        console.log('error');
       }
     })
   }
@@ -92,6 +91,12 @@ export class DoctorsListComponent implements OnInit {
       this.getDoctors();
     }
   }
+   ApplyCardFilter(item: any) {
+    debugger;
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
+    this.getDoctors();
+  }
   // 
   openDoctorModal(id: number) {
     this.getDoctorById(id);
@@ -109,7 +114,6 @@ export class DoctorsListComponent implements OnInit {
         }))
         
       };
-      console.log(this.selectedDoctor);
     });
   }
   // 
@@ -117,11 +121,9 @@ export class DoctorsListComponent implements OnInit {
     this.doctorService.getDoctorsCount().subscribe({
       next: (data: any) => {
         this.doctorsData = data.results;
-        console.log(this.doctorsData);
         
       },
       error: (err) => {
-        console.log(err);
       }
     });
   }

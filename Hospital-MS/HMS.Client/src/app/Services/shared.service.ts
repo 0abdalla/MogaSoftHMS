@@ -59,12 +59,12 @@ export class SharedService {
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     // -------------Download PDF File------------------
-    html2pdf().from(data).set(options).save();
+    //html2pdf().from(data).set(options).save();
     // -------------Open PDF File In New Tab------------------
-    // html2pdf().from(data).set(options).toPdf().get('pdf').then((pdf) => {
-    //   const pdfUrl = pdf.output('bloburl');
-    //   window.open(pdfUrl, '_blank');
-    // });
+    html2pdf().from(data).set(options).toPdf().get('pdf').then((pdf) => {
+      const pdfUrl = pdf.output('bloburl');
+      window.open(pdfUrl, '_blank');
+    });
   }
   generatePdfForPrint(data: HTMLElement) {
     const printWindow = window.open('', '_blank');

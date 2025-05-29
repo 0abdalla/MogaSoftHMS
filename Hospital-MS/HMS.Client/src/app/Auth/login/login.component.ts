@@ -21,7 +21,6 @@ import { AuthService } from '../auth.service';
 })
 export class LoginComponent implements OnInit {
   loignForm!: FormGroup;
-  // 
   message:string = '';
   constructor(private router : Router , private fb : FormBuilder , private authService : AuthService) { } 
   ngOnInit(): void { 
@@ -33,11 +32,9 @@ export class LoginComponent implements OnInit {
   onLogin(){
     this.authService.login(this.loignForm.value).subscribe({
       next:(data:any) => {
-        console.log('Login successful', data);
         this.router.navigate(['/hms']);
       },
       error:(err) => {
-        console.error('Login failed', err);
         this.message = 'اسم المستخدم أو كلمة المرور غير صحيحين';
       }
     })

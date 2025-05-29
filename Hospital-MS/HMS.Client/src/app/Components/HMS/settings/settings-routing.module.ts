@@ -6,14 +6,15 @@ import { DoctorsSettingsEditComponent } from './doctors-settings-edit/doctors-se
 import { PermissionsComponent } from './permissions/permissions.component';
 import { AppsManagmementComponent } from './apps-managmement/apps-managmement.component';
 import { MedicalServicesListComponent } from './medical-services-list/medical-services-list.component';
+import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  {path:"doctors" , component:DoctorsSettingsComponent},
-  {path:"doctors-list" , component : DoctorsListComponent },
-  {path:"doctors/:id" , component : DoctorsSettingsEditComponent},
-  {path:"permissions" , component : PermissionsComponent},
-  {path:"apps-managmement" , component : AppsManagmementComponent},
-  {path:"medical-services-list" , component : MedicalServicesListComponent}
+  {path:"doctors" , component:DoctorsSettingsComponent,canActivate:[authGuard], data: { pageName: 'doctors' } },
+  {path:"doctors-list" , component : DoctorsListComponent,canActivate:[authGuard], data: { pageName: 'doctors-list' } },
+  {path:"doctors/:id" , component : DoctorsSettingsEditComponent,canActivate:[authGuard], data: { pageName: 'doctors-list' } },
+  {path:"permissions" , component : PermissionsComponent,canActivate:[authGuard], data: { pageName: 'permissions' } },
+  {path:"apps-managmement" , component : AppsManagmementComponent,canActivate:[authGuard], data: { pageName: 'apps-managmement' } },
+  {path:"medical-services-list" , component : MedicalServicesListComponent,canActivate:[authGuard], data: { pageName: 'medical-services-list' } },
 ];
 
 @NgModule({

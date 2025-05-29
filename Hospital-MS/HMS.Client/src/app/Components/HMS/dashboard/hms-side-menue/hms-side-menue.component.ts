@@ -11,16 +11,23 @@ import { AppsService } from '../../../../Services/Permissions/apps.service';
   styleUrl: './hms-side-menue.component.css'
 })
 export class HMSSideMenueComponent {
+  Pages: any[] = [];
   isCollapsed: boolean = false;
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
+  // 
+  activeSubMenu: string = '';
+  // 
   permissions: { [key: string]: boolean } = {};
+  RoleName: string;
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
 
-  constructor(private router: Router, private authService: AuthService , private permissionService: AppsService) {}
+  constructor(private router: Router, private authService: AuthService, private permissionService: AppsService) { }
 
   ngOnInit() {
+    this.RoleName = sessionStorage.getItem('role');
+    this.GetAllowedPagesByRoleName();
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -33,52 +40,46 @@ export class HMSSideMenueComponent {
     });
   }
 
-  setActiveMenuBasedOnRoute() {
-    const currentRoute = this.router.url
-    const routeMenuMap: { [key: string]: string } = {
-      '/hms/home': 'home',
-      '/hms/patients/list': 'patients',
-      '/hms/patients/add': 'patients',
-      '/hms/appointments/list': 'appointments',
-      '/hms/appointments/add': 'appointments',
-      '/hms/appointments/settings': 'appointments',
-      '/hms/emergency/emergency-reception': 'emergency',
-      '/hms/insurance/insurance-list': 'insurance',
-      '/hms/insurance/add-insurance': 'insurance',
-      '/hms/finance/accounts': 'finance',
-      '/hms/finance/transactions': 'finance',
-      '/hms/inventory/stock': 'inventory',
-      '/hms/inventory/purchases': 'inventory',
-      '/hms/staff/list': 'staff',
-      '/hms/staff/add': 'staff',
-      '/hms/staff/progression': 'staff',
-      '/hms/staff/classification': 'staff',
-      '/hms/staff/department-admin': 'staff',
-      '/hms/staff/job-management': 'staff',
-      '/hms/staff/job-levels': 'staff',
-      '/hms/reports/financial': 'reports',
-      '/hms/reports/medical': 'reports',
-      '/hms/settings/general': 'settings',
-      '/hms/settings/doctors': 'settings',
-      '/hms/settings/doctors-list': 'settings',
-      '/hms/settings/permissions': 'settings',
-      '/hms/settings/apps-managmement': 'settings',
-      '/hms/settings/medical-services-list': 'settings',
-    };
+  GetAllowedPagesByRoleName() {
+    this.authService.GetAllowedPagesByRoleName(this.RoleName).subscribe((data: any) => {
+      this.Pages = data;
+      this.Pages.forEach(i => {
+        if (i.children.length == 0)
+          i.isGroup = false;
+        else
+          i.isGroup = true;
+      });
+    });
+  }
 
-    for (const route in routeMenuMap) {
-      if (currentRoute.startsWith(route)) {
-        this.activeMenu = routeMenuMap[route];
+  setActiveMenuBasedOnRoute() {
+    const currentRoute = this.router.url;
+    for (const item of this.Pages) {
+      if (item.isGroup && item.children) {
+        for (const child of item.children) {
+          if (currentRoute.startsWith(child.route)) {
+            this.activeMenu = item.nameAR;
+            this.activeSubmenuRoute = currentRoute;
+            return;
+          }
+        }
+      } else if (!item.isGroup && currentRoute.startsWith(item.route)) {
+        this.activeMenu = item.nameAR;
         this.activeSubmenuRoute = currentRoute;
         return;
       }
     }
+
     this.activeMenu = null;
     this.activeSubmenuRoute = '';
   }
 
   toggleSubMenu(menu: string) {
     this.activeMenu = this.activeMenu === menu ? null : menu;
+  }
+
+  toggleSubSubMenu(subMenu: string) {
+    this.activeSubMenu = this.activeSubMenu === subMenu ? '' : subMenu;
   }
 
   toggleSidebar() {

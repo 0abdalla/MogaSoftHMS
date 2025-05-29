@@ -110,8 +110,6 @@ export class StaffFormComponent implements OnInit {
   }
   onSubmit() {
     if (this.employeeForm.invalid) {
-      console.log('Form is invalid', this.employeeForm.errors);
-      console.log(this.employeeForm.value);
       
       this.messageService.add({
         severity: 'error',
@@ -154,8 +152,6 @@ export class StaffFormComponent implements OnInit {
     formData.append('password', this.employeeForm.get('password')?.value || '');
     this.staffService.addStaff(formData).subscribe({
       next: (data) => {
-        console.log(data);
-        console.log(formData);
         // this.selectedFiles = [];
         this.messageService.add({
           severity: 'success',
@@ -189,10 +185,6 @@ export class StaffFormComponent implements OnInit {
         this.jobTitles = data.jobTitles.results;
         this.filteredJobTitles = [];
         this.jobLevels = data.jobLevels.results;
-        console.log('Departments : ',this.jobDepartments);
-        console.log('Titles : ',this.jobTitles);
-        console.log('Types : ',this.jobTypes);
-        console.log('Levels : ',this.jobLevels);
       },
       error: (error) => {
         console.error(error);

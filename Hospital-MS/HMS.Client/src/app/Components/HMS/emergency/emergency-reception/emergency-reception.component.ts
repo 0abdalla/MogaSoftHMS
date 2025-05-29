@@ -38,12 +38,10 @@ export class EmergencyReceptionComponent {
   submitForm() {
     this.appointmentService.createAppointment(this.emergencyForm.value).subscribe({
       next:(data)=>{
-        console.log("Appointment Successfully Added" , data);
         this.emergencyForm.reset();
         this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
       },
       error : (err) =>{
-        console.log("Failed to add appointment" , err);
         this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
       }
     })

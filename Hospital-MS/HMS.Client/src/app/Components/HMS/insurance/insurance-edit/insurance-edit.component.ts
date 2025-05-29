@@ -40,7 +40,6 @@ export class InsuranceEditComponent implements OnInit {
   getCompanyId(id: number) {
     this.insuranceService.getInsuranceById(id).subscribe({
       next: (response: any) => {
-        console.log('Insurance retrieved successfully', response);
         const company = response.results;
         this.insuranceForm.patchValue({
           name: company.name,
@@ -94,7 +93,6 @@ export class InsuranceEditComponent implements OnInit {
     }else{
       this.insuranceService.updateInsurance(this.companyId , this.insuranceForm.value).subscribe({
         next: (response) => {
-          console.log('Insurance updated successfully', response);
           this.messageService.add({
             severity: 'success',
             summary: 'نجاح',

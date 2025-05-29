@@ -1,1 +1,154 @@
-<p>permissions works!</p>
+<main id="doctors-list" @fadeIn>
+    <section class="section2" id="table-doctors">
+        <div class="card mt-3 p-2">
+            <div class="p-3 mt-4">
+                <div class="row justify-content-between align-items-center gap-2">
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn-purble" data-bs-toggle="modal" data-bs-target="#UserModal" (click)="openAddEditUserModal(null)">+ تعيين مستخدم</button>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-hover mt-4">
+                <thead>
+                    <tr>
+                        <th>الإسم</th>
+                        <th>البريد الالكتروني</th>
+                        <th>الصلاحية</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody *ngIf="UsersData.length > 0">
+                    <tr *ngFor="let user of UsersData | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: Total }">
+                        <td>
+                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                                <div class="avatar-circle">{{ user?.fullName?.charAt(0) }}</div>
+                                <span class="fw-bold">{{ user.fullName }}</span>
+                            </div>
+                        </td>
+                        <td>{{user.email}}</td>
+                        <td>{{user.roleNameAr}}</td>
+                        <td>
+                            <button class="btn btn-outline-warning" data-bs-toggle="modal" data-bs-target="#UserModal" (click)="openAddEditUserModal(user)">
+                                <i class="fa-light fa-pen-to-square"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody *ngIf="UsersData?.length === 0">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">لا يوجد مستخدميين حتى الآن</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="col-lg-12">
+                <div *ngIf="Total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                    <div class="my-pagination">
+                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                            screenReaderCurrentLabel="You're on page">
+                        </pagination-controls>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="modal fade" id="UserModal" tabindex="-1" aria-labelledby="UserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-size">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="UserModalLabel">تعيين مستخدم</h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="UserForm" (ngSubmit)="Register()">
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">المستخدمين</label>
+                        <select id="statusSelect" class="form-select shadow-none" formControlName="staffId">
+                            <option selected disabled value="">اختر مستخدم</option>
+                            <option *ngFor="let user of UsersList" [value]="user.userId">
+                                {{ user.userName }}
+                            </option>
+                        </select>
+                        <div *ngIf="UserForm.get('staffId')?.invalid && UserForm.get('staffId')?.touched" class="text-danger">
+                            يرجى اختيار مستخدم
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">الصلاحيات</label>
+                        <select id="statusSelect" class="form-select shadow-none" formControlName="roleName">
+                            <option selected disabled value="">اختر صلاحية</option>
+                            <option *ngFor="let role of RolesList" [value]="role.roleNameEn">
+                                {{ role.roleNameAr }}
+                            </option>
+                        </select>
+                        <div *ngIf="UserForm.get('roleName')?.invalid && UserForm.get('roleName')?.touched" class="text-danger">
+                            يرجى اختيار صلاحية
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">البريد الالكتروني</label>
+                        <input type="text" class="form-control shadow-none" placeholder="أدخل البريد الالكتروني" formControlName="email" />
+                        <div *ngIf="UserForm.get('email')?.errors?.['required'] && UserForm.get('email')?.touched" class="text-danger">
+                            يرجى إدخال البريد الالكتروني
+                        </div>
+                        <div *ngIf="UserForm.get('email')?.errors?.['pattern']" class="text-danger">
+                            يرجى إدخال بريد الكتروني صالح
+                        </div>
+                    </div>
+                    <div class="mb-3 password-wrapper" dir="rtl">
+                        <label class="form-label">كلمة المرور</label>
+                        <div class="input-with-icon">
+                            <input [type]="showPassword ? 'text' : 'password'" class="form-control shadow-none" placeholder="أدخل كلمة المرور" formControlName="password" />
+                            <span class="toggle-icon" (click)="togglePasswordVisibility()" title="{{ showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور' }}">
+                                <ng-container *ngIf="showPassword; else eyeClosed">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </ng-container>
+                                <ng-template #eyeClosed>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20C5 20 1 12 1 12c.886-1.523 2.234-3.568 4.092-5.086"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                    <path d="M9.53 9.53a3 3 0 0 0 4.94 4.94"/>
+                                    </svg>
+                                </ng-template>
+                            </span>
+                        </div>
+                        <div *ngIf="UserForm.get('password')?.errors?.['required'] && UserForm.get('password')?.touched && !isEdit" class="text-danger">
+                            يرجى إدخال كلمة المرور
+                        </div>
+                        <div *ngIf="UserForm.get('password')?.errors?.['minlength']" class="text-danger">
+                            يجب أن تكون كلمة المرور 6 خانات على الأقل
+                        </div>
+                        <div *ngIf="UserForm.get('password')?.errors?.['pattern']" class="text-danger">
+                            يجب أن تحتوي كلمة المرور على حرف كبير، حرف صغير، رقم، ورمز خاص
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">الاسم الاول</label>
+                        <input type="text" class="form-control shadow-none" placeholder="أدخل الاسم الاول" formControlName="firstName" />
+                        <div *ngIf="UserForm.get('firstName')?.invalid && UserForm.get('firstName')?.touched" class="text-danger">
+                            يرجى إدخال الاسم الاول
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">الاسم الثاني</label>
+                        <input type="text" class="form-control shadow-none" placeholder="أدخل الاسم الثاني" formControlName="lastName" />
+                        <div *ngIf="UserForm.get('lastName')?.invalid && UserForm.get('lastName')?.touched" class="text-danger">
+                            يرجى إدخال الاسم الثاني
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label">العنوان</label>
+                        <input type="text" class="form-control shadow-none" placeholder="أدخل العنوان" formControlName="address" />
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn-blue" [disabled]="UserForm.invalid">حفظ التغييرات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

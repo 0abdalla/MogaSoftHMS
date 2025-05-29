@@ -21,7 +21,6 @@ export class AppointmetSettingsComponent {
 
   saveSettings() {
     const settings = this.settingsForm.value;
-    console.log('تم حفظ الإعدادات:', settings);
   }
 
 }

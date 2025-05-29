@@ -106,10 +106,8 @@ export class MedicalServicesListComponent implements OnInit {
           return service;
         });
         this.total = data.totalCount;
-        console.log('Services', this.services);
       },
       error: (err) => {
-        console.log(err);
         this.services = [];
       }
     });
@@ -125,12 +123,9 @@ export class MedicalServicesListComponent implements OnInit {
   }
   
   openServiceDetails(serviceId: number) {
-    console.log('Opening service details for ID:', serviceId); 
     this.appointmentService.getServices().subscribe({
       next: (data) => {
-        console.log('API Response:', data); 
         this.serviceDetails = data.results.find((service: any) => service.id === serviceId);
-        console.log('Found Service:', this.serviceDetails); 
         this.medicalServiceSchedules.clear();
         const schedules = this.serviceDetails.medicalServiceSchedules || [];
         if (schedules.length === 0) {
@@ -171,7 +166,6 @@ export class MedicalServicesListComponent implements OnInit {
         this.medicalServiceSchedules.push(this.createSchedule());
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة الخدمة' });
       },
     });
@@ -202,7 +196,6 @@ export class MedicalServicesListComponent implements OnInit {
         this.medicalServiceSchedules.push(this.createSchedule());
       },
       error: (err) => {
-        console.log(err);
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل الخدمة' });
       },
     });

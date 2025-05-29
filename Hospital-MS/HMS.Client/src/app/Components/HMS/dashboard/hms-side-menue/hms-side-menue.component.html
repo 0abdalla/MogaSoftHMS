@@ -2,11 +2,9 @@
     <button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle Sidebar">
         <i class="fa" [ngClass]="{'fa-arrow-right': isCollapsed, 'fa-arrow-left': !isCollapsed}"></i>
     </button>
-
     <div class="user-profile">
         <img src="assets/vendors/imgs/logo.png" class="img-fluid" alt="Logo" />
     </div>
-
     <ul class="menu p-2">
         <li>
             <a routerLink="/hms/home" routerLinkActive="activSide" (click)="toggleSubMenu('home')">
@@ -14,244 +12,144 @@
                 <span *ngIf="!isCollapsed">لوحة التحكم</span>
             </a>
         </li>
+        <li *ngFor="let item of Pages">
+            <ng-container *ngIf="!item.isGroup">
+                <a [routerLink]="item.route" routerLinkActive="activSide" (click)="toggleSubMenu(item.nameAR)">
+                    <i class="fa-solid" [ngClass]="item.icon"></i>
+                    <span *ngIf="!isCollapsed">{{ item.nameAR }}</span>
+                </a>
+            </ng-container>
+            <ng-container *ngIf="item.isGroup">
+                <a (click)="toggleSubMenu(item.nameAR)" [class.activSide]="activeMenu === item.nameAR">
+                    <i class="fa-solid" [ngClass]="item.icon"></i>
+                    <span *ngIf="!isCollapsed">{{ item.nameAR }}</span>
+                    <i class="fa me-auto" [ngClass]="{
+              'fa-chevron-up': activeMenu === item.nameAR,
+              'fa-chevron-down': activeMenu !== item.nameAR
+            }" *ngIf="!isCollapsed"></i>
+                </a>
 
-        <li *ngIf="permissions['patients_list'] || permissions['patients_add']">
-            <a (click)="toggleSubMenu('patients')" [class.activSide]="activeMenu === 'patients'">
-                <i class="fa-solid fa-users"></i>
-                <span *ngIf="!isCollapsed">المرضى</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'patients',
-                    'fa-chevron-down': activeMenu !== 'patients'
-                }" *ngIf="!isCollapsed"></i>
+                <ul class="submenu" [ngClass]="{'open': activeMenu === item.nameAR && !isCollapsed}" *ngIf="!isCollapsed">
+                    <li *ngFor="let child of item.children">
+                        <a [routerLink]="child.route" routerLinkActive="activSub" class="a-subMenu">
+                            <i class="fa-solid" [ngClass]="child.icon"></i> {{ child.nameAR }}
+                        </a>
+                    </li>
+                </ul>
+            </ng-container>
+        </li>
+        <li>
+            <a (click)="toggleSubMenu('tree')" [class.activSide]="activeMenu === 'tree'">
+              <i class="fa-solid fa-diagram-project"></i>
+              <span *ngIf="!isCollapsed">شجرة العمليات</span>
+              <i class="fa me-auto" [ngClass]="{
+                'fa-chevron-up': activeMenu === 'tree',
+                'fa-chevron-down': activeMenu !== 'tree'
+              }" *ngIf="!isCollapsed"></i>
             </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'patients' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['patients_list']">
-                    <a routerLink="/hms/patients/list" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة المرضى
+            
+            <ul class="submenu" [ngClass]="{'open': activeMenu === 'tree' && !isCollapsed}" *ngIf="!isCollapsed">
+              <li>
+                <a (click)="toggleSubSubMenu('inputs')" class="a-subsubMenu">
+                  <div class="d-flex align-items-center justify-content-start">
+                    <i class="fa-solid fa-folder"></i> المدخلات 
+                  </div>
+                  <i class="fa me-auto" [ngClass]="{
+                    'fa-chevron-up': activeSubMenu === 'inputs',
+                    'fa-chevron-down': activeSubMenu !== 'inputs'
+                  }"></i>
+                </a>
+                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'inputs'}">
+                  <li>
+                    <a routerLink="/hms/fin-tree/main-groups" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> المجموعات الرئيسية
                     </a>
-                </li>
-                <li *ngIf="permissions['patients_add']">
-                    <a routerLink="/hms/patients/add" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إضافة مريض
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/items-group" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> مجموعة الأصناف
                     </a>
-                </li>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/items" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i>  الأصناف
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/providers" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> الموردين
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/clients" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> العملاء
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/boxes" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> الخزائن
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/banks" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> البنوك
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/accounts" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> الحسابات العامة
+                    </a>
+                  </li>
+                </ul>
+              </li>
+          
+              <li>
+                <a (click)="toggleSubSubMenu('transactions')" class="a-subsubMenu">
+                  <div class="d-flex align-items-center justify-content-start">
+                    <i class="fa-solid fa-folder"></i> الحركات 
+                  </div>
+                  <i class="fa me-auto" [ngClass]="{
+                    'fa-chevron-up': activeSubMenu === 'transactions',
+                    'fa-chevron-down': activeSubMenu !== 'transactions'
+                  }"></i>
+                </a>
+                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'transactions'}">
+                  <li>
+                    <a routerLink="/hms/fin-tree/add-items" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> أذون الإضافة
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/issue-items" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> أذون الصرف
+                    </a>
+                  </li>
+                </ul>
+              </li>
+          
+              <li>
+                <a (click)="toggleSubSubMenu('reports')" class="a-subsubMenu">
+                  <div class="d-flex align-items-center justify-content-start">
+                    <i class="fa-solid fa-folder"></i> 
+                    التقارير 
+                  </div>
+                  <i class="fa me-auto" [ngClass]="{
+                    'fa-chevron-up': activeSubMenu === 'reports',
+                    'fa-chevron-down': activeSubMenu !== 'reports'
+                  }"></i>
+                </a>
+                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'reports'}">
+                  <li>
+                    <a routerLink="/stock-movement-report" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> تقرير حركة مخزن
+                    </a>
+                  </li>
+                </ul>
+              </li>
             </ul>
-        </li>
-
-        <li *ngIf="permissions['appointments_list'] || permissions['appointments_add'] || permissions['appointments_settings']">
-            <a (click)="toggleSubMenu('appointments')" [class.activSide]="activeMenu === 'appointments'">
-                <i class="fa-solid fa-calendar-check"></i>
-                <span *ngIf="!isCollapsed">الحجوزات</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'appointments',
-                    'fa-chevron-down': activeMenu !== 'appointments'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'appointments' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['appointments_list']">
-                    <a routerLink="/hms/appointments/list" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة الحجوزات
-                    </a>
-                </li>
-                <li *ngIf="permissions['appointments_add']">
-                    <a routerLink="/hms/appointments/add" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إضافة حجز
-                    </a>
-                </li>
-                <li *ngIf="permissions['appointments_settings']">
-                    <a routerLink="/hms/appointments/settings" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إعدادات الحجز
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li *ngIf="permissions['emergency_reception']">
-            <a routerLink="/hms/emergency/emergency-reception" routerLinkActive="activSide" (click)="toggleSubMenu('emergency')">
-                <i class="fa-solid fa-hospital-user"></i>
-                <span *ngIf="!isCollapsed">الطوارئ</span>
-            </a>
-        </li>
-
-        <li *ngIf="permissions['insurance_list'] || permissions['insurance_add']">
-            <a (click)="toggleSubMenu('insurance')" [class.activSide]="activeMenu === 'insurance'">
-                <i class="fa-solid fa-file-contract"></i>
-                <span *ngIf="!isCollapsed">وكلاء التأمين</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'insurance',
-                    'fa-chevron-down': activeMenu !== 'insurance'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'insurance' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['insurance_list']">
-                    <a routerLink="/hms/insurance/insurance-list" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>وكلاء التأمين
-                    </a>
-                </li>
-                <li *ngIf="permissions['insurance_add']">
-                    <a routerLink="/hms/insurance/add-insurance" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إضافة وكيل التأمين
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li *ngIf="permissions['finance_accounts'] || permissions['finance_transactions']">
-            <a (click)="toggleSubMenu('finance')" [class.activSide]="activeMenu === 'finance'">
-                <i class="fa-solid fa-money-bill-trend-up"></i>
-                <span *ngIf="!isCollapsed">الحسابات</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'finance',
-                    'fa-chevron-down': activeMenu !== 'finance'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'finance' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['finance_accounts']">
-                    <a routerLink="/hms/finance/accounts" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>الحسابات العامة
-                    </a>
-                </li>
-                <li *ngIf="permissions['finance_transactions']">
-                    <a routerLink="/hms/finance/transactions" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>المعاملات المالية
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li *ngIf="permissions['inventory_stock'] || permissions['inventory_purchases']">
-            <a (click)="toggleSubMenu('inventory')" [class.activSide]="activeMenu === 'inventory'">
-                <i class="fa-solid fa-boxes-stacked"></i>
-                <span *ngIf="!isCollapsed">المشتريات</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'inventory',
-                    'fa-chevron-down': activeMenu !== 'inventory'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'inventory' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['inventory_stock']">
-                    <a routerLink="/hms/inventory/stock" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>المخزون
-                    </a>
-                </li>
-                <li *ngIf="permissions['inventory_purchases']">
-                    <a routerLink="/hms/inventory/purchases" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>المشتريات
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li *ngIf="permissions['staff_list'] || permissions['staff_add'] || permissions['staff_department'] || permissions['staff_job_levels'] || permissions['staff_classification'] || permissions['staff_job_management']">
-            <a (click)="toggleSubMenu('staff')" [class.activSide]="activeMenu === 'staff'">
-                <i class="fa-solid fa-users-gear"></i>
-                <span *ngIf="!isCollapsed">الموارد البشرية</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'staff',
-                    'fa-chevron-down': activeMenu !== 'staff'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'staff' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['staff_list']">
-                    <a routerLink="/hms/staff/list" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة الموظفين
-                    </a>
-                </li>
-                <li *ngIf="permissions['staff_add']">
-                    <a routerLink="/hms/staff/add" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إضافة موظف
-                    </a>
-                </li>
-                <li *ngIf="permissions['staff_department']">
-                    <a routerLink="/hms/staff/department-admin" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>الأقسام
-                    </a>
-                </li>
-                <li *ngIf="permissions['staff_job_levels']">
-                    <a routerLink="/hms/staff/job-levels" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>المستويات الوظيفية
-                    </a>
-                </li>
-                <li *ngIf="permissions['staff_classification']">
-                    <a routerLink="/hms/staff/classification" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>تصنيف الوظائف
-                    </a>
-                </li>
-                <li *ngIf="permissions['staff_job_management']">
-                    <a routerLink="/hms/staff/job-management" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>الوظائف
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li *ngIf="permissions['reports_financial'] || permissions['reports_medical']">
-            <a (click)="toggleSubMenu('reports')" [class.activSide]="activeMenu === 'reports'">
-                <i class="fa-solid fa-chart-column"></i>
-                <span *ngIf="!isCollapsed">التقارير</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'reports',
-                    'fa-chevron-down': activeMenu !== 'reports'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'reports' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['reports_financial']">
-                    <a routerLink="/hms/reports/financial" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>تقارير المالية
-                    </a>
-                </li>
-                <li *ngIf="permissions['reports_medical']">
-                    <a routerLink="/hms/reports/medical" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>تقارير الطبية
-                    </a>
-                </li>
-            </ul>
-        </li>
-
-        <li *ngIf="permissions['settings_general'] || permissions['settings_doctors_list'] || permissions['settings_doctors'] || permissions['settings_medical_services'] || permissions['settings_permissions'] || permissions['settings_apps_management']">
-            <a (click)="toggleSubMenu('settings')" [class.activSide]="activeMenu === 'settings'">
-                <i class="fa-solid fa-gear"></i>
-                <span *ngIf="!isCollapsed">الاعدادات</span>
-                <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeMenu === 'settings',
-                    'fa-chevron-down': activeMenu !== 'settings'
-                }" *ngIf="!isCollapsed"></i>
-            </a>
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'settings' && !isCollapsed}" *ngIf="!isCollapsed">
-                <li *ngIf="permissions['settings_general']">
-                    <a routerLink="/hms/settings/general" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>الإعدادات العامة
-                    </a>
-                </li>
-                <li *ngIf="permissions['settings_doctors_list']">
-                    <a routerLink="/hms/settings/doctors-list" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة الأطباء
-                    </a>
-                </li>
-                <li *ngIf="permissions['settings_doctors']">
-                    <a routerLink="/hms/settings/doctors" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إضافة طبيب
-                    </a>
-                </li>
-                <li *ngIf="permissions['settings_medical_services']">
-                    <a routerLink="/hms/settings/medical-services-list" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة الخدمات الطبية
-                    </a>
-                </li>
-                <li *ngIf="permissions['settings_permissions']">
-                    <a routerLink="/hms/settings/permissions" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة الصلاحيات
-                    </a>
-                </li>
-                <li *ngIf="permissions['settings_apps_management']">
-                    <a routerLink="/hms/settings/apps-managmement" routerLinkActive="activSub" class="a-subMenu">
-                        <i class="fa-solid fa-circle"></i>إدارة التطبيقات
-                    </a>
-                </li>
-            </ul>
-        </li>
+          </li>
+          
     </ul>
-
     <div class="logout d-flex align-items-center justify-content-center px-4 text-danger" (click)="logout()">
         <a class="text-decoration-none text-danger" *ngIf="!isCollapsed">تسجيل الخروج</a>
         <i class="fa fa-sign-out-alt me-auto"></i>

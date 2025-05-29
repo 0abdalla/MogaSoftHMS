@@ -63,13 +63,10 @@ export class InsuranceFormComponent {
       summary: 'خطأ',
       detail: 'يرجى ملء جميع الحقول المطلوبة بشكل صحيح'
     });
-    console.log('Form Errors:', this.insuranceForm.errors);
-    console.log('Form Value:', this.insuranceForm.value);
     return;
   }else{
     this.insuranceService.addInsurance(this.insuranceForm.value).subscribe({
       next: (response) => {
-        console.log('Insurance added successfully', response);
         this.messageService.add({ severity: 'success', summary: 'تم الإضافة', detail: 'تم إضافة الشركة بنجاح' });
         this.resetForm();
       },

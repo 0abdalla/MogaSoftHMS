@@ -3,10 +3,12 @@ using Hospital_MS.Core._Data;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
+using Hospital_MS.Interfaces;
 using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Services;
 using Hospital_MS.Services.Auth;
 using Hospital_MS.Services.Common;
 using Hospital_MS.Services.HMS;
@@ -71,6 +73,10 @@ namespace Hospital_MS.API
             services.AddScoped<IJobLevelService, JobLevelService>();
             services.AddScoped<IJobDepartmentService, JobDepartmentService>();
             services.AddScoped<IDashboardService, DashboardService>();
+            services.AddScoped<IManageRolesService, ManageRolesService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISupplierService, SupplierService>();
+
 
 
 

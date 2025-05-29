@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../Models/HMS/user';
+import { PagingFilterModel } from '../Models/Generics/PagingFilterModel';
+import { PagedResponseModel } from '../Models/Generics/PagedResponseModel';
+import { ErrorResponseModel } from '../Models/Generics/ErrorResponseModel';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   baseUrl = environment.baseUrl;
+  private allowedPagesCache = new Map<string, Observable<any>>();
 
   constructor(private http: HttpClient) { }
 
@@ -20,12 +24,17 @@ export class AuthService {
         sessionStorage.setItem('firstName', response.results.firstName);
         sessionStorage.setItem('lastName', response.results.lastName);
         sessionStorage.setItem('role', response.results.role);
+        sessionStorage.setItem('pages', response.results.pages);
       })
     );
   }
 
-  register(data: User) {
-    return this.http.post(`${this.baseUrl}Auth/register`, data);
+  register(data: any) {
+    return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Auth/register`, data);
+  }
+
+  UpdateUserAsync(data: any) {
+    return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Auth/UpdateUserAsync`, data);
   }
 
   getUserFromSession(): User | null {
@@ -33,11 +42,55 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
+  GetAllUsers(pagingFilter: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<any>>(`${this.baseUrl}Users/GetAllUsers`, pagingFilter);
+  }
+
+  GetManageRolePages() {
+    return this.http.get(`${this.baseUrl}ManageRoles/GetManageRolePages`);
+  }
+
+  AssignRoleToPages(Model: any) {
+    return this.http.post(`${this.baseUrl}ManageRoles/AssignRoleToPages`, Model);
+  }
+
+  GetAllRoles() {
+    return this.http.get<any>(`${this.baseUrl}ManageRoles/GetAllRoles`);
+  }
+
+  GetPagesByRoleId(RoleId: any) {
+    return this.http.get(`${this.baseUrl}ManageRoles/GetPagesByRoleId?RoleId=${RoleId}`);
+  }
+
+  GetAllEmployees() {
+    return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Users/GetAllEmployees`);
+  }
+
+  GetAllowedPagesByRoleName(RoleName: any): Observable<any> {
+    if (this.allowedPagesCache.has(RoleName)) {
+      return this.allowedPagesCache.get(RoleName)!;
+    }
+
+    const request = this.http
+      .get(`${this.baseUrl}ManageRoles/GetAllowedPagesByRoleName?RoleName=${RoleName}`)
+      .pipe(
+        shareReplay(1)
+      );
+
+    this.allowedPagesCache.set(RoleName, request);
+    return request;
+  }
+
   logout(): void {
     sessionStorage.clear();
   }
   getToken(): string | null {
     return sessionStorage.getItem('token');
+  }
+
+  CheckUserAllowed(pageName: string): boolean {
+    let pages = sessionStorage.getItem('pages').split(',');
+    return pages ? pages.some(i => i == pageName) : false;
   }
 
   isInRole(roles: string[]): boolean {
