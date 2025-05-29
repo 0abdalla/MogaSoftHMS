@@ -88,7 +88,7 @@ namespace Hospital_MS.Services.Auth
                 LastName = request.LastName,
                 Email = request.Email,
                 UserName = request.Email,
-                StaffId = request.StaffId,
+                //StaffId = request.StaffId,
                 IsActive = true,
             };
 

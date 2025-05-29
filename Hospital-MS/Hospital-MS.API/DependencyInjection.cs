@@ -8,6 +8,7 @@ using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Services;
 using Hospital_MS.Services.Auth;
 using Hospital_MS.Services.Common;
 using Hospital_MS.Services.HMS;
@@ -74,6 +75,8 @@ namespace Hospital_MS.API
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<IManageRolesService, ManageRolesService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ISupplierService, SupplierService>();
+
 
 
 

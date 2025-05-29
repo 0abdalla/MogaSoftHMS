@@ -38,7 +38,7 @@ namespace Hospital_MS.Core._Data
         public DbSet<JobLevel> JobLevels { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
-
+        public DbSet<Supplier> Suppliers  { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
