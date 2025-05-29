@@ -3,7 +3,7 @@ using Hospital_MS.Core.Models.HR;
 
 namespace Hospital_MS.Core.Models
 {
-    public sealed class Staff : AuditableEntity
+    public class Staff : AuditableEntity
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;
