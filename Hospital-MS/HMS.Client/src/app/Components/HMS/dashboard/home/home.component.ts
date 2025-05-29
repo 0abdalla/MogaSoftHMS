@@ -123,6 +123,9 @@ export class HomeComponent {
           fontFamily: 'Tajawal',
         },
       },
+      accessibility: {
+        enabled: false
+      },
       title: {
         text: '',
         
@@ -173,6 +176,9 @@ export class HomeComponent {
     });
 
     this.completedAppsChart = new Chart({
+      accessibility: {
+        enabled: false
+      },
       chart: {
         type: 'pie',
         renderTo: 'appointments-donut',
@@ -229,6 +235,9 @@ export class HomeComponent {
     })
 
     this.doctorsChart = new Chart({
+      accessibility: {
+        enabled: false
+      },
       chart: {
         type: 'bar',
         renderTo: 'doctors-stacked-bar',
@@ -316,6 +325,9 @@ export class HomeComponent {
     this.clinicChart = new Chart({
       chart: {
         type: 'column'
+      },
+      accessibility: {
+        enabled: false
       },
       title: {
         text: 'توزيع ضغط الحجوزات',

@@ -1,0 +1,193 @@
+<main id="providers">
+    <div class="container-fluid">
+        <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-md-6">
+                        <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام اسم المورد أو رقم الهاتف" class="form-control text-end shadow-none">
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <button data-bs-toggle="modal" data-bs-target="#addProviderModal" type="button" class="btn-red w-100 mx-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>كود الحساب</th>
+                    <th>إسم المورد</th>
+                    <th>إسم المسئول</th>
+                    <th>رقم الهاتف</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="providers?.length > 0">
+                <tr *ngFor="let provider of providers | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(provider.id)" style="cursor: pointer">
+                    <td>
+                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <div class="avatar-circle">{{ provider.name.charAt(0) }}</div>
+                            <span class="fw-bold">{{ provider.name }}</span>
+                        </div>
+                    </td>
+                    <td class="text-secondary">{{ provider.description }}</td>
+                    <td>{{ provider.responsibleName }}</td>
+                    <td>{{ provider.phoneNumber }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="providers?.length === 0">
+                <tr>
+                    <td colspan="6" class="text-center text-muted">لا يوجد موردين حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="addProviderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="addProviderModalLabel">إضافة مورد</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="providerForm" (ngSubmit)="addProvider()">
+            <div class="row p-3 mb-3">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>كود الحسابات</label>
+                  <input type="text" formControlName="accountCode" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-9">
+                <div class="form-group">
+                  <label>اسم المورد</label>
+                  <input type="text" formControlName="name" class="form-control shadow-none text-end" placeholder="أدخل اسم المورد">
+                </div>
+              </div>
+  
+              <div class="col-md-12 mt-3">
+                <div class="form-group">
+                  <label>العنوان</label>
+                  <input type="text" formControlName="address" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-6 mt-3">
+                <div class="form-group">
+                  <label>اسم المسئول</label>
+                  <input type="text" formControlName="managerName1" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-6 mt-3">
+                <div class="form-group">
+                  <label>اسم المسئول 2</label>
+                  <input type="text" formControlName="managerName2" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-6 mt-3">
+                <div class="form-group">
+                  <label>هاتف العميل</label>
+                  <input type="text" formControlName="phone1" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-6 mt-3">
+                <div class="form-group">
+                  <label>هاتف العميل 2</label>
+                  <input type="text" formControlName="phone2" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-6 mt-3">
+                <div class="form-group">
+                  <label>الرقم الضريبي</label>
+                  <input type="text" formControlName="taxNumber" class="form-control shadow-none text-end">
+                </div>
+              </div>
+
+              <div class="col-md-6 mt-3">
+                <div class="form-group">
+                  <label>الوظيفة</label>
+                  <input type="text" formControlName="job" class="form-control shadow-none text-end">
+                </div>
+              </div>
+            </div>
+
+            <div class="row p-3 mb-3">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>التليفون 1</label>
+                  <input type="number" formControlName="phone1" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>الفاكس 1</label>
+                  <input type="number" formControlName="fax1" class="form-control shadow-none text-end">
+                </div>
+              </div>
+            </div>
+  
+            <div class="row p-3 mb-3">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>البريد الإلكتروني</label>
+                  <input type="email" formControlName="email" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-12 mt-3">
+                <div class="form-group">
+                  <label>الموقع على الشبكة</label>
+                  <input type="text" formControlName="networkLink" class="form-control shadow-none text-end">
+                </div>
+              </div>
+  
+              <div class="col-md-12 mt-3">
+                <div class="form-group">
+                  <label>ملاحظات</label>
+                  <textarea formControlName="notes" class="form-control shadow-none text-end"></textarea>
+                </div>
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-4" [disabled]="providerForm.invalid">إضافة المورد</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

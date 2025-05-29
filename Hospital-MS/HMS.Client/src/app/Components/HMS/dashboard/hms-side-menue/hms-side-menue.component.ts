@@ -15,6 +15,9 @@ export class HMSSideMenueComponent {
   isCollapsed: boolean = false;
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
+  // 
+  activeSubMenu: string = '';
+  // 
   permissions: { [key: string]: boolean } = {};
   RoleName: string;
 
@@ -73,6 +76,10 @@ export class HMSSideMenueComponent {
 
   toggleSubMenu(menu: string) {
     this.activeMenu = this.activeMenu === menu ? null : menu;
+  }
+
+  toggleSubSubMenu(subMenu: string) {
+    this.activeSubMenu = this.activeSubMenu === subMenu ? '' : subMenu;
   }
 
   toggleSidebar() {

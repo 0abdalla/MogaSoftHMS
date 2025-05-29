@@ -21,6 +21,7 @@ const routes: Routes = [
       { path: 'financial', loadChildren: () => import('./financial/financial.module').then(m => m.FinancialModule) },
       { path: 'reports', loadChildren: () => import('./reports/reports.module').then(m => m.ReportsModule) },
       { path: 'settings', loadChildren: () => import('./settings/settings.module').then(m => m.SettingsModule) },
+      { path: 'fin-tree', loadChildren: () => import('./fin-tree/fin-tree.module').then(m => m.FinTreeModule) },
       { path: '**', redirectTo: 'home' },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
     ]

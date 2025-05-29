@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   declarations: [
     HmsLayoutComponent,
     HMSSideMenueComponent,
-    HomeComponent
+    HomeComponent,
   ],
   imports: [
     CommonModule,

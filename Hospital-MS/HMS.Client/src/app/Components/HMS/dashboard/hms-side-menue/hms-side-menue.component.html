@@ -38,6 +38,117 @@
                 </ul>
             </ng-container>
         </li>
+        <li>
+            <a (click)="toggleSubMenu('tree')" [class.activSide]="activeMenu === 'tree'">
+              <i class="fa-solid fa-diagram-project"></i>
+              <span *ngIf="!isCollapsed">شجرة العمليات</span>
+              <i class="fa me-auto" [ngClass]="{
+                'fa-chevron-up': activeMenu === 'tree',
+                'fa-chevron-down': activeMenu !== 'tree'
+              }" *ngIf="!isCollapsed"></i>
+            </a>
+            
+            <ul class="submenu" [ngClass]="{'open': activeMenu === 'tree' && !isCollapsed}" *ngIf="!isCollapsed">
+              <li>
+                <a (click)="toggleSubSubMenu('inputs')" class="a-subsubMenu">
+                  <div class="d-flex align-items-center justify-content-start">
+                    <i class="fa-solid fa-folder"></i> المدخلات 
+                  </div>
+                  <i class="fa me-auto" [ngClass]="{
+                    'fa-chevron-up': activeSubMenu === 'inputs',
+                    'fa-chevron-down': activeSubMenu !== 'inputs'
+                  }"></i>
+                </a>
+                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'inputs'}">
+                  <li>
+                    <a routerLink="/hms/fin-tree/main-groups" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> المجموعات الرئيسية
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/items-group" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> مجموعة الأصناف
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/items" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i>  الأصناف
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/providers" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> الموردين
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/clients" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> العملاء
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/boxes" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> الخزائن
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/banks" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> البنوك
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/accounts" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> الحسابات العامة
+                    </a>
+                  </li>
+                </ul>
+              </li>
+          
+              <li>
+                <a (click)="toggleSubSubMenu('transactions')" class="a-subsubMenu">
+                  <div class="d-flex align-items-center justify-content-start">
+                    <i class="fa-solid fa-folder"></i> الحركات 
+                  </div>
+                  <i class="fa me-auto" [ngClass]="{
+                    'fa-chevron-up': activeSubMenu === 'transactions',
+                    'fa-chevron-down': activeSubMenu !== 'transactions'
+                  }"></i>
+                </a>
+                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'transactions'}">
+                  <li>
+                    <a routerLink="/hms/fin-tree/add-items" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> أذون الإضافة
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/issue-items" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> أذون الصرف
+                    </a>
+                  </li>
+                </ul>
+              </li>
+          
+              <li>
+                <a (click)="toggleSubSubMenu('reports')" class="a-subsubMenu">
+                  <div class="d-flex align-items-center justify-content-start">
+                    <i class="fa-solid fa-folder"></i> 
+                    التقارير 
+                  </div>
+                  <i class="fa me-auto" [ngClass]="{
+                    'fa-chevron-up': activeSubMenu === 'reports',
+                    'fa-chevron-down': activeSubMenu !== 'reports'
+                  }"></i>
+                </a>
+                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'reports'}">
+                  <li>
+                    <a routerLink="/stock-movement-report" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> تقرير حركة مخزن
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          
     </ul>
     <div class="logout d-flex align-items-center justify-content-center px-4 text-danger" (click)="logout()">
         <a class="text-decoration-none text-danger" *ngIf="!isCollapsed">تسجيل الخروج</a>

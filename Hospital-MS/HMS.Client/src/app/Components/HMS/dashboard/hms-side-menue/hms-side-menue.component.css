@@ -219,3 +219,8 @@
   width: 3em;
   height: 1.5em;
 }
+
+.a-subsubMenu{
+  display: flex !important;
+  justify-content: space-between !important;
+}

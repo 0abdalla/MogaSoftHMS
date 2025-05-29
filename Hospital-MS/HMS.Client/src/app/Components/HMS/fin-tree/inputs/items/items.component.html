@@ -1,0 +1,219 @@
+<main id="items">
+    <div class="container-fluid">
+        <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-md-8 row">
+                        <div class="col-md-3 mb-2">
+                            <label class="form-label">إسم الصنف</label>
+                            <br>
+                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none">
+                        </div>
+
+                        <div class="col-md-3 mb-2 ">
+                            <label class="form-label">المجموعة</label>
+                            <br>
+                            <select class="form-select text-end shadow-none">
+                                <option>خامات</option>
+                                <option>مواد</option>
+                                <option>خدمات</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-2 ">
+                            <label class="form-label">حد الطلب</label>
+                            <br>
+                            <div class="d-flex gap-2">
+                                <select class="form-select text-end shadow-none">
+                                    <option>يساوي</option>
+                                    <option>أقل من</option>
+                                    <option>أكبر من</option>
+                                </select>
+                                <input type="text" formControlName="SearchText" class="form-control text-end shadow-none">
+                            </div>
+                        </div>
+                    
+                        <!-- <br>
+                        <div class="col-md-4 mb-2">
+                            <label class="form-label">ترتيب حسب</label>
+                            <div class="d-flex gap-2">
+                                <select class="form-select text-end shadow-none">
+                                    <option>تنازلياً</option>
+                                    <option>تصاعدياً</option>
+                                </select>
+                                <select class="form-select text-end shadow-none">
+                                    <option>تاريخ الإدخال</option>
+                                    <option>تاريخ التحديث</option>
+                                </select>
+                            </div>
+                        </div> -->
+                    </div>
+                    <!-- <div class="col-md-2 text-center">
+                        <button type="submit" class="w-100 btn-blue">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <br>
+                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="w-100 btn-red mt-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div> -->
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>رقم الصنف</th>
+                    <th>إسم الصنف</th>
+                    <th>حد الطلب</th>
+                    <th>المجموعة</th>
+                    <th>رأس مجموعة</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="items?.length > 0">
+                <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
+                    <td>
+                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
+                            <span class="fw-bold">{{ item.name }}</span>
+                        </div>
+                    </td>
+                    <td class="text-secondary">{{ item.description }}</td>
+                    <td>{{ item.items }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="items?.length === 0">
+                <tr>
+                    <td colspan="6" class="text-center text-muted">لا يوجد أصناف حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="addItemModalLabel">إضافة صنف جديد</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="itemForm" (ngSubmit)="addItem()">
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <label for="name" class="form-label">اسم الصنف</label>
+                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الصنف">
+                <div *ngIf="itemForm.get('name')?.invalid && itemForm.get('name')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="nameEn" class="form-label">اسم الصنف بالإنجليزية</label>
+                <input type="text" class="form-control shadow-none" formControlName="nameEn" id="nameEn" placeholder="الاسم بالإنجليزية">
+                <div *ngIf="itemForm.get('nameEn')?.invalid && itemForm.get('nameEn')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('nameEn')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="category" class="form-label">المجموعة</label>
+                <select class="form-select shadow-none" formControlName="category" id="category">
+                  <option selected disabled value="">اختر المجموعة</option>
+                  <option value="">خامات</option>
+                  <option value="">مواد</option>
+                  <option value="">خدمات</option>
+                </select>
+                <div *ngIf="itemForm.get('category')?.invalid && itemForm.get('category')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('category')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="unit" class="form-label">الوحدة</label>
+                <select class="form-select shadow-none" formControlName="unit" id="unit">
+                  <option selected disabled value="">اختر الوحدة</option>
+                  <option value="كجم">كجم</option>
+                  <option value="قطعة">قطعة</option>
+                  <option value="لتر">لتر</option>
+
+                </select>
+                <div *ngIf="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('unit')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-4 mb-2" *ngFor="let field of numericFields">
+                <label [for]="field.name" class="form-label">{{ field.label }}</label>
+                <input type="number" class="form-control shadow-none" [formControlName]="field.name" [id]="field.name" [placeholder]="field.label">
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="hasBarcode" class="form-label">له باركود</label>
+                <select class="form-select shadow-none" formControlName="hasBarcode" id="hasBarcode">
+                  <option value="true">نعم</option>
+                  <option value="false">لا</option>
+                </select>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="groupHead" class="form-label">رأس مجموعة</label>
+                <select class="form-select shadow-none" formControlName="groupHead" id="groupHead">
+                  <option value="true">نعم</option>
+                  <option value="false">لا</option>
+                </select>
+                <div *ngIf="itemForm.get('groupHead')?.invalid && itemForm.get('groupHead')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('groupHead')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+  
+              <div class="col-md-6 mb-2">
+                <label for="itemType" class="form-label">نوع الصنف</label>
+                <select class="form-select shadow-none" formControlName="itemType" id="itemType">
+                  <option selected disabled value="">اختر نوع الصنف</option>
+                  <option value="">منتج</option>
+                  <option value="خدمة">خدمة</option>
+                </select>
+                <div *ngIf="itemForm.get('itemType')?.invalid && itemForm.get('itemType')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('itemType')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                </div>
+              </div>
+            </div>
+  
+            <div class="text-center mt-3">
+              <button type="submit" class="btn-blue" [disabled]="itemForm.invalid">إضافة الصنف</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>  

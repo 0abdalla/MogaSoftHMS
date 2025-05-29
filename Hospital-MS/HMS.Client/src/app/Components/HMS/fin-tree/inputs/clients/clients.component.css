@@ -1,0 +1,90 @@
+#clients{
+    min-height: 100vh;
+}
+
+table {
+    width: 100%;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    overflow: hidden;
+    border: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  
+  th {
+    color: #5A607F;
+  }
+  
+  th,
+  td {
+    border: none;
+    padding: 15px;
+  }
+  td{
+    text-align: start;
+    vertical-align: middle;
+    border-bottom: 1px solid #E6E9F4;
+  }
+  
+  .table td p {
+    font-size: 14px;
+    padding: 4px 5px 7px;
+    border-radius: 8px;
+    color: white;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    transition: all 0.3s ease;
+  }
+  
+  
+  .pagination-container {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top: 2px solid #e9e9ee;
+    background-color: white;
+  }
+  
+  .my-pagination {
+    background-color: transparent !important;
+  }
+  
+  .my-pagination ::ng-deep .ngx-pagination .current {
+    background: #ECF2FF;
+    color: #576CAB;
+    border-radius: 6px;
+    text-align: center !important;
+  }
+  
+  .my-pagination ::ng-deep .ngx-pagination {
+    margin-top: 14px !important;
+    padding-left: 0 !important;
+  }
+  
+  .my-pagination ::ng-deep .ngx-pagination a {
+    background: none;
+    font-size: 16px;
+    border-radius: 6px;
+    color: #5A607F;
+    margin-inline: 3px !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+  }
+  
+  .my-pagination ::ng-deep .ngx-pagination a:hover {
+    background: #ECF2FF;
+    border-radius: 6px;
+    color: #576CAB;
+  }
+  
+  .my-pagination ::ng-deep .ngx-pagination .disabled {
+    color: gray;
+    margin-inline: 3px;
+    text-decoration: none;
+    text-align: center !important;
+  }
