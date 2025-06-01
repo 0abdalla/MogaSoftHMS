@@ -76,6 +76,10 @@ namespace Hospital_MS.API
             services.AddScoped<IManageRolesService, ManageRolesService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISupplierService, SupplierService>();
+            services.AddScoped<IItemService, ItemService>();
+            services.AddScoped<ITreasuryService, TreasuryService>();
+            services.AddScoped<ICustomerService, CustomerService>();
+            services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 
 
 
