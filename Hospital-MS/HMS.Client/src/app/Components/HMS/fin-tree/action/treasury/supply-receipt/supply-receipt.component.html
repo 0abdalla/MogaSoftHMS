@@ -1,0 +1,149 @@
+<main id="supply">
+    <div class="container-fluid">
+        <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
+                <div class="row justify-content-between align-items-center">
+                    <div class="row col-md-8">
+                        <div class="col-md-6">
+                            <select formControlName="type" name="" id="" class="form-select text-end shadow-none">
+                                <option selected disabled value="">اختر الخزينة </option>
+                                <option value="">خزينة رئيسي</option>
+                                <option value="">خزينة فرعية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام رقم المستند" class="form-control text-end shadow-none"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <button data-bs-toggle="modal" data-bs-target="#addSupplyReceiptModal" type="button" class="btn-red w-100 mx-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>التاريخ</th>
+                    <th>الخزينة</th>
+                    <th>المبلغ</th>
+                    <th>اسم المستخدم</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="adds?.length > 0">
+                <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
+                    <td>
+                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <div class="avatar-circle">{{ add.name.charAt(0) }}</div>
+                            <span class="fw-bold">{{ add.name }}</span>
+                        </div>
+                    </td>
+                    <td class="text-secondary">{{ add.description }}</td>
+                    <td>{{ add.responsibleName }}</td>
+                    <td>{{ add.phoneNumber }}</td>
+
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="adds?.length === 0">
+                <tr>
+                    <td colspan="5" class="text-center text-muted">لا يوجد إيصالات توريد حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addSupplyReceiptModal" tabindex="-1" aria-labelledby="addSupplyReceiptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="addSupplyReceiptModalLabel">إيصال توريد جديد</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="addPermissionForm" (ngSubmit)="submitPermission()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+  
+                <div class="col-md-4">
+                  <label>التاريخ</label>
+                  <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                </div>
+
+                <div class="col-md-4">
+                  <label>صرف من</label>
+                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                    <option disabled selected value="">اختر الخزينة</option>
+                    <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                    <option value="مخزن فرعي">خزينة فرعية</option>
+                    
+                  </select>
+                </div>
+
+  
+                <div class="col-md-4">
+                  <label>استلمت من السيد</label>
+                  <input type="text" class="form-control shadow-none text-end" formControlName="balance" />
+                </div>
+
+                <div class="col-md-4">
+                    <label>كود الحساب</label>
+                    <select class="form-select shadow-none text-end" formControlName="supplierName">
+                      <option disabled selected value="">اختر الحساب</option>
+                      <option value="مورد 1">مورد 1</option>
+                      <option value="مورد 2">مورد 2</option>
+                    </select>
+                  </div>
+
+                <div class="col-md-4">
+                  <label>المبلغ</label>
+                  <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
+                </div>
+
+                <div class="col-md-4">
+                  <label>شرح العملية/القيد</label>
+                  <input type="text" class="form-control shadow-none text-end" formControlName="description" />
+                </div>
+  
+                <div class="col-md-12">
+                  <label>ملاحظات</label>
+                  <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                </div>
+  
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">إضافة إيصال</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>

@@ -38,6 +38,7 @@
                 </ul>
             </ng-container>
         </li>
+
         <li>
             <a (click)="toggleSubMenu('tree')" [class.activSide]="activeMenu === 'tree'">
               <i class="fa-solid fa-diagram-project"></i>
@@ -124,6 +125,16 @@
                       <i class="fa-solid fa-circle"></i> أذون الصرف
                     </a>
                   </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/fetch-inventory" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> جرد المخازن
+                    </a>
+                  </li>
+                  <li>
+                    <a routerLink="/hms/fin-tree/treasury" routerLinkActive="activSub" class="a-subMenu">
+                      <i class="fa-solid fa-circle"></i> حركة الخزينة
+                    </a>
+                  </li>
                 </ul>
               </li>
           
@@ -147,8 +158,7 @@
                 </ul>
               </li>
             </ul>
-          </li>
-          
+        </li>
     </ul>
     <div class="logout d-flex align-items-center justify-content-center px-4 text-danger" (click)="logout()">
         <a class="text-decoration-none text-danger" *ngIf="!isCollapsed">تسجيل الخروج</a>

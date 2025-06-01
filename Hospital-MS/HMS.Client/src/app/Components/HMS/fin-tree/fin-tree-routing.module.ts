@@ -10,6 +10,9 @@ import { BanksComponent } from './inputs/banks/banks.component';
 import { AccountsComponent } from './inputs/accounts/accounts.component';
 import { AddItemsComponent } from './action/add-items/add-items.component';
 import { IssueItemsComponent } from './action/issue-items/issue-items.component';
+import { FetchInventoryComponent } from './action/fetch-inventory/fetch-inventory.component';
+import { TreasuryIndexComponent } from './action/treasury/treasury-index/treasury-index.component';
+import { SupplyReceiptComponent } from './action/treasury/supply-receipt/supply-receipt.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
@@ -23,6 +26,10 @@ const routes: Routes = [
   // actions
   {path:"add-items" , component : AddItemsComponent},
   {path:"issue-items" , component : IssueItemsComponent},
+  {path:"fetch-inventory" , component : FetchInventoryComponent},
+  // treasury
+  {path:"treasury" , component : TreasuryIndexComponent},
+  {path:"treasury/supply-receipt" , component : SupplyReceiptComponent}
 ];
 
 @NgModule({
