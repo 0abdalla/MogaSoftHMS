@@ -80,6 +80,7 @@ namespace Hospital_MS.API
             services.AddScoped<ITreasuryService, TreasuryService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+            services.AddScoped<IDispensePermissionService, DispensePermissionService>();
 
 
 
