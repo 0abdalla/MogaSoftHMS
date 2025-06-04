@@ -68,7 +68,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) 
             {
                 new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value),
                 new SqlParameter("@CurrentPage", pagingFilter.CurrentPage),
-                new SqlParameter("@PageSize", pagingFilter.PageSize)
+                new SqlParameter("@PageSize", pagingFilter.PageSize)  
             };
 
             var dt = await _sqlHelper.ExecuteDataTableAsync("Finance.SP_GetPurchaseOrders", parameters);
