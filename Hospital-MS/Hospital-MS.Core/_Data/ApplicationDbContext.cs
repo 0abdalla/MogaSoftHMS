@@ -48,6 +48,7 @@ namespace Hospital_MS.Core._Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Store> Stores { get; set; }
         public DbSet<DispensePermission> DispensePermissions { get; set; }
+        public DbSet<StoreCount> StoreCounts { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
