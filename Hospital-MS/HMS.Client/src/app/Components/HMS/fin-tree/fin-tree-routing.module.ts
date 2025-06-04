@@ -13,6 +13,11 @@ import { IssueItemsComponent } from './action/issue-items/issue-items.component'
 import { FetchInventoryComponent } from './action/fetch-inventory/fetch-inventory.component';
 import { TreasuryIndexComponent } from './action/treasury/treasury-index/treasury-index.component';
 import { SupplyReceiptComponent } from './action/treasury/supply-receipt/supply-receipt.component';
+import { ExchangePremssionComponent } from './action/treasury/exchange-premssion/exchange-premssion.component';
+import { BankIndexComponent } from './action/bankActions/bank-index/bank-index.component';
+import { AddNoticeComponent } from './action/bankActions/add-notice/add-notice.component';
+import { DiscountNoticeComponent } from './action/bankActions/discount-notice/discount-notice.component';
+import { RestrictionsComponent } from './action/restrictions/restrictions.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
@@ -29,7 +34,13 @@ const routes: Routes = [
   {path:"fetch-inventory" , component : FetchInventoryComponent},
   // treasury
   {path:"treasury" , component : TreasuryIndexComponent},
-  {path:"treasury/supply-receipt" , component : SupplyReceiptComponent}
+  {path:"treasury/supply-receipt" , component : SupplyReceiptComponent},
+  {path:"treasury/exchange-permission" , component : ExchangePremssionComponent},
+  // bank
+  {path:'bank',component:BankIndexComponent},
+  {path:'bank/add-notice',component:AddNoticeComponent},
+  {path:'bank/discount-notice',component:DiscountNoticeComponent},
+  {path:'restrictions',component:RestrictionsComponent}
 ];
 
 @NgModule({

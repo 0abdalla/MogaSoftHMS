@@ -1,5 +1,5 @@
-#treasury-index {
-    min-height: 74vh;
+#bank-index {
+    min-height: 71vh;
     background-color: #e8e5e938;
     .row{
         padding: 20px;
@@ -38,6 +38,6 @@
     }
 }
 h3{
-    color: var(--main-color);
     font-weight: 600;
+    color: var(--main-color);
 }

@@ -4,66 +4,30 @@
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="col-md-8 row">
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">إسم الصنف</label>
-                            <br>
-                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none">
+                        <div class="col-md-4">
+                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none" placeholder="إبحث بإستخدام اسم الصنف">
                         </div>
 
-                        <div class="col-md-3 mb-2 ">
-                            <label class="form-label">المجموعة</label>
-                            <br>
+                        <div class="col-md-4 ">
                             <select class="form-select text-end shadow-none">
+                              <option disabled selected value="">اختر مجموعة الأصناف</option>
                                 <option>خامات</option>
                                 <option>مواد</option>
                                 <option>خدمات</option>
                             </select>
                         </div>
-                        <div class="col-md-6 mb-2 ">
-                            <label class="form-label">حد الطلب</label>
-                            <br>
-                            <div class="d-flex gap-2">
-                                <select class="form-select text-end shadow-none">
-                                    <option>يساوي</option>
-                                    <option>أقل من</option>
-                                    <option>أكبر من</option>
-                                </select>
-                                <input type="text" formControlName="SearchText" class="form-control text-end shadow-none">
+                        <div class="col-md-4 ">
+                                <input type="text" formControlName="SearchText" class="form-control text-end shadow-none" placeholder="إبحث بإستخدام حد الطلب">
                             </div>
-                        </div>
-                    
-                        <!-- <br>
-                        <div class="col-md-4 mb-2">
-                            <label class="form-label">ترتيب حسب</label>
-                            <div class="d-flex gap-2">
-                                <select class="form-select text-end shadow-none">
-                                    <option>تنازلياً</option>
-                                    <option>تصاعدياً</option>
-                                </select>
-                                <select class="form-select text-end shadow-none">
-                                    <option>تاريخ الإدخال</option>
-                                    <option>تاريخ التحديث</option>
-                                </select>
-                            </div>
-                        </div> -->
                     </div>
-                    <!-- <div class="col-md-2 text-center">
-                        <button type="submit" class="w-100 btn-blue">
-                            بحث <i class="fa fa-search me-1"></i> 
-                        </button>
-                        <br>
-                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="w-100 btn-red mt-2">
-                            جديد <i class="fa fa-plus me-1"></i> 
-                        </button>
-                    </div> -->
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
-                        <button type="submit" class="btn-blue w-100 mx-2">
-                            بحث <i class="fa fa-search me-1"></i> 
-                        </button>
-                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
-                            جديد <i class="fa fa-plus me-1"></i> 
-                        </button>
-                    </div>
+                      <button type="submit" class="btn-blue w-100 mx-2">
+                          بحث <i class="fa fa-search me-1"></i> 
+                      </button>
+                      <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
+                          جديد <i class="fa fa-plus me-1"></i> 
+                      </button>
+                  </div>
                 </div>
             </form>
         </div>
@@ -88,6 +52,7 @@
                     </td>
                     <td class="text-secondary">{{ item.description }}</td>
                     <td>{{ item.items }}</td>
+                    <td>{{ item.group }}</td>
                     <td>
                         <button type="button" class="btn btn-primary">
                             <i class="fa fa-edit"></i>

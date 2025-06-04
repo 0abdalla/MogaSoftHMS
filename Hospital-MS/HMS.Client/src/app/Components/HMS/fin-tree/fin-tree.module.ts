@@ -20,6 +20,11 @@ import { IssueItemsComponent } from './action/issue-items/issue-items.component'
 import { FetchInventoryComponent } from './action/fetch-inventory/fetch-inventory.component';
 import { TreasuryIndexComponent } from './action/treasury/treasury-index/treasury-index.component';
 import { SupplyReceiptComponent } from './action/treasury/supply-receipt/supply-receipt.component';
+import { ExchangePremssionComponent } from './action/treasury/exchange-premssion/exchange-premssion.component';
+import { AddNoticeComponent } from './action/bankActions/add-notice/add-notice.component';
+import { DiscountNoticeComponent } from './action/bankActions/discount-notice/discount-notice.component';
+import { BankIndexComponent } from './action/bankActions/bank-index/bank-index.component';
+import { RestrictionsComponent } from './action/restrictions/restrictions.component';
 
 
 @NgModule({
@@ -37,6 +42,11 @@ import { SupplyReceiptComponent } from './action/treasury/supply-receipt/supply-
     FetchInventoryComponent,
     TreasuryIndexComponent,
     SupplyReceiptComponent,
+    ExchangePremssionComponent,
+    AddNoticeComponent,
+    DiscountNoticeComponent,
+    BankIndexComponent,
+    RestrictionsComponent,
   ],
   imports: [
     CommonModule,

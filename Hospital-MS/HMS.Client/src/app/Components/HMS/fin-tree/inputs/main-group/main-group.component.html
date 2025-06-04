@@ -2,45 +2,17 @@
     <div class="container-fluid">
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
-                <div class="row justify-content-between">
-                    <div class="col-md-10 row">
-                        <div class="col-md-4 mb-2 d-flex align-items-center ">
-                            <p class="fw-bold m-0">المجموعات الرئيسية</p>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <select class="form-select text-end shadow-none">
-                                <option>يبدأ بــ</option>
-                                <option>يحتوي على</option>
-                                <option>ينتهي بــ</option>
-                                <option>يساوي</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none">
-                        </div>
-                        <br>
-                        <div class="col-md-4 mb-2 d-flex align-items-center">
-                            <p class="fw-bold m-0">ترتيب حسب</p>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <select class="form-select text-end shadow-none">
-                                <option>تنازلياً</option>
-                                <option>تصاعدياً</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-2">
-                            <select class="form-select text-end shadow-none">
-                                <option>تاريخ الإدخال</option>
-                                <option>تاريخ التحديث</option>
-                            </select>
+                <div class="row justify-content-between align-items-center">
+                    <div class="row col-md-8">
+                        <div class="col-md-12">
+                            <input type="text" class="form-control shadow-none" placeholder="إبحث بإستخدام المجموعات الرئيسية">
                         </div>
                     </div>
-                    <div class="col-md-2 text-center">
-                        <button type="submit" class="w-100 btn-blue">
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
                             بحث <i class="fa fa-search me-1"></i> 
                         </button>
-                        <br>
-                        <button data-bs-toggle="modal" data-bs-target="#addMainGroupModal" type="button" class="w-100 btn-red mt-2">
+                        <button type="button" class="btn-red w-100 mx-2">
                             جديد <i class="fa fa-plus me-1"></i> 
                         </button>
                     </div>
