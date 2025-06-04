@@ -3,43 +3,24 @@
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between">
-                    <div class="col-md-10 row">
-                        <div class="col-md-3 mb-2 ">
-                            <label class="form-label">المجموعات الرئيسية</label>
-                            <br>
+                    <div class="col-md-8 row">
+                        <div class="col-md-6 mb-2 ">
                             <select class="form-select text-end shadow-none">
+                                <option disabled selected value="">اختر مجموعة رئيسية</option>
                                 <option>خامات</option>
                                 <option>مواد</option>
                                 <option>خدمات</option>
                             </select>
                         </div>
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">وصف المجموعة</label>
-                            <br>
-                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none">
-                        </div>
-                        
-                        <br>
                         <div class="col-md-6 mb-2">
-                            <label class="form-label">ترتيب حسب</label>
-                            <div class="d-flex gap-2">
-                                <select class="form-select text-end shadow-none">
-                                    <option>تنازلياً</option>
-                                    <option>تصاعدياً</option>
-                                </select>
-                                <select class="form-select text-end shadow-none">
-                                    <option>تاريخ الإدخال</option>
-                                    <option>تاريخ التحديث</option>
-                                </select>
-                            </div>
+                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none" placeholder="إبحث بإستخدام وصف المجموعة">
                         </div>
                     </div>
-                    <div class="col-md-2 text-center">
-                        <button type="submit" class="w-100 btn-blue">
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
                             بحث <i class="fa fa-search me-1"></i> 
                         </button>
-                        <br>
-                        <button data-bs-toggle="modal" data-bs-target="#addMainGroupModal" type="button" class="w-100 btn-red mt-2">
+                        <button type="button" class="btn-red w-100 mx-2">
                             جديد <i class="fa fa-plus me-1"></i> 
                         </button>
                     </div>

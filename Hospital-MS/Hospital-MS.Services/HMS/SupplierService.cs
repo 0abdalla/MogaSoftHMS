@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hospital_MS.Services;
+namespace Hospital_MS.Services.HMS;
 public class SupplierService : ISupplierService
 {
     private readonly IUnitOfWork _unitOfWork;

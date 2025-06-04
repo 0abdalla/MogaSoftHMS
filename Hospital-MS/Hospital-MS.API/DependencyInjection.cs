@@ -8,7 +8,6 @@ using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
-using Hospital_MS.Services;
 using Hospital_MS.Services.Auth;
 using Hospital_MS.Services.Common;
 using Hospital_MS.Services.HMS;
@@ -81,8 +80,7 @@ namespace Hospital_MS.API
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
             services.AddScoped<IDispensePermissionService, DispensePermissionService>();
-
-
+            services.AddScoped<IStoreCountService, StoreCountService>();
 
 
             services.AddHealthChecks()

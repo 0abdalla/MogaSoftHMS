@@ -1,0 +1,195 @@
+<main id="bank-index">
+    <div class="container-fluid">
+        <!-- <h2 class="text-center fw-bold">حركة البنك</h2> -->
+        <div class="row">
+            <div class="col-lg-6 mt-3">
+                <a routerLink="add-notice" class="card text-decoration-none">
+                    <div class="card-body">
+                        <i class="fas fa-donate"></i>
+                        <h5 class="card-title">إشعار إضافة</h5>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6 mt-3">
+                <a routerLink="discount-notice" class="card text-decoration-none">
+                    <div class="card-body">
+                        <i class="fas fa-money-bill-wave"></i> 
+                        <h5 class="card-title">إشعار خصم</h5>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6 mt-3">
+                <a class="card text-decoration-none"  data-bs-toggle="modal" data-bs-target="#bankReportModal">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line"></i> 
+                        <h5 class="card-title">كشف حركة البنك</h5>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-6 mt-3">
+                <a class="card text-decoration-none" data-bs-toggle="modal" data-bs-target="#bankLockModal">
+                    <div class="card-body" >
+                        <i class="fas fa-calendar-check"></i>
+                        <h5 class="card-title">إقفال حركة البنك السنوية</h5>
+                    </div>
+                </a>
+            </div>
+            
+        </div>
+    </div>
+</main>
+
+<div class="modal fade" id="bankReportModal" tabindex="-1" aria-labelledby="bankReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="bankReportModalLabel">كشف حركة البنك</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="bankReportForm" (ngSubmit)="submitClosebank()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ من</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="dateFrom" />
+                </div>
+
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ إلى</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="dateTo" />
+                </div>
+
+                <div class="col-lg-12">
+                    <label class="form-label">البنك</label>
+                    <select class="form-select shadow-none text-end" formControlName="bank">
+                        <option disabled selected value="">اختر البنك</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" data-bs-toggle="modal" data-bs-target="#openBankReportModal" [disabled]="bankReportForm.invalid">كشف حركة البنك</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="bankLockModal" tabindex="-1" aria-labelledby="bankLockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="bankLockModalLabel">إقفال حركة البنك السنوية</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="bankLockForm" (ngSubmit)="submitClosebank()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ من</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="dateFrom" />
+                </div>
+
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ إلى</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="dateTo" />
+                </div>
+
+                <div class="col-lg-12">
+                    <label class="form-label">البنك</label>
+                    <select class="form-select shadow-none text-end" formControlName="bank">
+                        <option disabled selected value="">اختر البنك</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="bankLockForm.invalid">إقفال حركة البنك السنوية</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="openBankReportModal" tabindex="-1" aria-labelledby="openBankReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="openBankReportModalLabel">كشف حركة <span style="color: var(--main-color);">بنك مصر</span> الفترة من 2025-06-04 إلى 2025-06-04</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover; direction: rtl;">
+            <h3>الوارد</h3>
+            <table class="table">
+            <thead>
+              <tr>
+                <th>رقم المستند</th>
+                <th>رقم الشيك</th>
+                <th>التاريخ</th>
+                <th>اسم الحساب</th>
+                <th>ملاحظات</th>
+                <th>المبلغ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align:right;">إجمالي الإيداعات</td>
+                <td>0.00</td>
+              </tr>
+              <tr>
+                <td colspan="5" style="text-align:right;">إجمالي المسحوبات</td>
+                <td>1,475.60</td>
+              </tr>
+              <tr>
+                <td colspan="5" style="text-align:right;">الرصيد السابق </td>
+                <td style="color:red;">( 0.00 )</td>
+              </tr>
+              <tr>
+                <td colspan="5" style="text-align:right;">الرصيد المرحل</td>
+                <td style="color:red;">( 0.00 )</td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <br>
+          <h3>المنصرف</h3>
+          <table class="table">
+            <thead>
+                <tr>
+                    <th>رقم المستند</th>
+                    <th>رقم الشيك</th>
+                    <th>التاريخ</th>
+                    <th>اسم الحساب</th>
+                    <th>ملاحظات</th>
+                    <th>المبلغ</th>
+                  </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="5" style="text-align:right;">إجمالي المسحوبات</td>
+                <td>1,475.60</td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <br>
+        </div>
+      </div>
+    </div>
+</div>

@@ -1,0 +1,136 @@
+<main id="add-notice">
+    <div class="container-fluid">
+        <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
+                <div class="row justify-content-between align-items-center">
+                    <div class="row col-md-8">
+                        <div class="col-md-6">
+                            <select formControlName="type" name="" id="" class="form-select text-end shadow-none">
+                                <option selected disabled value="">اختر البنك </option>
+                                <option value="">بنك رئيسي</option>
+                                <option value="">بنك فرعية</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام رقم المستند" class="form-control text-end shadow-none"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <button data-bs-toggle="modal" data-bs-target="#addnoticePermissionModal" type="button" class="btn-red w-100 mx-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>رقم المستند</th>
+                    <th>التاريخ</th>
+                    <th>البنك</th>
+                    <th>المبلغ</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="adds?.length > 0">
+                <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
+                    <td>{{ add.documentNumber }}</td>
+                    <td>{{ add.date }}</td>
+                    <td>{{ add.bankName }}</td>
+                    <td>{{ add.balance }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="adds?.length === 0">
+                <tr>
+                    <td colspan="6" class="text-center text-muted">لا يوجد إشعارات إضافة حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addnoticePermissionModal" tabindex="-1" aria-labelledby="addnoticePermissionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="addnoticePermissionModalLabel">إشعار إضافة جديد</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="addNoticeGroup" (ngSubmit)="submitPermission()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+  
+                <div class="col-md-4">
+                  <label>التاريخ</label>
+                  <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                </div>
+
+                <div class="col-md-4">
+                  <label>اسم البنك</label>
+                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                    <option disabled selected value="">اختر البنك</option>
+                    <option value="بنك رئيسي">بنك رئيسي</option>
+                    <option value="بنك فرعية">بنك فرعية</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label>اسم الحساب</label>
+                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                    <option disabled selected value="">اختر الحساب</option>
+                    <option value="حساب رئيسي">حساب رئيسي</option>
+                    <option value="حساب فرعية">حساب فرعية</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6">
+                  <label>المبلغ</label>
+                  <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
+                </div>
+
+                <div class="col-md-6">
+                  <label>رقم الشيك</label>
+                  <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                </div>
+  
+                <div class="col-md-12">
+                  <label>ملاحظات</label>
+                  <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                </div>
+  
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="addNoticeGroup.invalid">إضافة إشعار إضافة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>

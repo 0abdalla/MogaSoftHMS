@@ -94,6 +94,42 @@ export class HeaderComponent {
         return 'إدارة التأمينات';
       case '/hms/insurance/add-insurance':
         return 'إضافة وكيل تأمين';
+      case '/hms/fin-tree/main-groups':
+        return 'المجموعات الرئيسية';
+      case '/hms/fin-tree/items-group':
+        return 'مجموعة الأصناف';
+      case '/hms/fin-tree/items':
+        return 'الأصناف';
+      case '/hms/fin-tree/providers':
+        return 'الموردين';
+      case '/hms/fin-tree/clients':
+        return 'العملاء';
+      case '/hms/fin-tree/boxes':
+        return 'الخزائن';
+      case '/hms/fin-tree/banks':
+        return 'البنوك';
+      case '/hms/fin-tree/accounts':
+        return 'الحسابات العامة';
+      case '/hms/fin-tree/add-items':
+        return 'أذون الإضافة';
+      case '/hms/fin-tree/discount-items':
+        return 'أذون الصرف';
+      case '/hms/fin-tree/fetch-inventory':
+        return 'جرد المخازن';
+      case '/hms/fin-tree/treasury':
+        return 'حركة الخزينة';
+      case '/hms/fin-tree/treasury/supply-receipt':
+        return 'إيصال التوريد';
+      case '/hms/fin-tree/treasury/exchange-permission':
+        return 'إذن صرف خزينة';
+      case '/hms/fin-tree/bank':
+        return 'حركة البنوك';
+      case '/hms/fin-tree/bank/add-notice':
+        return 'إشعار إضافة';
+      case '/hms/fin-tree/bank/discount-notice':
+        return 'إشعار خصم';
+      case '/hms/fin-tree/restrictions':
+        return 'قيود اليومية';
       default:
         console.warn('No matching route found for:', path);
         return 'Infinity Clinic';

@@ -1,6 +1,6 @@
 <main id="treasury-index">
     <div class="container-fluid">
-        <h2 class="text-center fw-bold">حركة الخزينة</h2>
+        <!-- <h2 class="text-center fw-bold">حركة الخزينة</h2> -->
         <div class="row" >
             <div class="col-lg-4 mt-3">
                 <a routerLink="supply-receipt" class="card text-decoration-none">
@@ -11,16 +11,16 @@
                 </a>
             </div>
             <div class="col-lg-4 mt-3">
-                <div class="card">
+                <a routerLink="exchange-permission" class="card text-decoration-none">
                     <div class="card-body">
                         <i class="fa-solid fa-money-bill-transfer"></i>
                         <h5 class="card-title">إذن صرف خزينة</h5>
                     </div>
-                </div>
+                </a>
             </div>
             <div class="col-lg-4 mt-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" data-bs-toggle="modal" data-bs-target="#closeTreasuryModal">
                         <i class="fa-solid fa-lock"></i>
                         <h5 class="card-title">إغلاق حركة الخزينة</h5>
                     </div>
@@ -28,7 +28,7 @@
             </div>
             <div class="col-lg-4 mt-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" data-bs-toggle="modal" data-bs-target="#openTreasuryModal">
                         <i class="fa-solid fa-lock-open"></i>
                         <h5 class="card-title">فتح حركة خزينة مغلقة</h5>
                     </div>
@@ -36,15 +36,15 @@
             </div>
             <div class="col-lg-4 mt-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" data-bs-toggle="modal" data-bs-target="#reCloseTreasuryModal">
                         <i class="fa-solid fa-lock"></i>
-                        <h5 class="card-title">إغلاق حركة خزينة مفتوحة</h5>
+                        <h5 class="card-title">إعادة إغلاق حركة خزينة</h5>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 mt-3">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body" data-bs-toggle="modal" data-bs-target="#treasuryReportModal">
                         <i class="fa-solid fa-file-invoice"></i>
                         <h5 class="card-title">كشف حركة الخزينة</h5>
                     </div>
@@ -53,3 +53,249 @@
         </div>
     </div>
 </main>
+
+
+
+
+
+<div class="modal fade" id="closeTreasuryModal" tabindex="-1" aria-labelledby="closeTreasuryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="closeTreasuryModalLabel">إغلاق حركة الخزينة</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="closeTreasuryForm" (ngSubmit)="submitCloseTreasury()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+  
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                </div>
+                <div class="col-lg-6">
+                    <label class="form-label">الخزينة</label>
+                    <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                        <option disabled selected value="">اختر الخزينة</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-12">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                </div>
+  
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="closeTreasuryForm.invalid">إغلاق حركة الخزينة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="openTreasuryModal" tabindex="-1" aria-labelledby="openTreasuryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="openTreasuryModalLabel">فتح حركة الخزينة المغلقة</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="openTreasuryForm" (ngSubmit)="submitOpenTreasury()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+  
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                </div>
+                <div class="col-lg-6">
+                    <label class="form-label">الخزينة</label>
+                    <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                        <option disabled selected value="">اختر الخزينة</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-12">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                </div>
+  
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="openTreasuryForm.invalid">فتح حركة الخزينة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="reCloseTreasuryModal" tabindex="-1" aria-labelledby="reCloseTreasuryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="reCloseTreasuryModalLabel">إغلاق حركة الخزينة</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="closeTreasuryForm" (ngSubmit)="submitCloseTreasury()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+  
+                <div class="col-lg-6">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                </div>
+                <div class="col-lg-6">
+                    <label class="form-label">الخزينة</label>
+                    <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                        <option disabled selected value="">اختر الخزينة</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-12">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                </div>
+  
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="closeTreasuryForm.invalid">إغلاق حركة الخزينة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="treasuryReportModal" tabindex="-1" aria-labelledby="treasuryReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="treasuryReportModalLabel">كشف حركة الخزينة</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="treasuryReportForm" (ngSubmit)="submitCloseTreasury()">
+            <div class="p-3 mb-3">
+              <div class="row gy-3">
+  
+                <div class="col-lg-6">
+                    <label class="form-label">الخزينة</label>
+                    <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                        <option disabled selected value="">اختر الخزينة</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-6">
+                    <label class="form-label">رقم الخزينة</label>
+                    <select class="form-select shadow-none text-end" formControlName="treasuryNumber">
+                        <option disabled selected value="">اختر الخزينة</option>
+                        <option value="المخزن الرئيسي">خزينة رئيسي</option>
+                        <option value="مخزن فرعي">خزينة فرعية</option>
+                    </select>
+                </div>
+
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" data-bs-toggle="modal" data-bs-target="#openTreasuryReportModal" [disabled]="treasuryReportForm.invalid">كشف حركة الخزينة</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="openTreasuryReportModal" tabindex="-1" aria-labelledby="openTreasuryReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="openTreasuryReportModalLabel">الخزينة العامة رقم 1 من 2025-01-01 الى 2025-01-02</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover; direction: rtl;">
+            <h3>الوارد</h3>
+            <table class="table">
+            <thead>
+              <tr>
+                <th>رقم المستند</th>
+                <th>التاريخ</th>
+                <th>البيان</th>
+                <th>استلم من السيد</th>
+                <th>القيمة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>2025-05-19</td>
+                <td>بتفنيشينيني</td>
+                <td>احمد صبري</td>
+                <td>1,475.60</td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:right;">الرصيد السابق</td>
+                <td>0.00</td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:right;">إجمالي المقبوضات</td>
+                <td>1,475.60</td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:right;">إجمالي المنصرف</td>
+                <td style="color:red;">( 0.00 )</td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align:right;">الرصيد المرحل</td>
+                <td style="color:red;">( 0.00 )</td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <br>
+          <h3>المنصرف</h3>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>رقم المستند</th>
+                <th>التاريخ</th>
+                <th>البيان</th>
+                <th>استلمت انا السيد</th>
+                <th>القيمة</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>2025-05-19</td>
+                <td>بتفنيشينيني</td>
+                <td>احمد صبري</td>
+                <td>1,475.60</td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <br>
+        </div>
+      </div>
+    </div>
+</div>
