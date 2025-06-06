@@ -8,6 +8,8 @@ import { HomeComponent } from './dashboard/home/home.component';
 import { ChartModule } from 'angular-highcharts';
 import { HMSSideMenueComponent } from './dashboard/hms-side-menue/hms-side-menue.component';
 import { FormsModule } from '@angular/forms';
+import { HmsHomeComponent } from './hms-home/hms-home.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -15,12 +17,14 @@ import { FormsModule } from '@angular/forms';
     HmsLayoutComponent,
     HMSSideMenueComponent,
     HomeComponent,
+    HmsHomeComponent,
   ],
   imports: [
     CommonModule,
     HmsRoutingModule,
     ChartModule,
     SharedModule,
+    NgbModule,
     FormsModule
   ]
 })

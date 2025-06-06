@@ -1,3 +1,313 @@
+<app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+
+<div class="table-card border radius-10 overflow-hidden shadow-sm">
+    <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+        <div class="col-md-8 mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openItemModal(OpenItemModal,null)">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة</span>
+                </button>
+                <!-- <div ngbDropdown class="d-inline-block">
+                    <button type="button" class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" id="dropdownBasic1" ngbDropdownToggle>
+                        <i class="uil uil-export"></i>
+                        <span>تنزيل</span>
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="border rounded">
+                        <button ngbDropdownItem class="d-flex align-items-center gap-2">
+                            <i class="fas fa-file-download"></i>
+                            <span class="px-2">PDF</span>
+                        </button>
+                        <button ngbDropdownItem>
+                            <i class="fas fa-file-download"></i>
+                            <span class="px-2">Excel</span>
+                        </button>
+                    </div>
+                </div> -->
+                <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-4 mb-2">
+            <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="pagedResponseModel.totalCount"></app-pagination>
+        </div>
+        <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+            <div class="d-flex align-items-center">
+                <!-- <ng-container>
+                    <app-za-filters [FilterList]="filterList" (filterChanged)="filterChecked($event)" [searchPlaceholder]="'البحث بالوصف ...'"></app-za-filters>
+                </ng-container> -->
+            </div>
+        </div>
+    </div>
+    <div class="p-3 bg-white">
+        <div class="table-responsive shadow-sm radius-10">
+            <table class="table table-card-table table-borderless table-middle table-hover bg-transparent m-0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>الوصف</th>
+                        <th>تمت الاضافة من قبل</th>
+                        <th>تاريخ الاضافة</th>
+                        <th class="text-center">مرئي في الموقع</th>
+                        <th>عمليات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container>
+                        <tr *ngFor="let item of pagedResponseModel.results">
+                            <!-- <td><input type="checkbox" class="big-checkbox"></td> -->
+                            <td>
+                                <img src="{{item.image}}" class="table-image">
+                            </td>
+                            <td>{{item.title}}</td>
+                            <td>{{item.createdBy}}</td>
+                            <td>{{item.insertDate}}</td>
+                            <td class="text-center">
+                                <label class="jtoggler-wrapper m-0 mx-0">
+                                <input type="checkbox" [(ngModel)]="item.isVisible" class="jtoggler" disabled>
+                                <div class="jtoggler-control">
+                                <div class="jtoggler-handle"></div>
+                                </div>
+                            </label>
+                            </td>
+                            <td>
+                                <div class="w-100 d-flex align-items-center justify-content-center">
+                                    <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2" (click)="openItemModal(OpenItemModal,item)">
+                                        <i class="uil uil-pen"></i>
+                                        <span>تعديل</span>
+                                    </button>
+                                    <button class="button-table-action btn-delete d-flex align-items-center justify-content-center gap-2" (click)="openDeleteItemModal(deleteItemModal,item)">
+                                    <i class="uil uil-trash-alt"></i>
+                                    <span>حذف</span>
+                                </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr *ngIf="!pagedResponseModel.results.length">
+                            <td colspan="12" class="text-right">
+                                <app-empty-data [showEmptyData]="!pagedResponseModel.results.length"></app-empty-data>
+                            </td>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- <ng-template #DetailsSidePanel let-offcanvas>
+    <div class="offcanvas-header justify-content-between gap-3 fs-4 border-bottom py-3">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-info-circle offcanvas-header-icon"></i>
+            <span>
+                تفاصيل القيد رقم
+            </span>
+        </div>
+        <div class="cursor-pointer text-danger fs-2" (click)="offcanvas.dismiss()">
+            <i class="uil uil-times-circle"></i>
+        </div>
+    </div>
+    <div class="offcanvas-body pt-4 bg-light">
+        <div class="employee-card-body mb-3">
+            <div class="inputs-wrapper border rounded bg-white mb-3">
+                <div class="inputs-sec-content px-3 py-3">
+                    <div class="row gy-3">
+                        <div class="col-lg-6">
+                            <div class="mb-2">
+                                <label class="form-label d-flex align-items-center gap-2">رقم القيد</label>
+                                <input type="text" disabled class="form-control nw-form-input" />
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="mb-2">
+                                <label class="form-label d-flex align-items-center gap-2">تاريخ القيد</label>
+                                <input type="text" disabled class="form-control nw-form-input" />
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-2">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    البيان
+                                </label>
+                                <input type="text" disabled class="form-control nw-form-input description-area" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-start m-3">
+                    <button (click)="offcanvas.dismiss()" routerLink="/general-accounts/new-entry" class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2">
+                        <i class="uil uil-pen"></i>
+                        <span>تعديل</span>
+                    </button>
+                    <button class="btn btn-table-action  gap-2 border rounded px-3 me-2">
+                        <i class="fas fa-print fs-7"></i>
+                        <span>طباعة</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <hr class="border-black" />
+        <div class="inputs-wrapper border rounded bg-white mb-3">
+            <div class="inputs-sec-title fw-semibold fs-16 px-3 py-2 border-bottom mb-2">الحسابات</div>
+            <div class="inputs-sec-content px-3 py-2 table-responsive table-vp-height small-scroll">
+                <table class="table table-bordered table-middle text-center table-actions m-0">
+                    <thead>
+                        <tr>
+                            <th>الحساب</th>
+                            <th>مدين</th>
+                            <th>دائن</th>
+                            <th>مركز التكلفة</th>
+                            <th style="width: 290px;">ملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="row-hover">
+                        </tr>
+                        <tr *ngIf="!selectedEntryModel?.journalEntryAccounts?.length">
+                            <td colspan="5" class="text-right">
+                                <app-za-empty-data [showEmptyData]="!selectedEntryModel?.journalEntryAccounts?.length"></app-za-empty-data>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</ng-template> -->
+
+<ng-template #OpenItemModal let-modal>
+    <div class="modal-header modal-header-bg justify-content-between">
+        <h2 class="d-flex align-items-center gap-2">
+            <i class="uil uil-plus"></i>
+            <span>املأ البيانات الأتية</span>
+        </h2>
+        <div class="cursor-pointer text-danger fs-2" (click)="modal.dismiss()">
+            <i class="uil uil-times-circle"></i>
+        </div>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="ItemForm" autocomplete="off">
+            <table class="table table-bordered table-feature-value align-middle border m-0">
+                <tbody>
+                    <tr>
+                        <td class="table-feature">عنوان السلايدر</td>
+                        <td class="table-value">
+                            <input type="text" class="form-control form-control-lg" formControlName="title" placeholder="عنوان السلايدر...">
+                            <div *ngIf="ItemForm.controls['title']?.invalid && (ItemForm.controls['title']?.dirty || ItemForm.controls['title']?.touched)" class="error-message">
+                                <span *ngIf="ItemForm.controls['title'].errors?.['required']"> هذا الحقل مطلوب</span>
+                                <span *ngIf="ItemForm.controls['title'].errors?.['noSpace']"> لا يمكن ان يحتوي الحقل على مسافات فقط</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-feature">الحالة</td>
+                        <td class="table-value">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">مرئي</div>
+                                <label class="jtoggler-wrapper m-0 mx-0">
+                                <input type="checkbox" formControlName="isVisible" class="jtoggler">
+                                <div class="jtoggler-control">
+                                    <div class="jtoggler-handle"></div>
+                                </div>
+                            </label>
+                                <div class="ms-2">غير مرئي</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-feature">تحميل صورة</td>
+                        <td class="table-value">
+                            <div class="choose-file-box position-relative border rounded h-58" (click)="InputFile.click()">
+                                <div class="choose-file-btn">تحميل صورة</div>
+                            </div>
+                            <div class="error-message" *ngIf="isFileExist">
+                                <span>هذا الحقل مطلوب</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-feature"></td>
+                        <td>
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-6 g-2">
+                                <div class="w-25" *ngFor="let url of fileURL">
+                                    <div class="choosed-img img-thumbnail shadow-sm">
+                                        <img src="{{url.image}}" loading="lazy" alt="" />
+                                        <div class="choosed-img-delete" (click)="DeleteSelectedFile()">
+                                            <i class="far fa-times-circle"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- <tr>
+                        <td class="table-feature">الدولة</td>
+                        <td class="table-value">
+                            <div class="form-floating">
+                                <app-za-drop-down-form-control [showSearch]="true" [placeholder]="'الدولة'"></app-za-drop-down-form-control>
+                            </div>
+                            <div *ngIf="formErrors.countryId" class="text-danger  font-small-3 m-03">
+                                {{formErrors.countryId}}
+                            </div>
+                        </td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </form>
+    </div>
+    <div class="modal-footer flex-nowrap gap-2">
+        <button type="button" class="btn btn-success d-flex align-items-center justify-content-center gap-2 w-100" (click)="AddNewSlider()">
+            <i class="uil uil-save fs-3"></i>
+            <span>حفظ</span>
+        </button>
+        <button type="button" class="btn btn-danger d-flex align-items-center gap-2" (click)="modal.close()">
+            <i class="uil uil-times-circle fs-3"></i>
+            <span>الغاء</span>
+        </button>
+    </div>
+</ng-template>
+
+<input type="file" #InputFile class="choose-file-input" (change)="onFileChange($event)" hidden />
+
+<ng-template #deleteItemModal let-modal>
+    <div class="modal-header modal-header-bg justify-content-between">
+        <h2 class="d-flex align-items-center gap-2">
+            <span>تأكيد الإجراء</span>
+        </h2>
+        <div class="cursor-pointer text-danger fs-2" (click)="modal.dismiss()">
+            <i class="uil uil-times-circle"></i>
+        </div>
+    </div>
+    <div class="modal-body">
+        <p class="fs-5 m-0">هل أنت متأكد أنك تريد إزالة هذا العنصر؟</p>
+    </div>
+    <div class="modal-footer justify-content-start">
+        <button type="button" class="btn btn-success" (click)="DeleteSlider()">
+            <i class="fas fa-check"></i>
+            <span class="ms-2">نعم</span>
+        </button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">
+            <i class="fas fa-times"></i>
+            <span class="ms-2">لا</span>
+        </button>
+    </div>
+</ng-template>
+
+<!-- <app-za-loader [show]="true"></app-za-loader> -->
+
+<!-- <button class="btn btn-primary" [disabled]="loading">
+  <app-za-loader [show]="true" [inline]="true"></app-za-loader>
+  <span *ngIf="!loading">حفظ</span>
+  <span *ngIf="loading">جارٍ الحفظ...</span>
+</button> -->
+
+
+
+
+
+
 <main id="list-patients">
     <div class="container-fluid">
         <div class="row mt-4">
@@ -290,84 +600,84 @@
 
 <div class="modal fade" id="medicalHistoryModal" tabindex="-1" aria-labelledby="medicalHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content custom-modal">
-        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
-        </div>
-        <div class="modal-body">
-          <div class="patient-info mb-4">
-            <strong class="strong">👤 الاسم:</strong> <span class="span"> {{ admissionDetails?.patientName }}</span>
-            <br>
-            <strong class="strong">📞 الهاتف:</strong> <span class="span"> {{ admissionDetails?.phone }}</span>
-          </div>
-          <h4 class="section-title">🛏️ العيادات الداخلية</h4>
-          <div class="table-responsive mb-4">
-            <table class="table table-hover text-center">
-              <thead class="table-primary">
-                <tr class="text-end">
-                  <th>التاريخ</th>
-                  <th>الطبيب</th>
-                  <th>الغرفة</th>
-                  <th>السرير</th>
-                  <th>القسم</th>
-                  <th>الحالة</th>
-                </tr>
-              </thead>
-              <tbody *ngIf="medicalHistory?.admissions?.length > 0">
-                <tr *ngFor="let history of medicalHistory?.admissions">
-                  <td>{{ history.admissionDate | date : 'yyyy-MM-dd' }}</td>
-                  <td>{{ history.doctorName }}</td>
-                  <td>{{ history.roomNumber }}</td>
-                  <td>{{ history.bedNumber }}</td>
-                  <td>{{ history.departmentName }}</td>
-                  <td>{{ mapStatusToArabic(history.patientStatus) }}</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="medicalHistory?.admissions?.length === 0">
-                <tr>
-                  <td colspan="6" class="text-center text-muted">لا يوجد سجل عيادات داخلية لهذا الشخص</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-  
-          <h4 class="section-title">📅 العيادات الخارجية</h4>
-          <div class="table-responsive">
-            <table class="table table-hover text-center">
-              <thead class="table-secondary">
-                <tr class="text-end">
-                  <th>التاريخ</th>
-                  <th>الطبيب</th>
-                  <th>الخدمة الطبية</th>
-                  <th>الحالة</th>
-                  <th>النوع</th>
-                </tr>
-              </thead>
-              <tbody *ngIf="medicalHistory?.appointments?.length > 0">
-                <tr *ngFor="let history of medicalHistory?.appointments">
-                  <td>{{ history.appointmentDate | date : 'yyyy-MM-dd' }}</td>
-                  <td>{{ history.doctorName }}</td>
-                  <td>{{ history.medicalServiceName }}</td>
-                  <td>{{ mapTypeToArabic(history.type) }}</td>
-                  <td [ngClass]="{
+        <div class="modal-content custom-modal">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
+            </div>
+            <div class="modal-body">
+                <div class="patient-info mb-4">
+                    <strong class="strong">👤 الاسم:</strong> <span class="span"> {{ admissionDetails?.patientName }}</span>
+                    <br>
+                    <strong class="strong">📞 الهاتف:</strong> <span class="span"> {{ admissionDetails?.phone }}</span>
+                </div>
+                <h4 class="section-title">🛏️ العيادات الداخلية</h4>
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover text-center">
+                        <thead class="table-primary">
+                            <tr class="text-end">
+                                <th>التاريخ</th>
+                                <th>الطبيب</th>
+                                <th>الغرفة</th>
+                                <th>السرير</th>
+                                <th>القسم</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="medicalHistory?.admissions?.length > 0">
+                            <tr *ngFor="let history of medicalHistory?.admissions">
+                                <td>{{ history.admissionDate | date : 'yyyy-MM-dd' }}</td>
+                                <td>{{ history.doctorName }}</td>
+                                <td>{{ history.roomNumber }}</td>
+                                <td>{{ history.bedNumber }}</td>
+                                <td>{{ history.departmentName }}</td>
+                                <td>{{ mapStatusToArabic(history.patientStatus) }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="medicalHistory?.admissions?.length === 0">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">لا يوجد سجل عيادات داخلية لهذا الشخص</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="section-title">📅 العيادات الخارجية</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover text-center">
+                        <thead class="table-secondary">
+                            <tr class="text-end">
+                                <th>التاريخ</th>
+                                <th>الطبيب</th>
+                                <th>الخدمة الطبية</th>
+                                <th>الحالة</th>
+                                <th>النوع</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="medicalHistory?.appointments?.length > 0">
+                            <tr *ngFor="let history of medicalHistory?.appointments">
+                                <td>{{ history.appointmentDate | date : 'yyyy-MM-dd' }}</td>
+                                <td>{{ history.doctorName }}</td>
+                                <td>{{ history.medicalServiceName }}</td>
+                                <td>{{ mapTypeToArabic(history.type) }}</td>
+                                <td [ngClass]="{
                     'text-warning': history.status === 'Pending',
                     'text-success': history.status === 'Completed',
                     'text-danger': history.status === 'Cancelled'
                   }">
-                    {{ mapStatusToArabic(history.status) }}
-                  </td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="medicalHistory?.appointments?.length === 0">
-                <tr>
-                  <td colspan="5" class="text-center text-muted">لا يوجد سجل عيادات خارجية لهذا الشخص</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-  
+                                    {{ mapStatusToArabic(history.status) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="medicalHistory?.appointments?.length === 0">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">لا يوجد سجل عيادات خارجية لهذا الشخص</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
-      </div>
     </div>
 </div>

@@ -1,0 +1,78 @@
+<div class="row">
+    <div class="col-md-3 p-2">
+        <div class="overview-card rounded h-100 bg-success-gradient" routerLink="/hms/appointments/list">
+            <div class="p-3">
+                <h5>عدد المواعيد</h5>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="fw-bold fs-4">{{home?.appointmentsCount}}%</div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <p class="m-0"> 12%</p>
+                        <i class="fa-arrow-circle-up fas"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-graph-line">
+                <img src="../../../assets/images/ov-card-graph-1.svg" alt="" loading="lazy" class="w-100 h-30">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 p-2">
+        <div class="overview-card rounded h-100 bg-primary-gradient" routerLink="/hms/patients/list">
+            <div class="p-3">
+                <h5>المرضى الحاليين</h5>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="fw-bold fs-4">{{home?.currentPatients}}%</div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <p class="m-0"> 12%</p>
+                        <i class="fa-arrow-circle-up fas"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-graph-line">
+                <img src="../../../assets/images/ov-card-graph-1.svg" alt="" loading="lazy" class="w-100 h-30">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 p-2">
+        <div class="overview-card rounded h-100 bg-secondary-gradient" routerLink="/hms/settings/doctors-list">
+            <div class="p-3">
+                <h5>الأطباء النشطين</h5>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="fw-bold fs-4">{{home?.activeDoctors}}%</div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <p class="m-0"> 12%</p>
+                        <i class="fa-arrow-circle-up fas"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-graph-line">
+                <img src="../../../assets/images/ov-card-graph-1.svg" alt="" loading="lazy" class="w-100 h-30">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 p-2">
+        <div class="overview-card rounded h-100 bg-danger-gradient" routerLink="/hms/rooms/list">
+            <div class="p-3">
+                <h5>نسبة إشغال الأسرّة</h5>
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="fw-bold fs-4">{{home?.bedOccupancyRate}}%</div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <p class="m-0"> 12%</p>
+                        <i class="fa-arrow-circle-up fas"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-graph-line">
+                <img src="../../../assets/images/ov-card-graph-1.svg" alt="" loading="lazy" class="w-100 h-30">
+            </div>
+        </div>
+    </div>
+</div>

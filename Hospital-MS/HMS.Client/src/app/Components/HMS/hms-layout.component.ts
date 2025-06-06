@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { MenuSidebarItem } from '../../Models/Generics/MenuSidebarItem';
+import { MenueService, MenuType } from '../../Services/Generics/menue.service';
 
 @Component({
   selector: 'app-hms-layout',
@@ -6,14 +8,35 @@ import { Component } from '@angular/core';
   styleUrl: './hms-layout.component.css'
 })
 export class HmsLayoutComponent {
-  isSidebarCollapsed: boolean = false;
+isToggle = false;
+  toggler = false;
+  menuItem: MenuSidebarItem;
 
-  onSidebarToggled(isCollapsed: boolean) {
-    debugger;
-    this.isSidebarCollapsed = isCollapsed;
+  constructor(private menuService: MenueService) {
+    this.menuItem = this.menuService.getMenuById(MenuType.ZAInstitution);
   }
 
-  constructor() {
-   
+  onToggleContent() {
+    this.isToggle = !this.isToggle;
+    const htmlElement = document.querySelector('html');
+    if (this.isToggle) {
+      htmlElement.style.cssText = `overflow: hidden`;
+    } else {
+      htmlElement.style.cssText = `overflow: auto`;
+    }
+  }
+
+  onOverlayClicked() {
+    this.isToggle = false;
+    const htmlElement = document.querySelector('html');
+    htmlElement.style.cssText = `overflow: auto`;
+  }
+  
+  onToggler() {
+    this.toggler = !this.toggler;
+  }
+  
+  toggleMenu(menu: HTMLElement) {
+    menu.classList.toggle('show');
   }
 }

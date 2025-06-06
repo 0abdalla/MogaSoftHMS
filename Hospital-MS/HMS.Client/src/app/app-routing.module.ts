@@ -5,9 +5,11 @@ import { LoginComponent } from './Auth/login/login.component';
 import { loadingInterceptor } from './Security/loading.interceptor';
 import { authGuard } from './Auth/auth.guard';
 import { NotAuthorizedComponent } from './Auth/not-authorized/not-authorized.component';
+import { HomeComponent } from './Shared/home/home.component';
 
 const routes: Routes = [
-  { path: "login", component: LoginComponent },
+  { path: 'home', component: HomeComponent },
+  { path: '', component: LoginComponent },
   { path: 'not-authorized', component: NotAuthorizedComponent },
   {
     path: 'hms',

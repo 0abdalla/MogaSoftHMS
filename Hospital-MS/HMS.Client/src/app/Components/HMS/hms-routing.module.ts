@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from '../../Auth/auth.guard';
-import { HomeComponent } from './dashboard/home/home.component';
 import { HmsLayoutComponent } from './hms-layout.component';
+import { HmsHomeComponent } from './hms-home/hms-home.component';
+import { HomeComponent } from './dashboard/home/home.component';
 
 const routes: Routes = [
   {
@@ -10,7 +11,9 @@ const routes: Routes = [
     component: HmsLayoutComponent,
     canActivate: [authGuard],
     children: [
-      { path: 'home', component: HomeComponent },
+      { path: 'home', component: HmsHomeComponent },
+      { path: 'home/:tabName', component: HmsHomeComponent },
+      { path: 'dashboard', component: HomeComponent },
       { path: 'patients', loadChildren: () => import('./patients/patients.module').then(m => m.PatientsModule) },
       { path: 'staff', loadChildren: () => import('./staff/staff.module').then(m => m.StaffModule) },
       { path: 'appointments', loadChildren: () => import('./appointments/appointments.module').then(m => m.AppointmentsModule) },

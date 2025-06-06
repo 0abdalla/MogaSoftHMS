@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
@@ -6,143 +6,42 @@ import { NavigationEnd, Router } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
-  currentDate: string = '';
-  userProfileImage: string = 'assets/vendors/imgs/avatar.png';
-  searchQuery: string = '';
-  routeNow: string = '';
-  
-  @Input() isCollapsed: boolean = false;
-  @Output() sidebarToggled = new EventEmitter<boolean>();
-  activeMenu: string | null = null;
-  activeSubmenuRoute: string = '';
-
-  constructor(private router: Router) {}
+export class HeaderComponent implements OnInit {
+  @Input() showToggler: boolean = true;
+  @Output() toggler = new EventEmitter<boolean>();
+  collapsed = true;
+  showMenu: boolean = false;
+  systemUrl: string; //environment.systemUrl;
+  UserModel: any;
+  selectedModuleName: string = 'الأنظمة';
+  modulesMenu: any[] = [];
+  constructor() {
+    // this.modulesMenu = this.menuService.getMenuById(MenuType.MainModules)?.subMenus;
+    // this.UserModel = this.authService.getCurrentUser();
+    // this.routerSubscriber();
+  }
 
   ngOnInit(): void {
-    this.setCurrentDate();
-
-    // Set the initial route immediately on component initialization
-    this.routeNow = this.getArabicRouteName(this.router.url);
-
-    // Subscribe to future navigation events
-    this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) {
-        this.routeNow = this.getArabicRouteName(event.url);
-      }
-    });
   }
 
-  setCurrentDate(): void {
-    const today = new Date();
-    const day = today.getDate();
-    const month = today.toLocaleString('ar-EG', { month: 'short' });
-    const weekday = today.toLocaleString('ar-EG', { weekday: 'short' });
-    this.currentDate = `اليوم، ${weekday} ${day} ${month}`;
-  }
+  routerSubscriber() {
+    // this.setSelectedModule(this.router.url);
 
-  getArabicRouteName(url: string): string {
-    let path = url;
-    try {
-      if (url.includes('://')) {
-        const urlObj = new URL(url);
-        path = urlObj.pathname;
-      }
-      path = path.split('?')[0].split('#')[0];
-      path = path.startsWith('/') ? path : `/${path}`;
-      path = path.endsWith('/') ? path.slice(0, -1) : path;
-    } catch (e) {
-      console.error('Invalid URL format:', url);
-    }
-    const doctorsDynamicRoutePattern = /^\/settings\/doctors\/\d+$/;
-    if (doctorsDynamicRoutePattern.test(path)) {
-      return 'إعدادات الأطباء';
-    }
-    switch (path) {
-      case '/':
-      case '/hms/home':
-        return 'لوحة البيانات';
-      case '/hms/patients/list':
-        return 'إدارة المرضى';
-      case '/hms/patients/add':
-        return 'إضافة مريض';
-      case '/hms/appointments/list':
-        return 'إدارة الحجوزات';
-      case '/hms/appointments/add':
-        return 'إضافة حجز';
-      case '/hms/appointments/settings':
-        return 'إعدادات الحجوزات';
-      case '/hms/emergency/emergency-reception':
-        return 'الطوارئ';
-      case '/hms/staff/list':
-        return 'إدارة الموظفين';
-      case '/hms/staff/add':
-        return 'إضافة موظف';
-      case '/hms/reports':
-        return 'التقارير';
-      case '/hms/settings/doctors':
-        return 'إعدادات الأطباء';
-      case '/hms/settings/doctors-list':
-        return 'إدارة الأطباء';
-      case '/hms/settings/medical-services-list':
-        return 'إدارة الخدمات الطبية';
-      case '/hms/staff/progression':
-        return 'إدارة التدرج الوظيفي';
-      case '/hms/staff/classification':
-        return 'إدارة التصنيف الوظيفي';
-      case '/hms/insurance/insurance-list':
-        return 'إدارة التأمينات';
-      case '/hms/insurance/add-insurance':
-        return 'إضافة وكيل تأمين';
-      case '/hms/fin-tree/main-groups':
-        return 'المجموعات الرئيسية';
-      case '/hms/fin-tree/items-group':
-        return 'مجموعة الأصناف';
-      case '/hms/fin-tree/items':
-        return 'الأصناف';
-      case '/hms/fin-tree/providers':
-        return 'الموردين';
-      case '/hms/fin-tree/clients':
-        return 'العملاء';
-      case '/hms/fin-tree/boxes':
-        return 'الخزائن';
-      case '/hms/fin-tree/banks':
-        return 'البنوك';
-      case '/hms/fin-tree/accounts':
-        return 'الحسابات العامة';
-      case '/hms/fin-tree/add-items':
-        return 'أذون الإضافة';
-      case '/hms/fin-tree/discount-items':
-        return 'أذون الصرف';
-      case '/hms/fin-tree/fetch-inventory':
-        return 'جرد المخازن';
-      case '/hms/fin-tree/treasury':
-        return 'حركة الخزينة';
-      case '/hms/fin-tree/treasury/supply-receipt':
-        return 'إيصال التوريد';
-      case '/hms/fin-tree/treasury/exchange-permission':
-        return 'إذن صرف خزينة';
-      case '/hms/fin-tree/bank':
-        return 'حركة البنوك';
-      case '/hms/fin-tree/bank/add-notice':
-        return 'إشعار إضافة';
-      case '/hms/fin-tree/bank/discount-notice':
-        return 'إشعار خصم';
-      case '/hms/fin-tree/restrictions':
-        return 'قيود اليومية';
-      default:
-        console.warn('No matching route found for:', path);
-        return 'Infinity Clinic';
+    // this.router.events.pipe(filter(event => event instanceof NavigationStart)).subscribe((event: NavigationStart) => {
+    //   this.setSelectedModule(event.url);
+    // });
+  }
+  setSelectedModule(url: string) {
+    var selectedModule = url.split('/') ? url.split('/')[1] : '';
+    if (selectedModule) {
+      this.selectedModuleName = this.modulesMenu.find(x => x.route == `/${selectedModule}`)?.displayName;
     }
   }
-
-  toggleSidebar() {
-    this.isCollapsed = !this.isCollapsed;
-    this.sidebarToggled.emit(this.isCollapsed);
+  onToggler() {
+    this.showMenu = !this.showMenu;
+    console.log(this.toggler);
   }
-
-  toggleSubMenu(menu: string) {
-    this.activeMenu = menu;
-    this.activeSubmenuRoute = this.router.url;
+  logout() {
+    // this.authService.logout();
   }
 }

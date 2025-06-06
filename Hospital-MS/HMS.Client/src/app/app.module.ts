@@ -11,6 +11,7 @@ import { RegisterComponent } from './Auth/register/register.component';
 import { LoginComponent } from './Auth/login/login.component';
 import { SharedModule } from './Shared/shared.module';
 import { NotAuthorizedComponent } from './Auth/not-authorized/not-authorized.component';
+import { ArabicDayDatePipe } from './Pipes/arabic-day-date.pipe';
 
 @NgModule({
   declarations: [
