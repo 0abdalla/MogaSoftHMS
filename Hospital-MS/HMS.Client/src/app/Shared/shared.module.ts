@@ -18,6 +18,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { FiltersComponent } from './filters/filters.component';
 import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
 import { FormsModule } from '@angular/forms';
+import { GeneralSelectorComponent } from './general-selector/general-selector.component';
 
 
 
@@ -37,7 +38,8 @@ import { FormsModule } from '@angular/forms';
     SpinnerComponent,
     EmptyDataComponent,
     FiltersComponent,
-    DropDownFormControlComponent
+    DropDownFormControlComponent,
+    GeneralSelectorComponent
   ],
   imports: [
     CommonModule,
@@ -58,7 +60,8 @@ import { FormsModule } from '@angular/forms';
     PaginationComponent,
     EmptyDataComponent,
     FiltersComponent,
-    DropDownFormControlComponent
+    DropDownFormControlComponent,
+    GeneralSelectorComponent
   ],
   providers: [DatePipe]
 })

@@ -13,35 +13,40 @@ import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel
   styleUrls: ['./patient-form.component.css']
 })
 export class PatientFormComponent implements OnInit {
+  TitleList = ['إدارة المستشفى', 'المرضى', 'إضافة مريض'];
+  Genders = [{ name: 'ذكر', value: 'Male' }, { name: 'أنثى', value: 'Female' }];
+  PatientStatus = [{ name: 'إقامة', value: 'Staying' }, { name: 'عناية مركزة', value: 'IntensiveCare' }, { name: 'طوارئ', value: 'Emergency' },
+  { name: 'حضانات الأطفال', value: 'NeonatalCare' }, { name: 'عمليات', value: 'Surgery' }];
+  PatientHealthStatus = [{ name: 'مستقرة', value: 'مستقرة' }, { name: 'غير مستقرة', value: 'غير مستقرة' }, { name: 'حرجة', value: 'حرجة' }];
   pagingFilterModel: PagingFilterModel = {
-      searchText: '',
-      currentPage: 1,
-      pageSize: 100,
-      filterList: []
-    };
+    searchText: '',
+    currentPage: 1,
+    pageSize: 100,
+    filterList: []
+  };
   patientForm: FormGroup;
   // 
-  doctors!:any[];
+  doctors!: any[];
   filteredDoctors!: any[];
-  departments!:any;
-  rooms!:any;
-  filteredRooms!:any[];
-  beds!:any;
-  filteratedBeds!:any[];
-  insuranceCompanies!:any;
-  insuranceCategories!:any;
-  patients!:any;
+  departments!: any;
+  rooms!: any;
+  filteredRooms!: any[];
+  beds!: any;
+  filteratedBeds!: any[];
+  insuranceCompanies!: any;
+  insuranceCategories!: any;
+  patients!: any;
   // 
   showSecondContact = false;
   // 
-  currentDate!:any
+  currentDate!: any
   // 
   selectedDailyPrice: number | null = null;
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
     private addmisionService: AdmissionService,
-    private messageService : MessageService,
+    private messageService: MessageService,
     private insuranceService: InsuranceService
   ) {
     const minBirthDate = new Date(1920, 0, 1);
@@ -55,8 +60,8 @@ export class PatientFormComponent implements OnInit {
       patientGender: ['', Validators.required],
       emergencyPhone01: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       emergencyContact01: ['', Validators.required],
-      emergencyPhone02: [''], 
-      emergencyContact02: [''], 
+      emergencyPhone02: [''],
+      emergencyContact02: [''],
       departmentId: ['', Validators.required],
       doctorId: [{ value: '', disabled: true }, Validators.required],
       roomType: ['', Validators.required],
@@ -67,10 +72,10 @@ export class PatientFormComponent implements OnInit {
       insuranceNumber: [null],
       healthStatus: ['', Validators.required],
       initialDiagnosis: ['', Validators.required],
-      hasCompanion: [false, Validators.required], 
-      companionName: ['', []], 
-      companionNationalId: ['', [Validators.pattern(/^[0-9]{14}$/)]], 
-      companionPhone: ['', [Validators.pattern(/^01[0125][0-9]{8}$/)]], 
+      hasCompanion: [false, Validators.required],
+      companionName: ['', []],
+      companionNationalId: ['', [Validators.pattern(/^[0-9]{14}$/)]],
+      companionPhone: ['', [Validators.pattern(/^01[0125][0-9]{8}$/)]],
       notes: [''],
     });
 
@@ -134,7 +139,7 @@ export class PatientFormComponent implements OnInit {
 
         }
       });
-    }else{
+    } else {
     }
   }
   onDepartmentChange() {
@@ -148,10 +153,10 @@ export class PatientFormComponent implements OnInit {
     }
     this.patientForm.get('doctorId')?.setValue('');
   }
-  onRoomTypeChange(){
+  onRoomTypeChange() {
     const selectedRoomType = this.patientForm.get('roomType')?.value;
     if (selectedRoomType) {
-      this.filteredRooms = this.rooms.filter((room:any) => room.type === selectedRoomType);
+      this.filteredRooms = this.rooms.filter((room: any) => room.type === selectedRoomType);
       this.patientForm.get('roomId')?.enable();
     } else {
       this.filteredRooms = [];
@@ -159,12 +164,12 @@ export class PatientFormComponent implements OnInit {
     }
     this.patientForm.get('roomId')?.setValue('');
   }
-  onRoomChange(){
+  onRoomChange() {
     const selectedRoomId = this.patientForm.get('roomId')?.value;
     const selectedRoom = this.rooms.find(room => room.id === +selectedRoomId);
     this.selectedDailyPrice = selectedRoom ? selectedRoom.dailyPrice : null;
     if (selectedRoomId) {
-      this.filteratedBeds = this.beds.filter((bed:any) => bed.roomId === +selectedRoomId);
+      this.filteratedBeds = this.beds.filter((bed: any) => bed.roomId === +selectedRoomId);
       this.patientForm.get('bedId')?.enable();
     } else {
       this.filteratedBeds = [];
@@ -225,7 +230,7 @@ export class PatientFormComponent implements OnInit {
   searchPatientByPhone(event: Event) {
     const input = event.target as HTMLInputElement;
     const phoneNumber = input.value.trim();
-    
+
     if (phoneNumber.length === 11 && /^01[0125][0-9]{8}$/.test(phoneNumber)) {
       this.pagingFilterModel.searchText = phoneNumber;
       this.addmisionService.getAddmision(this.pagingFilterModel).subscribe({
@@ -253,7 +258,7 @@ export class PatientFormComponent implements OnInit {
             this.patientForm.get('patientNationalId')?.disable();
             this.patientForm.get('patientBirthDate')?.disable();
             this.patientForm.get('patientGender')?.disable();
-            
+
             this.messageService.add({
               severity: 'success',
               summary: 'تم العثور على المريض',

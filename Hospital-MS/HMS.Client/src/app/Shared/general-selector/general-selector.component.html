@@ -1,0 +1,55 @@
+<ng-container *ngIf="!selectMulti">
+    <div ngbDropdown class="dropdown-filter-wrapper dropdown-as-input d-inline-block w-100">
+        <div class="position-relative">
+            <button [disabled]="disabled" class="d-flex form-control nw-form-input cursor-pointer" ngbDropdownToggle>
+                {{selectedName??selectedName?.substring(0, 30)}}
+            </button>
+            <div class="input-drop-action d-flex align-items-center gap-1 fw-normal" *ngIf="selectedName &&!disabled">
+                <i class="uil uil-times cursor-pointer" (click)="removeSingleSelected()" ngbDropdownToggle></i>
+            </div>
+            <span class="selector-icon-up-down" *ngIf="!selectedName"></span>
+        </div>
+        <div ngbDropdownMenu class="dropdown-menu-search-input p-0 overflow-hidden w-100 shadow-sm">
+            <div *ngIf="showSearch" class="p-2 bg-light border-bottom">
+                <input type="text" class="form-control form-control" (input)="onInputChange($event)" placeholder="Search..." />
+            </div>
+            <div *ngIf="menuDesign!='table'" class="max-height-150 min-width-200 overflow-auto small-scroll">
+                <div class="check-row" *ngFor="let item of data | searchArry: searchText: searchFields">
+                    <a class="dropdown-item cursor-pointer fw-semibold" [class]="item.value==selectedValue?'active DropDownSelected':''" (click)="selectOption(item)">
+                        {{item.name}}
+                        <span *ngIf="item && item.code">
+                            ({{item.code}})
+                        </span>
+                    </a>
+                </div>
+            </div>
+            <div *ngIf="menuDesign=='table'" class="max-height-150 min-width-200 overflow-auto small-scroll p-2">
+                <table class="table table-card-table table-borderless border table-middle table-hover bg-transparent m-0" style="padding: .2rem .2rem !important">
+                    <tbody>
+                        <ng-container *ngFor="let item of data | searchArry: searchText: searchFields">
+                            <tr class="cursor-pointer" ngbDropdownToggle [class]="item.value==selectedValue?'active DropDownSelected':''" (click)="selectOption(item)">
+
+                                <td style="text-align:right !important">
+                                    <i *ngIf="item.value==selectedValue" class="fas fa-check"></i> {{item.name}}
+                                </td>
+                                <td style="text-align:right !important">
+                                    <span *ngIf="item && item.code">
+                                        {{item.code}}
+                                    </span>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <div *ngIf="routeForCreate" class="d-flex flex-column gap-2 bg-light border-top p-2">
+                <div class="check-row mb-3">
+                    <a [routerLink]="routeForCreate" class="dropdown-item d-flex align-items-center gap-2 cursor-pointer px-1">
+                        <i class="uil uil-plus"></i>
+                        <a>إنشاء جديد</a>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
