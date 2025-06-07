@@ -4,8 +4,9 @@ import { MessageService } from 'primeng/api';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
-import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { SharedService } from '../../../../Services/shared.service';
+import { NgbModal, NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-patient-list',
@@ -42,7 +43,9 @@ export class PatientListComponent {
   pagedResponseModel: PagedResponseModel<any> = {};
   // 
   medicalHistory!: any;
-  constructor(private admissionService: AdmissionService, private fb: FormBuilder, private messageService: MessageService, private sharedService: SharedService) {
+  constructor(private admissionService: AdmissionService, private fb: FormBuilder, private messageService: MessageService, private sharedService: SharedService,
+    private offcanvasService: NgbOffcanvas, private modalService: NgbModal
+  ) {
     this.filterForm = this.fb.group({
       Search: [''],
       Status: [''],
@@ -92,6 +95,11 @@ export class PatientListComponent {
     this.destroy$.complete();
   }
 
+  openDetailsSidePanel(content: any, item: any) {
+    this.getAdmissionById(item.patientId);
+    this.offcanvasService.open(content, { position: 'end' });
+  }
+
   loadPatients() {
     const requestModel = {
       searchText: this.pagingFilterModel.searchText,
@@ -103,6 +111,7 @@ export class PatientListComponent {
     };
     this.admissionService.getAddmision(requestModel).subscribe({
       next: (data) => {
+        this.pagedResponseModel.totalCount = data.totalCount;
         this.patients = data.results.map((patient: any) => {
           switch (patient.patientStatus) {
             case 'CriticalCondition':
@@ -207,10 +216,13 @@ export class PatientListComponent {
     });
   }
 
-  applyFilters() {
+  filterChecked(filters: FilterModel[]) {
     this.pagingFilterModel.currentPage = 1;
-    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Status', this.filterForm.value.Type);
-    this.pagingFilterModel.searchText = this.filterForm.value.Search;
+    this.pagingFilterModel.filterList = filters;
+    if (filters.some(i => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+    else
+      this.pagingFilterModel.searchText = '';
     this.loadPatients();
   }
 
@@ -291,17 +303,38 @@ export class PatientListComponent {
     }
   }
 
-  onPageChange(page: number) {
-    this.pagingFilterModel.currentPage = page;
+  onPageChange(page: any) {
+    this.pagingFilterModel.currentPage = page.page;
     this.loadPatients();
   }
   // 
-  openStatusUpdateModal() {
+
+  openPatientUpdateStatusModal(content: any) {
     this.statusForm.reset();
     if (this.admissionDetails?.patientStatus) {
       this.statusForm.patchValue({ newStatus: this.admissionDetails.patientStatus });
     }
+
+    this.modalService.open(content, {
+      size: 'lg',
+      scrollable: true,
+      centered: true
+    });
   }
+
+  openPatientMedicalHistoryModal(content: any) {
+    this.statusForm.reset();
+    if (this.admissionDetails?.patientStatus) {
+      this.statusForm.patchValue({ newStatus: this.admissionDetails.patientStatus });
+    }
+
+    this.modalService.open(content, {
+      size: 'xl',
+      scrollable: true,
+      centered: true
+    });
+  }
+
   updateStatus() {
     if (this.statusForm.valid) {
       this.admissionService.updateAdmision(this.admissionDetails.patientId, this.statusForm.value).subscribe({

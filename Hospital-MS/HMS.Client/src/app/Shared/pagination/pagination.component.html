@@ -1,3 +1,13 @@
+<!-- <div *ngIf="!newPagination" class="pagination-container d-flex align-items-center justify-content-end flex-wrap">
+    <span class="me-2">
+    <span class="CrossRef_2_Info">{{'Showing'}} {{showingStr}} {{'of'}} </span>
+    <span class="CrossRef_2_InfoTotal">{{totalCount}}</span>
+    </span>
+    <div class="pull-right NewPaging">
+        <pagination [boundaryLinks]="true" [totalItems]="totalCount" [maxSize]="maxSize" [itemsPerPage]="pageSize" previousText="{{'Previous'}}" nextText="{{'Next'}}" firstText="{{'First'}}" lastText="{{'Last'}}">
+        </pagination>
+    </div>
+</div> -->
 <div *ngIf="newPagination" class="pagination-container d-flex align-items-center justify-content-end flex-wrap">
     <span class="me-2">
     <span class="CrossRef_2_Info">عرض {{showingStr}} من </span>

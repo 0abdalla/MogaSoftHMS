@@ -15,6 +15,9 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { PaginationComponent } from './pagination/pagination.component';
 import { EmptyDataComponent } from './empty-data/empty-data.component';
 import { SpinnerComponent } from './spinner/spinner.component';
+import { FiltersComponent } from './filters/filters.component';
+import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -32,12 +35,15 @@ import { SpinnerComponent } from './spinner/spinner.component';
     BreadcrumbComponent,
     PaginationComponent,
     SpinnerComponent,
-    EmptyDataComponent
+    EmptyDataComponent,
+    FiltersComponent,
+    DropDownFormControlComponent
   ],
   imports: [
     CommonModule,
     NgbModule,
-    RouterModule
+    RouterModule,
+    FormsModule
   ],
   exports: [
     AgePipe,
@@ -50,7 +56,9 @@ import { SpinnerComponent } from './spinner/spinner.component';
     OverviewCardComponent,
     BreadcrumbComponent,
     PaginationComponent,
-    EmptyDataComponent
+    EmptyDataComponent,
+    FiltersComponent,
+    DropDownFormControlComponent
   ],
   providers: [DatePipe]
 })
