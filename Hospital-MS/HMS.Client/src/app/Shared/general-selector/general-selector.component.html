@@ -13,34 +13,12 @@
             <div *ngIf="showSearch" class="p-2 bg-light border-bottom">
                 <input type="text" class="form-control form-control" (input)="onInputChange($event)" placeholder="Search..." />
             </div>
-            <div *ngIf="menuDesign!='table'" class="max-height-150 min-width-200 overflow-auto small-scroll">
+            <div class="max-height-150 min-width-200 overflow-auto small-scroll">
                 <div class="check-row" *ngFor="let item of data | searchArry: searchText: searchFields">
                     <a class="dropdown-item cursor-pointer fw-semibold" [class]="item.value==selectedValue?'active DropDownSelected':''" (click)="selectOption(item)">
                         {{item.name}}
-                        <span *ngIf="item && item.code">
-                            ({{item.code}})
-                        </span>
                     </a>
                 </div>
-            </div>
-            <div *ngIf="menuDesign=='table'" class="max-height-150 min-width-200 overflow-auto small-scroll p-2">
-                <table class="table table-card-table table-borderless border table-middle table-hover bg-transparent m-0" style="padding: .2rem .2rem !important">
-                    <tbody>
-                        <ng-container *ngFor="let item of data | searchArry: searchText: searchFields">
-                            <tr class="cursor-pointer" ngbDropdownToggle [class]="item.value==selectedValue?'active DropDownSelected':''" (click)="selectOption(item)">
-
-                                <td style="text-align:right !important">
-                                    <i *ngIf="item.value==selectedValue" class="fas fa-check"></i> {{item.name}}
-                                </td>
-                                <td style="text-align:right !important">
-                                    <span *ngIf="item && item.code">
-                                        {{item.code}}
-                                    </span>
-                                </td>
-                            </tr>
-                        </ng-container>
-                    </tbody>
-                </table>
             </div>
             <div *ngIf="routeForCreate" class="d-flex flex-column gap-2 bg-light border-top p-2">
                 <div class="check-row mb-3">

@@ -6,6 +6,7 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { GeneralSelectorModel } from '../../../../Shared/general-selector/general-selector.component';
 
 @Component({
   selector: 'app-patient-form',
@@ -33,6 +34,7 @@ export class PatientFormComponent implements OnInit {
   filteredRooms!: any[];
   beds!: any;
   filteratedBeds!: any[];
+  insuranceCompaniesData!: any[];
   insuranceCompanies!: any;
   insuranceCategories!: any;
   patients!: any;
@@ -89,8 +91,8 @@ export class PatientFormComponent implements OnInit {
       this.updateSecondContactValidators();
     });
     this.patientForm.get('insuranceCompanyId')?.valueChanges.subscribe(companyId => {
-      const selectedCompany = this.insuranceCompanies.find(company => company.id === +companyId);
-      this.insuranceCategories = selectedCompany?.insuranceCategories || [];
+      const selectedCompany = this.insuranceCompaniesData.find(company => company.id === +companyId);
+      this.insuranceCategories = selectedCompany?.insuranceCategories.map(i => { return { value: i.id, name: i.name } }) as GeneralSelectorModel[] || [];
     });
   }
   addSecondContact() {
@@ -114,10 +116,11 @@ export class PatientFormComponent implements OnInit {
         this.departments = res.departments.results;
         this.rooms = res.rooms.results;
         this.beds = res.beds.results;
-        this.insuranceCompanies = res.insuranceCompanies.results;
-        this.insuranceCategories = this.insuranceCompanies
+        this.insuranceCompaniesData = res.insuranceCompanies.results;
+        this.insuranceCompanies = res.insuranceCompanies.results.map(i => { return { value: i.id, name: i.name } }) as GeneralSelectorModel[];
+        this.insuranceCategories = res.insuranceCompanies.results
           .filter(company => company.insuranceCategories && Array.isArray(company.insuranceCategories))
-          .flatMap(company => company.insuranceCategories);
+          .flatMap(company => company.insuranceCategories).map(i => { return { value: i.id, name: i.name } }) as GeneralSelectorModel[];
         this.patients = res.patients.results;
       },
       error: (err) => {

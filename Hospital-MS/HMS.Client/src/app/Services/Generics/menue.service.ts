@@ -5,7 +5,7 @@ import { MenuSidebarItem } from '../../Models/Generics/MenuSidebarItem';
   providedIn: 'root'
 })
 export class MenueService {
-getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
+  getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
     if (subItemName) {
       return this.menus.find(x => x.menuItemId == menuId)?.subMenus?.find(x => x.menuItem == subItemName);
     }
@@ -122,24 +122,80 @@ getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
           route: '/hms/home/5',
           subMenus: [
             {
-              displayName: 'الحسابات العامة',
+              displayName: 'إدارة الحسابات العامة',
               menuItem: 'accounts',
-              description: 'عرض وإدارة الحسابات العامة',
+              description: 'عرض و إدارة الحسابات العامة',
               icon: 'uil uil-sliders-v-alt',
-              route: '/hms/finance/accounts'
+              route: '/hms/fin-tree/accounts'
             },
             {
               displayName: 'المعاملات المالية',
               menuItem: 'transactions',
-              description: 'عرض وإدارة المعاملات المالية',
+              description: 'عرض و إدارة المعاملات المالية',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/finance/transactions'
+            },
+            {
+              displayName: 'إدارة الخزائن',
+              menuItem: 'boxes',
+              description: 'عرض و إدارة الخزائن',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/boxes'
+            },
+            {
+              displayName: 'إدارة البنوك',
+              menuItem: 'banks',
+              description: 'عرض و إدارة البنوك',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/banks'
+            },
+            {
+              displayName: 'أذون الإضافة',
+              menuItem: 'add-items',
+              description: 'عرض و إدارة أذون الإضافة',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/add-items'
+            },
+            {
+              displayName: 'أذون الصرف',
+              menuItem: 'issue-items',
+              description: 'عرض و إدارة أذون الصرف',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/issue-items'
+            },
+            {
+              displayName: 'جرد المخازن',
+              menuItem: 'fetch-inventory',
+              description: 'عرض و إدارة جرد المخازن',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/fetch-inventory'
+            },
+            {
+              displayName: 'حركة الخزينة',
+              menuItem: 'treasury',
+              description: 'عرض و إدارة حركة الخزينة',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/treasury'
+            },
+            {
+              displayName: 'حركة البنك',
+              menuItem: 'bank',
+              description: 'عرض و إدارة حركة البنك',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/bank'
+            },
+            {
+              displayName: 'القيود اليومية',
+              menuItem: 'restrictions',
+              description: 'عرض و إدارة القيود اليومية',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/restrictions'
             }
           ]
         },
-         {
+        {
           menuItemId: MenuType.ZAInstitution,
-          displayName: 'المشتريات',
+          displayName: 'المشتريات والمخازن',
           menuItem: '6',
           description: 'تتبع و إدارة المشتريات',
           icon: 'fa-solid fa-boxes-stacked',
@@ -158,10 +214,46 @@ getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
               description: 'تتبع و إدارة المشتريات',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/inventory/purchases'
+            },
+            {
+              displayName: 'المجموعات الرئيسية',
+              menuItem: 'main-groups',
+              description: 'تتبع و إدارة المجموعات',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/main-groups'
+            },
+            {
+              displayName: 'مجموعة الأصناف',
+              menuItem: 'items-group',
+              description: 'تتبع و إدارة المجموعات',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/items-group'
+            },
+            {
+              displayName: 'الأصناف',
+              menuItem: 'items',
+              description: 'تتبع و إدارة الأصناف',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/items'
+            },
+            {
+              displayName: 'الموردين',
+              menuItem: 'providers',
+              description: 'تتبع و إدارة الموردين',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/providers'
+            },
+            {
+              displayName: 'العملاء',
+              menuItem: 'clients',
+              description: 'تتبع و إدارة العملاء',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/fin-tree/clients'
             }
+
           ]
         },
-         {
+        {
           menuItemId: MenuType.ZAInstitution,
           displayName: 'الموارد البشرية',
           menuItem: '7',
@@ -183,28 +275,28 @@ getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/staff/add'
             },
-             {
+            {
               displayName: 'الأقسام',
               menuItem: 'department-admin',
               description: 'عرض و إدارة الأقسام',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/staff/department-admin'
             },
-             {
+            {
               displayName: 'المستويات الوظيفية',
               menuItem: 'job-levels',
               description: 'عرض و إدارة المستويات الوظيفية',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/staff/job-levels'
             },
-             {
+            {
               displayName: 'تصنيف الوظائف',
               menuItem: 'classification',
               description: 'عرض و إدارة تصنيف الوظائف',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/staff/classification'
             },
-              {
+            {
               displayName: 'الوظائف',
               menuItem: 'job-management',
               description: 'عرض و إدارة الوظائف',
@@ -213,7 +305,7 @@ getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
             }
           ]
         },
-         {
+        {
           menuItemId: MenuType.ZAInstitution,
           displayName: 'التقارير',
           menuItem: '8',
@@ -234,10 +326,17 @@ getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
               description: 'عرض التقارير الطبية',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/reports/medical'
+            },
+            {
+              displayName: 'تقارير حركة المخزن',
+              menuItem: 'stock-movement-report',
+              description: 'عرض تقارير حركة المخزن',
+              icon: 'uil uil-sliders-v-alt',
+              route: '/hms/reports/stock-movement-report'
             }
           ]
         },
-         {
+        {
           menuItemId: MenuType.ZAInstitution,
           displayName: 'الاعدادات',
           menuItem: '9',
@@ -259,28 +358,28 @@ getMenuById(menuId: MenuType, subItemName: string = null): MenuSidebarItem {
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/settings/doctors-list'
             },
-             {
+            {
               displayName: 'إضافة طبيب',
               menuItem: 'doctors',
               description: 'إضافة طبيب جديد',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/settings/doctors'
             },
-             {
+            {
               displayName: 'إدارة الخدمات الطبية',
               menuItem: 'medical-services-list',
               description: 'عرض و إدارة الخدمات الطبية',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/settings/medical-services-list'
             },
-             {
+            {
               displayName: 'تعيين مستخدم',
               menuItem: 'permissions',
               description: 'عرض و إدارة المستخدمين',
               icon: 'uil uil-sliders-v-alt',
               route: '/hms/settings/permissions'
             },
-             {
+            {
               displayName: 'إدارة التطبيقات ',
               menuItem: 'apps-managmement',
               description: 'عرض و إدارة التطبيقات ',
