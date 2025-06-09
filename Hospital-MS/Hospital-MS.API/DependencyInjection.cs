@@ -81,6 +81,8 @@ namespace Hospital_MS.API
             services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
             services.AddScoped<IDispensePermissionService, DispensePermissionService>();
             services.AddScoped<IStoreCountService, StoreCountService>();
+            services.AddScoped<ISupplyReceiptService, SupplyReceiptService>();
+            services.AddScoped<IAdditionNotificationService, AdditionNotificationService>();
 
 
             services.AddHealthChecks()
