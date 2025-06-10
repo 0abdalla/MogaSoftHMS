@@ -51,7 +51,7 @@ namespace Hospital_MS.Core._Data
         public DbSet<StoreCount> StoreCounts { get; set; }
         public DbSet<SupplyReceipt> SupplyReceipts { get; set; }
         public DbSet<AdditionNotice> AdditionNotices { get; set; }
-
+        public DbSet<DebitNotice> DebitNotices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -73,7 +73,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
 
     }
 
-    public async Task<PagedResponseModel<List<AdditionNotificationResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+    public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -90,64 +90,42 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 var bankFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Bank");
                 if (bankFilter != null)
                 {
-                    parameters.Add(new SqlParameter("@BankId", bankFilter.ItemValue));
+                    parameters.Add(new SqlParameter("@BankId", bankFilter.ItemValue ?? (object)DBNull.Value));
                 }
 
                 var accountFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Account");
                 if (accountFilter != null)
                 {
-                    parameters.Add(new SqlParameter("@AccountId", accountFilter.ItemValue));
+                    parameters.Add(new SqlParameter("@AccountId", accountFilter.ItemValue ?? (object)DBNull.Value));
                 }
 
                 var dateFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Date");
                 if (dateFilter != null)
                 {
-                    if (dateFilter.FromDate.HasValue)
-                        parameters.Add(new SqlParameter("@FromDate", dateFilter.FromDate.Value));
-                    if (dateFilter.ToDate.HasValue)
-                        parameters.Add(new SqlParameter("@ToDate", dateFilter.ToDate.Value));
+                    parameters.Add(new SqlParameter("@FromDate", dateFilter.FromDate ?? (object)DBNull.Value));
+                    parameters.Add(new SqlParameter("@ToDate", dateFilter.ToDate ?? (object)DBNull.Value));
                 }
 
                 var checkNumberFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "CheckNumber");
                 if (checkNumberFilter != null)
                 {
-                    parameters.Add(new SqlParameter("@CheckNumber", checkNumberFilter.ItemValue));
+                    parameters.Add(new SqlParameter("@CheckNumber", checkNumberFilter.ItemValue ?? (object)DBNull.Value));
                 }
             }
 
             var dt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetAdditionNotifications]", parameters.ToArray());
 
-            var notifications = new List<AdditionNotificationResponse>();
             int totalCount = 0;
-
             if (dt.Rows.Count > 0)
             {
-                totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"]);
-
-                notifications = dt.AsEnumerable().Select(row => new AdditionNotificationResponse
-                {
-                    Id = row.Field<int>("Id"),
-                    Date = DateOnly.FromDateTime(row.Field<DateTime>("Date")),
-                    BankId = row.Field<int>("BankId"),
-                    BankName = row.Field<string>("BankName") ?? string.Empty,
-                    AccountId = row.Field<int>("AccountId"),
-                    AccountName = row.Field<string>("AccountName") ?? string.Empty,
-                    CheckNumber = row.Field<string>("CheckNumber") ?? string.Empty,
-                    Amount = row.Field<decimal>("Amount"),
-                    Notes = row.Field<string>("Notes")
-
-                }).ToList();
+                totalCount = dt.Rows[0].Field<int>("TotalCount");
             }
 
-            return PagedResponseModel<List<AdditionNotificationResponse>>.Success(
-                GenericErrors.GetSuccess,
-                totalCount,
-                notifications
-            );
+            return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
         }
         catch (Exception)
         {
-            return PagedResponseModel<List<AdditionNotificationResponse>>.Failure(GenericErrors.TransFailed);
+            return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
         }
     }
 
