@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder , Validators } from '@angular/forms';
+import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 
 @Component({
   selector: 'app-add-notice',
   templateUrl: './add-notice.component.html',
   styleUrl: './add-notice.component.css'
 })
-export class AddNoticeComponent {
+export class AddNoticeComponent implements OnInit {
   filterForm!:FormGroup;
   addNoticeGroup!:FormGroup
   // 
@@ -16,22 +17,31 @@ export class AddNoticeComponent {
     pageSize:16,
     currentPage:1,
   }
-  constructor(private fb:FormBuilder){
+  constructor(private fb:FormBuilder , private financialService:FinancialService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
       responsible:[''],
     })
     this.addNoticeGroup = this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
-      documentNumber: ['0'],
-      warehouseName: [''],
-      supplierName: [''],
-      itemNumber: [''],
-      quantity: [1],
-      balance: [0],
+      date: ['' , [Validators.required]],
+      documentNumber: ['' , [Validators.required]],
+      bankId: ['' , [Validators.required]],
+      accountId: ['' , [Validators.required]],
+      checkNumber: ['' , [Validators.required]],
+      amount: [0 , [Validators.required]],
       notes: ['']
     });    
+  }
+  ngOnInit(): void {
+    this.getAllAdditionNotifications();
+  }
+  getAllAdditionNotifications(){
+    this.financialService.getAllAdditionNotifications(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.filterForm.value.SearchText).subscribe((res:any)=>{
+      this.adds=res.results;
+      this.total=res.total;
+      console.log(this.adds);
+    })
   }
   applyFilters(){
     this.total=this.adds.length;
@@ -52,7 +62,9 @@ export class AddNoticeComponent {
   }
   // 
   submitPermission(){
-    console.log(this.addNoticeGroup.value);
+    this.financialService.addAdditionNotification(this.addNoticeGroup).subscribe((res:any)=>{
+      console.log(res);
+    })
     this.addNoticeGroup.reset();
   }
 }

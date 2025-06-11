@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FinancialService } from '../../../../../Services/HMS/financial.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-banks',
   templateUrl: './banks.component.html',
   styleUrl: './banks.component.css'
 })
-export class BanksComponent {
+export class BanksComponent implements OnInit {
   filterForm!:FormGroup;
   accountForm!:FormGroup
   // 
@@ -16,17 +18,27 @@ export class BanksComponent {
     pageSize:16,
     currentPage:1,
   }
-  constructor(private fb:FormBuilder){
+  constructor(private fb:FormBuilder , private finService : FinancialService){
     this.filterForm=this.fb.group({
       SearchText:[],
     })
     this.accountForm = this.fb.group({
       name: ['', Validators.required],
-      safe: ['', Validators.required],
-      branch: ['', Validators.required],
+      code: ['', Validators.required],
+      accountNumber: ['', Validators.required],
       currency: ['', Validators.required],
-      openingBalance: ['', Validators.required]
+      initialBalance: ['', Validators.required]
     });
+  }
+  ngOnInit(): void {
+    this.getAllBanks();
+  }
+  getAllBanks(){
+    this.finService.getAllBanks(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.filterForm.value.search).subscribe((res:any)=>{
+      this.banks=res.results;
+      console.log(this.banks);
+      this.applyFilters();
+    })
   }
   applyFilters(){
     this.total=this.banks.length;
@@ -47,6 +59,35 @@ export class BanksComponent {
   }
   // 
   addAccount(){
-    this.accountForm.reset();
+    this.finService.addBank(this.accountForm).subscribe((res:any)=>{
+      console.log(res);
+      this.accountForm.reset();
+      this.getAllBanks();
+    })
+  }
+  // updateAccount(){
+  //   this.finService.updateBank(this.selectedItem.id , this.accountForm).subscribe((res:any)=>{
+  //     console.log(res);
+  //     this.accountForm.reset();
+  //     this.getAllBanks();
+  //   })
+  // }
+  deleteAccount(id:number){
+    Swal.fire({
+      title: 'هل انت متأكد من حذف هذه الحساب',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'نعم، حذف هذه الحساب',
+      cancelButtonText: 'لا'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.finService.deleteBank(id).subscribe((res:any)=>{
+          console.log(res);
+          this.getAllBanks();
+        })
+      }
+    })
   }
 }

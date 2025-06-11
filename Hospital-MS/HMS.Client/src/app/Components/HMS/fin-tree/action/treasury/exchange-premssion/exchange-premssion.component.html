@@ -95,38 +95,34 @@
 
                 <div class="col-md-4">
                   <label>صرف من</label>
-                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                  <select class="form-select shadow-none text-end" formControlName="fromStoreId">
                     <option disabled selected value="">اختر الخزينة</option>
-                    <option value="المخزن الرئيسي">خزينة رئيسي</option>
-                    <option value="مخزن فرعي">خزينة فرعية</option>
+                    <option value="1">خزينة رئيسي</option>
+                    <option value="2">خزينة فرعية</option>
                     
                   </select>
                 </div>
 
   
-                <div class="col-md-4">
-                  <label>استلمت من السيد</label>
-                  <input type="text" class="form-control shadow-none text-end" formControlName="balance" />
+                <div class="col-md-4">  
+                  <label>صرف إلى</label>
+                  <input type="text" class="form-control shadow-none text-end" formControlName="toStoreId" />
                 </div>
 
                 <div class="col-md-4">
                     <label>كود الحساب</label>
-                    <select class="form-select shadow-none text-end" formControlName="supplierName">
+                    <select class="form-select shadow-none text-end" formControlName="itemId">
                       <option disabled selected value="">اختر الحساب</option>
-                      <option value="مورد 1">مورد 1</option>
-                      <option value="مورد 2">مورد 2</option>
+                      <option value="1">مورد 1</option>
+                      <option value="2">مورد 2</option>
                     </select>
                   </div>
 
                 <div class="col-md-4">
                   <label>المبلغ</label>
-                  <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
+                  <input type="number" class="form-control shadow-none text-end" formControlName="quantity" />
                 </div>
 
-                <div class="col-md-4">
-                  <label>شرح العملية/القيد</label>
-                  <input type="text" class="form-control shadow-none text-end" formControlName="description" />
-                </div>
   
                 <div class="col-md-12">
                   <label>ملاحظات</label>

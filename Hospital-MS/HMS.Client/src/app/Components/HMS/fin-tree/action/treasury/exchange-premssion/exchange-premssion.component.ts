@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 
 @Component({
   selector: 'app-exchange-premssion',
@@ -16,7 +17,7 @@ export class ExchangePremssionComponent {
     pageSize:16,
     currentPage:1,
   }
-  constructor(private fb:FormBuilder){
+  constructor(private fb:FormBuilder , private financialService:FinancialService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -24,14 +25,21 @@ export class ExchangePremssionComponent {
     })
     this.exPermissionForm = this.fb.group({
       date: [new Date().toISOString().substring(0, 10)],
-      documentNumber: ['0'],
-      warehouseName: [''],
-      supplierName: [''],
-      itemNumber: [''],
-      quantity: [1],
-      balance: [0],
+      fromStoreId: ['' , Validators.required],
+      toStoreId: ['' , Validators.required],
+      quantity: ['' , Validators.required],
+      itemId: ['' , Validators.required],
       notes: ['']
     });    
+    this.getExchanges();
+  }
+  getExchanges(){
+    this.financialService.getDispensePermission(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize).subscribe((res:any)=>{
+      console.log(res);
+      this.exchanges=res.results;
+      console.log(this.exchanges);
+      this.applyFilters();
+    })
   }
   applyFilters(){
     this.total=this.exchanges.length;
@@ -52,7 +60,10 @@ export class ExchangePremssionComponent {
   }
   // 
   submitPermission(){
-    console.log(this.exPermissionForm.value);
+    this.financialService.addDispensePermission(this.exPermissionForm.value).subscribe((res:any)=>{
+      console.log(res);
+      this.getExchanges();
+    })
     this.exPermissionForm.reset();
   }
 }

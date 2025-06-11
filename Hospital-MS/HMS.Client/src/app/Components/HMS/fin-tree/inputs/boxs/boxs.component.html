@@ -4,7 +4,7 @@
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="col-md-8 row">
-                        <input type="text" formControlName="SearchText" placeholder="إبحث بإستخادم رقم الخزينة أو اسم الخزينة" class="form-control text-end shadow-none">
+                        <input type="text" formControlName="search" placeholder="إبحث بإستخادم رقم الخزينة أو اسم الخزينة" class="form-control text-end shadow-none">
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
                         <button type="submit" class="btn-blue w-100 mx-2">
@@ -27,19 +27,17 @@
                 </tr>
             </thead>
             <tbody *ngIf="items?.length > 0">
-                <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
-                    <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ item.name }}</span>
-                        </div>
+                <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" style="cursor: pointer">
+                    <td (click)="openItem(item.id)">{{ item.id }}</td>
+                    <td (click)="openItem(item.id)">
+                      <span class="fw-bold">{{ item.name }}</span>
                     </td>
-                    <td>{{ item.items }}</td>
+                    <td (click)="openItem(item.id)">{{ item.currency || 'جنيه مصري' }}</td>
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" (click)="openForm(item.id); $event.stopPropagation()" class="btn btn-primary">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" (click)="deleteAccount(item.id); $event.stopPropagation()" class="btn btn-danger">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -65,6 +63,40 @@
 </main>
 
 
+<div class="modal fade" id="viewItemModal" tabindex="-1" aria-labelledby="viewItemModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="viewItemModalLabel">تفاصيل الخزينة</h5>
+      </div>
+      <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+        <div class="row text-end">
+
+          <div class="col-md-6 mb-2">
+            <strong>الكود:</strong> {{ selectedItem?.code }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>الخزينة:</strong> {{ selectedItem?.name }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>العملة:</strong> {{ selectedItem?.currency }}
+          </div>
+
+          <div class="col-md-6 mb-2">
+            <strong>إسم المستخدم:</strong> {{ selectedItem?.userName }}
+          </div>
+          <div class="col-md-6 mb-2">
+            <!-- <strong>تاريخ الطباعة:</strong> {{ currentDateTime }} -->
+          </div>
+          <div class="col-md-6 mb-2">
+            <strong>صفحة رقم:</strong> 1
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
@@ -77,10 +109,10 @@
             <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
                 <div class="row">
                   <div class="col-md-12 mb-2">
-                    <label for="safe" class="form-label">تكويد الحسابات</label>
-                    <input type="text" class="form-control shadow-none" formControlName="safe" id="safe" placeholder="تكويد الحسابات">
-                    <div *ngIf="accountForm.get('safe')?.invalid && accountForm.get('safe')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('safe')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    <label for="accountCode" class="form-label">تكويد الحسابات</label>
+                    <input type="text" class="form-control shadow-none" formControlName="accountCode" id="accountCode" placeholder="تكويد الحسابات">
+                    <div *ngIf="accountForm.get('accountCode')?.invalid && accountForm.get('accountCode')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('accountCode')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                     </div>
                   </div>
 
@@ -93,14 +125,14 @@
                   </div>
               
                   <div class="col-md-6 mb-2">
-                    <label for="branch" class="form-label">الفرع</label>
-                    <select class="form-select shadow-none" formControlName="branch" id="branch">
+                    <label for="branchId" class="form-label">الفرع</label>
+                    <select class="form-select shadow-none" formControlName="branchId" id="branchId">
                       <option selected disabled value="">اختر الفرع</option>
-                      <option value="رئيسية">الرئيسية</option>
-                      <option value="فرع">الفرع</option>
+                      <option value="1">الفرع الرئيسي</option>
+                      <option value="2">الفرع الفرعي</option>
                     </select>
-                    <div *ngIf="accountForm.get('branch')?.invalid && accountForm.get('branch')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('branch')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    <div *ngIf="accountForm.get('branchId')?.invalid && accountForm.get('branchId')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('branchId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                     </div>
                   </div>
               
@@ -127,6 +159,76 @@
               
                 <div class="text-center mt-3">
                   <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">إضافة الخزينة</button>
+                </div>
+              </form>
+              
+        </div>
+      </div>
+    </div>
+</div>  
+
+
+
+<div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="editItemModalLabel">تعديل الخزينة</h5>
+        </div>
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+            <form [formGroup]="accountForm" (ngSubmit)="updateAccount()">
+                <div class="row">
+                  <div class="col-md-12 mb-2">
+                    <label for="accountCode" class="form-label">تكويد الحسابات</label>
+                    <input type="text" class="form-control shadow-none" formControlName="accountCode" id="accountCode" placeholder="تكويد الحسابات">
+                    <div *ngIf="accountForm.get('accountCode')?.invalid && accountForm.get('accountCode')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('accountCode')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-2">
+                    <label for="name" class="form-label">اسم الخزينة</label>
+                    <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الخزينة">
+                    <div *ngIf="accountForm.get('name')?.invalid && accountForm.get('name')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    </div>
+                  </div>
+              
+                  <div class="col-md-6 mb-2">
+                    <label for="branchId" class="form-label">الفرع</label>
+                    <select class="form-select shadow-none" formControlName="branchId" id="branchId">
+                      <option selected disabled value="">اختر الفرع</option>
+                      <option value="1">الفرع الرئيسي</option>
+                      <option value="2">الفرع الفرعي</option>
+                    </select>
+                    <div *ngIf="accountForm.get('branchId')?.invalid && accountForm.get('branchId')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('branchId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    </div>
+                  </div>
+              
+                  <div class="col-md-6 mb-2">
+                    <label for="currency" class="form-label">العملة</label>
+                    <select class="form-select shadow-none" formControlName="currency" id="currency">
+                      <option selected disabled value="">اختر العملة</option>
+                      <option value="ريال">ريال</option>
+                      <option value="دولار">دولار</option>
+                    </select>
+                    <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    </div>
+                  </div>
+              
+                  <div class="col-md-6 mb-2">
+                    <label for="openingBalance" class="form-label">رصيد أول المدة</label>
+                    <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="رصيد أول المدة">
+                    <div *ngIf="accountForm.get('openingBalance')?.invalid && accountForm.get('openingBalance')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('openingBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    </div>
+                  </div>
+                </div>
+              
+                <div class="text-center mt-3">
+                  <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">تعديل الخزينة</button>
                 </div>
               </form>
               

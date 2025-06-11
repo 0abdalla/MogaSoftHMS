@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
+import { FinancialService } from '../../../../../../Services/HMS/financial.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-discount-notice',
@@ -10,13 +12,13 @@ export class DiscountNoticeComponent {
   filterForm!:FormGroup;
   discountNoticeGroup!:FormGroup
   // 
-  adds:any[]=[];
+  discounts:any[]=[];
   total:number=0;
   pagingFilterModel:any={
     pageSize:16,
     currentPage:1,
   }
-  constructor(private fb:FormBuilder){
+  constructor(private fb:FormBuilder,private financialService:FinancialService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -24,17 +26,23 @@ export class DiscountNoticeComponent {
     })
     this.discountNoticeGroup = this.fb.group({
       date: [new Date().toISOString().substring(0, 10)],
-      documentNumber: ['0'],
-      warehouseName: [''],
-      supplierName: [''],
-      itemNumber: [''],
-      quantity: [1],
-      balance: [0],
+      bankId: [1],
+      accountId: [1],
+      checkNumber: [''],
+      amount: [0],
       notes: ['']
     });    
+    this.getDiscounts();
+  }
+  getDiscounts(){
+    this.financialService.getAllDiscountNotifications(this.pagingFilterModel.currentPage,this.pagingFilterModel.pageSize,this.filterForm.value.SearchText,this.filterForm.value.type,this.filterForm.value.responsible).subscribe((res:any)=>{
+      this.discounts=res.results;
+      console.log('Data',this.discounts);
+      this.total=res.total;
+    })
   }
   applyFilters(){
-    this.total=this.adds.length;
+    this.getDiscounts();
   }
   resetFilters(){
     this.filterForm.reset();
@@ -51,8 +59,40 @@ export class DiscountNoticeComponent {
     
   }
   // 
-  submitPermission(){
-    console.log(this.discountNoticeGroup.value);
+  submitPermission() {
+    this.financialService.addDiscountNotification(this.discountNoticeGroup.value).subscribe({
+      next: (res: any) => {
+        console.log('Discount notification added successfully:', res);
+        this.getDiscounts();
+      },
+      error: (err) => {
+        console.error('Error adding discount notification:', err);
+      }
+    });
     this.discountNoticeGroup.reset();
+  }
+  deleteDiscount(id:number){
+    Swal.fire({
+      title: 'هل انت متأكد من الحذف؟',
+      text: "لا يمكن استرجاع البيانات المحذوفة!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'نعم، حذف البيانات!',
+      cancelButtonText: 'إلغاء'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.financialService.deleteDiscountNotification(id).subscribe({
+          next: (res: any) => {
+            console.log('Discount notification deleted successfully:', res);
+            this.getDiscounts();
+          },
+          error: (err) => {
+            console.error('Error deleting discount notification:', err);
+          }
+        });
+      }
+    });
   }
 }

@@ -36,23 +36,23 @@
                     <th>الإجراءات</th>
                 </tr>
             </thead>
-            <tbody *ngIf="adds?.length > 0">
-                <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
-                    <td>{{ add.documentNumber }}</td>
-                    <td>{{ add.date }}</td>
+            <tbody *ngIf="discounts?.length > 0">
+                <tr *ngFor="let add of discounts | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
+                    <td>{{ add.id }}</td>
+                    <td>{{ add.date | date:'yyyy-MM-dd' }}</td>
                     <td>{{ add.bankName }}</td>
-                    <td>{{ add.balance }}</td>
+                    <td>{{ add.amount }} {{ add.currency || 'جنيه مصري' }}</td>
                     <td>
                         <button type="button" class="btn btn-primary">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button (click)="deleteDiscount(add.id)" type="button" class="btn btn-danger">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 </tr>
             </tbody>
-            <tbody *ngIf="adds?.length === 0">
+            <tbody *ngIf="discounts?.length === 0">
                 <tr>
                     <td colspan="6" class="text-center text-muted">لا يوجد إشعارات خصم حتى الآن</td>
                 </tr>
@@ -92,30 +92,30 @@
 
                 <div class="col-md-4">
                   <label>اسم البنك</label>
-                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                  <select class="form-select shadow-none text-end" formControlName="bankId">
                     <option disabled selected value="">اختر البنك</option>
-                    <option value="بنك رئيسي">بنك رئيسي</option>
-                    <option value="بنك فرعية">بنك فرعية</option>
+                    <option value="1">بنك رئيسي</option>
+                    <option value="2">بنك فرعية</option>
                   </select>
                 </div>
 
                 <div class="col-md-4">
                   <label>اسم الحساب</label>
-                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                  <select class="form-select shadow-none text-end" formControlName="accountId">
                     <option disabled selected value="">اختر الحساب</option>
-                    <option value="حساب رئيسي">حساب رئيسي</option>
-                    <option value="حساب فرعية">حساب فرعية</option>
+                    <option value="1">حساب رئيسي</option>
+                    <option value="2">حساب فرعية</option>
                   </select>
                 </div>
 
                 <div class="col-md-6">
                   <label>المبلغ</label>
-                  <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
+                  <input type="number" class="form-control shadow-none text-end" formControlName="amount" />
                 </div>
 
                 <div class="col-md-6">
                   <label>رقم الشيك</label>
-                  <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                  <input type="text" class="form-control shadow-none text-end" formControlName="checkNumber" />
                 </div>
   
                 <div class="col-md-12">
