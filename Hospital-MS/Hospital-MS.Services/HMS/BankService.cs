@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
-public class BankService(IUnitOfWork unitOfWork,ISQLHelper sQLHelper) : IBankService
+public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISQLHelper _sQLHelper = sQLHelper;
@@ -165,6 +165,79 @@ public class BankService(IUnitOfWork unitOfWork,ISQLHelper sQLHelper) : IBankSer
         {
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
 
+        }
+    }
+
+    public async Task<ErrorResponseModel<BankStatementResponse>> GetBankStatementAsync(int bankId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var summaryParams = new[]
+            {
+                new SqlParameter("@BankId", bankId),
+                new SqlParameter("@FromDate", fromDate.ToDateTime(TimeOnly.MinValue)),
+                new SqlParameter("@ToDate", toDate.ToDateTime(TimeOnly.MinValue))
+            };
+
+            var dt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetBankStatement]", summaryParams);
+
+            if (dt.Rows.Count == 0)
+                return ErrorResponseModel<BankStatementResponse>.Failure(GenericErrors.NotFound);
+
+            var response = new BankStatementResponse
+            {
+                BankName = dt.Rows[0].Field<string>("BankName") ?? string.Empty,
+                InitialBalance = dt.Rows[0].Field<decimal>("InitialBalance"),
+                TotalCredit = dt.Rows[0].Field<decimal>("TotalCredit"),
+                TotalDebit = dt.Rows[0].Field<decimal>("TotalDebit"),
+                FinalBalance = dt.Rows[0].Field<decimal>("FinalBalance")
+            };
+
+            var depositParams = new[]
+            {
+                new SqlParameter("@BankId", bankId),
+                new SqlParameter("@FromDate", fromDate.ToDateTime(TimeOnly.MinValue)),
+                new SqlParameter("@ToDate", toDate.ToDateTime(TimeOnly.MinValue))
+            };
+
+            var depositsDt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetBankStatementDeposits]", depositParams);
+
+            response.DepositDetails = depositsDt.AsEnumerable()
+                .Select(row => new StatementDetail
+                {
+                    Id = row.Field<int>("Id"),
+                    Date = DateOnly.FromDateTime(row.Field<DateTime>("Date")),
+                    CheckNumber = row.Field<string>("CheckNumber") ?? string.Empty,
+                    AccountName = row.Field<string>("AccountName") ?? string.Empty,
+                    Amount = row.Field<decimal>("Amount"),
+                    Notes = row.Field<string>("Notes")
+                }).ToList();
+
+            var withdrawalParams = new[]
+            {
+                new SqlParameter("@BankId", bankId),
+                new SqlParameter("@FromDate", fromDate.ToDateTime(TimeOnly.MinValue)),
+                new SqlParameter("@ToDate", toDate.ToDateTime(TimeOnly.MinValue))
+            };
+
+            var withdrawalsDt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetBankStatementWithdrawals]", withdrawalParams);
+
+            response.WithdrawalDetails = withdrawalsDt.AsEnumerable()
+                .Select(row => new StatementDetail
+                {
+                    Id = row.Field<int>("Id"),
+                    Date = DateOnly.FromDateTime(row.Field<DateTime>("Date")),
+                    CheckNumber = row.Field<string>("CheckNumber") ?? string.Empty,
+                    AccountName = row.Field<string>("AccountName") ?? string.Empty,
+                    Amount = row.Field<decimal>("Amount"),
+                    Notes = row.Field<string>("Notes")
+                }).ToList();
+
+            return ErrorResponseModel<BankStatementResponse>.Success(GenericErrors.GetSuccess, response);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<BankStatementResponse>.Failure(GenericErrors.TransFailed);
         }
     }
 }

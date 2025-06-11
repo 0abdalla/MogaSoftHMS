@@ -50,5 +50,12 @@ namespace Hospital_MS.API.Controllers
             var result = await _bankService.DeleteAsync(id, cancellationToken);
             return Ok(result);
         }
+
+        [HttpGet("{bankId}/statement")]
+        public async Task<IActionResult> GetBankStatement(int bankId, [FromQuery] DateOnly fromDate, [FromQuery] DateOnly toDate, CancellationToken cancellationToken)
+        {
+            var result = await _bankService.GetBankStatementAsync(bankId, fromDate, toDate, cancellationToken);
+            return Ok(result);
+        }
     }
 }

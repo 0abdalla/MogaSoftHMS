@@ -15,4 +15,6 @@ public interface IBankService
     Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default);
     Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<BankResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+
+    Task<ErrorResponseModel<BankStatementResponse>> GetBankStatementAsync(int bankId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken);
 }
