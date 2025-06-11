@@ -3,28 +3,45 @@
         <app-header></app-header>
         <main class="main-design-wrapper pt-3">
             <div class="d-flex">
-                <aside class="nw-sidebar-wrapper" [class.is-toggle]="isToggle">
-                    <button class="sidebar-button-collapser" (click)="onToggleContent()">
+                <aside class="nw-sidebar-wrapper">
+                    <button class="sidebar-button-collapser">
                         <i class="uil uil-angle-left"></i>
                     </button>
                     <div class="p-2">
-                        <div *ngIf="menuItem && menuItem.subMenus?.length >0" class="sidebar-scrolling small-scroll d-flex flex-column gap-4 nw-sidebar-height">
-                            <section class="d-flex flex-column gap-4">
-                                <h4 class="nw-sidebar-title mb-0">
-                                    {{menuItem.displayName}}
-                                </h4>
-                                <ul class="nw-sidebar-list list-unstyled p-0 m-0 d-flex flex-column gap-3">
-                                    <li *ngFor="let item of menuItem.subMenus" class="nw-sidebar-item">
-                                        <a [routerLink]="item.route" routerLinkActive="active" class="nw-sidebar-link d-flex align-items-center gap-3">
-                                            <div class="nw-sidebar-icon">
-                                                <i [class]="item.icon"></i>
+                        <div class="sidebar-scrolling small-scroll d-flex flex-column gap-4 nw-sidebar-height" *ngIf="menuItem?.subMenus?.length">
+                            <section class="d-flex flex-column gap-3">
+                                <h4 class="nw-sidebar-title mb-0">{{ menuItem.displayName }}</h4>
+                                <ul class="nw-sidebar-list list-unstyled p-0 m-0 d-flex flex-column gap-2">
+                                    <li>
+                                        <div class="nw-sidebar-link d-flex align-items-center justify-content-between cursor-pointer" routerLink="/hms/home" routerLinkActive="active">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="fa-solid fa-house" style="font-size: 15px;"></i>
+                                                <span style="font-size: 15px;font-weight: 900;">لوحة التحكم</span>
                                             </div>
-                                            <div class="nw-sidebar-text">{{item.displayName}}</div>
-                                        </a>
+                                        </div>
+                                    </li>
+                                    <li *ngFor="let parent of menuItem.subMenus" class="nw-sidebar-item">
+                                        <div class="nw-sidebar-link d-flex align-items-center justify-content-between cursor-pointer" (click)="toggleSubMenu(parent)">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i [class]="parent.icon" style="font-size: 15px;"></i>
+                                                <span style="font-size: 15px;font-weight: 900;">{{ parent.displayName }}</span>
+                                            </div>
+                                            <i class="uil" [ngClass]="isExpanded(parent) ? 'uil-angle-up' : 'uil-angle-down'"></i>
+                                        </div>
+                                        <ul *ngIf="parent.subMenus" [@expandCollapse]="isExpanded(parent) ? 'expanded' : 'collapsed'" class="nw-sidebar-list list-unstyled p-0 m-0 d-flex flex-column gap-2 ps-3">
+
+                                            <li *ngFor="let child of parent.subMenus" class="nw-sidebar-item">
+                                                <div class="nw-sidebar-link d-flex align-items-center justify-content-between cursor-pointer" [routerLink]="child.route" routerLinkActive="active">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <i [class]="child.icon" style="color: #9b9b9b;"></i>
+                                                        <span>{{ child.displayName }}</span>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
                                     </li>
                                 </ul>
                             </section>
-
                         </div>
                     </div>
                 </aside>
@@ -32,7 +49,7 @@
                     <router-outlet></router-outlet>
                 </div>
             </div>
-            <div id="overlaying-element" class="cursor-pointer" [class.show]="isToggle" (click)="onOverlayClicked()">
+            <div id="overlaying-element" class="cursor-pointer">
             </div>
         </main>
     </div>

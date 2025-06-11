@@ -24,7 +24,7 @@
     z-index: 1;
     max-width: 100%;
     width: auto;
-    transform: rotateY(180deg);
+    /* transform: rotateY(180deg); */
 }
 
 .half-content {
