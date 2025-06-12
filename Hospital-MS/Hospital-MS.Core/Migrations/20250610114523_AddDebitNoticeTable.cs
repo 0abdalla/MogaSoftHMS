@@ -1,0 +1,96 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace Hospital_MS.Core.Migrations
+{
+    /// <inheritdoc />
+    public partial class AddDebitNoticeTable : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateTable(
+                name: "DebitNotices",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    BankId = table.Column<int>(type: "int", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    CheckNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DebitNotices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DebitNotices_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalSchema: "finance",
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DebitNotices_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_DebitNotices_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DebitNotices_Banks_BankId",
+                        column: x => x.BankId,
+                        principalSchema: "finance",
+                        principalTable: "Banks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DebitNotices_AccountId",
+                schema: "finance",
+                table: "DebitNotices",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DebitNotices_BankId",
+                schema: "finance",
+                table: "DebitNotices",
+                column: "BankId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DebitNotices_CreatedById",
+                schema: "finance",
+                table: "DebitNotices",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DebitNotices_UpdatedById",
+                schema: "finance",
+                table: "DebitNotices",
+                column: "UpdatedById");
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropTable(
+                name: "DebitNotices",
+                schema: "finance");
+        }
+    }
+}

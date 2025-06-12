@@ -29,19 +29,15 @@
             </thead>
             <tbody *ngIf="banks?.length > 0">
                 <tr *ngFor="let item of banks | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
-                    <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ item.name }}</span>
-                        </div>
-                    </td>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
                     <td>{{ item.accountNumber }}</td>
                     <td>{{ item.currency }}</td>
                     <td>
                         <button type="button" class="btn btn-primary">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button (click)="deleteAccount(item.id)" type="button" class="btn btn-danger">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -79,10 +75,10 @@
             <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
                 <div class="row">
                   <div class="col-md-12 mb-2">
-                    <label for="safe" class="form-label">تكويد الحسابات</label>
-                    <input type="text" class="form-control shadow-none" formControlName="safe" id="safe" placeholder="أدخل تكويد الحسابات">
-                    <div *ngIf="accountForm.get('safe')?.invalid && accountForm.get('safe')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('safe')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    <label for="code" class="form-label">تكويد الحسابات</label>
+                    <input type="text" class="form-control shadow-none" formControlName="code" id="code" placeholder="أدخل تكويد الحسابات">
+                    <div *ngIf="accountForm.get('code')?.invalid && accountForm.get('code')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('code')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                     </div>
                   </div>
 
@@ -106,8 +102,8 @@
                     <label for="currency" class="form-label">العملة</label>
                     <select class="form-select shadow-none" formControlName="currency" id="currency">
                       <option selected disabled value="">اختر العملة</option>
-                      <option value="ريال">ريال</option>
-                      <option value="دولار">دولار</option>
+                      <option value="جنيه مصري">جنيه مصري</option>
+                      <option value="دولار أمريكي">دولار أمريكي</option>
                     </select>
                     <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
                       <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
@@ -115,10 +111,10 @@
                   </div>
               
                   <div class="col-md-6 mb-2">
-                    <label for="openingBalance" class="form-label">رصيد أول المدة</label>
-                    <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="أدخل رصيد أول المدة">
-                    <div *ngIf="accountForm.get('openingBalance')?.invalid && accountForm.get('openingBalance')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('openingBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                    <label for="initialBalance" class="form-label">رصيد أول المدة</label>
+                    <input type="number" class="form-control shadow-none" formControlName="initialBalance" id="initialBalance" placeholder="أدخل رصيد أول المدة">
+                    <div *ngIf="accountForm.get('initialBalance')?.invalid && accountForm.get('initialBalance')?.touched" class="text-danger">
+                      <ng-container *ngIf="accountForm.get('initialBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                     </div>
                   </div>
                 </div>

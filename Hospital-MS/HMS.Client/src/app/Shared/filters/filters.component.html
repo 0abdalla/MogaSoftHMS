@@ -1,0 +1,33 @@
+<div class="d-flex align-items-center flex-wrap gap-2 mb-2">
+    <div class="input-group input-search">
+        <span class="input-group-text bg-light">
+      <button (click)="InputSearchChange()" class="border-0 bg-transparent">
+        <i class="fas fa-search"></i>
+      </button>
+    </span>
+        <input [(ngModel)]="SearchText" (input)="InputSearchChange()" type="text" [placeholder]="searchPlaceholder" class="form-control">
+    </div>
+    <div class="selector-width">
+        <div ngbDropdown class="dropdown-as-input">
+            <button type="button" style="padding-left: 80px;" id="dropdownBasic1" ngbDropdownToggle>
+                <span>{{selectedName}} <sup>*</sup>
+                </span>
+            </button>
+            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="w-100">
+                <div class="dropdown-h large-scroll">
+                    <ng-container *ngFor="let item of filterData">
+                        <div class="d-flex dropdown-item cursor-pointer" [class]="item.name==selectedName?'active DropDownSelected':''" (click)="selectorFilterChange(item)">
+                            <a style="width:270px; min-width: 270px">{{item.name}}</a>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2" (click)="RemoveAllFilters()">
+            <i class="uil uil-eye"></i>
+            <span>إظهار الكل</span>
+        </button>
+    </div>
+</div>

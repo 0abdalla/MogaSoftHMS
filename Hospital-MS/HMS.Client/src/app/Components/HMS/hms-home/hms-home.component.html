@@ -1,0 +1,71 @@
+<div class="d-flex flex-column gap-5">
+    <section class="general-accounts-section d-flex flex-column gap-4">
+        <div class="section-content d-flex">
+            <app-overview-card></app-overview-card>
+        </div>
+    </section>
+    <section class="general-accounts-section d-flex flex-column gap-4">
+        <header class="section-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+        </header>
+        <div class="section-content">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                <div class="col-lg-12 mb-4">
+                    <div class="bg-white p-3 shadow">
+                        <div class="row align-items-center">
+                            <div class="col-lg-10">
+                                <h4 class="mb-2 fw-bold">أعداد الحجوزات</h4>
+                                <p class="mb-0" style="color: #7C8FAC; font-weight: 500;">مقارنة بين الشهر الحالي والماضي</p>
+                            </div>
+                            <div class="col-lg-2">
+                                <select name="month" class="form-select shadow-none" (change)="onMonthChange($event)">
+                  <option *ngFor="let month of months" [value]="month.value" [selected]="month.value === selectedMonth">
+                    {{month.name + ' ' + selectedYear}}
+                  </option>
+                </select>
+                            </div>
+                        </div>
+
+                        <div [chart]="appointmentNumsChart"></div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mb-4">
+                    <div class="bg-white p-3 shadow">
+                        <div class="row align-items-center">
+                            <div class="col-lg-12">
+                                <div class="text-center">
+                                    <h4 class="mb-2 fw-bold">المواعيد المنجزة</h4>
+                                    <p class="mb-0" style="color: #7C8FAC; font-weight: 500;">نسبة إنجاز المواعيد</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div [chart]="completedAppsChart"></div>
+                    </div>
+                </div>
+                <div class="col-lg-9 mb-4">
+                    <div class="bg-white p-3 shadow">
+                        <div class="row align-items-center">
+                            <div class="col-lg-10">
+                                <h4 class="mb-2 fw-bold">أفضل الأطباء</h4>
+                                <p class="mb-0" style="color: #7C8FAC; font-weight: 500;">عدد الحالات اللتي أنجزها الطبيب</p>
+                            </div>
+                            <div class="col-lg-2">
+                                <select name="month" class="form-select shadow-none" (change)="onMonthChange($event)">
+                  <option *ngFor="let month of months" [value]="month.value" [selected]="month.value === selectedMonth">
+                    {{month.name + ' ' + selectedYear}}
+                  </option>
+                </select>
+                            </div>
+                        </div>
+
+                        <div [chart]="doctorsChart"></div>
+                    </div>
+                </div>
+                <div class="col-lg-12 mb-4">
+                    <div class="bg-white p-3 shadow">
+                        <div [chart]="clinicChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

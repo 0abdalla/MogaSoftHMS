@@ -11,6 +11,7 @@ public class Treasury : AuditableEntity
     public string Currency { get; set; } = default!;
     public decimal OpeningBalance { get; set; }
     public bool IsActive { get; set; } = true;
+    public bool IsEnabled { get; set; } = true;
 
     public Branch Branch { get; set; } = default!;
 }

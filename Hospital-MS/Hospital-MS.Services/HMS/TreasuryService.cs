@@ -199,4 +199,77 @@ public class TreasuryService : ITreasuryService
         }
     }
 
+    public async Task<ErrorResponseModel<List<TreasuryResponse>>> GetEnabledTreasuriesAsync(CancellationToken cancellationToken = default)
+    {
+        var treasuries = await _unitOfWork.Repository<Treasury>()
+            .GetAll(x => x.IsActive && x.IsEnabled)
+            .Select(x => new TreasuryResponse
+            {
+                Id = x.Id,
+                Name = x.Name,
+            })
+            .ToListAsync(cancellationToken);
+
+        return ErrorResponseModel<List<TreasuryResponse>>.Success(GenericErrors.GetSuccess, treasuries);
+    }
+
+    public async Task<ErrorResponseModel<List<TreasuryResponse>>> GetDisabledTreasuriesAsync(CancellationToken cancellationToken = default)
+    {
+        var treasuries = await _unitOfWork.Repository<Treasury>()
+            .GetAll(x => x.IsActive && !x.IsEnabled)
+            .Select(x => new TreasuryResponse
+            {
+                Id = x.Id,
+                Name = x.Name,
+            })
+            .ToListAsync(cancellationToken);
+
+        return ErrorResponseModel<List<TreasuryResponse>>.Success(GenericErrors.GetSuccess, treasuries);
+    }
+
+    public async Task<ErrorResponseModel<string>> EnableTreasuryAsync(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var treasury = await _unitOfWork.Repository<Treasury>().GetByIdAsync(id, cancellationToken);
+
+            if (treasury == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            treasury.IsEnabled = true;
+
+            _unitOfWork.Repository<Treasury>().Update(treasury);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public async Task<ErrorResponseModel<string>> DisableTreasuryAsync(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var treasury = await _unitOfWork.Repository<Treasury>().GetByIdAsync(id, cancellationToken);
+
+            if (treasury == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            treasury.IsEnabled = false;
+
+            _unitOfWork.Repository<Treasury>().Update(treasury);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
 }
