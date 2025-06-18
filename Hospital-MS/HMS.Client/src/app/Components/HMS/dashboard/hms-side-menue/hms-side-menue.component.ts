@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { filter } from 'rxjs';
 import { AuthService } from '../../../../Auth/auth.service';
 import { AppsService } from '../../../../Services/Permissions/apps.service';
+import { MenueService } from '../../../../Services/menue.service';
+import { MenuSidebarItem } from '../../../../Models/Generics/MenuSidebarItem';
 
 @Component({
   selector: 'app-hms-side-menue',
@@ -11,23 +13,29 @@ import { AppsService } from '../../../../Services/Permissions/apps.service';
   styleUrl: './hms-side-menue.component.css'
 })
 export class HMSSideMenueComponent {
-  Pages: any[] = [];
+  menusList: MenuSidebarItem[] = [];
   isCollapsed: boolean = false;
   activeMenu: string | null = null;
-  activeSubmenuRoute: string = '';
-  // 
+  activeChildMenu: string | null = null;
   activeSubMenu: string = '';
-  // 
+  activeRoute: string = '';
   permissions: { [key: string]: boolean } = {};
   RoleName: string;
 
   @Output() sidebarToggled = new EventEmitter<boolean>();
 
-  constructor(private router: Router, private authService: AuthService, private permissionService: AppsService) { }
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private permissionService: AppsService,
+    private menuService: MenueService
+  ) {
+    this.menusList = this.menuService.menus;
+  }
 
   ngOnInit() {
     this.RoleName = sessionStorage.getItem('role');
-    this.GetAllowedPagesByRoleName();
+
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -35,51 +43,56 @@ export class HMSSideMenueComponent {
       });
 
     this.setActiveMenuBasedOnRoute();
+
     this.permissionService.permissions$.subscribe(permissions => {
       this.permissions = permissions;
     });
   }
 
-  GetAllowedPagesByRoleName() {
-    this.authService.GetAllowedPagesByRoleName(this.RoleName).subscribe((data: any) => {
-      this.Pages = data;
-      this.Pages.forEach(i => {
-        if (i.children.length == 0)
-          i.isGroup = false;
-        else
-          i.isGroup = true;
-      });
-    });
-  }
-
   setActiveMenuBasedOnRoute() {
     const currentRoute = this.router.url;
-    for (const item of this.Pages) {
-      if (item.isGroup && item.children) {
-        for (const child of item.children) {
+
+    for (const main of this.menusList) {
+      if (main.subMenus) {
+        for (const child of main.subMenus) {
+          if (child.subMenus) {
+            for (const subChild of child.subMenus) {
+              if (currentRoute.startsWith(subChild.route)) {
+                this.activeMenu = main.displayName;
+                this.activeChildMenu = child.displayName;
+                return;
+              }
+            }
+          }
+
           if (currentRoute.startsWith(child.route)) {
-            this.activeMenu = item.nameAR;
-            this.activeSubmenuRoute = currentRoute;
+            this.activeMenu = main.displayName;
+            this.activeChildMenu = child.displayName;
             return;
           }
         }
-      } else if (!item.isGroup && currentRoute.startsWith(item.route)) {
-        this.activeMenu = item.nameAR;
-        this.activeSubmenuRoute = currentRoute;
+      }
+
+      if (currentRoute.startsWith(main.route)) {
+        this.activeMenu = main.displayName;
+        this.activeChildMenu = null;
         return;
       }
     }
 
     this.activeMenu = null;
-    this.activeSubmenuRoute = '';
+    this.activeChildMenu = null;
   }
 
-  toggleSubMenu(menu: string) {
+
+
+  toggleMainMenu(menu: string) {
     this.activeMenu = this.activeMenu === menu ? null : menu;
+    this.activeChildMenu = null;
   }
 
-  toggleSubSubMenu(subMenu: string) {
-    this.activeSubMenu = this.activeSubMenu === subMenu ? '' : subMenu;
+  toggleChildMenu(childMenu: string) {
+    this.activeChildMenu = this.activeChildMenu === childMenu ? null : childMenu;
   }
 
   toggleSidebar() {

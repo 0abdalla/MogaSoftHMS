@@ -7,171 +7,63 @@
     </div>
     <ul class="menu p-2">
         <li>
-            <a routerLink="/hms/home" routerLinkActive="activSide" (click)="toggleSubMenu('home')">
+            <a routerLink="/hms/home" routerLinkActive="activSide">
                 <i class="fa-solid fa-house"></i>
-                <span *ngIf="!isCollapsed">لوحة التحكم</span>
+                <span *ngIf="!isCollapsed">إدارة المستشفى</span>
             </a>
         </li>
-        <li *ngFor="let item of Pages">
-            <ng-container *ngIf="!item.isGroup">
-                <a [routerLink]="item.route" routerLinkActive="activSide" (click)="toggleSubMenu(item.nameAR)">
-                    <i class="fa-solid" [ngClass]="item.icon"></i>
-                    <span *ngIf="!isCollapsed">{{ item.nameAR }}</span>
+        <li *ngFor="let item of menusList">
+            <ng-container *ngIf="!item.isGroup && !item.subMenus">
+                <a [routerLink]="item.route" routerLinkActive="activSide">
+                    <i [class]="item.icon"></i>
+                    <span *ngIf="!isCollapsed">{{ item.displayName }}</span>
                 </a>
             </ng-container>
-            <ng-container *ngIf="item.isGroup">
-                <a (click)="toggleSubMenu(item.nameAR)" [class.activSide]="activeMenu === item.nameAR">
-                    <i class="fa-solid" [ngClass]="item.icon"></i>
-                    <span *ngIf="!isCollapsed">{{ item.nameAR }}</span>
-                    <i class="fa me-auto" [ngClass]="{
-              'fa-chevron-up': activeMenu === item.nameAR,
-              'fa-chevron-down': activeMenu !== item.nameAR
-            }" *ngIf="!isCollapsed"></i>
+
+            <ng-container *ngIf="item.subMenus && item.subMenus.length > 0">
+                <a (click)="toggleMainMenu(item.displayName)">
+                    <i [class]="item.icon"></i>
+                    <span *ngIf="!isCollapsed">{{ item.displayName }}</span>
+                    <i class="fa ms-auto" [ngClass]="{
+          'fa-chevron-up': activeMenu === item.displayName,
+          'fa-chevron-down': activeMenu !== item.displayName
+        }" *ngIf="!isCollapsed"></i>
                 </a>
 
-                <ul class="submenu" [ngClass]="{'open': activeMenu === item.nameAR && !isCollapsed}" *ngIf="!isCollapsed">
-                    <li *ngFor="let child of item.children">
-                        <a [routerLink]="child.route" routerLinkActive="activSub" class="a-subMenu">
-                            <i class="fa-solid" [ngClass]="child.icon"></i> {{ child.nameAR }}
-                        </a>
+                <ul class="submenu" [ngClass]="{'open': activeMenu === item.displayName}" *ngIf="!isCollapsed">
+                    <li *ngFor="let child of item.subMenus">
+                        <ng-container *ngIf="!child.subMenus">
+                            <a [routerLink]="child.route" routerLinkActive="activSide">
+                                <i [class]="child.icon"></i>
+                                <span *ngIf="!isCollapsed">{{ child.displayName }}</span>
+                            </a>
+                        </ng-container>
+
+                        <ng-container *ngIf="child.subMenus && child.subMenus.length > 0">
+                            <a (click)="toggleChildMenu(child.displayName)">
+                                <i [class]="child.icon"></i>
+                                <span *ngIf="!isCollapsed">{{ child.displayName }}</span>
+                                <i class="fa ms-auto" [ngClass]="{
+                'fa-chevron-up': activeChildMenu === child.displayName,
+                'fa-chevron-down': activeChildMenu !== child.displayName
+              }" *ngIf="!isCollapsed"></i>
+                            </a>
+
+                            <ul class="submenu" [ngClass]="{'open': activeChildMenu === child.displayName}" *ngIf="!isCollapsed">
+                                <li *ngFor="let subChild of child.subMenus">
+                                    <a [routerLink]="subChild.route" routerLinkActive="activSub" class="a-subMenu">
+                                        <i [class]="subChild.icon"></i> {{ subChild.displayName }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </ng-container>
                     </li>
                 </ul>
             </ng-container>
         </li>
-
-        <li>
-            <a (click)="toggleSubMenu('tree')" [class.activSide]="activeMenu === 'tree'">
-              <i class="fa-solid fa-diagram-project"></i>
-              <span *ngIf="!isCollapsed">شجرة العمليات</span>
-              <i class="fa me-auto" [ngClass]="{
-                'fa-chevron-up': activeMenu === 'tree',
-                'fa-chevron-down': activeMenu !== 'tree'
-              }" *ngIf="!isCollapsed"></i>
-            </a>
-            
-            <ul class="submenu" [ngClass]="{'open': activeMenu === 'tree' && !isCollapsed}" *ngIf="!isCollapsed">
-              <li>
-                <a (click)="toggleSubSubMenu('inputs')" class="a-subsubMenu">
-                  <div class="d-flex align-items-center justify-content-start">
-                    <i class="fa-solid fa-folder"></i> المدخلات 
-                  </div>
-                  <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeSubMenu === 'inputs',
-                    'fa-chevron-down': activeSubMenu !== 'inputs'
-                  }"></i>
-                </a>
-                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'inputs'}">
-                  <li>
-                    <a routerLink="/hms/fin-tree/main-groups" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> المجموعات الرئيسية
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/items-group" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> مجموعة الأصناف
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/items" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i>  الأصناف
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/providers" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> الموردين
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/clients" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> العملاء
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/boxes" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> الخزائن
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/banks" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> البنوك
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/accounts" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> الحسابات العامة
-                    </a>
-                  </li>
-                </ul>
-              </li>
-          
-              <li>
-                <a (click)="toggleSubSubMenu('transactions')" class="a-subsubMenu">
-                  <div class="d-flex align-items-center justify-content-start">
-                    <i class="fa-solid fa-folder"></i> الحركات 
-                  </div>
-                  <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeSubMenu === 'transactions',
-                    'fa-chevron-down': activeSubMenu !== 'transactions'
-                  }"></i>
-                </a>
-                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'transactions'}">
-                  <li>
-                    <a routerLink="/hms/fin-tree/add-items" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> أذون الإضافة
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/issue-items" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> أذون الصرف
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/fetch-inventory" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> جرد المخازن
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/treasury" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> حركة الخزينة
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/bank" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> حركة البنك
-                    </a>
-                  </li>
-                  <li>
-                    <a routerLink="/hms/fin-tree/restrictions" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> القيود اليومية
-                    </a>
-                  </li>
-                </ul>
-              </li>
-          
-              <li>
-                <a (click)="toggleSubSubMenu('reports')" class="a-subsubMenu">
-                  <div class="d-flex align-items-center justify-content-start">
-                    <i class="fa-solid fa-folder"></i> 
-                    التقارير 
-                  </div>
-                  <i class="fa me-auto" [ngClass]="{
-                    'fa-chevron-up': activeSubMenu === 'reports',
-                    'fa-chevron-down': activeSubMenu !== 'reports'
-                  }"></i>
-                </a>
-                <ul class="submenu" [ngClass]="{'open': activeSubMenu === 'reports'}">
-                  <li>
-                    <a routerLink="/stock-movement-report" routerLinkActive="activSub" class="a-subMenu">
-                      <i class="fa-solid fa-circle"></i> تقرير حركة مخزن
-                    </a>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-        </li>
     </ul>
     <div class="logout d-flex align-items-center justify-content-center px-4 text-danger" (click)="logout()">
         <a class="text-decoration-none text-danger" *ngIf="!isCollapsed">تسجيل الخروج</a>
-        <i class="fa fa-sign-out-alt me-auto"></i>
+        <i class="fa fa-sign-out-alt ms-auto"></i>
     </div>
 </div>
