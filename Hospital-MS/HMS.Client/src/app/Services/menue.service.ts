@@ -286,6 +286,7 @@ export class MenueService {
     {
       displayName: 'الإعدادات العامة',
       icon: 'fa-solid fa-gear',
+      isGroup: true,
       subMenus: [
         {
           displayName: 'إدارة التطبيقات',
