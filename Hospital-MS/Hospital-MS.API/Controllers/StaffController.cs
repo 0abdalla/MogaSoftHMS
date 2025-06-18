@@ -62,5 +62,7 @@ namespace Hospital_MS.API.Controllers
             var count = await _staffService.GetCountsAsync(pagingFilter, cancellationToken);
             return Ok(count);
         }
+
+        
     }
 }

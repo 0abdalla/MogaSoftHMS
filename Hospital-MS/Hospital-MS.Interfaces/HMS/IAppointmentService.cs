@@ -20,6 +20,8 @@ namespace Hospital_MS.Interfaces.HMS
         Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusInEmergencyRequest request, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default);
 
+        Task<PagedResponseModel<DataTable>> GetStaffAppointmentsAsync(int staffId, PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
+
         Task UpdateAppointmentsToCompletedAsync(); 
     }
 }

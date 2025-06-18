@@ -46,4 +46,12 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
         var result = await _treasuryService.DeleteTreasuryAsync(id, cancellationToken);
         return Ok(result);
     }
+
+    [HttpPost("assign-treasury-to-staff/{treasuryId}/{staffId}")]
+    [Authorize(Roles = "SystemAdmin")]
+    public async Task<IActionResult> AssignTreasury(int treasuryId, int staffId, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.AssignTreasuryToStaffAsync(staffId, treasuryId, cancellationToken);
+        return Ok(result);
+    }
 }
