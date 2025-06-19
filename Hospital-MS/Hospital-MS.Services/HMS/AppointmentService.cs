@@ -382,5 +382,53 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
+
+        public async Task<PagedResponseModel<DataTable>> GetStaffAppointmentsAsync(int staffId, PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var parameters = new List<SqlParameter>
+                {
+                    new("@StaffId", staffId),
+                    new("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value),
+                    new("@CurrentPage", pagingFilter.CurrentPage),
+                    new("@PageSize", pagingFilter.PageSize)
+                };
+
+                // Add filter parameters
+                if (pagingFilter.FilterList != null)
+                {
+                    var statusFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Status");
+                    if (statusFilter != null)
+                    {
+                        parameters.Add(new SqlParameter("@Status", statusFilter.ItemValue ?? (object)DBNull.Value));
+                    }
+
+                    var dateFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Date");
+                    if (dateFilter != null)
+                    {
+                        if (dateFilter.FromDate.HasValue)
+                            parameters.Add(new SqlParameter("@FromDate", dateFilter.FromDate.Value));
+                        if (dateFilter.ToDate.HasValue)
+                            parameters.Add(new SqlParameter("@ToDate", dateFilter.ToDate.Value));
+                    }
+                }
+
+                var dt = await _sQLHelper.ExecuteDataTableAsync("[dbo].[SP_GetStaffAppointments]", parameters.ToArray());
+
+                int totalCount = 0;
+                if (dt.Rows.Count > 0)
+                {
+                    totalCount = dt.Rows[0].Field<int>("TotalCount");
+                }
+
+                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
+            }
+            catch (Exception)
+            {
+                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
     }
 }

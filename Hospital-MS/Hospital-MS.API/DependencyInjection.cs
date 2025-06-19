@@ -81,7 +81,7 @@ namespace Hospital_MS.API
             services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
             services.AddScoped<IDispensePermissionService, DispensePermissionService>();
             services.AddScoped<IStoreCountService, StoreCountService>();
-
+            services.AddScoped<IAttendanceService, AttendanceService>();
 
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)

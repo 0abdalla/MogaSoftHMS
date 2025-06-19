@@ -275,5 +275,6 @@ namespace Hospital_MS.Services.HMS
 
             return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
         }
+
     }
 }

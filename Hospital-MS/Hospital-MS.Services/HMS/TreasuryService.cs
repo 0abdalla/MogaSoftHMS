@@ -27,6 +27,27 @@ public class TreasuryService : ITreasuryService
         _sqlHelper = sqlHelper;
     }
 
+    public async Task<ErrorResponseModel<string>> AssignTreasuryToStaffAsync(int staffId, int treasuryId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var staffTreasury = new StaffTreasury
+            {
+                StaffId = staffId,
+                TreasuryId = treasuryId
+            };
+
+            await _unitOfWork.Repository<StaffTreasury>().AddAsync(staffTreasury, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
     public async Task<ErrorResponseModel<string>> CreateTreasuryAsync(TreasuryRequest request, CancellationToken cancellationToken)
     {
         try

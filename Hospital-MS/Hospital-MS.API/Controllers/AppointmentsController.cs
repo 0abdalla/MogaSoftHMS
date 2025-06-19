@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
 using Hospital_MS.Interfaces.HMS;
+using Hospital_MS.Services.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -61,5 +62,11 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{staffId}/appointments")]
+        public async Task<IActionResult> GetStaffAppointments(int staffId, [FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        {
+            var result = await _appointmentService.GetStaffAppointmentsAsync(staffId, pagingFilter, cancellationToken);
+            return Ok(result);
+        }
     }
 }

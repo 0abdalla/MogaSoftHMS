@@ -8,6 +8,8 @@ import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { SharedService } from '../../../../Services/shared.service';
 declare var html2pdf: any;
+import Swal from 'sweetalert2';
+import { Modal } from 'bootstrap';
 
 @Component({
   selector: 'app-appointment-list',
@@ -250,4 +252,49 @@ export class AppointmentListComponent implements OnInit {
       }
     });
   }
+  // 
+  displayCashMovement = false;
+  cashMovementData: any[] = [];
+  ashMovementData = [
+  { day: '2025-06-18', count: 10, total: 1500 },
+  { day: '2025-06-17', count: 8, total: 1200 },
+  // ...
+];
+
+clinicCount = 5;
+clinicTotal = 700;
+
+totalCount = this.cashMovementData.reduce((sum, i) => sum + i.count, 0) + this.clinicCount;
+totalAmount = this.cashMovementData.reduce((sum, i) => sum + i.total, 0) + this.clinicTotal;
+  closeShift() {
+  Swal.fire({
+    title: 'هل أنت متأكد أنك تريد إغلاق الشيفت؟',
+    text: 'لن يمكنك إضافة حجوزات أخرى',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'نعم، أغلق الشيفت',
+    cancelButtonText: 'لا، إلغاء'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.appointmentService.closeShift().subscribe({
+        next: () => {
+          this.messageService.add({ severity: 'success', summary: 'تم الإغلاق', detail: 'تم إغلاق الشيفت بنجاح' });
+        },
+        error: () => {
+          this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء إغلاق الشيفت' });
+        }
+      });
+    } else if (result.dismiss === Swal.DismissReason.cancel) {
+      const modalElement = document.getElementById('cashMovementModal');
+      if (modalElement) {
+        const modal = new Modal(modalElement);
+        modal.show();
+      }
+    }
+  });
+  }
+  showCashMovementModal() {
+  this.displayCashMovement = true;
+  }
+
 }
