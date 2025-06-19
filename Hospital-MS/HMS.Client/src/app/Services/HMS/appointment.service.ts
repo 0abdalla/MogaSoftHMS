@@ -66,4 +66,8 @@ export class AppointmentService {
   editService(id: number, service: any){
     return this.http.put<any>(`${this.baseUrl}MedicalService/${id}`, service);
   }
+  // 
+  closeShift(){
+    return this.http.post<any>(`${this.baseUrl}Shift/Close`, {});
+  }
 }

@@ -62,6 +62,14 @@
             </ng-container>
         </li>
     </ul>
+    <ul class="menu p-2">
+        <li>
+            <a routerLink="/hms/staff/attendance" routerLinkActive="activSide">
+                <i class="fa-solid fa-gear"></i>
+                <span *ngIf="!isCollapsed">تسجيل الحضور</span>
+            </a>
+        </li>
+    </ul>
     <div class="logout d-flex align-items-center justify-content-center px-4 text-danger" (click)="logout()">
         <a class="text-decoration-none text-danger" *ngIf="!isCollapsed">تسجيل الخروج</a>
         <i class="fa fa-sign-out-alt ms-auto"></i>

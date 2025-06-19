@@ -39,8 +39,14 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-2">
-                            <button type="button" routerLink="/hms/appointments/add" class="btn-purble">+ إضافة حجز</button>
+                        <div class="col-lg-4 d-flex justify-content-end gap-2">
+                            <div class="">
+                                <button type="button" routerLink="/hms/appointments/add" class="btn-blue">+ إضافة حجز</button>
+                            </div>
+
+                            <div class="">
+                                <button type="button" (click)="closeShift()" class="btn-purble">إغلاق حركة الشيفت</button>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -245,4 +251,46 @@
             </div>
         </div>
     </div>
+</div>
+
+
+
+
+<div class="modal fade" id="cashMovementModal" tabindex="-1" aria-labelledby="cashMovementLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cashMovementLabel">كشف حركة الخزينة</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered text-center">
+          <thead class="table-light">
+            <tr>
+              <th>اليوم</th>
+              <th>العدد</th>
+              <th>السعر الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of cashMovementData">
+              <td>{{ item.day }}</td>
+              <td>{{ item.count }}</td>
+              <td>{{ item.total | currency:'EGP' }}</td>
+            </tr>
+            <tr class="fw-bold table-secondary">
+              <td>العيادات</td>
+              <td>{{ clinicCount }}</td>
+              <td>{{ clinicTotal | currency:'EGP' }}</td>
+            </tr>
+            <tr class="fw-bold table-dark text-white">
+              <td>الإجمالي</td>
+              <td>{{ totalCount }}</td>
+              <td>{{ totalAmount | currency:'EGP' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
