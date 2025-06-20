@@ -1,6 +1,7 @@
 <main id="list-patients">
     <div class="container-fluid">
-        <div class="row mt-4">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <div class="row mt-4 mb-3">
             <div class="col-lg-2" *ngFor="let status of patientStatuses">
                 <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }" style="cursor: pointer">
                     <h4>{{ status.name }}</h4>
@@ -14,73 +15,86 @@
             </div>
         </div>
 
-        <div class="card mt-3 p-2">
-            <div class="p-3 mt-4">
-                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-                    <div class="row justify-content-between align-items-center gap-2">
-                        <div class="row col-8">
-                            <div class="col-lg-2">
-                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
-                            </div>
-                            <div class="col-lg-3">
-                                <select class="form-select shadow-none" formControlName="Status" name="Status">
-                  <option selected disabled value="">الحالة</option>
-                  <option *ngFor="let status of patientStatuses" [value]="status.value">
-                    {{ status.name }}
-                  </option>
-                </select>
-                            </div>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المريض أو رقم الهاتف" formControlName="Search" />
-                            </div>
-                        </div>
-
-                        <div class="col-lg-2">
-                            <button routerLink="/hms/patients/add" type="button" class="btn-purble">+ إضافة مريض</button>
-                        </div>
+        <div class="table-card border radius-10 overflow-hidden shadow-sm">
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                <div class="col-md-8 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/patients/add">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة مريض</span>
+                </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
                     </div>
-                </form>
+                </div>
+                <div class="col-md-4 mb-2" *ngIf="total > 0">
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div>
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters [filterData]="patientStatuses" [filterPlaceholder]="'الحالة'" [searchPlaceholder]="'أدخل إسم المريض أو رقم الهاتف ...'" [categoryName]="'Status'" (filterChanged)="filterChecked($event)"></app-filters>
+                        </ng-container>
+                    </div>
+                </div>
             </div>
-            <table class="table table-hover mt-4">
-                <thead>
-                    <tr>
-                        <th>الاسم</th>
-                        <th>العمر</th>
-                        <th>الحالة</th>
-                        <th>الرقم</th>
-                    </tr>
-                </thead>
-                <tbody *ngIf="patients?.length > 0">
-                    <tr *ngFor="let patient of patients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openAdmissionDetails(patient.patientId)" data-bs-toggle="modal" data-bs-target="#inpatientDetailsModal"
-                        style="cursor: pointer">
-                        <td>
-                            <div class="d-flex align-items-center gap-2 justify-content-start">
-                                <div class="avatar-circle">{{ patient.patientName.charAt(0) }}</div>
-                                <span class="fw-bold">{{ patient.patientName }}</span>
-                            </div>
-                        </td>
-                        <td class="text-secondary fw-semibold">{{ patient.dateOfBirth | age }} سنة</td>
-                        <td>
-                            <p class="text-white status-pill" *ngIf="patient.patientStatus" [ngStyle]="{ backgroundColor: getStatusColor(patient.patientStatus) }">
-                                {{ patient.patientStatus }}
-                            </p>
-                        </td>
-                        <td class="text-secondary">{{ patient.patientId }}</td>
-                    </tr>
-                </tbody>
-                <tbody *ngIf="patients?.length === 0">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">لا يوجد مرضى حتى الآن</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="col-lg-12">
-                <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
-                    <div class="my-pagination">
-                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
-                            screenReaderCurrentLabel="You're on page">
-                        </pagination-controls>
+            <div class="p-3 bg-white">
+                <div class="table-responsive shadow-sm radius-10">
+                    <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
+                        <thead>
+                            <tr>
+                                <th>الاسم</th>
+                                <th>العمر</th>
+                                <th>الحالة</th>
+                                <th>الرقم</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container>
+                                <tr *ngFor="let patient of patients" (click)="openAdmissionDetails(patient.patientId)" data-bs-toggle="modal" data-bs-target="#inpatientDetailsModal" style="cursor: pointer">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                                            <div class="avatar-circle">{{ patient.patientName.charAt(0) }}</div>
+                                            <span class="fw-bold">{{ patient.patientName }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-secondary fw-semibold">{{ patient.dateOfBirth | age }} سنة</td>
+                                    <td>
+                                        <p class="text-white status-pill" *ngIf="patient.patientStatus" [ngStyle]="{ backgroundColor: getStatusColor(patient.patientStatus) }">
+                                            {{ patient.patientStatus }}
+                                        </p>
+                                    </td>
+                                    <td>
+                                        {{ patient.patientId }}
+                                    </td>
+                                    <!-- <td>
+                                <div class="w-100 d-flex align-items-center justify-content-center">
+                                    <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2">
+                                        <i class="uil uil-pen"></i>
+                                        <span>تعديل</span>
+                                    </button>
+                                    <button class="button-table-action btn-delete d-flex align-items-center justify-content-center gap-2">
+                                    <i class="uil uil-trash-alt"></i>
+                                    <span>حذف</span>
+                                </button>
+                                </div>
+                            </td> -->
+                                </tr>
+                                <tr *ngIf="!patients?.length">
+                                    <td colspan="12" class="text-right">
+                                        <app-empty-data [showEmptyData]="!patients?.length"></app-empty-data>
+                                    </td>
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                    <div class="col-md-8 mb-2"></div>
+                    <div class="col-md-4 mb-2" *ngIf="total > 0">
+                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
                     </div>
                 </div>
             </div>
@@ -290,84 +304,84 @@
 
 <div class="modal fade" id="medicalHistoryModal" tabindex="-1" aria-labelledby="medicalHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content custom-modal">
-        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
-        </div>
-        <div class="modal-body">
-          <div class="patient-info mb-4">
-            <strong class="strong">👤 الاسم:</strong> <span class="span"> {{ admissionDetails?.patientName }}</span>
-            <br>
-            <strong class="strong">📞 الهاتف:</strong> <span class="span"> {{ admissionDetails?.phone }}</span>
-          </div>
-          <h4 class="section-title">🛏️ العيادات الداخلية</h4>
-          <div class="table-responsive mb-4">
-            <table class="table table-hover text-center">
-              <thead class="table-primary">
-                <tr class="text-end">
-                  <th>التاريخ</th>
-                  <th>الطبيب</th>
-                  <th>الغرفة</th>
-                  <th>السرير</th>
-                  <th>القسم</th>
-                  <th>الحالة</th>
-                </tr>
-              </thead>
-              <tbody *ngIf="medicalHistory?.admissions?.length > 0">
-                <tr *ngFor="let history of medicalHistory?.admissions">
-                  <td>{{ history.admissionDate | date : 'yyyy-MM-dd' }}</td>
-                  <td>{{ history.doctorName }}</td>
-                  <td>{{ history.roomNumber }}</td>
-                  <td>{{ history.bedNumber }}</td>
-                  <td>{{ history.departmentName }}</td>
-                  <td>{{ mapStatusToArabic(history.patientStatus) }}</td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="medicalHistory?.admissions?.length === 0">
-                <tr>
-                  <td colspan="6" class="text-center text-muted">لا يوجد سجل عيادات داخلية لهذا الشخص</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-  
-          <h4 class="section-title">📅 العيادات الخارجية</h4>
-          <div class="table-responsive">
-            <table class="table table-hover text-center">
-              <thead class="table-secondary">
-                <tr class="text-end">
-                  <th>التاريخ</th>
-                  <th>الطبيب</th>
-                  <th>الخدمة الطبية</th>
-                  <th>الحالة</th>
-                  <th>النوع</th>
-                </tr>
-              </thead>
-              <tbody *ngIf="medicalHistory?.appointments?.length > 0">
-                <tr *ngFor="let history of medicalHistory?.appointments">
-                  <td>{{ history.appointmentDate | date : 'yyyy-MM-dd' }}</td>
-                  <td>{{ history.doctorName }}</td>
-                  <td>{{ history.medicalServiceName }}</td>
-                  <td>{{ mapTypeToArabic(history.type) }}</td>
-                  <td [ngClass]="{
+        <div class="modal-content custom-modal">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
+            </div>
+            <div class="modal-body">
+                <div class="patient-info mb-4">
+                    <strong class="strong">👤 الاسم:</strong> <span class="span"> {{ admissionDetails?.patientName }}</span>
+                    <br>
+                    <strong class="strong">📞 الهاتف:</strong> <span class="span"> {{ admissionDetails?.phone }}</span>
+                </div>
+                <h4 class="section-title">🛏️ العيادات الداخلية</h4>
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover text-center">
+                        <thead class="table-primary">
+                            <tr class="text-end">
+                                <th>التاريخ</th>
+                                <th>الطبيب</th>
+                                <th>الغرفة</th>
+                                <th>السرير</th>
+                                <th>القسم</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="medicalHistory?.admissions?.length > 0">
+                            <tr *ngFor="let history of medicalHistory?.admissions">
+                                <td>{{ history.admissionDate | date : 'yyyy-MM-dd' }}</td>
+                                <td>{{ history.doctorName }}</td>
+                                <td>{{ history.roomNumber }}</td>
+                                <td>{{ history.bedNumber }}</td>
+                                <td>{{ history.departmentName }}</td>
+                                <td>{{ mapStatusToArabic(history.patientStatus) }}</td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="medicalHistory?.admissions?.length === 0">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">لا يوجد سجل عيادات داخلية لهذا الشخص</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4 class="section-title">📅 العيادات الخارجية</h4>
+                <div class="table-responsive">
+                    <table class="table table-hover text-center">
+                        <thead class="table-secondary">
+                            <tr class="text-end">
+                                <th>التاريخ</th>
+                                <th>الطبيب</th>
+                                <th>الخدمة الطبية</th>
+                                <th>الحالة</th>
+                                <th>النوع</th>
+                            </tr>
+                        </thead>
+                        <tbody *ngIf="medicalHistory?.appointments?.length > 0">
+                            <tr *ngFor="let history of medicalHistory?.appointments">
+                                <td>{{ history.appointmentDate | date : 'yyyy-MM-dd' }}</td>
+                                <td>{{ history.doctorName }}</td>
+                                <td>{{ history.medicalServiceName }}</td>
+                                <td>{{ mapTypeToArabic(history.type) }}</td>
+                                <td [ngClass]="{
                     'text-warning': history.status === 'Pending',
                     'text-success': history.status === 'Completed',
                     'text-danger': history.status === 'Cancelled'
                   }">
-                    {{ mapStatusToArabic(history.status) }}
-                  </td>
-                </tr>
-              </tbody>
-              <tbody *ngIf="medicalHistory?.appointments?.length === 0">
-                <tr>
-                  <td colspan="5" class="text-center text-muted">لا يوجد سجل عيادات خارجية لهذا الشخص</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-  
+                                    {{ mapStatusToArabic(history.status) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody *ngIf="medicalHistory?.appointments?.length === 0">
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">لا يوجد سجل عيادات خارجية لهذا الشخص</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
         </div>
-      </div>
     </div>
 </div>

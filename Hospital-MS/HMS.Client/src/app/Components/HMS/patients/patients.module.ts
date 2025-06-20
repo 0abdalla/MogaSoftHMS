@@ -12,6 +12,7 @@ import { PatientFormComponent } from './patient-form/patient-form.component';
 import { AppointmentsComponent } from './appointments/appointments.component';
 import { AffairsComponent } from './affairs/affairs.component';
 import { SharedModule } from '../../../Shared/shared.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -30,6 +31,7 @@ import { SharedModule } from '../../../Shared/shared.module';
     NgSelectModule,
     NgxPaginationModule,
     ToastModule,
+    NgbModule,
     SharedModule
   ]
 })
