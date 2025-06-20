@@ -146,7 +146,7 @@ export class MenueService {
         {
           displayName: 'الحضور والانصراف',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: 'staff/attendance'
         }
       ]
     },
