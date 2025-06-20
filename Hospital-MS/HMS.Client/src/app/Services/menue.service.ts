@@ -55,12 +55,12 @@ export class MenueService {
         {
           displayName: 'إذن إضافة',
           icon: 'fa-solid fa-circle',
-          route: '/hms/inventory/stock'
+          route: '/hms/fin-tree/add-items'
         },
         {
           displayName: 'إذن صرف',
           icon: 'fa-solid fa-circle',
-          route: '/hms/inventory/purchases'
+          route: '/hms/fin-tree/issue-items'
         }
       ]
     },
@@ -82,7 +82,7 @@ export class MenueService {
         {
           displayName: 'الموردين',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/fin-tree/providers'
         },
         {
           displayName: 'عروض الأسعار',
@@ -157,12 +157,12 @@ export class MenueService {
             {
               displayName: 'ايصال استلام نقدية',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/treasury/supply-receipt'
             },
             {
               displayName: 'إذن صرف نقدي',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/treasury/exchange-permission'
             },
             {
               displayName: 'كشف حركة الخزينة',
@@ -183,12 +183,12 @@ export class MenueService {
             {
               displayName: 'اشعار اضافة',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/bank/add-notice'
             },
             {
               displayName: 'اشعار خصم',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/bank/discount-notice'
             },
           ]
         },

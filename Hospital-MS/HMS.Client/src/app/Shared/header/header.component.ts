@@ -11,7 +11,7 @@ export class HeaderComponent {
   userProfileImage: string = 'assets/vendors/imgs/avatar.png';
   searchQuery: string = '';
   routeNow: string = '';
-  
+
   @Input() isCollapsed: boolean = false;
   @Output() sidebarToggled = new EventEmitter<boolean>();
   activeMenu: string | null = null;
@@ -112,7 +112,7 @@ export class HeaderComponent {
         return 'الحسابات العامة';
       case '/hms/fin-tree/add-items':
         return 'أذون الإضافة';
-      case '/hms/fin-tree/discount-items':
+      case 'hms/fin-tree/issue-items':
         return 'أذون الصرف';
       case '/hms/fin-tree/fetch-inventory':
         return 'جرد المخازن';
