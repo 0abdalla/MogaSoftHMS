@@ -6,7 +6,14 @@ import { RoleCheckerDirective } from '../Directives/role-checker.directive';
 import { InterceptorComponent } from '../Security/interceptor/interceptor.component';
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
-import { MessageService } from 'primeng/api';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
+import { PaginationComponent } from './pagination/pagination.component';
+import { FiltersComponent } from './filters/filters.component';
+import { FormsModule } from '@angular/forms';
+import { SpinnerComponent } from './spinner/spinner.component';
+import { EmptyDataComponent } from './empty-data/empty-data.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { GeneralSelectorComponent } from './general-selector/general-selector.component';
 
 
 
@@ -17,10 +24,18 @@ import { MessageService } from 'primeng/api';
     RoleCheckerDirective,
     InterceptorComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    BreadcrumbComponent,
+    PaginationComponent,
+    FiltersComponent,
+    SpinnerComponent,
+    EmptyDataComponent,
+    GeneralSelectorComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule,
+    NgbModule
   ],
   exports: [
     AgePipe,
@@ -28,7 +43,12 @@ import { MessageService } from 'primeng/api';
     RoleCheckerDirective,
     InterceptorComponent,
     HeaderComponent,
-    FooterComponent
+    FooterComponent,
+    BreadcrumbComponent,
+    PaginationComponent,
+    FiltersComponent,
+    EmptyDataComponent,
+    GeneralSelectorComponent
   ],
   providers: [DatePipe]
 })

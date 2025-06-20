@@ -1,0 +1,25 @@
+<ng-container *ngIf="!selectMulti">
+    <div ngbDropdown class="dropdown-filter-wrapper dropdown-as-input d-inline-block w-100">
+        <div class="position-relative">
+            <button [disabled]="disabled" class="d-flex form-control nw-form-input cursor-pointer" ngbDropdownToggle>
+                {{selectedName??selectedName?.substring(0, 30)}}
+            </button>
+            <div class="input-drop-action d-flex align-items-center gap-1 fw-normal" *ngIf="selectedName &&!disabled">
+                <i class="uil uil-times cursor-pointer" (click)="removeSingleSelected()" ngbDropdownToggle></i>
+            </div>
+            <span class="selector-icon-up-down" *ngIf="!selectedName"></span>
+        </div>
+        <div ngbDropdownMenu class="dropdown-menu-search-input p-0 overflow-hidden w-100 shadow-sm">
+            <div *ngIf="showSearch" class="p-2 bg-light border-bottom">
+                <input type="text" class="form-control form-control" (input)="onInputChange($event)" placeholder="Search..." />
+            </div>
+            <div class="max-height-150 min-width-200 overflow-auto small-scroll">
+                <div class="check-row" *ngFor="let item of data | searchArry: searchText: searchFields">
+                    <a class="dropdown-item cursor-pointer fw-semibold" [class]="item.value==selectedValue?'active DropDownSelected':''" (click)="selectOption(item)">
+                        {{item.name}}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
