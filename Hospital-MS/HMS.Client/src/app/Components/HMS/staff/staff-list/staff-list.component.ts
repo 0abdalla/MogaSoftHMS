@@ -22,6 +22,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 })
 
 export class StaffListComponent implements OnInit, OnDestroy {
+  TitleList = ['الموارد البشرية','بيانات الموظفين','الموظفين'];
   employees: any[] = [];
   employeesData: any[] = [];
   filterForm: FormGroup;

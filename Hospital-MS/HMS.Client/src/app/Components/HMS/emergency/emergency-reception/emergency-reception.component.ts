@@ -8,27 +8,27 @@ import { AppointmentService } from '../../../../Services/HMS/appointment.service
   templateUrl: './emergency-reception.component.html',
   styleUrl: './emergency-reception.component.css',
   animations: [
-      trigger('fadeIn', [
-        transition(':enter', [
-          style({ opacity: 0 }),
-          animate('200ms ease-in', style({ opacity: 1 })),
-        ]),
-        transition(':leave', [
-          animate('200ms ease-out', style({ opacity: 0 })),
-        ])
+    trigger('fadeIn', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('200ms ease-in', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        animate('200ms ease-out', style({ opacity: 0 })),
       ])
-    ],
+    ])
+  ],
 })
 export class EmergencyReceptionComponent {
   emergencyForm: FormGroup;
-
-  constructor(private fb: FormBuilder , private appointmentService : AppointmentService , private messageService : MessageService) {
+  TitleList = ['الطوارئ والإستقبال'];
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private messageService: MessageService) {
     this.emergencyForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       emergencyLevel: ['', Validators.required],
       companionName: ['', Validators.required],
-      appointmentType : ['Emergency'],
+      appointmentType: ['Emergency'],
       companionNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       companionPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       notes: [''],
@@ -37,11 +37,11 @@ export class EmergencyReceptionComponent {
 
   submitForm() {
     this.appointmentService.createAppointment(this.emergencyForm.value).subscribe({
-      next:(data)=>{
+      next: (data) => {
         this.emergencyForm.reset();
         this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
       },
-      error : (err) =>{
+      error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
       }
     })

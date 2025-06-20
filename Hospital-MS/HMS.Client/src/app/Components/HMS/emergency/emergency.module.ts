@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { EmergencyReceptionComponent } from './emergency-reception/emergency-reception.component';
 import { UpdateStatusComponent } from './update-status/update-status.component';
+import { SharedModule } from '../../../Shared/shared.module';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { UpdateStatusComponent } from './update-status/update-status.component';
     CommonModule,
     EmergencyRoutingModule,
     ReactiveFormsModule,
-    ToastModule
+    ToastModule,
+    SharedModule
   ]
 })
 export class EmergencyModule { }

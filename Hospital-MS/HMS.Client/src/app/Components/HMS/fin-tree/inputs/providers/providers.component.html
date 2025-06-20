@@ -1,5 +1,6 @@
 <main id="providers">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -72,122 +73,121 @@
 
 <div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="addProviderModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addProviderModalLabel">إضافة مورد</h5>
-        </div>
-        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-          <form [formGroup]="providerForm" (ngSubmit)="addProvider()">
-            <div class="row p-3 mb-3">
-              <div class="col-md-3">
-                <div class="form-group">
-                  <label>كود الحسابات</label>
-                  <input type="text" formControlName="accountCode" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-9">
-                <div class="form-group">
-                  <label>اسم المورد</label>
-                  <input type="text" formControlName="name" class="form-control shadow-none text-end" placeholder="أدخل اسم المورد">
-                </div>
-              </div>
-  
-              <div class="col-md-12 mt-3">
-                <div class="form-group">
-                  <label>العنوان</label>
-                  <input type="text" formControlName="address" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-6 mt-3">
-                <div class="form-group">
-                  <label>اسم المسئول</label>
-                  <input type="text" formControlName="managerName1" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-6 mt-3">
-                <div class="form-group">
-                  <label>اسم المسئول 2</label>
-                  <input type="text" formControlName="managerName2" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-6 mt-3">
-                <div class="form-group">
-                  <label>هاتف العميل</label>
-                  <input type="text" formControlName="phone1" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-6 mt-3">
-                <div class="form-group">
-                  <label>هاتف العميل 2</label>
-                  <input type="text" formControlName="phone2" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-6 mt-3">
-                <div class="form-group">
-                  <label>الرقم الضريبي</label>
-                  <input type="text" formControlName="taxNumber" class="form-control shadow-none text-end">
-                </div>
-              </div>
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addProviderModalLabel">إضافة مورد</h5>
+            </div>
+            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+                <form [formGroup]="providerForm" (ngSubmit)="addProvider()">
+                    <div class="row p-3 mb-3">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>كود الحسابات</label>
+                                <input type="text" formControlName="accountCode" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
 
-              <div class="col-md-6 mt-3">
-                <div class="form-group">
-                  <label>الوظيفة</label>
-                  <input type="text" formControlName="job" class="form-control shadow-none text-end">
-                </div>
-              </div>
-            </div>
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label>اسم المورد</label>
+                                <input type="text" formControlName="name" class="form-control shadow-none text-end" placeholder="أدخل اسم المورد">
+                            </div>
+                        </div>
 
-            <div class="row p-3 mb-3">
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>التليفون 1</label>
-                  <input type="number" formControlName="phone1" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>الفاكس 1</label>
-                  <input type="number" formControlName="fax1" class="form-control shadow-none text-end">
-                </div>
-              </div>
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group">
+                                <label>العنوان</label>
+                                <input type="text" formControlName="address" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label>اسم المسئول</label>
+                                <input type="text" formControlName="managerName1" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label>اسم المسئول 2</label>
+                                <input type="text" formControlName="managerName2" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label>هاتف العميل</label>
+                                <input type="text" formControlName="phone1" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label>هاتف العميل 2</label>
+                                <input type="text" formControlName="phone2" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label>الرقم الضريبي</label>
+                                <input type="text" formControlName="taxNumber" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mt-3">
+                            <div class="form-group">
+                                <label>الوظيفة</label>
+                                <input type="text" formControlName="job" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row p-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>التليفون 1</label>
+                                <input type="number" formControlName="phone1" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>الفاكس 1</label>
+                                <input type="number" formControlName="fax1" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row p-3 mb-3">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>البريد الإلكتروني</label>
+                                <input type="email" formControlName="email" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group">
+                                <label>الموقع على الشبكة</label>
+                                <input type="text" formControlName="networkLink" class="form-control shadow-none text-end">
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 mt-3">
+                            <div class="form-group">
+                                <label>ملاحظات</label>
+                                <textarea formControlName="notes" class="form-control shadow-none text-end"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn-blue px-4" [disabled]="providerForm.invalid">إضافة المورد</button>
+                    </div>
+                </form>
             </div>
-  
-            <div class="row p-3 mb-3">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label>البريد الإلكتروني</label>
-                  <input type="email" formControlName="email" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-12 mt-3">
-                <div class="form-group">
-                  <label>الموقع على الشبكة</label>
-                  <input type="text" formControlName="networkLink" class="form-control shadow-none text-end">
-                </div>
-              </div>
-  
-              <div class="col-md-12 mt-3">
-                <div class="form-group">
-                  <label>ملاحظات</label>
-                  <textarea formControlName="notes" class="form-control shadow-none text-end"></textarea>
-                </div>
-              </div>
-            </div>
-  
-            <div class="text-center">
-              <button type="submit" class="btn-blue px-4" [disabled]="providerForm.invalid">إضافة المورد</button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
-  
+</div>

@@ -1,5 +1,6 @@
 <main id="job-titles">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="card p-2">
             <div class="p-3">
                 <p-toast position="top-left"></p-toast>
@@ -32,8 +33,7 @@
                     </tr>
                 </thead>
                 <tbody *ngIf="jobTitles?.length > 0">
-                    <tr *ngFor="let jobTitle of jobTitles | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openjobTitleDetails(jobTitle.id)"
-                        style="cursor: pointer">
+                    <tr *ngFor="let jobTitle of jobTitles | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openjobTitleDetails(jobTitle.id)" style="cursor: pointer">
                         <td class="text-secondary">{{ jobTitle.id }}</td>
                         <td>
                             <div class="d-flex align-items-center gap-2 justify-content-start">
@@ -73,117 +73,117 @@
 
 <div class="modal fade" id="addjobTitleModal" tabindex="-1" aria-labelledby="addjobTitleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addjobTitleModalLabel">إضافة وظيفة</h5>
-        </div>
-        <div class="modal-body">
-          <form [formGroup]="jobTitleForm" (ngSubmit)="addjobTitle()">
-            <div class="row">
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label class="form-label" for="name">إسم الوظيفة</label>
-                  <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم الوظيفة">
-                  <div *ngIf="jobTitleForm.get('name')?.invalid && jobTitleForm.get('name')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['required']">إسم الوظيفة مطلوب</ng-container>
-                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['minlength']">إسم الوظيفة يجب أن يكون أكثر من 3 حروف</ng-container>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-6">
-                <div class="form-group">
-                  <label class="form-label" for="jobDepartmentId">القسم</label>
-                  <select class="form-select shadow-none" formControlName="jobDepartmentId" id="jobDepartmentId">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addjobTitleModalLabel">إضافة وظيفة</h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="jobTitleForm" (ngSubmit)="addjobTitle()">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-label" for="name">إسم الوظيفة</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم الوظيفة">
+                                <div *ngIf="jobTitleForm.get('name')?.invalid && jobTitleForm.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['required']">إسم الوظيفة مطلوب</ng-container>
+                                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['minlength']">إسم الوظيفة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-label" for="jobDepartmentId">القسم</label>
+                                <select class="form-select shadow-none" formControlName="jobDepartmentId" id="jobDepartmentId">
                     <option selected disabled value="">اختر القسم</option>
                     <option *ngFor="let dep of jobDeps" value="{{dep.id}}">{{dep.name}}</option>
                   </select>
-                  <div *ngIf="jobTitleForm.get('jobDepartmentId')?.invalid && jobTitleForm.get('jobDepartmentId')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('jobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label class="form-label" for="description">الوصف</label>
-                  <textarea class="form-control shadow-none" formControlName="description" id="description" placeholder="أدخل الوصف"></textarea>
-                  <div *ngIf="jobTitleForm.get('description')?.invalid && jobTitleForm.get('description')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
-                  </div>
-                </div>
-              </div>
-            </div>
-  
-            <div class="text-center mt-3">
-              <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">إضافة الوظيفة</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+                                <div *ngIf="jobTitleForm.get('jobDepartmentId')?.invalid && jobTitleForm.get('jobDepartmentId')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('jobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="form-label" for="description">الوصف</label>
+                                <textarea class="form-control shadow-none" formControlName="description" id="description" placeholder="أدخل الوصف"></textarea>
+                                <div *ngIf="jobTitleForm.get('description')?.invalid && jobTitleForm.get('description')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-  <div class="modal fade" id="editjobTitleModal" tabindex="-1" aria-labelledby="editjobTitleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="editjobTitleModalLabel">تعديل الوظيفة</h5>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">إضافة الوظيفة</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="modal-body">
-          <form [formGroup]="jobTitleForm" (ngSubmit)="editjobTitle()">
-            <div class="row">
-              <div class="col-lg-6 mb-2">
-                <div class="form-group">
-                  <label class="form-label" for="name">إسم الوظيفة</label>
-                  <input type="text" class="form-control shadow-none" formControlName="name" id="name">
-                  <div *ngIf="jobTitleForm.get('name')?.invalid && jobTitleForm.get('name')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['required']">إسم الوظيفة مطلوب</ng-container>
-                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['minlength']">إسم الوظيفة يجب أن يكون أكثر من 3 حروف</ng-container>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-6 mb-2">
-                <div class="form-group">
-                  <label class="form-label" for="status">الحالة</label>
-                  <select class="form-select shadow-none" formControlName="status" id="status">
+    </div>
+</div>
+
+<div class="modal fade" id="editjobTitleModal" tabindex="-1" aria-labelledby="editjobTitleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="editjobTitleModalLabel">تعديل الوظيفة</h5>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="jobTitleForm" (ngSubmit)="editjobTitle()">
+                    <div class="row">
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
+                                <label class="form-label" for="name">إسم الوظيفة</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name">
+                                <div *ngIf="jobTitleForm.get('name')?.invalid && jobTitleForm.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['required']">إسم الوظيفة مطلوب</ng-container>
+                                    <ng-container *ngIf="jobTitleForm.get('name')?.errors?.['minlength']">إسم الوظيفة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 mb-2">
+                            <div class="form-group">
+                                <label class="form-label" for="status">الحالة</label>
+                                <select class="form-select shadow-none" formControlName="status" id="status">
                     <option selected disabled value="">اختر الحالة</option>
                     <option value="Active">نشط</option>
                     <option value="Inactive">غير نشط</option>
                   </select>
-                  <div *ngIf="jobTitleForm.get('status')?.invalid && jobTitleForm.get('status')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label class="form-label" for="jobDepartmentId">القسم</label>
-                  <select class="form-select shadow-none" formControlName="jobDepartmentId" id="jobDepartmentId">
+                                <div *ngIf="jobTitleForm.get('status')?.invalid && jobTitleForm.get('status')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="form-label" for="jobDepartmentId">القسم</label>
+                                <select class="form-select shadow-none" formControlName="jobDepartmentId" id="jobDepartmentId">
                     <option selected disabled value="">اختر القسم</option>
                     <option *ngFor="let dep of jobDeps" value="{{dep.id}}">{{dep.name}}</option>
                   </select>
-                  <div *ngIf="jobTitleForm.get('jobDepartmentId')?.invalid && jobTitleForm.get('jobDepartmentId')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('jobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12 mb-2">
-                <div class="form-group">
-                  <label class="form-label" for="description">الوصف</label>
-                  <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
-                  <div *ngIf="jobTitleForm.get('description')?.invalid && jobTitleForm.get('description')?.touched" class="text-danger">
-                    <ng-container *ngIf="jobTitleForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
-                  </div>
-                </div>
-              </div>
-              
+                                <div *ngIf="jobTitleForm.get('jobDepartmentId')?.invalid && jobTitleForm.get('jobDepartmentId')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('jobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2">
+                            <div class="form-group">
+                                <label class="form-label" for="description">الوصف</label>
+                                <textarea class="form-control shadow-none" formControlName="description" id="description"></textarea>
+                                <div *ngIf="jobTitleForm.get('description')?.invalid && jobTitleForm.get('description')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">تعديل الوظيفة</button>
+                    </div>
+                </form>
             </div>
-            <div class="text-center mt-3">
-              <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">تعديل الوظيفة</button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
+</div>

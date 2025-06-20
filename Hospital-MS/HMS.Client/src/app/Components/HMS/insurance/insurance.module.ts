@@ -8,6 +8,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { InsuranceEditComponent } from './insurance-edit/insurance-edit.component';
+import { SharedModule } from '../../../Shared/shared.module';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { InsuranceEditComponent } from './insurance-edit/insurance-edit.componen
     InsuranceRoutingModule,
     ReactiveFormsModule,
     ToastModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    SharedModule
   ]
 })
 export class InsuranceModule { }

@@ -13,7 +13,7 @@ import { SharedService } from '../../../../Services/shared.service';
   styleUrl: './patient-list.component.css'
 })
 export class PatientListComponent {
-  TitleList = ['إدارة المستشفى', 'المرضى'];
+  TitleList = ['المرضى'];
   filterForm!: FormGroup;
   statusForm!: FormGroup;
   isFilter = true;

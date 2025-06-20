@@ -23,6 +23,7 @@ import { MessageService } from 'primeng/api';
   ],
 })
 export class PermissionsComponent implements OnInit {
+  TitleList = ['الإعدادات العامة','صلاحيات المستخدم'];
   UserForm!: FormGroup;
   pagingFilterModel: PagingFilterModel = {
     searchText: '',

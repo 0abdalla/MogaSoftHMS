@@ -11,6 +11,7 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
   styleUrl: './staff-class-managment.component.css'
 })
 export class StaffClassManagmentComponent implements OnInit {
+  TitleList = ['الإدارة المالية','حركة الخزينة','إغلاق حركة الخزينة'];
   jobTypes:any[]=[];
   total!:number;
   pagingFilterModel: PagingFilterModel = {

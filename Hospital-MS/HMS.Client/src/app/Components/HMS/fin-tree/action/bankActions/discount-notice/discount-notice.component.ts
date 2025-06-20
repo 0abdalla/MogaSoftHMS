@@ -7,6 +7,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
   styleUrl: './discount-notice.component.css'
 })
 export class DiscountNoticeComponent {
+   TitleList = ['الإدارة المالية','حركة البنك','إشعار خصم'];
   filterForm!:FormGroup;
   discountNoticeGroup!:FormGroup
   // 

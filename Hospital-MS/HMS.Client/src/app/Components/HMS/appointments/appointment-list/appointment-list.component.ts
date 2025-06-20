@@ -29,7 +29,7 @@ import { FormDropdownModel } from '../../../../Models/Generics/FormDropdownModel
   ],
 })
 export class AppointmentListComponent implements OnInit {
-  TitleList = ['إدارة المستشفى', 'المواعيد والحجز', 'الحجوزات'];
+ TitleList = ['المواعيد والحجز']; 
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,

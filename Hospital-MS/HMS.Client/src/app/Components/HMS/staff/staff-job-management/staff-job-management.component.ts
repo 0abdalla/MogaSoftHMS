@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
   styleUrl: './staff-job-management.component.css'
 })
 export class StaffJobManagementComponent {
+   TitleList = ['الموارد البشرية','بيانات الموظفين','الوظائف'];
   jobTitles:any[]=[];
   total!:number;  
   pagingFilterModel: PagingFilterModel = {

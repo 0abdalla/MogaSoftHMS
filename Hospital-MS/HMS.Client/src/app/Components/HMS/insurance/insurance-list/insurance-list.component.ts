@@ -24,6 +24,7 @@ declare var bootstrap: any;
 })
 export class InsuranceListComponent implements OnInit {
   filterForm!: FormGroup;
+  TitleList = ['وكلاء التأمين'];
   // 
   insurnaces!: InsuranceCompany[];
   // 

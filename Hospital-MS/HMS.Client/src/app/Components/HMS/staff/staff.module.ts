@@ -15,6 +15,7 @@ import { StaffJobManagementComponent } from './staff-job-management/staff-job-ma
 import { StaffLevelsComponent } from './staff-levels/staff-levels.component';
 import { AttendanceFormComponent } from './attendance-form/attendance-form.component';
 import { TableModule } from 'primeng/table';
+import { SharedModule } from '../../../Shared/shared.module';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { TableModule } from 'primeng/table';
     ReactiveFormsModule,
     ToastModule,
     TableModule,
-    FormsModule
+    FormsModule,
+    SharedModule
   ]
 })
 export class StaffModule { }

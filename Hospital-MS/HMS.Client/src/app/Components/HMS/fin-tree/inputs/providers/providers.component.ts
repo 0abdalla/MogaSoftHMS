@@ -9,6 +9,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class ProvidersComponent {
   filterForm!:FormGroup;
     providerForm!:FormGroup
+    TitleList = ['المشتريات','الموردين'];
     // 
     providers:any[]=[];
     total:number=0;

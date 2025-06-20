@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
   styleUrl: './attendance-form.component.css'
 })
 export class AttendanceFormComponent {
+  TitleList = ['الموارد البشرية','الحضور والانصراف'];
   data: any[] = [];
   headers: string[] = [];
 
