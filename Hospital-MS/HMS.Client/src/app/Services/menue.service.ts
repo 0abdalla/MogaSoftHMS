@@ -21,16 +21,11 @@ export class MenueService {
           displayName: 'الحجوزات',
           icon: 'fa-solid fa-circle',
           route: '/hms/appointments/list'
-        },
-        {
-          displayName: 'إغلاق حركة الشيفت',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/appointments/settings'
         }
       ],
     },
     {
-      displayName: 'الحجوزات والطوارئ',
+      displayName: 'الطوارئ والإستقبال',
       icon: 'fa-solid fa-hospital-user',
       route: '/hms/emergency/emergency-reception',
       isGroup: false
