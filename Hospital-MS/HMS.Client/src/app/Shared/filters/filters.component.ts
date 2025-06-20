@@ -26,7 +26,6 @@ export class FiltersComponent {
   }
 
   InputSearchChange() {
-    debugger;
     this.SelectedFilter = [];
     if (this.SearchText.length > 2) {
       const textFilter: FilterModel = {

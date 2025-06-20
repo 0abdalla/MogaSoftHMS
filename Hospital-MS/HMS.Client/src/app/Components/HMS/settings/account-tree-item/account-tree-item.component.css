@@ -1,0 +1,46 @@
+.tree-row .tree-row-icon i:hover {
+    color: var(--main-color);
+}
+
+.tree-row-text {
+    height: 50px;
+    padding: 0 10px;
+    border-left: 1px solid #dbdbdb;
+}
+
+.tree-row-icon {
+    height: 50px;
+    padding: 0 10px;
+    min-width: 300px;
+}
+
+.tree-row-text-collapser {
+    max-width: 250px;
+}
+
+.max-width-390 {
+    max-width: 390px;
+}
+
+.width-75-per {
+    width: 75%;
+}
+
+.width-20-per {
+    width: 20%;
+}
+
+.width-5-per {
+    width: 5%;
+}
+
+.btn {
+    padding-right: 1rem;
+    padding-left: 1rem;
+    font-size: 10px;
+    max-height: 30px;
+}
+
+.btn:hover {
+    background-color: var(--bs-btn-hover-bg);
+}

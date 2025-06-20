@@ -56,5 +56,7 @@ namespace Hospital_MS.Services.Common
         public static Error FailedToUpdatePassword = new("فشل في تعديل كلمة المرور", Status.Failed);
 
         public static Error FailedToAssignNewRole = new("فشل في تعيين صلاحية جديدة", Status.Failed);
+
+        public static Error ParentAccountNotFound = new("فشل في تعيين صلاحية جديدة", Status.Failed);
     }
 }

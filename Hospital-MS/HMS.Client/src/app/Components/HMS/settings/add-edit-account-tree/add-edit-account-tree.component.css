@@ -1,0 +1,10 @@
+.btn {
+    padding-right: 1rem;
+    padding-left: 1rem;
+    font-size: 11px;
+    max-height: 30px;
+}
+
+.btn:hover {
+    background-color: var(--bs-btn-hover-bg);
+}

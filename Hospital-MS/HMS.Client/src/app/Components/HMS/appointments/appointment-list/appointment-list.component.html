@@ -1,7 +1,8 @@
 <main id="list-patients" @fadeIn>
     <p-toast position="top-left"></p-toast>
     <div class="container-fluid">
-        <div class="row mt-4">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <div class="row mt-4 mb-3">
             <div class="col-lg-2" *ngFor="let status of patientServices">
                 <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
                     <h4>{{ status.name }}</h4>
@@ -15,83 +16,70 @@
             </div>
         </div>
 
-        <div class="card mt-3 p-2">
-            <div class="p-3 mt-4">
-                <form [formGroup]="filterForm">
-                    <div class="row justify-content-between align-items-center gap-2">
-                        <div class="row col-8">
-                            <div class="col-lg-2">
-                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
-                            </div>
-                            <div class="col-lg-3">
-                                <select class="form-select shadow-none" formControlName="Type" (change)="applyFilters()">
-                                <option selected disabled value="">اختر نوع الحجز</option>
-                                <option value="General">كشف</option>
-                                <option value="Consultation">استشارة</option>
-                                <option value="Surgery">عمليات</option>
-                                <option value="Screening">تحاليل</option>
-                                <option value="Radiology">اشعه</option>
-                                <option value="Emergency">طوارئ</option>
-                                </select>
-                            </div>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم المريض أو رقم الهاتف" (input)="SearchTextChange()" formControlName="Search" />
-                            </div>
-                        </div>
-
-                        <div class="col-lg-4 d-flex justify-content-end gap-2">
-                            <div class="">
-                                <button type="button" routerLink="/hms/appointments/add" class="btn-blue">+ إضافة حجز</button>
-                            </div>
-
-                            <div class="">
-                                <button type="button" (click)="closeShift()" class="btn-purble">إغلاق حركة الشيفت</button>
-                            </div>
-                        </div>
+        <div class="table-card border radius-10 overflow-hidden shadow-sm">
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                <div class="col-md-8 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/appointments/add">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة حجز</span>
+                </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3">
+                    <i class="fas fa-close"></i>
+                    <span>إغلاق حركة الشيفت</span>
+                </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
                     </div>
-                </form>
+                </div>
+                <div class="col-md-4 mb-2" *ngIf="total > 0">
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div>
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters [filterData]="AppointmentTypes" [filterPlaceholder]="'النوع'" [searchPlaceholder]="'أدخل إسم المريض أو رقم الهاتف ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                        </ng-container>
+                    </div>
+                </div>
             </div>
-
-            <table class="table table-hover mt-4">
-                <thead>
-                    <tr>
-                        <th>الإسم</th>
-                        <th>العيادة الطبية</th>
-                        <th>الخدمة الطبية</th>
-                        <th>رقم الحجز</th>
-                    </tr>
-                </thead>
-                <tbody *ngIf="patients?.length > 0">
-                    <tr *ngFor="let appointment of patients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" [ngClass]="{'canceled-row': appointment.status === 'ملغي'}" (click)="openAppointmentModal(appointment.id)"
-                        data-bs-toggle="modal" data-bs-target="#bookingDetailsModal" style="cursor: pointer; background-color: red !important;">
-                        <td>
-                            <div class="d-flex align-items-center gap-2 justify-content-start">
-                                <div class="avatar-circle">{{ appointment.patientName.charAt(0) }}</div>
-                                <span class="fw-bold">{{ appointment.patientName }}</span>
-                            </div>
-                        </td>
-                        <td class="text-secondary fw-semibold">{{ appointment.medicalServiceName || 'طوارئ' }}</td>
-                        <td>
-                            <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
-                                {{ getServiceName(appointment.type) }}
-                            </p>
-                        </td>
-                        <td class="text-secondary">{{ appointment.id }}</td>
-                    </tr>
-                </tbody>
-                <tbody *ngIf="patients?.length === 0">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">لا توجد حجوزات حتى الان</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="col-lg-12">
-                <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
-                    <div class="my-pagination">
-                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
-                            screenReaderCurrentLabel="You're on page">
-                        </pagination-controls>
+            <div class="p-3 bg-white">
+                <div class="table-responsive shadow-sm radius-10">
+                    <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
+                        <thead>
+                            <tr>
+                                <th>الإسم</th>
+                                <th>العيادة الطبية</th>
+                                <th>الخدمة الطبية</th>
+                                <th>رقم الحجز</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container>
+                                <tr *ngFor="let appointment of patients" [ngClass]="{'canceled-row': appointment.status === 'ملغي'}" (click)="openAppointmentModal(appointment.id)" data-bs-toggle="modal" data-bs-target="#bookingDetailsModal" style="cursor: pointer; background-color: red !important;">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                                            <div class="avatar-circle">{{ appointment.patientName.charAt(0) }}</div>
+                                            <span class="fw-bold">{{ appointment.patientName }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-secondary fw-semibold">{{ appointment.medicalServiceName || 'طوارئ' }}</td>
+                                    <td>
+                                        <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
+                                            {{ getServiceName(appointment.type) }}
+                                        </p>
+                                    </td>
+                                    <td class="text-secondary">{{ appointment.id }}</td>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                    <div class="col-md-8 mb-2"></div>
+                    <div class="col-md-4 mb-2" *ngIf="total > 0">
+                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
                     </div>
                 </div>
             </div>
@@ -257,40 +245,40 @@
 
 
 <div class="modal fade" id="cashMovementModal" tabindex="-1" aria-labelledby="cashMovementLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="cashMovementLabel">كشف حركة الخزينة</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
-      </div>
-      <div class="modal-body">
-        <table class="table table-bordered text-center">
-          <thead class="table-light">
-            <tr>
-              <th>اليوم</th>
-              <th>العدد</th>
-              <th>السعر الإجمالي</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of cashMovementData">
-              <td>{{ item.day }}</td>
-              <td>{{ item.count }}</td>
-              <td>{{ item.total | currency:'EGP' }}</td>
-            </tr>
-            <tr class="fw-bold table-secondary">
-              <td>العيادات</td>
-              <td>{{ clinicCount }}</td>
-              <td>{{ clinicTotal | currency:'EGP' }}</td>
-            </tr>
-            <tr class="fw-bold table-dark text-white">
-              <td>الإجمالي</td>
-              <td>{{ totalCount }}</td>
-              <td>{{ totalAmount | currency:'EGP' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashMovementLabel">كشف حركة الخزينة</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>اليوم</th>
+                            <th>العدد</th>
+                            <th>السعر الإجمالي</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of cashMovementData">
+                            <td>{{ item.day }}</td>
+                            <td>{{ item.count }}</td>
+                            <td>{{ item.total | currency:'EGP' }}</td>
+                        </tr>
+                        <tr class="fw-bold table-secondary">
+                            <td>العيادات</td>
+                            <td>{{ clinicCount }}</td>
+                            <td>{{ clinicTotal | currency:'EGP' }}</td>
+                        </tr>
+                        <tr class="fw-bold table-dark text-white">
+                            <td>الإجمالي</td>
+                            <td>{{ totalCount }}</td>
+                            <td>{{ totalAmount | currency:'EGP' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

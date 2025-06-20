@@ -1,0 +1,8 @@
+::ng-deep .striped-row>app-account-tree-item:nth-child(even)>.tree-row,
+::ng-deep .striped-row>app-account-tree-item:nth-child(even)>.tree-row+div {
+    background-color: #f5f5f5;
+}
+
+::ng-deep app-account-tree-item .tree-row {
+    border-bottom: 1px solid #dbdbdb;
+}

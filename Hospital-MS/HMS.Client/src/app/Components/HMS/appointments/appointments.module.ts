@@ -9,9 +9,10 @@ import { AppointmentListComponent } from './appointment-list/appointment-list.co
 import { AppointmentDetailComponent } from './appointment-detail/appointment-detail.component';
 import { AppointmentFormComponent } from './appointment-form/appointment-form.component';
 import { AppointmetSettingsComponent } from './appointmet-settings/appointmet-settings.component';
-import { MessageService } from 'primeng/api';
 import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
 import { AppointmentEditComponent } from './appointment-edit/appointment-edit.component';
+import { SharedModule } from '../../../Shared/shared.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,9 @@ import { AppointmentEditComponent } from './appointment-edit/appointment-edit.co
     FormsModule,
     ReactiveFormsModule,
     NgxPaginationModule,
-    ToastModule
-  ],
+    ToastModule,
+    SharedModule,
+    NgbModule
+],
 })
 export class AppointmentsModule { }

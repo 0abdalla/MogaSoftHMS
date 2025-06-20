@@ -38,7 +38,6 @@ namespace Hospital_MS.Core._Data
         public DbSet<JobLevel> JobLevels { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
-
         public DbSet<Supplier> Suppliers  { get; set; }
         public DbSet<Item> Items  { get; set; }
         public DbSet<ItemGroup> ItemGroups  { get; set; }
@@ -50,6 +49,9 @@ namespace Hospital_MS.Core._Data
         public DbSet<DispensePermission> DispensePermissions { get; set; }
         public DbSet<StoreCount> StoreCounts { get; set; }
         public DbSet<Attendance> Attendances { get; set; }
+        public DbSet<AccountTree> AccountTrees { get; set; }
+        public DbSet<CostCenterTree> CostCenterTree { get; set; }
+        
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

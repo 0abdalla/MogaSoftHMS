@@ -14,6 +14,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { EmptyDataComponent } from './empty-data/empty-data.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GeneralSelectorComponent } from './general-selector/general-selector.component';
+import { GoToAccountReportDirective } from '../Directives/go-to-account-report.directive';
 
 
 
@@ -30,7 +31,8 @@ import { GeneralSelectorComponent } from './general-selector/general-selector.co
     FiltersComponent,
     SpinnerComponent,
     EmptyDataComponent,
-    GeneralSelectorComponent
+    GeneralSelectorComponent,
+    GoToAccountReportDirective
   ],
   imports: [
     CommonModule,
@@ -48,7 +50,8 @@ import { GeneralSelectorComponent } from './general-selector/general-selector.co
     PaginationComponent,
     FiltersComponent,
     EmptyDataComponent,
-    GeneralSelectorComponent
+    GeneralSelectorComponent,
+    GoToAccountReportDirective
   ],
   providers: [DatePipe]
 })

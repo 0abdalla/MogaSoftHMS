@@ -4,12 +4,13 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { MessageService } from 'primeng/api';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
 import { Patients } from '../../../../Models/HMS/patient';
-import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { SharedService } from '../../../../Services/shared.service';
 declare var html2pdf: any;
 import Swal from 'sweetalert2';
 import { Modal } from 'bootstrap';
+import { FormDropdownModel } from '../../../../Models/Generics/FormDropdownModel';
 
 @Component({
   selector: 'app-appointment-list',
@@ -28,12 +29,14 @@ import { Modal } from 'bootstrap';
   ],
 })
 export class AppointmentListComponent implements OnInit {
+  TitleList = ['إدارة المستشفى', 'المواعيد والحجز', 'الحجوزات'];
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
     pageSize: 16,
     filterList: []
   };
+  isFilter = true;
   pagedResponseModel: PagedResponseModel<any> = {};
   patients: Patients[] = [];
   patientServices: any[] = [];
@@ -44,6 +47,14 @@ export class AppointmentListComponent implements OnInit {
   selectedAppointment: any;
   // 
   clinics!: any;
+  AppointmentTypes: FormDropdownModel[] = [
+    { name: 'كشف', value: 'General' },
+    { name: 'استشارة', value: 'Consultation' },
+    { name: 'عمليات', value: 'Surgery' },
+    { name: 'تحاليل', value: 'Screening' },
+    { name: 'اشعه', value: 'Radiology' },
+    { name: 'طوارئ', value: 'Emergency' },
+  ]
   constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService,
     private sharedService: SharedService, private cdr: ChangeDetectorRef) { }
   ngOnInit() {
@@ -120,17 +131,21 @@ export class AppointmentListComponent implements OnInit {
     });
   }
 
-  applyFilters() {
-    this.pagingFilterModel.currentPage = 1;
-    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', this.filterForm.value.Type);
-    this.pagingFilterModel.searchText = this.filterForm.value.Search;
-    this.getPatients();
-  }
-  ApplyCardFilter(item: any) {
-    this.pagingFilterModel.currentPage = 1;
-    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
-    this.getPatients();
-  }
+   filterChecked(filters: FilterModel[]) {
+      this.pagingFilterModel.currentPage = 1;
+      this.pagingFilterModel.filterList = filters;
+      if (filters.some(i => i.categoryName == 'SearchText'))
+        this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+      else
+        this.pagingFilterModel.searchText = '';
+      this.getPatients();
+    }
+  
+    ApplyCardFilter(item: any) {
+      this.pagingFilterModel.currentPage = 1;
+      this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
+      this.getPatients();
+    }
 
   SearchTextChange() {
     if (this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
@@ -150,8 +165,8 @@ export class AppointmentListComponent implements OnInit {
     this.getCounts();
   }
 
-  onPageChange(page: number) {
-    this.pagingFilterModel.currentPage = page;
+ onPageChange(page: any) {
+    this.pagingFilterModel.currentPage = page.page;
     this.getPatients();
   }
   openAppointmentModal(id: number) {
@@ -256,45 +271,45 @@ export class AppointmentListComponent implements OnInit {
   displayCashMovement = false;
   cashMovementData: any[] = [];
   ashMovementData = [
-  { day: '2025-06-18', count: 10, total: 1500 },
-  { day: '2025-06-17', count: 8, total: 1200 },
-  // ...
-];
+    { day: '2025-06-18', count: 10, total: 1500 },
+    { day: '2025-06-17', count: 8, total: 1200 },
+    // ...
+  ];
 
-clinicCount = 5;
-clinicTotal = 700;
+  clinicCount = 5;
+  clinicTotal = 700;
 
-totalCount = this.cashMovementData.reduce((sum, i) => sum + i.count, 0) + this.clinicCount;
-totalAmount = this.cashMovementData.reduce((sum, i) => sum + i.total, 0) + this.clinicTotal;
+  totalCount = this.cashMovementData.reduce((sum, i) => sum + i.count, 0) + this.clinicCount;
+  totalAmount = this.cashMovementData.reduce((sum, i) => sum + i.total, 0) + this.clinicTotal;
   closeShift() {
-  Swal.fire({
-    title: 'هل أنت متأكد أنك تريد إغلاق الشيفت؟',
-    text: 'لن يمكنك إضافة حجوزات أخرى',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'نعم، أغلق الشيفت',
-    cancelButtonText: 'لا، إلغاء'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.appointmentService.closeShift().subscribe({
-        next: () => {
-          this.messageService.add({ severity: 'success', summary: 'تم الإغلاق', detail: 'تم إغلاق الشيفت بنجاح' });
-        },
-        error: () => {
-          this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء إغلاق الشيفت' });
+    Swal.fire({
+      title: 'هل أنت متأكد أنك تريد إغلاق الشيفت؟',
+      text: 'لن يمكنك إضافة حجوزات أخرى',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، أغلق الشيفت',
+      cancelButtonText: 'لا، إلغاء'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.appointmentService.closeShift().subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'تم الإغلاق', detail: 'تم إغلاق الشيفت بنجاح' });
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'فشل', detail: 'حدث خطأ أثناء إغلاق الشيفت' });
+          }
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        const modalElement = document.getElementById('cashMovementModal');
+        if (modalElement) {
+          const modal = new Modal(modalElement);
+          modal.show();
         }
-      });
-    } else if (result.dismiss === Swal.DismissReason.cancel) {
-      const modalElement = document.getElementById('cashMovementModal');
-      if (modalElement) {
-        const modal = new Modal(modalElement);
-        modal.show();
       }
-    }
-  });
+    });
   }
   showCashMovementModal() {
-  this.displayCashMovement = true;
+    this.displayCashMovement = true;
   }
 
 }

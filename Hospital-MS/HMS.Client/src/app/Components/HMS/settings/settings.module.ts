@@ -12,6 +12,11 @@ import { PermissionsComponent } from './permissions/permissions.component';
 import { AppsManagmementComponent } from './apps-managmement/apps-managmement.component';
 import { MedicalServicesListComponent } from './medical-services-list/medical-services-list.component';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { AccountTreeContainerComponent } from './account-tree-container/account-tree-container.component';
+import { AccountTreeComponent } from './account-tree/account-tree.component';
+import { AccountTreeItemComponent } from './account-tree-item/account-tree-item.component';
+import { AddEditAccountTreeComponent } from './add-edit-account-tree/add-edit-account-tree.component';
+import { SharedModule } from '../../../Shared/shared.module';
 
 
 @NgModule({
@@ -22,6 +27,10 @@ import { NgSelectModule } from '@ng-select/ng-select';
     PermissionsComponent,
     AppsManagmementComponent,
     MedicalServicesListComponent,
+    AccountTreeContainerComponent,
+    AccountTreeComponent,
+    AccountTreeItemComponent,
+    AddEditAccountTreeComponent,
     
   ],
   imports: [
@@ -31,7 +40,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
     ToastModule,
     NgxPaginationModule,
     FormsModule,
-    NgSelectModule
+    NgSelectModule,
+    SharedModule
   ]
 })
 export class SettingsModule { }

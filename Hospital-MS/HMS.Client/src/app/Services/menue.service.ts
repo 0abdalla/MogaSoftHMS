@@ -257,7 +257,7 @@ export class MenueService {
             {
               displayName: 'شجرة الحسابات',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/settings/account-tree'
             },
             {
               displayName: 'مراكز التكلفة',

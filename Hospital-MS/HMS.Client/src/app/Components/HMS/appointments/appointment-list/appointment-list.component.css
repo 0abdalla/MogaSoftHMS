@@ -8,7 +8,6 @@
     border-radius: 20px;
     box-shadow: 0px 12px 24px -4px #919EAB1F;
     overflow: hidden;
-    cursor: pointer;
     h4 {
         font-weight: 700;
         font-size: 18px;
@@ -24,18 +23,18 @@
     }
 }
 
-.vector {
-    position: absolute;
-    top: 0;
-    left: 160px;
-}
-
-img {
+.pattern {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+}
+
+.vector {
+    position: absolute;
+    top: 0px;
+    left: -160px;
     object-fit: cover;
 }
 
@@ -126,6 +125,10 @@ td {
     text-align: center !important;
 }
 
+.col-2 {
+    width: calc(95.7% / 6) !important;
+}
+
 .percentage {
     p {
         font-weight: 700;
@@ -154,7 +157,15 @@ td {
     font-weight: 500;
 }
 
-.table.table-striped tr.canceled-row {
-    background-color: red !important;
-    color: white !important;
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    background-color: #576CAB;
+    color: #fff;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 34px;
+    letter-spacing: 0px;
+    text-align: center;
 }
