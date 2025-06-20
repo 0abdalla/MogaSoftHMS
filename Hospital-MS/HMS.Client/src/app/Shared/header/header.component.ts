@@ -11,7 +11,7 @@ export class HeaderComponent {
   userProfileImage: string = 'assets/vendors/imgs/avatar.png';
   searchQuery: string = '';
   routeNow: string = '';
-  
+
   @Input() isCollapsed: boolean = false;
   @Output() sidebarToggled = new EventEmitter<boolean>();
   activeMenu: string | null = null;
@@ -67,13 +67,13 @@ export class HeaderComponent {
       case '/hms/patients/add':
         return 'إضافة مريض';
       case '/hms/appointments/list':
-        return 'إدارة الحجوزات';
+        return 'المواعيد والحجز ';
       case '/hms/appointments/add':
         return 'إضافة حجز';
       case '/hms/appointments/settings':
         return 'إعدادات الحجوزات';
       case '/hms/emergency/emergency-reception':
-        return 'الطوارئ';
+        return 'الطوارئ والاستقبال' ;
       case '/hms/staff/list':
         return 'إدارة الموظفين';
       case '/hms/staff/add':
@@ -112,16 +112,16 @@ export class HeaderComponent {
         return 'الحسابات العامة';
       case '/hms/fin-tree/add-items':
         return 'أذون الإضافة';
-      case '/hms/fin-tree/discount-items':
+      case 'hms/fin-tree/issue-items':
         return 'أذون الصرف';
       case '/hms/fin-tree/fetch-inventory':
         return 'جرد المخازن';
       case '/hms/fin-tree/treasury':
         return 'حركة الخزينة';
       case '/hms/fin-tree/treasury/supply-receipt':
-        return 'إيصال التوريد';
+        return 'إيصال استلام نقدية';
       case '/hms/fin-tree/treasury/exchange-permission':
-        return 'إذن صرف خزينة';
+        return 'إذن صرف نقدي';
       case '/hms/fin-tree/bank':
         return 'حركة البنوك';
       case '/hms/fin-tree/bank/add-notice':
