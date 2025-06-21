@@ -33,14 +33,14 @@
                 <ul class="submenu" [ngClass]="{'open': activeMenu === item.displayName}" *ngIf="!isCollapsed">
                     <li *ngFor="let child of item.subMenus">
                         <ng-container *ngIf="!child.subMenus">
-                            <a [routerLink]="child.route" routerLinkActive="activSide">
+                            <a [routerLink]="child.route" routerLinkActive="activSide" style="margin-right: 20px;">
                                 <i [class]="child.icon"></i>
                                 <span *ngIf="!isCollapsed">{{ child.displayName }}</span>
                             </a>
                         </ng-container>
 
                         <ng-container *ngIf="child.subMenus && child.subMenus.length > 0">
-                            <a (click)="toggleChildMenu(child.displayName)">
+                            <a (click)="toggleChildMenu(child.displayName)" style="margin-right: 20px;">
                                 <i [class]="child.icon"></i>
                                 <span *ngIf="!isCollapsed">{{ child.displayName }}</span>
                                 <i class="fa ms-auto" [ngClass]="{
@@ -51,7 +51,7 @@
 
                             <ul class="submenu" [ngClass]="{'open': activeChildMenu === child.displayName}" *ngIf="!isCollapsed">
                                 <li *ngFor="let subChild of child.subMenus">
-                                    <a [routerLink]="subChild.route" routerLinkActive="activSub" class="a-subMenu">
+                                    <a [routerLink]="subChild.route" routerLinkActive="activSub" class="a-subMenu" style="margin-right: 40px;">
                                         <i [class]="subChild.icon"></i> {{ subChild.displayName }}
                                     </a>
                                 </li>

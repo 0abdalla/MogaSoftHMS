@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
   styleUrl: './items.component.css'
 })
 export class ItemsComponent {
+  TitleList = ['إعدادات النظام','إعدادات المخازن','الأصناف'];
   filterForm!:FormGroup;
   itemForm!:FormGroup
   // 
