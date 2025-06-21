@@ -225,12 +225,12 @@ export class MenueService {
             {
               displayName: 'مجموعات الاصناف',
               icon: 'fa-solid fa-circle',
-              route: 'hms/fin-tree/items-group'
+              route: '/hms/fin-tree/items-group'
             },
             {
               displayName: 'الاصناف',
               icon: 'fa-solid fa-circle',
-              route: 'hms/fin-tree/items'
+              route: '/hms/fin-tree/items'
             },
             {
               displayName: 'انواع المخازن',
