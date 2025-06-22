@@ -1,0 +1,38 @@
+<div class="">
+    <div class="row gy-3">
+        <div class="col-md-12">
+            <div class="input-group">
+                <span class="input-group-text">
+          <button (click)="loadData()" class="border-0">
+            <i class="fas fa-search"></i>
+          </button>
+        </span>
+                <input [(ngModel)]="SearchText" (keyup.enter)="loadData()" type="text" placeholder="اسم مركز التكلفة" class="form-control">
+            </div>
+        </div>
+        <div *ngIf="CostCenterTreeData && CostCenterTreeData.length > 0" class="col-md-12">
+            <div class="border bg-white small-scroll overflow-auto max-height-350 striped-row">
+                <app-cost-center-tree-item *ngFor="let costCenter of CostCenterTreeData" [costCenter]="costCenter" (selectedCostCenter)="selectCostCenter($event)"></app-cost-center-tree-item>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">تأكيد الحذف</h4>
+    </div>
+    <div class="modal-body">
+        <p class="fs-5 m-0">هل تريد حذف مركز التكلفة ؟</p>
+    </div>
+    <div class="modal-footer justify-content-start">
+        <button type="button" class="btn btn-success" (click)="modal.close('Save click');deleteCostCenter()">
+          <i class="fas fa-check"></i>
+          <span class="ms-2">نعم</span>
+      </button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">
+          <i class="fas fa-times"></i>
+          <span class="ms-2">لا</span>
+      </button>
+    </div>
+</ng-template>

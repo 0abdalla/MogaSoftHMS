@@ -13,10 +13,14 @@ import { AppsManagmementComponent } from './apps-managmement/apps-managmement.co
 import { MedicalServicesListComponent } from './medical-services-list/medical-services-list.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AccountTreeContainerComponent } from './account-tree-container/account-tree-container.component';
-import { AccountTreeComponent } from './account-tree/account-tree.component';
-import { AccountTreeItemComponent } from './account-tree-item/account-tree-item.component';
-import { AddEditAccountTreeComponent } from './add-edit-account-tree/add-edit-account-tree.component';
+import { AccountTreeItemComponent } from './account-tree-container/account-tree-item/account-tree-item.component';
+import { AddEditAccountTreeComponent } from './account-tree-container/add-edit-account-tree/add-edit-account-tree.component';
 import { SharedModule } from '../../../Shared/shared.module';
+import { CostCenterTreeContainerComponent } from './cost-center-tree-container/cost-center-tree-container.component';
+import { AddEditCostCenterTreeComponent } from './cost-center-tree-container/add-edit-cost-center-tree/add-edit-cost-center-tree.component';
+import { CostCenterTreeComponent } from './cost-center-tree-container/cost-center-tree/cost-center-tree.component';
+import { CostCenterTreeItemComponent } from './cost-center-tree-container/cost-center-tree-item/cost-center-tree-item.component';
+import { AccountTreeComponent } from './account-tree-container/account-tree/account-tree.component';
 
 
 @NgModule({
@@ -31,6 +35,10 @@ import { SharedModule } from '../../../Shared/shared.module';
     AccountTreeComponent,
     AccountTreeItemComponent,
     AddEditAccountTreeComponent,
+    CostCenterTreeContainerComponent,
+    AddEditCostCenterTreeComponent,
+    CostCenterTreeComponent,
+    CostCenterTreeItemComponent,
     
   ],
   imports: [

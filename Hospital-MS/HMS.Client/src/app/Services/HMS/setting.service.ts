@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { AccountTreeModel } from '../../Models/HMS/AccountTree';
 import { GeneralSelectorModel } from '../../Models/Generics/GeneralSelectorModel';
+import { CostCenterTreeModel } from '../../Models/Generics/CostCenter';
 
 @Injectable({
   providedIn: 'root'
@@ -46,5 +47,27 @@ export class SettingService {
 
   DeleteAccountTree(accountId: number) {
     return this.http.get<any>(this.baseUrl + 'AccountTree/DeleteAccountTree?AccountId=' + accountId);
+  }
+
+  // =================================== CostCenterTree ===================================
+
+  CreateNewCostCenter(model: CostCenterTreeModel) {
+    return this.http.post<any>(this.baseUrl + 'CostCenterTree/CreateNewCostCenter', model);
+  }
+
+  UpdateCostCenterTree(costCenterId: number, model: CostCenterTreeModel) {
+    return this.http.post<any>(this.baseUrl + 'CostCenterTree/UpdateCostCenterTree?CostCenterId=' + costCenterId, model);
+  }
+
+  GenerateCostCenterNumber(parentCostCenterId: number) {
+    return this.http.get<string>(this.baseUrl + 'CostCenterTree/GenerateCostCenterNumber?ParentCostCenterId=' + parentCostCenterId);
+  }
+
+  GetCostCenterTreeHierarchicalData(SearchText: string) {
+    return this.http.get<any>(this.baseUrl + 'CostCenterTree/GetCostCenterTreeHierarchicalData?SearchText=' + SearchText);
+  }
+
+  DeleteCostCenterTree(costCenterId: number) {
+    return this.http.get<any>(this.baseUrl + 'CostCenterTree/DeleteCostCenterTree?CostCenterId=' + costCenterId);
   }
 }

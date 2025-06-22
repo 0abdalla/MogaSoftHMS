@@ -1,0 +1,68 @@
+<app-breadcrumb [TitleList]="TitleList">
+</app-breadcrumb>
+<div class="table-card border radius-10 overflow-hidden shadow-sm">
+    <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+        <div class="d-flex align-items-center gap-2">
+            <button [disabled]="showExportLoader" (click)="exportData()" class="btn  btn-outline-success d-flex align-items-center gap-2 border rounded px-3">
+                <i class="fas fa-file-download"></i>
+                <span>تصدير CSV</span>
+            </button>
+            <!-- <app-upload-importer-file [importerName]="'CostCenterImporter'">
+            </app-upload-importer-file> -->
+            <!-- <div ngbDropdown class="d-inline-block me-2">
+                <button type="button" class="btn btn-secondary btn-lg me-2" id="dropdownBasic1" ngbDropdownToggle>
+                    العمليات
+                </button>
+                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                    <button ngbDropdownItem (click)="dataUpdated(true)">تحديث</button>
+                    <button ngbDropdownItem (click)="downloadImporterTemplate()">تحميل القالب</button>
+                    <button ngbDropdownItem (click)="exportData()">تصدير حسابات</button>
+                </div>
+            </div> -->
+
+            <!-- <button (click)="dataUpdated(true)" class="btn btn-secondary btn-lg d-flex align-items-center fs-6 me-2 px-3 mb-1">
+              <i class="fas fa-sync-alt"></i>
+              <span class="ms-2">تحديث</span>
+            </button>
+            <button class="btn btn-secondary btn-lg d-flex align-items-center fs-6 me-2 px-3 mb-1">
+              <i class="fas fa-trash-alt"></i>
+              <span class="ms-2">حذف</span>
+            </button>
+            <button class="btn btn-secondary btn-lg d-flex align-items-center fs-6 me-2 px-3 mb-1">
+              <i class="fas fa-eye"></i>
+              <span class="ms-2">معاينة</span>
+            </button> -->
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-9">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <!-- <app-erp-filters [FilterList]="filterList" (filterChanged)="filterChecked($event)" [searchPlaceholder]="'البحث برقم القيد ...'"></app-erp-filters> -->
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-md-3">
+            </div>
+        </div>
+    </div>
+    <div class="bg-white">
+        <div class="card radius-10 border-0 card-shadow">
+            <div class="card-header bg-white">
+                <h6 class="fw-bold m-0">مراكز التكلفة</h6>
+            </div>
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-lg-6">
+
+                        <app-cost-center-tree (selectedCostCenter)="selectedCostCenter($event)" [reloadData]="reloadData"></app-cost-center-tree>
+                    </div>
+                    <div class="col-lg-6">
+
+                        <app-add-edit-cost-center-tree [costCenterModel]="selectedCostCenterTreeModel" [isUpdate]="isUpdate" (dataUpdated)="dataUpdated($event)">
+                        </app-add-edit-cost-center-tree>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

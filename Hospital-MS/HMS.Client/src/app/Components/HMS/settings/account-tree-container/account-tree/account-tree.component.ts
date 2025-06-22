@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { AccountTreeModel } from '../../../../Models/HMS/AccountTree';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SettingService } from '../../../../Services/HMS/setting.service';
+import { SettingService } from '../../../../../Services/HMS/setting.service';
+import { AccountTreeModel } from '../../../../../Models/HMS/AccountTree';
 
 @Component({
   selector: 'app-account-tree',

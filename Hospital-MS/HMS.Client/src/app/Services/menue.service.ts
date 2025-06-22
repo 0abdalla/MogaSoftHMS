@@ -289,7 +289,7 @@ export class MenueService {
             {
               displayName: 'مراكز التكلفة',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/settings/cost-center-tree'
             },
           ]
         },

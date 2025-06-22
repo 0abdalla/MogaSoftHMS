@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AccountTreeModel } from '../../../../Models/HMS/AccountTree';
-import { GeneralSelectorModel } from '../../../../Models/Generics/GeneralSelectorModel';
-import { SettingService } from '../../../../Services/HMS/setting.service';
+import { AccountTreeModel } from '../../../../../Models/HMS/AccountTree';
+import { GeneralSelectorModel } from '../../../../../Models/Generics/GeneralSelectorModel';
+import { SettingService } from '../../../../../Services/HMS/setting.service';
 
 @Component({
   selector: 'app-add-edit-account-tree',

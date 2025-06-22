@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AccountTreeModel } from '../../../../Models/HMS/AccountTree';
+import { AccountTreeModel } from '../../../../../Models/HMS/AccountTree';
 
 @Component({
   selector: 'app-account-tree-item',

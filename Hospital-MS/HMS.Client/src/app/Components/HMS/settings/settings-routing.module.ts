@@ -8,6 +8,7 @@ import { AppsManagmementComponent } from './apps-managmement/apps-managmement.co
 import { MedicalServicesListComponent } from './medical-services-list/medical-services-list.component';
 import { authGuard } from '../../../Auth/auth.guard';
 import { AccountTreeContainerComponent } from './account-tree-container/account-tree-container.component';
+import { CostCenterTreeContainerComponent } from './cost-center-tree-container/cost-center-tree-container.component';
 
 const routes: Routes = [
   { path: "doctors", component: DoctorsSettingsComponent, canActivate: [authGuard], data: { pageName: 'doctors' } },
@@ -17,6 +18,8 @@ const routes: Routes = [
   { path: "apps-managmement", component: AppsManagmementComponent, canActivate: [authGuard], data: { pageName: 'apps-managmement' } },
   { path: "medical-services-list", component: MedicalServicesListComponent, canActivate: [authGuard], data: { pageName: 'medical-services-list' } },
   { path: 'account-tree', component: AccountTreeContainerComponent, canActivate: [authGuard] },
+  { path: 'cost-center-tree', component: CostCenterTreeContainerComponent, canActivate: [authGuard] },
+  
 ];
 
 @NgModule({
