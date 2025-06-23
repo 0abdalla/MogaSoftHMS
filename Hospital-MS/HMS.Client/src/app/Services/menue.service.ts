@@ -183,7 +183,7 @@ export class MenueService {
         {
           displayName: 'الجزاءات',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/staff/penalty'
         },
         {
           displayName: 'الحضور والانصراف',

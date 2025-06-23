@@ -15,6 +15,7 @@ import { EmptyDataComponent } from './empty-data/empty-data.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GeneralSelectorComponent } from './general-selector/general-selector.component';
 import { GoToAccountReportDirective } from '../Directives/go-to-account-report.directive';
+import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
 
 
 
@@ -32,7 +33,8 @@ import { GoToAccountReportDirective } from '../Directives/go-to-account-report.d
     SpinnerComponent,
     EmptyDataComponent,
     GeneralSelectorComponent,
-    GoToAccountReportDirective
+    GoToAccountReportDirective,
+    DropDownFormControlComponent
   ],
   imports: [
     CommonModule,
@@ -51,7 +53,8 @@ import { GoToAccountReportDirective } from '../Directives/go-to-account-report.d
     FiltersComponent,
     EmptyDataComponent,
     GeneralSelectorComponent,
-    GoToAccountReportDirective
+    GoToAccountReportDirective,
+    DropDownFormControlComponent
   ],
   providers: [DatePipe]
 })

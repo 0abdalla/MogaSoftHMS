@@ -51,7 +51,10 @@ namespace Hospital_MS.Core._Data
         public DbSet<Attendance> Attendances { get; set; }
         public DbSet<AccountTree> AccountTrees { get; set; }
         public DbSet<CostCenterTree> CostCenterTree { get; set; }
-        
+        public DbSet<Penalty> Penalties { get; set; }
+        public DbSet<PenaltyType> PenaltyTypes { get; set; }
+        public DbSet<ContractDetail> ContractDetails { get; set; }
+
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -3,6 +3,9 @@ import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PagingFilterModel } from '../../Models/Generics/PagingFilterModel';
 import { PagedResponseModel } from '../../Models/Generics/PagedResponseModel';
+import { EmployeePenaltyModel } from '../../Models/HMS/Staff/EmployeePenaltyModel';
+import { EmployeeContractModel } from '../../Models/HMS/Staff/EmployeeContractModel';
+import { FormDropdownModel } from '../../Models/Generics/FormDropdownModel';
 
 @Injectable({
   providedIn: 'root'
@@ -82,75 +85,105 @@ export class StaffService {
     return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Doctors/counts`);
   }
   // ===========================================================================
-  getJobTypes(searchText : string ,currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobTypes(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobTypes`, { params });
   }
-  getJobTypeById(id: number){
+  getJobTypeById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobTypes/${id}`);
   }
-  addJobType(jobType: any){
+  addJobType(jobType: any) {
     return this.http.post<any>(`${this.baseUrl}JobTypes`, jobType);
   }
-  updateJobType(id: number, jobType: any){
+  updateJobType(id: number, jobType: any) {
     return this.http.put<any>(`${this.baseUrl}JobTypes/${id}`, jobType);
   }
   // 
-  getJobTitles(searchText : string , currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobTitles(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobTitles`, { params });
   }
-  getJobTitleById(id: number){
+  getJobTitleById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobTitles/${id}`);
   }
-  addJobTitle(jobTitle: any){
+  addJobTitle(jobTitle: any) {
     return this.http.post<any>(`${this.baseUrl}JobTitles`, jobTitle);
   }
-  updateJobTitle(id: number, jobTitle: any){
+  updateJobTitle(id: number, jobTitle: any) {
     return this.http.put<any>(`${this.baseUrl}JobTitles/${id}`, jobTitle);
   }
   // 
-  getJobLevels(searchText : string ,currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobLevels(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobLevels`, { params });
   }
-  getJobLevelById(id: number){
+  getJobLevelById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobLevels/${id}`);
   }
-  addJobLevel(jobLevel:any){
+  addJobLevel(jobLevel: any) {
     return this.http.post<any>(`${this.baseUrl}JobLevels`, jobLevel);
   }
-  updateJobLevel(id: number, jobLevel: any){
+  updateJobLevel(id: number, jobLevel: any) {
     return this.http.put<any>(`${this.baseUrl}JobLevels/${id}`, jobLevel);
   }
   // 
-  getJobDepartment( searchText : string , currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobDepartment(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobDepartment`, { params });
   }
-  getJobDepartmentById(id: number){
+  getJobDepartmentById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobDepartment/${id}`);
   }
-  addJobDepartment(jobDepartment:any){
-    return this.http.post<any>(`${this.baseUrl}JobDepartment` , jobDepartment)
+  addJobDepartment(jobDepartment: any) {
+    return this.http.post<any>(`${this.baseUrl}JobDepartment`, jobDepartment)
   }
-  updateJobDeprtment(id:number , jobDepartment : any){
-    return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}` , jobDepartment)
+  updateJobDeprtment(id: number, jobDepartment: any) {
+    return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}`, jobDepartment)
+  }
+
+  // ================================= Penalty ==========================================
+
+  GetPenaltiesByEmployeeId(employeeId, model: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<EmployeePenaltyModel[]>>(this.baseUrl + 'Penalty/GetPenaltiesByEmployeeId?EmployeeId=' + employeeId, model);
+  }
+
+   GetEmployeeContractDetails(EmployeeId: number) {
+    return this.http.get<EmployeeContractModel>(this.baseUrl + 'Penalty/GetEmployeeContractDetails?EmployeeId=' + EmployeeId);
+  }
+
+   AddNewEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
+    return this.http.post<any>(this.baseUrl + 'Penalty/AddNewEmployeePenalty?EmployeeId=' + employeeId, model);
+  }
+
+  EditEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
+    return this.http.post<any>(this.baseUrl + 'Penalty/EditEmployeePenalty?EmployeeId=' + employeeId, model);
+  }
+
+  GetPenaltyTypesSelector() {
+    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'Penalty/GetPenaltyTypesSelector');
+  }
+
+  GetActiveEmployeesSelector() {
+    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'Penalty/GetActiveEmployeesSelector');
+  }
+
+  DeleteEmployeePenalty(PenaltyId: number) {
+    return this.http.get<any>(this.baseUrl + 'Penalty/DeleteEmployeePenalty?PenaltyId=' + PenaltyId);
   }
 }

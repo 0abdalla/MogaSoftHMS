@@ -1,0 +1,47 @@
+import { CreatorModel } from "./CreatorModel";
+import { EmployeeContractModel } from "./EmployeeContractModel";
+import { EmployeeVerificationModel } from "./EmployeeVerificationModel";
+
+export interface EmployeeModel extends CreatorModel {
+    employeeId: number | null;
+    code: number;
+    managerId: number | null;
+    jobId: number;
+    visaJobId: number | null;
+    branchId: number;
+    socialStatusId: number;
+    statusId: number | null;
+    fullNameAR: string;
+    firstNameAR: string;
+    fatherNameAR: string;
+    grandNameAR: string;
+    lastNameAR: string;
+    fullNameEN: string;
+    firstNameEN: string;
+    fatherNameEN: string;
+    grandNameEN: string;
+    lastNameEN: string;
+    birthDate: string;
+    birthPlace: string;
+    phone: string;
+    email: string;
+    nationalityId: number;
+    sponsorId: number | null;
+    borderEntryNumber: string;
+    passportNumber: string;
+    arrivalPort: string;
+    visaNumber: string;
+    visaIssueDate: string | null;
+    passportExpireDate: string | null;
+    passportIssuanceDate: string | null;
+    religionId: number | null;
+    religion: string;
+    address: string;
+    image: string;
+    filesPath: string;
+    imageFile: File;
+    attachmentFile: File;
+    isChecked: boolean;
+    employeeContract: EmployeeContractModel;
+    employeeVerification: EmployeeVerificationModel;
+}
