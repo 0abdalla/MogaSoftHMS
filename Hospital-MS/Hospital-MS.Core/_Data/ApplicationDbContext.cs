@@ -54,6 +54,10 @@ namespace Hospital_MS.Core._Data
         public DbSet<Penalty> Penalties { get; set; }
         public DbSet<PenaltyType> PenaltyTypes { get; set; }
         public DbSet<ContractDetail> ContractDetails { get; set; }
+        public DbSet<Vacation> Vacations { get; set; }
+        public DbSet<VacationType> VacationTypes { get; set; }
+
+        
 
 
 

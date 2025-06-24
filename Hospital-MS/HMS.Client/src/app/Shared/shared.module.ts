@@ -16,6 +16,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GeneralSelectorComponent } from './general-selector/general-selector.component';
 import { GoToAccountReportDirective } from '../Directives/go-to-account-report.directive';
 import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
+import { ColorWithStatusDirectiveDirective } from '../Directives/color-with-status.directive.directive';
 
 
 
@@ -34,7 +35,8 @@ import { DropDownFormControlComponent } from './drop-down-form-control/drop-down
     EmptyDataComponent,
     GeneralSelectorComponent,
     GoToAccountReportDirective,
-    DropDownFormControlComponent
+    DropDownFormControlComponent,
+    ColorWithStatusDirectiveDirective
   ],
   imports: [
     CommonModule,
@@ -54,7 +56,8 @@ import { DropDownFormControlComponent } from './drop-down-form-control/drop-down
     EmptyDataComponent,
     GeneralSelectorComponent,
     GoToAccountReportDirective,
-    DropDownFormControlComponent
+    DropDownFormControlComponent,
+    ColorWithStatusDirectiveDirective
   ],
   providers: [DatePipe]
 })

@@ -11,6 +11,7 @@ import { StaffJobManagementComponent } from './staff-job-management/staff-job-ma
 import { StaffLevelsComponent } from './staff-levels/staff-levels.component';
 import { AttendanceFormComponent } from './attendance-form/attendance-form.component';
 import { HrPenaltyComponent } from './hr-penalty/hr-penalty.component';
+import { HrVacationComponent } from './hr-vacation/hr-vacation.component';
 
 const routes: Routes = [
   { path: '', redirectTo : 'list' , pathMatch:"full" },
@@ -25,6 +26,7 @@ const routes: Routes = [
   { path: 'job-levels' , component:StaffLevelsComponent , canActivate:[authGuard] },
   { path:"attendance", component : AttendanceFormComponent , data: { pageName: 'attendance' } },
   { path:"penalty", component : HrPenaltyComponent , data: { pageName: 'penalty' } },
+  { path:"vacation", component : HrVacationComponent , data: { pageName: 'penalty' } },
 ];
 
 @NgModule({

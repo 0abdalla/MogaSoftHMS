@@ -6,6 +6,8 @@ import { PagedResponseModel } from '../../Models/Generics/PagedResponseModel';
 import { EmployeePenaltyModel } from '../../Models/HMS/Staff/EmployeePenaltyModel';
 import { EmployeeContractModel } from '../../Models/HMS/Staff/EmployeeContractModel';
 import { FormDropdownModel } from '../../Models/Generics/FormDropdownModel';
+import { EmployeeVacationModel } from '../../Models/HMS/Staff/EmployeeVacationModel';
+import { GeneralSelectorModel } from '../../Models/Generics/GeneralSelectorModel';
 
 @Injectable({
   providedIn: 'root'
@@ -163,11 +165,11 @@ export class StaffService {
     return this.http.post<PagedResponseModel<EmployeePenaltyModel[]>>(this.baseUrl + 'Penalty/GetPenaltiesByEmployeeId?EmployeeId=' + employeeId, model);
   }
 
-   GetEmployeeContractDetails(EmployeeId: number) {
+  GetEmployeeContractDetails(EmployeeId: number) {
     return this.http.get<EmployeeContractModel>(this.baseUrl + 'Penalty/GetEmployeeContractDetails?EmployeeId=' + EmployeeId);
   }
 
-   AddNewEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
+  AddNewEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
     return this.http.post<any>(this.baseUrl + 'Penalty/AddNewEmployeePenalty?EmployeeId=' + employeeId, model);
   }
 
@@ -185,5 +187,27 @@ export class StaffService {
 
   DeleteEmployeePenalty(PenaltyId: number) {
     return this.http.get<any>(this.baseUrl + 'Penalty/DeleteEmployeePenalty?PenaltyId=' + PenaltyId);
+  }
+
+  // ================================= Vacation ==========================================
+
+  GetVacationsByEmployeeId(employeeId, model: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<EmployeeVacationModel[]>>(this.baseUrl + 'Vacation/GetVacationsByEmployeeId?EmployeeId=' + employeeId, model);
+  }
+
+   AddNewEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
+    return this.http.post<any>(this.baseUrl + 'Vacation/AddNewEmployeeVacation?EmployeeId=' + employeeId, model);
+  }
+
+  EditEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
+    return this.http.post<any>(this.baseUrl + 'Vacation/EditEmployeeVacation?EmployeeId=' + employeeId, model);
+  }
+
+  GetVacationTypesSelector() {
+    return this.http.get<GeneralSelectorModel[]>(this.baseUrl + 'Vacation/GetVacationTypesSelector');
+  }
+
+   DeleteVacation(VacationId: number) {
+    return this.http.get<any>(this.baseUrl + 'Vacation/DeleteVacation?VacationId=' + VacationId);
   }
 }

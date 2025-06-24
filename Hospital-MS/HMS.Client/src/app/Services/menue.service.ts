@@ -178,7 +178,7 @@ export class MenueService {
         {
           displayName: 'الأجازات',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/staff/vacation'
         },
         {
           displayName: 'الجزاءات',

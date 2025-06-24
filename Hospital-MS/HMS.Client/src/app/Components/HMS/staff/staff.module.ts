@@ -17,6 +17,7 @@ import { AttendanceFormComponent } from './attendance-form/attendance-form.compo
 import { TableModule } from 'primeng/table';
 import { SharedModule } from '../../../Shared/shared.module';
 import { HrPenaltyComponent } from './hr-penalty/hr-penalty.component';
+import { HrVacationComponent } from './hr-vacation/hr-vacation.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { HrPenaltyComponent } from './hr-penalty/hr-penalty.component';
     StaffJobManagementComponent,
     StaffLevelsComponent,
     AttendanceFormComponent,
-    HrPenaltyComponent
+    HrPenaltyComponent,
+    HrVacationComponent
   ],
   imports: [
     CommonModule,
