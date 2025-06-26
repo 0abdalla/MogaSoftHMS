@@ -19,6 +19,7 @@ import { SharedModule } from '../../../Shared/shared.module';
 import { HrPenaltyComponent } from './hr-penalty/hr-penalty.component';
 import { HrVacationComponent } from './hr-vacation/hr-vacation.component';
 import { HrAdvancesComponent } from './hr-advances/hr-advances.component';
+import { HrEmployeesSalariesComponent } from './hr-employees-salaries/hr-employees-salaries.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { HrAdvancesComponent } from './hr-advances/hr-advances.component';
     AttendanceFormComponent,
     HrPenaltyComponent,
     HrVacationComponent,
-    HrAdvancesComponent
+    HrAdvancesComponent,
+    HrEmployeesSalariesComponent
   ],
   imports: [
     CommonModule,

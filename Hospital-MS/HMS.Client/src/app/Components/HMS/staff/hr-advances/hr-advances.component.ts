@@ -84,7 +84,7 @@ export class HrAdvancesComponent implements OnInit {
   buildForm() {
 
     this.formGroup = this.form.group({
-      employeeAdvanceId: [null],
+      staffAdvanceId: [null],
       employeeId: [null],
       advanceTypeId: [null, [Validators.required]],
       advanceAmount: [null, [Validators.required, CustomValidators.regexPattern(RegexType.number)]],
@@ -97,8 +97,9 @@ export class HrAdvancesComponent implements OnInit {
   }
 
   saveEmployeeAdvance() {
+    debugger;
     this.employeeAdvanceModel = this.formGroup.value;
-    if (this.employeeAdvanceModel?.employeeAdvanceId)
+    if (this.employeeAdvanceModel?.staffAdvanceId)
       this.editEmployeeAdvance();
     else
       this.addNewEmployeeAdvance();
@@ -147,9 +148,10 @@ export class HrAdvancesComponent implements OnInit {
 
 
   fillEditForm(advanceModel: EmployeeAdvanceModel) {
+    debugger;
     this.isUpdate = true;
     this.formGroup.patchValue({
-      employeeAdvanceId: advanceModel.employeeAdvanceId,
+      staffAdvanceId: advanceModel.staffAdvanceId,
       advanceTypeId: advanceModel.advanceTypeId,
       advanceAmount: advanceModel.advanceAmount,
       paymentAmount: advanceModel.paymentAmount,
@@ -161,8 +163,8 @@ export class HrAdvancesComponent implements OnInit {
   }
 
 
-  openDeleteModal(content: any, employeeAdvanceId: number) {
-    this.selectedAdvanceId = employeeAdvanceId;
+  openDeleteModal(content: any, staffAdvanceId: number) {
+    this.selectedAdvanceId = staffAdvanceId;
     this.modalService.open(content, { centered: true, size: 'md' });
   }
 
@@ -201,8 +203,8 @@ export class HrAdvancesComponent implements OnInit {
     });
   }
 
-  openApproveModal(content: any, employeeAdvanceId: number) {
-    this.selectedAdvanceId = employeeAdvanceId;
+  openApproveModal(content: any, staffAdvanceId: number) {
+    this.selectedAdvanceId = staffAdvanceId;
     this.modalService.open(content, { centered: true, size: 'md' });
   }
   approveEmployeeAdvance() {

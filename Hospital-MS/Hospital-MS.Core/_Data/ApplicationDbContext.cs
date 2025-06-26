@@ -56,10 +56,8 @@ namespace Hospital_MS.Core._Data
         public DbSet<ContractDetail> ContractDetails { get; set; }
         public DbSet<Vacation> Vacations { get; set; }
         public DbSet<VacationType> VacationTypes { get; set; }
-
-        
-
-
+        public DbSet<EmployeeAdvance> EmployeeAdvances { get; set; }
+        public DbSet<AdvanceType> AdvanceTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

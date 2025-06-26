@@ -135,7 +135,7 @@ export class MenueService {
         {
           displayName: 'سلف الموظفين',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/staff/advances'
         }
       ]
     },

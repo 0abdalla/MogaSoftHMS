@@ -1,0 +1,146 @@
+<div class="inputs-wrapper border rounded bg-white mb-3">
+    <div class="inputs-sec-content px-3 py-2">
+        <div class="row gy-3">
+            <div class="col-lg-3">
+                <div class="mb-2">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        اسم الموظف
+                        <span class="text-danger">*</span>
+                    </label>
+                    <app-general-selector [(ngModel)]="selectedEmployeeId" [data]="employeeSelectorData" [placeholder]="'اسم الموظف'" [showSearch]="true"></app-general-selector>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="mb-2">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        السنه
+                        <span class="text-danger">*</span>
+                    </label>
+                    <app-general-selector [(ngModel)]="selectedYear" [data]="yearsSelectorData" [placeholder]="'السنه'" [showSearch]="true"></app-general-selector>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="mb-2">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        الشهر
+                        <span class="text-danger">*</span>
+                    </label>
+                    <app-general-selector [(ngModel)]="selectedMonth" [data]="monthsSelectorData" [placeholder]="'الشهر'" [showSearch]="true"></app-general-selector>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="inputs-sec-title fw-semibold fs-16 px-3 py-2 border-top">
+        <button class="btn btn-primary me-2" [disabled]="showLoader" (click)="search()">
+            <i class="fas fa-search"></i>
+            <span class="ms-2">بحث</span>
+        </button>
+        <button class="btn btn-table-action  gap-2 border rounded px-3 me-2">
+            <i class="fas fa-print fs-7"></i>
+            <span>طباعة</span>
+        </button>
+    </div>
+</div>
+<div class="card radius-10 border-0 card-shadow mb-4">
+    <div class="card-body">
+        <div class="row p-2">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="search-box position-relative mb-2"></div>
+                    <!-- <ng-container *ngIf="filterList.length > 0">
+                        <app-pos-filters [FilterList]="filterList" (filterChanged)="filterChecked($event)"></app-pos-filters>
+                    </ng-container> -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <app-pagination (pageChanged)="pageChanged($event)" [currentPage]="PagingFilter.currentPage" [pageSize]="PagingFilter.pageSize" [totalCount]="pagedResponseModel.totalCount"></app-pagination>
+            </div>
+        </div>
+        <div class="table-responsive shadow-sm radius-10 table-vp-height">
+            <table class="table table-card-table table-borderless table-middle  bg-transparent m-0">
+                <colgroup></colgroup>
+                <thead class="table-light">
+                    <tr>
+                        <th rowspan="2">الكود</th>
+                        <th rowspan="2">الحساب البنكى</th>
+                        <th rowspan="2">اسم الموظف</th>
+                        <th rowspan="2">كود البنك</th>
+                        <th rowspan="2">الوظيفة</th>
+                        <th colspan="11">الراتب</th>
+                        <th rowspan="2">أيام الدوام</th>
+                        <th rowspan="2">Diff Cost</th>
+                        <th rowspan="2">إجمالى الراتب</th>
+                        <th colspan="9">الخصومات</th>
+                        <th rowspan="2">صافى القيمة</th>
+                        <th rowspan="2">فيزا</th>
+                        <th rowspan="2">كاش</th>
+                        <th rowspan="2"></th>
+                    </tr>
+                    <tr>
+                        <th>أساسى</th>
+                        <th>إضافى</th>
+                        <th>بدل انتقال</th>
+                        <th>طبيعة عمل</th>
+                        <th>بدل وجبات</th>
+                        <th>بدل سكن</th>
+                        <th>ساعات إضافية</th>
+                        <th>بدل هاتف</th>
+                        <th>أخري</th>
+                        <th>أخري 2</th>
+                        <th>الإجمالى</th>
+                        <th>تأمين</th>
+                        <th>غيابات</th>
+                        <th>جزاءات</th>
+                        <th>سلف</th> 15
+                        <th>أجازات مرضية</th>
+                        <th>انتقال(-)</th>
+                        <th>سكن(-)</th>
+                        <th>أخري(-)</th>
+                        <th>إجمالى الخصم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of pagedResponseModel.results">
+                        <td>{{item.employeeCode}}</td>
+                        <td>{{item.bankAccountNumber}}</td>
+                        <td>{{item.employeeNameAR ??item.employeeNameEN}}</td>
+                        <td>{{item.bank}}</td>
+                        <td>{{item.jobNameEN ?? item.jobNameAR}}</td>
+                        <td>{{item.basicSalary}}</td>
+                        <td>{{item.extraSalary}}</td>
+                        <td>{{item.transportation}}</td>
+                        <td>{{item.workNature}}</td>
+                        <td>{{item.mealAllowance}}</td>
+                        <td>{{item.housingAllowance}}</td>
+                        <td>{{item.overtime}}</td>
+                        <td>{{item.mobileAllowance}}</td>
+                        <td>{{item.other}}</td>
+                        <td></td>
+                        <td>{{item.grossSalary}}</td>
+                        <td>{{item.totalWorkingDays}}</td>
+                        <td>{{item.dailySalary}}</td>
+                        <td>{{item.netSalary}}</td>
+                        <td></td>
+                        <td>{{item.absentDays * item.dailySalary}}</td>
+                        <td>{{item.penalties}}</td>
+                        <td>{{item.advances}}</td>
+                        <td>{{item.sickDays * item.dailySalary}}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>{{item.totalDeductions}}</td>
+                        <td>{{item.netSalary}}</td>
+                        <td>{{item.visaPayment}}</td>
+                        <td>{{item.cashPayment}}</td>
+                        <td></td>
+                    </tr>
+                    <tr *ngIf="!pagedResponseModel.results.length || showLoader">
+                        <td colspan="32" class="text-right">
+                            <app-empty-data [showEmptyData]="!pagedResponseModel.results.length&&!showLoader" [showLoader]="showLoader"></app-empty-data>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

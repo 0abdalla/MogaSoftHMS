@@ -66,7 +66,7 @@
                         <td class="word-break">{{item.notes}}</td>
                         <td>
                             <div class="d-flex align-items-center justify-content-center text-center">
-                                <button *ngIf="item.workflowStatusId != workflowStatus.Approved" class="button-table-action btn-success d-flex align-items-center justify-content-center gap-2 me-2" (click)="openApproveModal(approveModal,item.employeeAdvanceId)">
+                                <button *ngIf="item.workflowStatusId != workflowStatus.Approved" class="button-table-action btn-success d-flex align-items-center justify-content-center gap-2 me-2" (click)="openApproveModal(approveModal,item.staffAdvanceId)">
                                     <i class="uil uil-check-circle"></i>
                                     <span>موافقة</span>
                                 </button>
@@ -74,7 +74,7 @@
                                     <i class="uil uil-pen"></i>
                                     <span>تعديل</span>
                                 </button>
-                                <button class="button-table-action btn-delete d-flex align-items-center justify-content-center gap-2" (click)="openDeleteModal(deleteModal,item.employeeAdvanceId)">
+                                <button class="button-table-action btn-delete d-flex align-items-center justify-content-center gap-2" (click)="openDeleteModal(deleteModal,item.staffAdvanceId)">
                                     <i class="uil uil-trash-alt"></i>
                                     <span>الغاء</span>
                                 </button>

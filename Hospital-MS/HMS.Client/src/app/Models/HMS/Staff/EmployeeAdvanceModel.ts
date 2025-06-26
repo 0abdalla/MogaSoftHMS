@@ -1,7 +1,7 @@
 import { CreatorModel } from "./CreatorModel";
 
 export interface EmployeeAdvanceModel extends CreatorModel {
-    employeeAdvanceId: number | null;
+    staffAdvanceId: number | null;
     employeeId: number | null;
     employeeName: string;
     advanceTypeNameEN: string;

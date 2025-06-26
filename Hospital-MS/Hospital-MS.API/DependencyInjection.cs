@@ -88,6 +88,9 @@ namespace Hospital_MS.API
             services.AddScoped<ICostCenterTreeService, CostCenterTreeService>();
             services.AddScoped<IPenaltyService, PenaltyService>();
             services.AddScoped<IVacationService, VacationService>();
+            services.AddScoped<IEmployeeAdvancesService, EmployeeAdvancesService>();
+
+            
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)
             .AddHangfire(options => { options.MinimumAvailableServers = 1; });

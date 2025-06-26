@@ -9,6 +9,7 @@ import { FormDropdownModel } from '../../Models/Generics/FormDropdownModel';
 import { EmployeeVacationModel } from '../../Models/HMS/Staff/EmployeeVacationModel';
 import { GeneralSelectorModel } from '../../Models/Generics/GeneralSelectorModel';
 import { EmployeeAdvanceModel } from '../../Models/HMS/Staff/EmployeeAdvanceModel';
+import { EmployeeSalarySummaryModel } from '../../Models/HMS/Staff/EmployeeSalarySummaryModel';
 
 @Injectable({
   providedIn: 'root'
@@ -236,6 +237,12 @@ export class StaffService {
 
   GetAdvanceTypesSelector() {
     return this.http.get<FormDropdownModel[]>(this.baseUrl + 'EmployeeAdvances/GetAdvanceTypesSelector');
+  }
+
+  GetEmployeeSalarySummary(year: number, month: number, model: PagingFilterModel) {
+    year = year ?? new Date().getFullYear();
+    month = month ?? new Date().getMonth() + 1;
+    return this.http.post<PagedResponseModel<EmployeeSalarySummaryModel[]>>(this.baseUrl + 'Attendance/GetEmployeeSalarySummary?Year=' + year + '&Month=' + month, model);
   }
 
 }

@@ -65,5 +65,10 @@ namespace Hospital_MS.Services.Repository
         public IQueryable<T> GetAllAsQueryable(CancellationToken cancellationToken)
                 => _dbContext.Set<T>().AsQueryable();
 
+        public async Task<TResult> MaxAsync<TResult>(Expression<Func<T, TResult>> selector, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Set<T>().MaxAsync(selector, cancellationToken);
+        }
+
     }
 }
