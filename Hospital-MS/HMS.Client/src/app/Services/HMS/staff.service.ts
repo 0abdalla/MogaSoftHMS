@@ -8,6 +8,7 @@ import { EmployeeContractModel } from '../../Models/HMS/Staff/EmployeeContractMo
 import { FormDropdownModel } from '../../Models/Generics/FormDropdownModel';
 import { EmployeeVacationModel } from '../../Models/HMS/Staff/EmployeeVacationModel';
 import { GeneralSelectorModel } from '../../Models/Generics/GeneralSelectorModel';
+import { EmployeeAdvanceModel } from '../../Models/HMS/Staff/EmployeeAdvanceModel';
 
 @Injectable({
   providedIn: 'root'
@@ -195,7 +196,7 @@ export class StaffService {
     return this.http.post<PagedResponseModel<EmployeeVacationModel[]>>(this.baseUrl + 'Vacation/GetVacationsByEmployeeId?EmployeeId=' + employeeId, model);
   }
 
-   AddNewEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
+  AddNewEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
     return this.http.post<any>(this.baseUrl + 'Vacation/AddNewEmployeeVacation?EmployeeId=' + employeeId, model);
   }
 
@@ -207,7 +208,34 @@ export class StaffService {
     return this.http.get<GeneralSelectorModel[]>(this.baseUrl + 'Vacation/GetVacationTypesSelector');
   }
 
-   DeleteVacation(VacationId: number) {
+  DeleteVacation(VacationId: number) {
     return this.http.get<any>(this.baseUrl + 'Vacation/DeleteVacation?VacationId=' + VacationId);
   }
+
+  // ================================= Advances ==========================================
+
+  GetAdvancesByEmployeeId(employeeId, model: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<EmployeeAdvanceModel[]>>(this.baseUrl + 'EmployeeAdvances/GetAdvancesByEmployeeId?EmployeeId=' + employeeId, model);
+  }
+
+  AddNewEmployeeAdvance(employeeId: number, model: EmployeeAdvanceModel) {
+    return this.http.post<any>(this.baseUrl + 'EmployeeAdvances/AddNewEmployeeAdvance?EmployeeId=' + employeeId, model);
+  }
+
+  EditEmployeeAdvance(employeeId: number, model: EmployeeAdvanceModel) {
+    return this.http.post<any>(this.baseUrl + 'EmployeeAdvances/EditEmployeeAdvance?EmployeeId=' + employeeId, model);
+  }
+
+  DeleteEmployeeAdvance(employeeAdvanceId: number) {
+    return this.http.get<any>(this.baseUrl + 'EmployeeAdvances/DeleteEmployeeAdvance?EmployeeAdvanceId=' + employeeAdvanceId);
+  }
+
+  ApproveEmployeeAdvance(employeeAdvanceId: number, isApproved: boolean = true) {
+    return this.http.get<any>(this.baseUrl + `EmployeeAdvances/ApproveEmployeeAdvance?EmployeeAdvanceId=${employeeAdvanceId}&IsApproved=${isApproved}`);
+  }
+
+  GetAdvanceTypesSelector() {
+    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'EmployeeAdvances/GetAdvanceTypesSelector');
+  }
+
 }

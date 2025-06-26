@@ -1,0 +1,187 @@
+<div class="card radius-10 border-0 card-shadow mb-3">
+    <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between">
+        <h5 class="mb-0 fw-bold">السلف</h5>
+    </div>
+    <div class="card-body">
+        <div class="row  py-3">
+            <div class="col-lg-4">
+                <app-drop-down-form-control [(ngModel)]="selectedEmployeeId" [data]="employeeSelectorData" [showSearch]="true" [placeholder]="'قائمة الموظفين'"></app-drop-down-form-control>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-secondary radius-50" (click)="getAdvanceByEmployeeId()">
+                    <i class="fas fa-search"></i>
+                    <span class="ms-4">بحث</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="card radius-10 border-0 card-shadow mb-4">
+    <div class="card-body">
+        <div class="row p-2">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="search-box position-relative mb-2">
+                        <button class="btn btn-primary mb-2" (click)="openNewSidePanel(AddModal)">
+                            <span class="me-2">إنشاء سلفة</span>
+                            <i class="uil uil-plus-circle"></i>
+                        </button>
+                    </div>
+                    <!-- <ng-container *ngIf="filterList.length > 0">
+                        <app-pos-filters [FilterList]="filterList" (filterChanged)="filterChecked($event)"></app-pos-filters>
+                    </ng-container> -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <app-pagination (pageChanged)="pageChanged($event)" [currentPage]="PagingFilter.currentPage" [pageSize]="PagingFilter.pageSize" [totalCount]="employeeAdvanceResponse.totalCount"></app-pagination>
+            </div>
+        </div>
+        <div class="table-responsive shadow-sm radius-10 table-vp-height">
+            <table class="table table-card-table table-borderless table-middle table-hover bg-transparent m-0 ">
+                <thead class="table-light">
+                    <tr>
+                        <th>اسم الموظف</th>
+                        <th> تاريخ البدء</th>
+                        <th> تاريخ الانتهاء</th>
+                        <th>نوع السلفة</th>
+                        <th>القيمة </th>
+                        <th>القسط </th>
+                        <th>الحالة</th>
+                        <th>السبب</th>
+                        <th>العمليات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of employeeAdvanceResponse.results">
+                        <td>{{item.employeeName}}</td>
+                        <td>{{item.paymentFromDate | date}}</td>
+                        <td>{{item.paymentToDate | date}}</td>
+                        <td>{{item.advanceTypeNameAR ??item.advanceTypeNameEN}}</td>
+                        <td>{{item.advanceAmount}}</td>
+                        <td>{{item.paymentAmount}}</td>
+                        <td>
+                            <span appWorkflowStatus [id]="item.workflowStatusId" [nameEN]="item?.workflowStatusNameEN" [nameAR]="item?.workflowStatusNameAR">
+                            </span>
+                        </td>
+                        <td class="word-break">{{item.notes}}</td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center text-center">
+                                <button *ngIf="item.workflowStatusId != workflowStatus.Approved" class="button-table-action btn-success d-flex align-items-center justify-content-center gap-2 me-2" (click)="openApproveModal(approveModal,item.employeeAdvanceId)">
+                                    <i class="uil uil-check-circle"></i>
+                                    <span>موافقة</span>
+                                </button>
+                                <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2" (click)="openNewSidePanel(AddModal,item)">
+                                    <i class="uil uil-pen"></i>
+                                    <span>تعديل</span>
+                                </button>
+                                <button class="button-table-action btn-delete d-flex align-items-center justify-content-center gap-2" (click)="openDeleteModal(deleteModal,item.employeeAdvanceId)">
+                                    <i class="uil uil-trash-alt"></i>
+                                    <span>الغاء</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!employeeAdvanceResponse.results.length || showLoader">
+                        <td colspan="9" class="text-right">
+                            <app-empty-data [showEmptyData]="!employeeAdvanceResponse.results.length&&!showLoader" [showLoader]="showLoader"></app-empty-data>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<ng-template #approveModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">رسالة تأكيد</h4>
+    </div>
+    <div class="modal-body">
+        <p class="fs-5 m-0">هل أنت متأكد من تغير الحالة ؟</p>
+    </div>
+    <div class="modal-footer justify-content-start">
+        <button type="button" class="btn btn-success" (click)="modal.close('Save click');approveEmployeeAdvance()">
+            <i class="fas fa-check"></i>
+            <span class="ms-2">نعم</span>
+        </button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">
+            <i class="fas fa-times"></i>
+            <span class="ms-2">عودة</span>
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">رسالة تأكيد</h4>
+    </div>
+    <div class="modal-body">
+        <p class="fs-5 m-0">هل أنت متأكد من الالغاء ؟</p>
+    </div>
+    <div class="modal-footer justify-content-start">
+        <button type="button" class="btn btn-success" (click)="modal.close('Save click');deleteEmployeeAdvance()">
+            <i class="fas fa-check"></i>
+            <span class="ms-2">نعم</span>
+        </button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">
+            <i class="fas fa-times"></i>
+            <span class="ms-2">عودة</span>
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #AddModal let-offcanvas>
+    <div class="offcanvas-header gap-3 fs-4 border-bottom py-4">
+        <i class="fas fa-user-plus offcanvas-header-icon"></i>
+        <span>إنشاء سلفة</span>
+    </div>
+    <div class="offcanvas-body pt-4 bg-light">
+        <div class="card ">
+            <div class="card-body ">
+                <div class="p-2">
+                    <form [formGroup]="formGroup" autocomplete="off">
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                نوع السلفة
+                                <span class="text-danger">*</span>
+                            </label>
+                            <app-general-selector formControlName="advanceTypeId" [data]="advanceTypesSelectorData" [showSearch]="true" [placeholder]="'نوع السلفة'"></app-general-selector>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                بداية الدفع
+                                <span class="text-danger">*</span></label>
+                            <input type="date" formControlName="paymentFromDate" autocomplete="off" class="form-control nw-form-input" />
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                قيمة السلفة
+                                <span class="text-danger">*</span></label>
+                            <input type="text" formControlName="advanceAmount" autocomplete="off" class="form-control nw-form-input" />
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                القسط الشهرى
+                                <span class="text-danger">*</span></label>
+                            <input type="text" formControlName="paymentAmount" autocomplete="off" class="form-control nw-form-input" />
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                ملاحظات
+                            </label>
+                            <input type="text" class="form-control nw-form-input description-area" formControlName="notes" autocomplete="off" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center border-top pt-3 mt-3">
+            <button [disabled]="showAddLoader" (click)="saveEmployeeAdvance()" class="btn btn-primary w-50 justify-content-center py-3 fs-5 radius-10">
+                <span *ngIf="!isUpdate" class="ms-3">إنشاء</span>
+                <span *ngIf="isUpdate" class="ms-3">تعديل</span>
+            </button>
+        </div>
+        <div class="table-responsive sidepanel-table-h large-scroll">
+        </div>
+    </div>
+</ng-template>

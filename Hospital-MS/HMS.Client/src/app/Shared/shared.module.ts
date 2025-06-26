@@ -17,6 +17,7 @@ import { GeneralSelectorComponent } from './general-selector/general-selector.co
 import { GoToAccountReportDirective } from '../Directives/go-to-account-report.directive';
 import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
 import { ColorWithStatusDirectiveDirective } from '../Directives/color-with-status.directive.directive';
+import { WorkflowStatusDirective } from '../Directives/workflow-status.directive';
 
 
 
@@ -36,7 +37,8 @@ import { ColorWithStatusDirectiveDirective } from '../Directives/color-with-stat
     GeneralSelectorComponent,
     GoToAccountReportDirective,
     DropDownFormControlComponent,
-    ColorWithStatusDirectiveDirective
+    ColorWithStatusDirectiveDirective,
+    WorkflowStatusDirective
   ],
   imports: [
     CommonModule,
@@ -57,7 +59,8 @@ import { ColorWithStatusDirectiveDirective } from '../Directives/color-with-stat
     GeneralSelectorComponent,
     GoToAccountReportDirective,
     DropDownFormControlComponent,
-    ColorWithStatusDirectiveDirective
+    ColorWithStatusDirectiveDirective,
+    WorkflowStatusDirective
   ],
   providers: [DatePipe]
 })
