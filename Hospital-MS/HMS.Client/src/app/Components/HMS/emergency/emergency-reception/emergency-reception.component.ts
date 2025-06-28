@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
+import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 @Component({
   selector: 'app-emergency-reception',
   templateUrl: './emergency-reception.component.html',
@@ -22,7 +23,8 @@ import { AppointmentService } from '../../../../Services/HMS/appointment.service
 export class EmergencyReceptionComponent {
   emergencyForm: FormGroup;
   TitleList = ['الطوارئ والإستقبال'];
-  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private messageService: MessageService) {
+  insuranceCompanies: any;
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private messageService: MessageService , private insuranceService: InsuranceService) {
     this.emergencyForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
@@ -32,7 +34,23 @@ export class EmergencyReceptionComponent {
       companionNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       companionPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       notes: [''],
+      insuranceCompanyId: [''],
+      insuranceCategoryId: [''],
+      insuranceNumber: [''],
+      referred: [''],
+      referredClinic: [''],
+      paymentMethod: [''],
+
     });
+    this.insuranceService.getAllInsurances().subscribe({
+      next: (data) => {
+        this.insuranceCompanies = data.results;
+        console.log(this.insuranceCompanies);
+      },
+      error: (err) => {
+        console.log(err);
+      }
+    })
   }
 
   submitForm() {

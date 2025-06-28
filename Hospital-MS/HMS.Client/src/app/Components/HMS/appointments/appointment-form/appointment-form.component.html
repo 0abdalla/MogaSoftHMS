@@ -81,7 +81,15 @@
         </div>
         
         <div class="col-lg-3">
-          <label for="clinic" class="form-label">الخدمة الطبية</label>
+          <label for="clinic" class="form-label">
+            {{
+              reservationForm.get('appointmentType')?.value === 'Screening'
+                ? 'نوع التحليل'
+                : reservationForm.get('appointmentType')?.value === 'Radiology'
+                  ? 'نوع الأشعة'
+                  : 'الخدمة الطبية'
+            }}
+          </label>
           <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" 
                   (change)="onServiceSelected()">
             <option selected disabled value="">اختر الخدمة</option>
@@ -93,7 +101,13 @@
             </option>
           </select>
           <div *ngIf="reservationForm.get('medicalServiceId')?.invalid && reservationForm.get('medicalServiceId')?.touched" class="text-danger">
-            الخدمة الطبية مطلوبة
+            {{ 
+              reservationForm.get('appointmentType')?.value === 'Screening'
+                ? 'نوع التحليل مطلوب'
+                : reservationForm.get('appointmentType')?.value === 'Radiology'
+                  ? 'نوع الأشعة مطلوبة'
+                  : 'الخدمة الطبية مطلوبة'
+            }}
           </div>
         </div>
         

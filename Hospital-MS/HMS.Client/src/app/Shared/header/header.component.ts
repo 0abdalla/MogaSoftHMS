@@ -130,6 +130,12 @@ export class HeaderComponent {
         return 'إشعار خصم';
       case '/hms/fin-tree/restrictions':
         return 'قيود اليومية';
+      case '/hms/fin-tree/purchase-order':
+        return 'أوامر شراء';
+      case '/hms/fin-tree/purchase-request':
+        return 'طلبات شراء';
+      case '/hms/fin-tree/offers':
+        return 'عروض أسعار';
       default:
         console.warn('No matching route found for:', path);
         return 'Infinity Clinic';

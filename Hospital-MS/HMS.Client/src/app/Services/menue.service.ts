@@ -55,12 +55,12 @@ export class MenueService {
         {
           displayName: 'طلب شراء',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/fin-tree/purchase-request'
         },
         {
           displayName: 'أمر شراء',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/fin-tree/purchase-order'
         },
         {
           displayName: 'الموردين',
@@ -70,12 +70,11 @@ export class MenueService {
         {
           displayName: 'عروض الأسعار',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/fin-tree/offers'
         }
-
       ]
     },
-     {
+    {
       displayName: 'الإدارة المالية',
       icon: 'fa-solid fa-money-bill-trend-up',
       isGroup: true,
