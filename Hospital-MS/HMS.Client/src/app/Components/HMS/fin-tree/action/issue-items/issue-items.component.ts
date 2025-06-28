@@ -9,6 +9,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 export class IssueItemsComponent {
   filterForm!:FormGroup;
   addPermissionForm!:FormGroup
+   TitleList = ['المخازن','إذن صرف'];
   // 
   adds:any[]=[];
   total:number=0;

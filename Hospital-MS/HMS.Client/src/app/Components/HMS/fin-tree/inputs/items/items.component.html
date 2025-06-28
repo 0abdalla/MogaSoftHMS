@@ -1,5 +1,6 @@
 <main id="items">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -17,17 +18,17 @@
                             </select>
                         </div>
                         <div class="col-md-4 ">
-                                <input type="text" formControlName="SearchText" class="form-control text-end shadow-none" placeholder="إبحث بإستخدام حد الطلب">
-                            </div>
+                            <input type="text" formControlName="SearchText" class="form-control text-end shadow-none" placeholder="إبحث بإستخدام حد الطلب">
+                        </div>
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
-                      <button type="submit" class="btn-blue w-100 mx-2">
+                        <button type="submit" class="btn-blue w-100 mx-2">
                           بحث <i class="fa fa-search me-1"></i> 
                       </button>
-                      <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
+                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
                           جديد <i class="fa fa-plus me-1"></i> 
                       </button>
-                  </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -44,20 +45,16 @@
             </thead>
             <tbody *ngIf="items?.length > 0">
                 <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.nameAr }}</td>
+                    <td>{{ item.orderLimit }}</td>
+                    <td>{{ item.unitName }}</td>
+                    <td>{{ item.groupName }}</td>
                     <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ item.name }}</span>
-                        </div>
-                    </td>
-                    <td class="text-secondary">{{ item.description }}</td>
-                    <td>{{ item.items }}</td>
-                    <td>{{ item.group }}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-1" (click)="editItem(item.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-1" (click)="deleteItem(item.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -89,19 +86,23 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addItemModalLabel">إضافة صنف جديد</h5>
+            <h5 class="modal-title" id="addItemModalLabel">
+                {{ isEditMode ? 'تعديل صنف' : 'إضافة صنف جديد' }}
+              </h5>              
         </div>
         <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
           <form [formGroup]="itemForm" (ngSubmit)="addItem()">
             <div class="row">
+              <!-- الاسم بالعربية -->
               <div class="col-md-6 mb-2">
-                <label for="name" class="form-label">اسم الصنف</label>
-                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الصنف">
-                <div *ngIf="itemForm.get('name')?.invalid && itemForm.get('name')?.touched" class="text-danger">
-                  <ng-container *ngIf="itemForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                <label for="nameAr" class="form-label">اسم الصنف</label>
+                <input type="text" class="form-control shadow-none" formControlName="nameAr" id="nameAr" placeholder="اسم الصنف">
+                <div *ngIf="itemForm.get('nameAr')?.invalid && itemForm.get('nameAr')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('nameAr')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                 </div>
               </div>
   
+              <!-- الاسم بالإنجليزية -->
               <div class="col-md-6 mb-2">
                 <label for="nameEn" class="form-label">اسم الصنف بالإنجليزية</label>
                 <input type="text" class="form-control shadow-none" formControlName="nameEn" id="nameEn" placeholder="الاسم بالإنجليزية">
@@ -110,75 +111,90 @@
                 </div>
               </div>
   
+              <!-- المجموعة -->
               <div class="col-md-6 mb-2">
-                <label for="category" class="form-label">المجموعة</label>
-                <select class="form-select shadow-none" formControlName="category" id="category">
+                <label for="groupId" class="form-label">المجموعة</label>
+                <select class="form-select shadow-none" formControlName="groupId" id="groupId">
                   <option selected disabled value="">اختر المجموعة</option>
-                  <option value="">خامات</option>
-                  <option value="">مواد</option>
-                  <option value="">خدمات</option>
+                  <option [value]="1">خامات</option>
+                  <option [value]="2">مواد</option>
+                  <option [value]="3">خدمات</option>
                 </select>
-                <div *ngIf="itemForm.get('category')?.invalid && itemForm.get('category')?.touched" class="text-danger">
-                  <ng-container *ngIf="itemForm.get('category')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                <div *ngIf="itemForm.get('groupId')?.invalid && itemForm.get('groupId')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('groupId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                 </div>
               </div>
   
+              <!-- الوحدة -->
               <div class="col-md-6 mb-2">
-                <label for="unit" class="form-label">الوحدة</label>
-                <select class="form-select shadow-none" formControlName="unit" id="unit">
+                <label for="unitId" class="form-label">الوحدة</label>
+                <select class="form-select shadow-none" formControlName="unitId" id="unitId">
                   <option selected disabled value="">اختر الوحدة</option>
-                  <option value="كجم">كجم</option>
-                  <option value="قطعة">قطعة</option>
-                  <option value="لتر">لتر</option>
-
+                  <option [value]="1">كجم</option>
+                  <option [value]="2">قطعة</option>
+                  <option [value]="3">لتر</option>
                 </select>
-                <div *ngIf="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched" class="text-danger">
-                  <ng-container *ngIf="itemForm.get('unit')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                <div *ngIf="itemForm.get('unitId')?.invalid && itemForm.get('unitId')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('unitId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                 </div>
               </div>
   
-              <div class="col-md-4 mb-2" *ngFor="let field of numericFields">
-                <label [for]="field.name" class="form-label">{{ field.label }}</label>
-                <input type="number" class="form-control shadow-none" [formControlName]="field.name" [id]="field.name" [placeholder]="field.label">
+              <!-- الحقول الرقمية -->
+              <div class="col-md-4 mb-2">
+                <label for="orderLimit" class="form-label">حد الطلب</label>
+                <input type="number" class="form-control shadow-none" formControlName="orderLimit" id="orderLimit" placeholder="حد الطلب">
               </div>
   
-              <div class="col-md-6 mb-2">
-                <label for="hasBarcode" class="form-label">له باركود</label>
+              <div class="col-md-4 mb-2">
+                <label for="cost" class="form-label">التكلفة</label>
+                <input type="number" class="form-control shadow-none" formControlName="cost" id="cost" placeholder="التكلفة">
+              </div>
+  
+              <div class="col-md-4 mb-2">
+                <label for="openingBalance" class="form-label">الرصيد الافتتاحي</label>
+                <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="الرصيد الافتتاحي">
+              </div>
+  
+              <div class="col-md-4 mb-2">
+                <label for="salesTax" class="form-label">ضريبة المبيعات</label>
+                <input type="number" class="form-control shadow-none" formControlName="salesTax" id="salesTax" placeholder="الضريبة %">
+              </div>
+  
+              <div class="col-md-4 mb-2">
+                <label for="price" class="form-label">السعر</label>
+                <input type="number" class="form-control shadow-none" formControlName="price" id="price" placeholder="السعر">
+              </div>
+  
+              <!-- الباركود -->
+              <div class="col-md-4 mb-2">
+                <label for="hasBarcode" class="form-label">له باركود؟</label>
                 <select class="form-select shadow-none" formControlName="hasBarcode" id="hasBarcode">
-                  <option value="true">نعم</option>
-                  <option value="false">لا</option>
+                  <option [value]="true">نعم</option>
+                  <option [value]="false">لا</option>
                 </select>
               </div>
   
+              <!-- نوع الصنف -->
               <div class="col-md-6 mb-2">
-                <label for="groupHead" class="form-label">رأس مجموعة</label>
-                <select class="form-select shadow-none" formControlName="groupHead" id="groupHead">
-                  <option value="true">نعم</option>
-                  <option value="false">لا</option>
-                </select>
-                <div *ngIf="itemForm.get('groupHead')?.invalid && itemForm.get('groupHead')?.touched" class="text-danger">
-                  <ng-container *ngIf="itemForm.get('groupHead')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                </div>
-              </div>
-  
-              <div class="col-md-6 mb-2">
-                <label for="itemType" class="form-label">نوع الصنف</label>
-                <select class="form-select shadow-none" formControlName="itemType" id="itemType">
+                <label for="typeId" class="form-label">نوع الصنف</label>
+                <select class="form-select shadow-none" formControlName="typeId" id="typeId">
                   <option selected disabled value="">اختر نوع الصنف</option>
-                  <option value="">منتج</option>
-                  <option value="خدمة">خدمة</option>
+                  <option [value]="1">منتج</option>
+                  <option [value]="2">خدمة</option>
                 </select>
-                <div *ngIf="itemForm.get('itemType')?.invalid && itemForm.get('itemType')?.touched" class="text-danger">
-                  <ng-container *ngIf="itemForm.get('itemType')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                <div *ngIf="itemForm.get('typeId')?.invalid && itemForm.get('typeId')?.touched" class="text-danger">
+                  <ng-container *ngIf="itemForm.get('typeId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                 </div>
               </div>
             </div>
   
             <div class="text-center mt-3">
-              <button type="submit" class="btn-blue" [disabled]="itemForm.invalid">إضافة الصنف</button>
+                <button type="submit" class="btn-blue" [disabled]="itemForm.invalid">
+                    {{ isEditMode ? 'حفظ التعديلات' : 'إضافة الصنف' }}
+                  </button>                  
             </div>
           </form>
         </div>
       </div>
     </div>
-</div>  
+</div>

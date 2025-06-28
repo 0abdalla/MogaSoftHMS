@@ -1,0 +1,70 @@
+<div class="card ">
+    <div class="card-header bg-white">
+        <h6 class="fw-bold m-0">
+            <span *ngIf="!isUpdate" class="ms-3">إنشاء</span>
+            <span *ngIf="isUpdate" class="ms-3">تعديل</span>
+        </h6>
+    </div>
+    <div class="card-body ">
+        <div class="p-2">
+            <form [formGroup]="formGroup" autocomplete="off">
+                <div class="row mb-3">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        رمز مركز التكلفة
+                    </label>
+                    <input type="text" class="form-control nw-form-input" formControlName="costCenterNumber" [disabled]="true" autocomplete="off" />
+                </div>
+                <div class="row mb-3">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        اسم مركز التكلفة (AR)
+                    </label>
+                    <input type="text" class="form-control nw-form-input" formControlName="nameAR" autocomplete="off" />
+                </div>
+                <div class="row mb-3">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        اسم مركز التكلفة (EN)
+                    </label>
+                    <input type="text" class="form-control nw-form-input" formControlName="nameEN" autocomplete="off" />
+                </div>
+
+                <div class="row mb-3">
+                    <label class="form-label d-flex align-items-center gap-2">
+                        متفرع من مركز التكلفة
+                        <span class="text-danger">*</span>
+                    </label>
+                    <app-general-selector formControlName="parentId" [data]="parentCostCenterSelectorData" [showSearch]="true" [placeholder]="'اسم مركز التكلفة'"></app-general-selector>
+                </div>
+                <hr class="my-4" />
+                <div class="row mb-3">
+                    <div class="col-sm-4">
+                        <label class="form-label d-flex align-items-center gap-2">
+                            مؤجل
+                        </label>
+                        <input class="big-checkbox" formControlName="isPost" type="checkbox">
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="form-label d-flex align-items-center gap-2">
+                            مركز تكلفة نشط
+                        </label>
+                        <input class="big-checkbox" formControlName="isActive" type="checkbox">
+                    </div>
+                </div>
+            </form>
+            <div class="row mb-3">
+                <div class="col-sm-9">
+                    <div class="d-flex align-items-center">
+                        <button (click)="saveCostCenter()" class="btn btn-primary ms-2">
+                            <i class="fas fa-cogs"></i>
+                            <span class="ms-2">{{isUpdate?'تعديل':'أضافة'}}</span>
+                        </button>
+
+                        <button class="btn btn-warning btn-lg fs-6 m-2" (click)="initNewForm()">
+                            <i class="fas fa-times"></i>
+                            <span class="ms-2">مسح</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

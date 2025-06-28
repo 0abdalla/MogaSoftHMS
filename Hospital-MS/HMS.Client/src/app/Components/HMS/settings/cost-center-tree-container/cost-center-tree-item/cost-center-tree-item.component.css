@@ -1,0 +1,11 @@
+.tree-row {
+    padding: 10px;
+}
+
+.tree-row .tree-row-icon i {
+    font-size: 14px;
+}
+
+.tree-row .tree-row-icon i:hover {
+    color: var(--main-color);
+}

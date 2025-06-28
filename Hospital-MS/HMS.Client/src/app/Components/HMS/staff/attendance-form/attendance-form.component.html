@@ -1,24 +1,34 @@
 <main id="attendance">
-<div class="p-4">
-  <h4>استيراد ملف الحضور والإنصراف</h4>
-  <input type="file" accept=".csv,.xlsx" (change)="onFileUpload($event)" class="form-control shadow-none mb-3" />
-
-  <div *ngIf="data.length > 0" style="overflow-x: auto;">
-    <table class="table table-bordered table-sm text-center" style="min-width: max-content;">
-      <thead class="table-light">
-        <tr>
-          <th *ngFor="let col of headers">{{ col }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of data; let rowIndex = index">
-          <td *ngFor="let col of headers">
-            <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control shadow-none text-center" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+    <div class="p-4">
+        <h4>استيراد ملف الحضور والإنصراف</h4>
+        <input 
+        type="file" 
+        accept=".csv,.xlsx,.xls" 
+        (change)="onFileUpload($event)" 
+        class="d-none" 
+        #fileInput
+      />
+      
+      <button type="button" class="btn-blue mb-3" (click)="fileInput.click()">
+        رفع ملف
+      </button>
+        <div *ngIf="data.length > 0" style="overflow-x: auto;">
+            <table class="table table-bordered table-sm text-center" style="min-width: max-content;">
+                <thead class="table-light">
+                    <tr>
+                        <th *ngFor="let col of headers">{{ col }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of data; let rowIndex = index">
+                        <td *ngFor="let col of headers">
+                            <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control shadow-none text-center" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
 </main>

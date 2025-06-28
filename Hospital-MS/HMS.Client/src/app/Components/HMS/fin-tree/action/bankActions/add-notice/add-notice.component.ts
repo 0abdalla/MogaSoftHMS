@@ -7,6 +7,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
   styleUrl: './add-notice.component.css'
 })
 export class AddNoticeComponent {
+  TitleList = ['الإدارة المالية','حركة البنك','إشعار إضافة'];
   filterForm!:FormGroup;
   addNoticeGroup!:FormGroup
   // 

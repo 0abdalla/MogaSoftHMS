@@ -7,6 +7,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
   styleUrl: './banks.component.css'
 })
 export class BanksComponent {
+  TitleList = ['إعدادات النظام','إعدادات الإدارة المالية','البنوك'];
   filterForm!:FormGroup;
   accountForm!:FormGroup
   // 

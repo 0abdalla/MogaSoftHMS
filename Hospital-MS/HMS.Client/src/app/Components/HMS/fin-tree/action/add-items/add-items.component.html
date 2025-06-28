@@ -1,5 +1,6 @@
 <main id="add-items">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -22,7 +23,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام إذن الإضافة أو رقم الفاتورة" class="form-control text-end shadow-none"/>
+                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام إذن الإضافة أو رقم الفاتورة" class="form-control text-end shadow-none" />
                         </div>
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
@@ -95,93 +96,92 @@
 
 <div class="modal fade" id="addPermissionModal" tabindex="-1" aria-labelledby="addPermissionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addPermissionModalLabel">إذن إضافة جديد</h5>
-        </div>
-        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-          <form [formGroup]="addPermissionForm" (ngSubmit)="submitPermission()">
-            <div class="p-3 mb-3">
-              <div class="row gy-3">
-  
-                <div class="col-md-4">
-                  <label>التاريخ</label>
-                  <input type="date" class="form-control shadow-none text-end" formControlName="date" />
-                </div>
-  
-                <div class="col-md-4">
-                  <label>رقم المستند</label>
-                  <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
-                </div>
-  
-                <div class="col-md-4">
-                  <label>مركز التكلفة</label>
-                  <select class="form-select shadow-none text-end" formControlName="costCenter">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addPermissionModalLabel">إذن إضافة جديد</h5>
+            </div>
+            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+                <form [formGroup]="addPermissionForm" (ngSubmit)="submitPermission()">
+                    <div class="p-3 mb-3">
+                        <div class="row gy-3">
+
+                            <div class="col-md-4">
+                                <label>التاريخ</label>
+                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>رقم المستند</label>
+                                <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>مركز التكلفة</label>
+                                <select class="form-select shadow-none text-end" formControlName="costCenter">
                     <option value="بدون">بدون</option>
                     <option value="مركز 1">مركز 1</option>
                     <option value="مركز 2">مركز 2</option>
                   </select>
-                </div>
-  
-                <div class="col-md-4">
-                  <label>اسم المخزن</label>
-                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>اسم المخزن</label>
+                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
                     <option disabled selected value="">اختر اسم المخزن</option>
                     <option value="المخزن الرئيسي">المخزن الرئيسي</option>
                     <option value="مخزن فرعي">مخزن فرعي</option>
                   </select>
-                </div>
-  
-                <div class="col-md-4">
-                  <label>اسم المورد</label>
-                  <select class="form-select shadow-none text-end" formControlName="supplierName">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>اسم المورد</label>
+                                <select class="form-select shadow-none text-end" formControlName="supplierName">
                     <option disabled selected value="">اختر اسم المورد</option>
                     <option value="مورد 1">مورد 1</option>
                     <option value="مورد 2">مورد 2</option>
                   </select>
-                </div>
-  
-                <div class="col-md-4">
-                  <label>العملة</label>
-                  <select class="form-select shadow-none text-end" formControlName="currency">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>العملة</label>
+                                <select class="form-select shadow-none text-end" formControlName="currency">
                     <option value="جنيه">جنيه</option>
                     <option value="دولار">دولار</option>
                   </select>
-                </div>
-  
-                <div class="col-md-4">
-                  <label>رقم الصنف</label>
-                  <select class="form-select shadow-none text-end" formControlName="itemNumber">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>رقم الصنف</label>
+                                <select class="form-select shadow-none text-end" formControlName="itemNumber">
                     <option disabled selected value="">اختر الصنف</option>
                     <option value="1">صنف 1</option>
                     <option value="2">صنف 2</option>
                   </select>
-                </div>
-  
-                <div class="col-md-4">
-                  <label>الكمية</label>
-                  <input type="number" class="form-control shadow-none text-end" formControlName="quantity" />
-                </div>
-  
-                <div class="col-md-4">
-                  <label>تكلفة الصنف</label>
-                  <input type="number" class="form-control shadow-none text-end" formControlName="itemCost" />
-                </div>
-  
-                <div class="col-md-12">
-                  <label>ملاحظات</label>
-                  <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
-                </div>
-  
-              </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>الكمية</label>
+                                <input type="number" class="form-control shadow-none text-end" formControlName="quantity" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>تكلفة الصنف</label>
+                                <input type="number" class="form-control shadow-none text-end" formControlName="itemCost" />
+                            </div>
+
+                            <div class="col-md-12">
+                                <label>ملاحظات</label>
+                                <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">إضافة إذن</button>
+                    </div>
+                </form>
             </div>
-  
-            <div class="text-center">
-              <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">إضافة إذن</button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
-  </div>
-  
+</div>

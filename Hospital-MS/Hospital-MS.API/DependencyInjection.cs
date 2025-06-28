@@ -6,10 +6,12 @@ using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces;
 using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.Finance;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Auth;
 using Hospital_MS.Services.Common;
+using Hospital_MS.Services.Finance;
 using Hospital_MS.Services.HMS;
 using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -82,7 +84,13 @@ namespace Hospital_MS.API
             services.AddScoped<IDispensePermissionService, DispensePermissionService>();
             services.AddScoped<IStoreCountService, StoreCountService>();
             services.AddScoped<IAttendanceService, AttendanceService>();
+            services.AddScoped<IAccountTreeService, AccountTreeService>();
+            services.AddScoped<ICostCenterTreeService, CostCenterTreeService>();
+            services.AddScoped<IPenaltyService, PenaltyService>();
+            services.AddScoped<IVacationService, VacationService>();
+            services.AddScoped<IEmployeeAdvancesService, EmployeeAdvancesService>();
 
+            
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)
             .AddHangfire(options => { options.MinimumAvailableServers = 1; });

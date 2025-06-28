@@ -9,6 +9,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 export class SupplyReceiptComponent {
   filterForm!:FormGroup;
   addPermissionForm!:FormGroup
+  TitleList = ['الإدارة المالية','حركة الخزينة','ايصال استلام نقدية'];
   // 
   adds:any[]=[];
   total:number=0;

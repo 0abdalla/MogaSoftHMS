@@ -11,6 +11,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
   styleUrl: './staff-levels.component.css'
 })
 export class StaffLevelsComponent implements OnInit {
+  TitleList = ['الموارد البشرية','بيانات الموظفين','المستويات الوظيفية'];
   jobLevels!:any;
   pagingFilterModel: PagingFilterModel = {
         searchText: '',

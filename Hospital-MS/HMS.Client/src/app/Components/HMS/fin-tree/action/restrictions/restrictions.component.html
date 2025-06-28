@@ -1,5 +1,6 @@
 <main id="restrictions">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between">
@@ -94,93 +95,93 @@
 
 <div class="modal fade" id="addRestrictionModal" tabindex="-1" aria-labelledby="addRestrictionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
+        <div class="modal-content">
             <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="addRestrictionModalLabel">إضافة قيود</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
 
                 <form [formGroup]="restrictionForm" (ngSubmit)="addRestriction()">
-                  <div class="row mb-3">
-                    <div class="col-md-4">
-                      <label for="date">التاريخ</label>
-                      <input type="date" formControlName="date" class="form-control shadow-none">
-                    </div>
-              
-                    <div class="col-md-4">
-                      <label for="entryType">نوع القيد</label>
-                      <select formControlName="entryType" class="form-select shadow-none">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="date">التاريخ</label>
+                            <input type="date" formControlName="date" class="form-control shadow-none">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="entryType">نوع القيد</label>
+                            <select formControlName="entryType" class="form-select shadow-none">
                         <option selected disabled value="">اختر نوع القيد</option>
                         <option value="قيد مزدوج">قيد مزدوج</option>
                         <option value="قيد مفرد">قيد مفرد</option>
                       </select>
-                    </div>
-              
-                    <div class="col-md-4">
-                      <label for="direction">التوجيه المحاسبي</label>
-                      <select formControlName="direction" class="form-select shadow-none">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="direction">التوجيه المحاسبي</label>
+                            <select formControlName="direction" class="form-select shadow-none">
                         <option selected disabled value="">اختر التوجيه المحاسبي</option>
                         <option value="">الخزينة</option>
                         <option value="">البنك</option>
                         <option value="">اهلاك</option>
                         <option value="">الحسابات العامة</option>
                       </select>
+                        </div>
                     </div>
-                  </div>              
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <label for="description">شرح القيد</label>
-                      <input type="text" formControlName="description" class="form-control shadow-none" placeholder="نسجل قيد يومية">
-                    </div>
-              
-                    <div class="col-md-6">
-                      <label for="costCenter">مركز التكلفة</label>
-                      <select formControlName="costCenter" class="form-select shadow-none">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="description">شرح القيد</label>
+                            <input type="text" formControlName="description" class="form-control shadow-none" placeholder="نسجل قيد يومية">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="costCenter">مركز التكلفة</label>
+                            <select formControlName="costCenter" class="form-select shadow-none">
                         <option value="">بدون</option>
                       </select>
+                        </div>
                     </div>
-                  </div>
-              
-                  <div class="row mb-3">
-                    <div class="col-md-4">
-                      <label>اسم الحساب</label>
-                      <select formControlName="account1" class="form-select shadow-none">
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label>اسم الحساب</label>
+                            <select formControlName="account1" class="form-select shadow-none">
                         <option value="">اختر اسم الحساب</option>
                       </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>مدين</label>
+                            <input type="number" formControlName="debit1" class="form-control shadow-none" value="0">
+                        </div>
+
+                        <div class="col-md-4">
+                            <label>دائن</label>
+                            <input type="number" formControlName="credit1" class="form-control shadow-none" value="0">
+                        </div>
                     </div>
-              
-                    <div class="col-md-4">
-                      <label>مدين</label>
-                      <input type="number" formControlName="debit1" class="form-control shadow-none" value="0">
-                    </div>
-              
-                    <div class="col-md-4">
-                      <label>دائن</label>
-                      <input type="number" formControlName="credit1" class="form-control shadow-none" value="0">
-                    </div>
-                  </div>
-              
-                  <div class="row mb-3">
-                    <div class="col-md-4">
-                      <select formControlName="account2" class="form-select shadow-none">
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <select formControlName="account2" class="form-select shadow-none">
                         <option value="">اختر اسم الحساب</option>
                       </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="number" formControlName="debit2" class="form-control shadow-none" value="0">
+                        </div>
+
+                        <div class="col-md-4">
+                            <input type="number" formControlName="credit2" class="form-control shadow-none" value="0">
+                        </div>
                     </div>
-              
-                    <div class="col-md-4">
-                      <input type="number" formControlName="debit2" class="form-control shadow-none" value="0">
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn-blue" [disabled]="restrictionForm.invalid"> إضافة قيد</button>
                     </div>
-              
-                    <div class="col-md-4">
-                      <input type="number" formControlName="credit2" class="form-control shadow-none" value="0">
-                    </div>
-                  </div>
-              
-                  <div class="text-center mt-4">
-                    <button type="submit" class="btn-blue" [disabled]="restrictionForm.invalid"> إضافة قيد</button>
-                  </div>
-            </form>
+                </form>
             </div>
-      </div>
+        </div>
     </div>
 </div>

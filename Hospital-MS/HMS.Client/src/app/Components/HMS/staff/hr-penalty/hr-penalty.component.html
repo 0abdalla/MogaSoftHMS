@@ -1,0 +1,199 @@
+<app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+
+<div class="card radius-10 border-0 card-shadow mb-3">
+    <!-- <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between">
+        <h5 class="mb-0 fw-bold">الجزاءات</h5>
+    </div> -->
+    <div class="card-body">
+        <div class="row  py-3">
+            <div class="col-lg-4">
+                <app-drop-down-form-control [(ngModel)]="selectedEmployeeId" [data]="employeeSelectorData" [showSearch]="true" [placeholder]="'قائمة الموظفين'"></app-drop-down-form-control>
+            </div>
+            <div class="col-lg-2">
+                <button class="btn btn-secondary radius-50" (click)="getPenaltiesByEmployeeId()">
+                    <i class="fas fa-search"></i>
+                    <span class="ms-4">بحث</span>
+                </button>
+            </div>
+        </div>
+        <!-- <h6 class="mb-0 fw-bold" *ngIf="employeePenaltyResponse.results.length > 0">فرع {{employeePenaltyResponse.results[0].branchName}}</h6> -->
+    </div>
+</div>
+
+<div class="card radius-10 border-0 card-shadow mb-4">
+    <div class="card-body">
+        <div class="row p-2">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="search-box position-relative mb-2">
+                        <button class="btn btn-primary mb-2" (click)="openNewSidePanel(AddModal)">
+                            <span class="me-2">إنشاء جزاء</span>
+                            <i class="uil uil-plus-circle"></i>
+                        </button>
+                    </div>
+                    <!-- <ng-container *ngIf="filterList.length > 0">
+                        <app-pos-filters [FilterList]="filterList" (filterChanged)="filterChecked($event)"></app-pos-filters>
+                    </ng-container> -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <app-pagination (pageChanged)="pageChanged($event)" [currentPage]="employeePenaltyFilter.currentPage" [pageSize]="employeePenaltyFilter.pageSize" [totalCount]="employeePenaltyResponse.totalCount"></app-pagination>
+            </div>
+        </div>
+        <div class="table-responsive shadow-sm radius-10 table-vp-height">
+            <table class="table table-card-table table-borderless table-middle table-hover bg-transparent m-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>نوع الجزاء</th>
+                        <th>تاريخ الجزاء</th>
+                        <th>تاريخ التنفيذ</th>
+                        <th>عدد ايام الخصم</th>
+                        <th>خصم مادى</th>
+                        <th>إجمالى الخصم</th>
+                        <th>السبب</th>
+                        <th>العمليات</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                    <tr *ngFor="let item of employeePenaltyResponse.results">
+                        <td>{{item.penaltyType}}</td>
+                        <td>{{item.penaltyDate | date}}</td>
+                        <td>{{item.executionDate | date}}</td>
+                        <td>{{item.deductionByDays}}</td>
+                        <td>{{item.deductionAmount}}</td>
+                        <td>{{'-'}}</td>
+                        <td class="word-break">{{item.reason}}</td>
+                        <td>
+                            <div class="d-flex align-items-center justify-content-center text-center">
+                                <!-- <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2" (click)="openNewSidePanel(AddModal,item)">
+                                    <i class="uil uil-pen"></i>
+                                    <span>تعديل</span>
+                                </button> -->
+                                <button class="button-table-action btn-delete d-flex align-items-center justify-content-center gap-2" (click)="openDeleteModal(deleteModal,item.penaltyId)">
+                                    <i class="uil uil-trash-alt"></i>
+                                    <span>الغاء</span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!employeePenaltyResponse.results.length || showLoader">
+                        <td colspan="8" class="text-right">
+                            <app-empty-data [showEmptyData]="!employeePenaltyResponse.results.length&&!showLoader" [showLoader]="showLoader"></app-empty-data>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+<ng-template #deleteModal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title">رسالة تأكيد</h4>
+    </div>
+    <div class="modal-body">
+        <p class="fs-5 m-0">هل أنت متأكد من الالغاء ؟</p>
+    </div>
+    <div class="modal-footer justify-content-start">
+        <button type="button" class="btn btn-success" (click)="modal.close('Save click');deleteEmployeePenalty()">
+            <i class="fas fa-check"></i>
+            <span class="ms-2">نعم</span>
+        </button>
+        <button type="button" class="btn btn-danger" (click)="modal.close('Save click')">
+            <i class="fas fa-times"></i>
+            <span class="ms-2">عودة</span>
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #AddModal let-offcanvas>
+    <div class="offcanvas-header gap-3 fs-4 border-bottom py-4">
+        <i class="fas fa-user-plus offcanvas-header-icon"></i>
+        <span>إنشاء جزاء</span>
+    </div>
+
+    <div class="offcanvas-body pt-4 bg-light">
+        <div class="card ">
+            <div class="card-body ">
+                <div class="p-2">
+                    <form [formGroup]="formGroup" autocomplete="off">
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                نوع الجزاء
+                                <span class="text-danger">*</span>
+                            </label>
+                            <app-general-selector formControlName="penaltyTypeId" [data]="penaltyTypeSelectorData" [showSearch]="true" [placeholder]="'نوع الجزاء'"></app-general-selector>
+
+                            <div *ngIf="formErrors.penaltyTypeId" class="text-danger  font-small-3 m-03">
+                                {{formErrors.penaltyTypeId}}
+                            </div>
+
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                تاريخ التنفيذ
+                                <span class="text-danger">*</span></label>
+                            <input type="date" formControlName="executionDate" autocomplete="off" class="form-control nw-form-input" />
+                            <div *ngIf="formErrors.executionDate" class="text-danger  font-small-3 m-03">
+                                {{formErrors.executionDate}}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                خصم أيام
+                            </label>
+                            <input type="text" class="form-control nw-form-input description-area" formControlName="deductionByDays" autocomplete="off" />
+
+                            <div *ngIf="formErrors.deductionByDays" class="text-danger  font-small-3 m-03">
+                                {{formErrors.deductionByDays}}
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                خصم مادى
+                            </label>
+                            <input type="text" class="form-control nw-form-input description-area" formControlName="deductionAmount" autocomplete="off" />
+
+                            <div *ngIf="formErrors.deductionAmount" class="text-danger  font-small-3 m-03">
+                                {{formErrors.deductionAmount}}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                إجمالى الخصم
+                            </label>
+                            <input type="text" [disabled]="true" [value]="formGroup?.value?.totalDeduction" class="form-control nw-form-input description-area" autocomplete="off" />
+
+                            <div *ngIf="formErrors.totalDeduction" class="text-danger  font-small-3 m-03">
+                                {{formErrors.totalDeduction}}
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                السبب
+                            </label>
+                            <input type="text" class="form-control nw-form-input description-area" formControlName="reason" autocomplete="off" />
+
+                            <div *ngIf="formErrors.reason" class="text-danger  font-small-3 m-03">
+                                {{formErrors.reason}}
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center border-top pt-3 mt-3">
+            <button [disabled]="showAddLoader" (click)="saveEmployeePenalty()" class="btn btn-primary w-50 justify-content-center py-3 fs-5 radius-10">
+                <span *ngIf="!isUpdate" class="ms-3">إنشاء</span>
+                <span *ngIf="isUpdate" class="ms-3">تعديل</span>
+            </button>
+        </div>
+        <div class="table-responsive sidepanel-table-h large-scroll">
+        </div>
+    </div>
+</ng-template>

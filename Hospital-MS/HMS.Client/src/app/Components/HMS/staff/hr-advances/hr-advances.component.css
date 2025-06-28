@@ -1,0 +1,16 @@
+.table-vp-height {
+    height: calc(100vh - 350px);
+}
+
+.add-new-panel {
+    width: 50% !important;
+    /* background-color: red; */
+}
+
+td {
+    text-align: center;
+}
+
+::ng-deep ngb-offcanvas-panel {
+    width: 35% !important;
+}

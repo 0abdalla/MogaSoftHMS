@@ -15,6 +15,11 @@ import { StaffJobManagementComponent } from './staff-job-management/staff-job-ma
 import { StaffLevelsComponent } from './staff-levels/staff-levels.component';
 import { AttendanceFormComponent } from './attendance-form/attendance-form.component';
 import { TableModule } from 'primeng/table';
+import { SharedModule } from '../../../Shared/shared.module';
+import { HrPenaltyComponent } from './hr-penalty/hr-penalty.component';
+import { HrVacationComponent } from './hr-vacation/hr-vacation.component';
+import { HrAdvancesComponent } from './hr-advances/hr-advances.component';
+import { HrEmployeesSalariesComponent } from './hr-employees-salaries/hr-employees-salaries.component';
 
 
 @NgModule({
@@ -27,7 +32,11 @@ import { TableModule } from 'primeng/table';
     StaffProgressionManagmentComponent,
     StaffJobManagementComponent,
     StaffLevelsComponent,
-    AttendanceFormComponent
+    AttendanceFormComponent,
+    HrPenaltyComponent,
+    HrVacationComponent,
+    HrAdvancesComponent,
+    HrEmployeesSalariesComponent
   ],
   imports: [
     CommonModule,
@@ -36,7 +45,8 @@ import { TableModule } from 'primeng/table';
     ReactiveFormsModule,
     ToastModule,
     TableModule,
-    FormsModule
+    FormsModule,
+    SharedModule
   ]
 })
 export class StaffModule { }

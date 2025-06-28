@@ -3,6 +3,13 @@ import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PagingFilterModel } from '../../Models/Generics/PagingFilterModel';
 import { PagedResponseModel } from '../../Models/Generics/PagedResponseModel';
+import { EmployeePenaltyModel } from '../../Models/HMS/Staff/EmployeePenaltyModel';
+import { EmployeeContractModel } from '../../Models/HMS/Staff/EmployeeContractModel';
+import { FormDropdownModel } from '../../Models/Generics/FormDropdownModel';
+import { EmployeeVacationModel } from '../../Models/HMS/Staff/EmployeeVacationModel';
+import { GeneralSelectorModel } from '../../Models/Generics/GeneralSelectorModel';
+import { EmployeeAdvanceModel } from '../../Models/HMS/Staff/EmployeeAdvanceModel';
+import { EmployeeSalarySummaryModel } from '../../Models/HMS/Staff/EmployeeSalarySummaryModel';
 
 @Injectable({
   providedIn: 'root'
@@ -82,75 +89,160 @@ export class StaffService {
     return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Doctors/counts`);
   }
   // ===========================================================================
-  getJobTypes(searchText : string ,currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobTypes(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobTypes`, { params });
   }
-  getJobTypeById(id: number){
+  getJobTypeById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobTypes/${id}`);
   }
-  addJobType(jobType: any){
+  addJobType(jobType: any) {
     return this.http.post<any>(`${this.baseUrl}JobTypes`, jobType);
   }
-  updateJobType(id: number, jobType: any){
+  updateJobType(id: number, jobType: any) {
     return this.http.put<any>(`${this.baseUrl}JobTypes/${id}`, jobType);
   }
   // 
-  getJobTitles(searchText : string , currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobTitles(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobTitles`, { params });
   }
-  getJobTitleById(id: number){
+  getJobTitleById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobTitles/${id}`);
   }
-  addJobTitle(jobTitle: any){
+  addJobTitle(jobTitle: any) {
     return this.http.post<any>(`${this.baseUrl}JobTitles`, jobTitle);
   }
-  updateJobTitle(id: number, jobTitle: any){
+  updateJobTitle(id: number, jobTitle: any) {
     return this.http.put<any>(`${this.baseUrl}JobTitles/${id}`, jobTitle);
   }
   // 
-  getJobLevels(searchText : string ,currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobLevels(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobLevels`, { params });
   }
-  getJobLevelById(id: number){
+  getJobLevelById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobLevels/${id}`);
   }
-  addJobLevel(jobLevel:any){
+  addJobLevel(jobLevel: any) {
     return this.http.post<any>(`${this.baseUrl}JobLevels`, jobLevel);
   }
-  updateJobLevel(id: number, jobLevel: any){
+  updateJobLevel(id: number, jobLevel: any) {
     return this.http.put<any>(`${this.baseUrl}JobLevels/${id}`, jobLevel);
   }
   // 
-  getJobDepartment( searchText : string , currentPage: number, pageSize: number , filterList: any[] = []){
+  getJobDepartment(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText' , searchText.toString())
+      .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}JobDepartment`, { params });
   }
-  getJobDepartmentById(id: number){
+  getJobDepartmentById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobDepartment/${id}`);
   }
-  addJobDepartment(jobDepartment:any){
-    return this.http.post<any>(`${this.baseUrl}JobDepartment` , jobDepartment)
+  addJobDepartment(jobDepartment: any) {
+    return this.http.post<any>(`${this.baseUrl}JobDepartment`, jobDepartment)
   }
-  updateJobDeprtment(id:number , jobDepartment : any){
-    return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}` , jobDepartment)
+  updateJobDeprtment(id: number, jobDepartment: any) {
+    return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}`, jobDepartment)
   }
+
+  // ================================= Penalty ==========================================
+
+  GetPenaltiesByEmployeeId(employeeId, model: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<EmployeePenaltyModel[]>>(this.baseUrl + 'Penalty/GetPenaltiesByEmployeeId?EmployeeId=' + employeeId, model);
+  }
+
+  GetEmployeeContractDetails(EmployeeId: number) {
+    return this.http.get<EmployeeContractModel>(this.baseUrl + 'Penalty/GetEmployeeContractDetails?EmployeeId=' + EmployeeId);
+  }
+
+  AddNewEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
+    return this.http.post<any>(this.baseUrl + 'Penalty/AddNewEmployeePenalty?EmployeeId=' + employeeId, model);
+  }
+
+  EditEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
+    return this.http.post<any>(this.baseUrl + 'Penalty/EditEmployeePenalty?EmployeeId=' + employeeId, model);
+  }
+
+  GetPenaltyTypesSelector() {
+    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'Penalty/GetPenaltyTypesSelector');
+  }
+
+  GetActiveEmployeesSelector() {
+    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'Penalty/GetActiveEmployeesSelector');
+  }
+
+  DeleteEmployeePenalty(PenaltyId: number) {
+    return this.http.get<any>(this.baseUrl + 'Penalty/DeleteEmployeePenalty?PenaltyId=' + PenaltyId);
+  }
+
+  // ================================= Vacation ==========================================
+
+  GetVacationsByEmployeeId(employeeId, model: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<EmployeeVacationModel[]>>(this.baseUrl + 'Vacation/GetVacationsByEmployeeId?EmployeeId=' + employeeId, model);
+  }
+
+  AddNewEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
+    return this.http.post<any>(this.baseUrl + 'Vacation/AddNewEmployeeVacation?EmployeeId=' + employeeId, model);
+  }
+
+  EditEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
+    return this.http.post<any>(this.baseUrl + 'Vacation/EditEmployeeVacation?EmployeeId=' + employeeId, model);
+  }
+
+  GetVacationTypesSelector() {
+    return this.http.get<GeneralSelectorModel[]>(this.baseUrl + 'Vacation/GetVacationTypesSelector');
+  }
+
+  DeleteVacation(VacationId: number) {
+    return this.http.get<any>(this.baseUrl + 'Vacation/DeleteVacation?VacationId=' + VacationId);
+  }
+
+  // ================================= Advances ==========================================
+
+  GetAdvancesByEmployeeId(employeeId, model: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<EmployeeAdvanceModel[]>>(this.baseUrl + 'EmployeeAdvances/GetAdvancesByEmployeeId?EmployeeId=' + employeeId, model);
+  }
+
+  AddNewEmployeeAdvance(employeeId: number, model: EmployeeAdvanceModel) {
+    return this.http.post<any>(this.baseUrl + 'EmployeeAdvances/AddNewEmployeeAdvance?EmployeeId=' + employeeId, model);
+  }
+
+  EditEmployeeAdvance(employeeId: number, model: EmployeeAdvanceModel) {
+    return this.http.post<any>(this.baseUrl + 'EmployeeAdvances/EditEmployeeAdvance?EmployeeId=' + employeeId, model);
+  }
+
+  DeleteEmployeeAdvance(employeeAdvanceId: number) {
+    return this.http.get<any>(this.baseUrl + 'EmployeeAdvances/DeleteEmployeeAdvance?EmployeeAdvanceId=' + employeeAdvanceId);
+  }
+
+  ApproveEmployeeAdvance(employeeAdvanceId: number, isApproved: boolean = true) {
+    return this.http.get<any>(this.baseUrl + `EmployeeAdvances/ApproveEmployeeAdvance?EmployeeAdvanceId=${employeeAdvanceId}&IsApproved=${isApproved}`);
+  }
+
+  GetAdvanceTypesSelector() {
+    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'EmployeeAdvances/GetAdvanceTypesSelector');
+  }
+
+  GetEmployeeSalarySummary(year: number, month: number, model: PagingFilterModel) {
+    year = year ?? new Date().getFullYear();
+    month = month ?? new Date().getMonth() + 1;
+    return this.http.post<PagedResponseModel<EmployeeSalarySummaryModel[]>>(this.baseUrl + 'Attendance/GetEmployeeSalarySummary?Year=' + year + '&Month=' + month, model);
+  }
+
 }

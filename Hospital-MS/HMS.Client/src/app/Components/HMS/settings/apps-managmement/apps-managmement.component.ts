@@ -9,6 +9,7 @@ import { MessageService } from 'primeng/api';
   styleUrl: './apps-managmement.component.css'
 })
 export class AppsManagmementComponent {
+  TitleList = ['الإعدادات العامة','إدارة التطبيقات'];
   Pages: any[] = [];
   Roles: any[] = [];
   RoleId: any;

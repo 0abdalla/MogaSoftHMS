@@ -4,7 +4,7 @@ import { MessageService } from 'primeng/api';
 import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
-import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { SharedService } from '../../../../Services/shared.service';
 
 @Component({
@@ -13,8 +13,10 @@ import { SharedService } from '../../../../Services/shared.service';
   styleUrl: './patient-list.component.css'
 })
 export class PatientListComponent {
+  TitleList = ['المرضى'];
   filterForm!: FormGroup;
   statusForm!: FormGroup;
+  isFilter = true;
   // 
   patients!: any[];
   patientStatuses!: any[]
@@ -205,10 +207,13 @@ export class PatientListComponent {
     });
   }
 
-  applyFilters() {
+  filterChecked(filters: FilterModel[]) {
     this.pagingFilterModel.currentPage = 1;
-    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Status', this.filterForm.value.Type);
-    this.pagingFilterModel.searchText = this.filterForm.value.Search;
+    this.pagingFilterModel.filterList = filters;
+    if (filters.some(i => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+    else
+      this.pagingFilterModel.searchText = '';
     this.loadPatients();
   }
 
@@ -289,8 +294,8 @@ export class PatientListComponent {
     }
   }
 
-  onPageChange(page: number) {
-    this.pagingFilterModel.currentPage = page;
+  onPageChange(page: any) {
+    this.pagingFilterModel.currentPage = page.page;
     this.loadPatients();
   }
   // 

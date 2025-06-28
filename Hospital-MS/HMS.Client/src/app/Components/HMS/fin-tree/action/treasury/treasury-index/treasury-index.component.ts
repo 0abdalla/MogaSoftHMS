@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrl: './treasury-index.component.css'
 })
 export class TreasuryIndexComponent {
+  TitleList = ['الإدارة المالية','حركة الخزينة','كشف حركة الخزينة'];
   closeTreasuryForm!:FormGroup;
   openTreasuryForm!:FormGroup;
   treasuryReportForm!:FormGroup

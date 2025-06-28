@@ -18,5 +18,6 @@ namespace Hospital_MS.Interfaces.Repository
         Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default);
         IQueryable<T> GetAllAsQueryable(CancellationToken cancellationToken = default);
+        Task<TResult> MaxAsync<TResult>(Expression<Func<T, TResult>> selector, CancellationToken cancellationToken = default);
     }
 }

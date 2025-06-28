@@ -7,6 +7,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
   styleUrl: './restrictions.component.css'
 })
 export class RestrictionsComponent {
+  TitleList = ['الإدارة المالية','القيود اليومية'];
   filterForm!:FormGroup;
   restrictionForm!:FormGroup
     // 

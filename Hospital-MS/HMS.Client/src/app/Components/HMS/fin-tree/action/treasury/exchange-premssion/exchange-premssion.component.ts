@@ -8,6 +8,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 })
 export class ExchangePremssionComponent {
   filterForm!:FormGroup;
+  TitleList = ['الإدارة المالية','حركة الخزينة','إذن صرف نقدي'];
   exPermissionForm!:FormGroup
   // 
   exchanges:any[]=[];

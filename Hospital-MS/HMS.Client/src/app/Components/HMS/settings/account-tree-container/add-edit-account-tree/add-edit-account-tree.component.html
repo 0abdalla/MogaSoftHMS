@@ -1,0 +1,98 @@
+<button class="btn btn-primary gap-2 border rounded px-3" *ngIf="!isUpdate" (click)="openNewSidePanel(addAccountModal)">
+    <span>إنشاء حساب </span>
+</button>
+<button class="btn btn-secondary gap-2 border rounded px-3" *ngIf="isUpdate" (click)="openNewSidePanel(addAccountModal)">
+    <span>تعديل</span>
+</button>
+
+
+<ng-template #addAccountModal let-modal>
+    <div class="modal-header modal-header-bg justify-content-between">
+        <h4 class="d-flex align-items-center gap-2">
+            <i class="uil uil-plus"></i>
+            <span>املأ البيانات الأتية</span>
+        </h4>
+        <div class="cursor-pointer text-danger fs-2" (click)="modal.dismiss()">
+            <i class="uil uil-times-circle"></i>
+        </div>
+    </div>
+    <div class="modal-body">
+        <div class="card ">
+            <div class="card-body ">
+                <div class="p-2">
+                    <form [formGroup]="formGroup" autocomplete="off">
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                اسم المجموعة
+                            </label>
+                            <app-general-selector [disabled]="true" formControlName="parentAccountId" [data]="parentAccountsSelectorData" [showSearch]="true" [placeholder]="'نوع الحساب'"></app-general-selector>
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                رمز الحساب
+                            </label>
+                            <input type="text" class="form-control nw-form-input" formControlName="accountNumber" autocomplete="off" [disabled]="true" />
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                اسم الحساب
+                            </label>
+                            <input type="text" class="form-control nw-form-input" formControlName="nameAR" autocomplete="off" />
+                        </div>
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                نوع الحساب
+                                <span class="text-danger">*</span>
+                            </label>
+                            <app-general-selector formControlName="accountTypeId" [data]="accountTypesSelectorData" [showSearch]="true" [placeholder]="'نوع الحساب'"></app-general-selector>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                العملة الافتراضية
+                            </label>
+                            <app-general-selector formControlName="currencyTypeId" [data]="currencyTypesSelectorData" [showSearch]="true" [placeholder]="'العملة الافتراضية'"></app-general-selector>
+                        </div>
+                        <hr class="my-4" />
+                        <div class="row mb-3">
+                            <div class="col-sm-4">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    دعم مركز التكلفة
+                                </label>
+                                <input class="big-checkbox" formControlName="isDisToCostCenter" type="checkbox">
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    حساب نشط
+                                </label>
+                                <input class="big-checkbox" formControlName="isActive" type="checkbox">
+                            </div>
+                            <div class="col-sm-4">
+                                <label class="form-label d-flex align-items-center gap-2">
+                                    حساب مجموعة
+                                </label>
+                                <input class="big-checkbox" formControlName="isGroup" type="checkbox">
+                            </div>
+                        </div>
+                        <div *ngIf="formGroup?.value?.isDisToCostCenter" class="row mb-3">
+                            <label class="form-label d-flex align-items-center gap-2">
+                                مركز التكلفة
+                            </label>
+                            <app-general-selector formControlName="costCenterId" [data]="costCenterSelector" [showSearch]="true" [placeholder]="'مركز التكلفة'"></app-general-selector>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer flex-nowrap gap-2">
+        <button (click)="saveAccount()" type="button" class="btn btn-success d-flex align-items-center justify-content-center gap-2 w-100">
+            <i class="uil uil-save fs-3"></i>
+            <span>{{isUpdate?'تعديل':'أضافة'}}</span>
+        </button>
+        <button type="button" class="btn btn-danger d-flex align-items-center gap-2" (click)="initNewForm();modal.close()">
+            <i class="uil uil-times-circle fs-3"></i>
+            <span>الغاء</span>
+        </button>
+    </div>
+</ng-template>

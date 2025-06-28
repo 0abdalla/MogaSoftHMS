@@ -18,12 +18,18 @@ import { BankIndexComponent } from './action/bankActions/bank-index/bank-index.c
 import { AddNoticeComponent } from './action/bankActions/add-notice/add-notice.component';
 import { DiscountNoticeComponent } from './action/bankActions/discount-notice/discount-notice.component';
 import { RestrictionsComponent } from './action/restrictions/restrictions.component';
+import { PurchaseRequestComponent } from './inputs/purchase-request/purchase-request.component';
+import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
+import { OffersComponent } from './inputs/offers/offers.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
   {path:"items-group" , component : ItemsGroupComponent},
   {path:"main-groups" , component : MainGroupComponent},
   {path:"providers" , component : ProvidersComponent},
+  {path:"purchase-request" , component : PurchaseRequestComponent},
+  {path:"purchase-order" , component : PurchaseOrderComponent},
+  {path:"offers" , component : OffersComponent},
   {path:"clients" , component : ClientsComponent},
   {path:"boxes" , component : BoxsComponent},
   {path:"banks" , component : BanksComponent},

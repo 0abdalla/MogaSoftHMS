@@ -17,7 +17,7 @@ import { NotAuthorizedComponent } from './Auth/not-authorized/not-authorized.com
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    NotAuthorizedComponent,
+    NotAuthorizedComponent
   ],
   imports: [
     BrowserModule,

@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
   styleUrl: './staff-dep-managment.component.css'
 })
 export class StaffDepManagmentComponent implements OnInit {
+  TitleList = ['الموارد البشرية','بيانات الموظفين','الأقسام'];
   filterForm!:FormGroup;
   jobDepsForm!:FormGroup
   // 

@@ -8,6 +8,7 @@ import { HomeComponent } from './dashboard/home/home.component';
 import { ChartModule } from 'angular-highcharts';
 import { HMSSideMenueComponent } from './dashboard/hms-side-menue/hms-side-menue.component';
 import { FormsModule } from '@angular/forms';
+import { PurchaseOrderComponent } from './fin-tree/inputs/purchase-order/purchase-order.component';
 
 
 @NgModule({

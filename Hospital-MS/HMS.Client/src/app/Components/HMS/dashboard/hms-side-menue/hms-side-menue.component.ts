@@ -50,44 +50,33 @@ export class HMSSideMenueComponent {
   }
 
   setActiveMenuBasedOnRoute() {
-  const currentRoute = this.router.url;
-  console.log('Current Route:', currentRoute);
-
-  for (const main of this.menusList) {
-    if (main.subMenus) {
-      for (const child of main.subMenus) {
-        if (child.subMenus) {
-          for (const subChild of child.subMenus) {
-            console.log('Checking:', subChild.route);
-            if (currentRoute.startsWith(subChild.route)) {
-              this.activeMenu = main.displayName;
-              this.activeChildMenu = child.displayName;
-              return;
+    const currentRoute = this.router.url;
+    this.activeMenu = null;
+    this.activeChildMenu = null;
+    for (const main of this.menusList) {
+      if (main.route && currentRoute.includes(main.route)) {
+        this.activeMenu = main.displayName;
+      }
+      if (main.subMenus) {
+        for (const child of main.subMenus) {
+          if (child.route && currentRoute.includes(child.route)) {
+            this.activeMenu = main.displayName;
+            this.activeChildMenu = child.displayName;
+            return;
+          }
+          if (child.subMenus) {
+            for (const subChild of child.subMenus) {
+              if (subChild.route && currentRoute.includes(subChild.route)) {
+                this.activeMenu = main.displayName;
+                this.activeChildMenu = child.displayName;
+                return;
+              }
             }
           }
         }
-
-        console.log('Checking:', child.route);
-        if (currentRoute.startsWith(child.route)) {
-          this.activeMenu = main.displayName;
-          this.activeChildMenu = child.displayName;
-          return;
-        }
       }
     }
-
-    console.log('Checking:', main.route);
-    if (currentRoute.startsWith(main.route)) {
-      this.activeMenu = main.displayName;
-      this.activeChildMenu = null;
-      return;
-    }
   }
-
-  this.activeMenu = null;
-  this.activeChildMenu = null;
-}
-
 
 
 

@@ -1,5 +1,6 @@
 <main id="boxes">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -69,68 +70,68 @@
 
 <div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addItemModalLabel">إضافة خزينة جديدة</h5>
-        </div>
-        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-            <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
-                <div class="row">
-                  <div class="col-md-12 mb-2">
-                    <label for="safe" class="form-label">تكويد الحسابات</label>
-                    <input type="text" class="form-control shadow-none" formControlName="safe" id="safe" placeholder="تكويد الحسابات">
-                    <div *ngIf="accountForm.get('safe')?.invalid && accountForm.get('safe')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('safe')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                    </div>
-                  </div>
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addItemModalLabel">إضافة خزينة جديدة</h5>
+            </div>
+            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+                <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <label for="safe" class="form-label">تكويد الحسابات</label>
+                            <input type="text" class="form-control shadow-none" formControlName="safe" id="safe" placeholder="تكويد الحسابات">
+                            <div *ngIf="accountForm.get('safe')?.invalid && accountForm.get('safe')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('safe')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
 
-                  <div class="col-md-6 mb-2">
-                    <label for="name" class="form-label">اسم الخزينة</label>
-                    <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الخزينة">
-                    <div *ngIf="accountForm.get('name')?.invalid && accountForm.get('name')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                    </div>
-                  </div>
-              
-                  <div class="col-md-6 mb-2">
-                    <label for="branch" class="form-label">الفرع</label>
-                    <select class="form-select shadow-none" formControlName="branch" id="branch">
+                        <div class="col-md-6 mb-2">
+                            <label for="name" class="form-label">اسم الخزينة</label>
+                            <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الخزينة">
+                            <div *ngIf="accountForm.get('name')?.invalid && accountForm.get('name')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <label for="branch" class="form-label">الفرع</label>
+                            <select class="form-select shadow-none" formControlName="branch" id="branch">
                       <option selected disabled value="">اختر الفرع</option>
                       <option value="رئيسية">الرئيسية</option>
                       <option value="فرع">الفرع</option>
                     </select>
-                    <div *ngIf="accountForm.get('branch')?.invalid && accountForm.get('branch')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('branch')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                    </div>
-                  </div>
-              
-                  <div class="col-md-6 mb-2">
-                    <label for="currency" class="form-label">العملة</label>
-                    <select class="form-select shadow-none" formControlName="currency" id="currency">
+                            <div *ngIf="accountForm.get('branch')?.invalid && accountForm.get('branch')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('branch')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <label for="currency" class="form-label">العملة</label>
+                            <select class="form-select shadow-none" formControlName="currency" id="currency">
                       <option selected disabled value="">اختر العملة</option>
                       <option value="ريال">ريال</option>
                       <option value="دولار">دولار</option>
                     </select>
-                    <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <label for="openingBalance" class="form-label">رصيد أول المدة</label>
+                            <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="رصيد أول المدة">
+                            <div *ngIf="accountForm.get('openingBalance')?.invalid && accountForm.get('openingBalance')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('openingBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-              
-                  <div class="col-md-6 mb-2">
-                    <label for="openingBalance" class="form-label">رصيد أول المدة</label>
-                    <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="رصيد أول المدة">
-                    <div *ngIf="accountForm.get('openingBalance')?.invalid && accountForm.get('openingBalance')?.touched" class="text-danger">
-                      <ng-container *ngIf="accountForm.get('openingBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">إضافة الخزينة</button>
                     </div>
-                  </div>
-                </div>
-              
-                <div class="text-center mt-3">
-                  <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">إضافة الخزينة</button>
-                </div>
-              </form>
-              
+                </form>
+
+            </div>
         </div>
-      </div>
     </div>
-</div>  
+</div>

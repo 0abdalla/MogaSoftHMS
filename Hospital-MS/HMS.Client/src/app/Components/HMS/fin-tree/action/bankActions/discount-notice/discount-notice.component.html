@@ -1,5 +1,6 @@
 <main id="discount-notice">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -12,7 +13,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام رقم المستند" class="form-control text-end shadow-none"/>
+                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام رقم المستند" class="form-control text-end shadow-none" />
                         </div>
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
@@ -76,61 +77,61 @@
 
 <div class="modal fade" id="discountNoticePermissionModal" tabindex="-1" aria-labelledby="discountNoticePermissionModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="discountNoticePermissionModalLabel">إشعار خصم جديد</h5>
-        </div>
-        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-          <form [formGroup]="discountNoticeGroup" (ngSubmit)="submitPermission()">
-            <div class="p-3 mb-3">
-              <div class="row gy-3">
-  
-                <div class="col-md-4">
-                  <label>التاريخ</label>
-                  <input type="date" class="form-control shadow-none text-end" formControlName="date" />
-                </div>
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="discountNoticePermissionModalLabel">إشعار خصم جديد</h5>
+            </div>
+            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+                <form [formGroup]="discountNoticeGroup" (ngSubmit)="submitPermission()">
+                    <div class="p-3 mb-3">
+                        <div class="row gy-3">
 
-                <div class="col-md-4">
-                  <label>اسم البنك</label>
-                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                            <div class="col-md-4">
+                                <label>التاريخ</label>
+                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>اسم البنك</label>
+                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
                     <option disabled selected value="">اختر البنك</option>
                     <option value="بنك رئيسي">بنك رئيسي</option>
                     <option value="بنك فرعية">بنك فرعية</option>
                   </select>
-                </div>
+                            </div>
 
-                <div class="col-md-4">
-                  <label>اسم الحساب</label>
-                  <select class="form-select shadow-none text-end" formControlName="warehouseName">
+                            <div class="col-md-4">
+                                <label>اسم الحساب</label>
+                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
                     <option disabled selected value="">اختر الحساب</option>
                     <option value="حساب رئيسي">حساب رئيسي</option>
                     <option value="حساب فرعية">حساب فرعية</option>
                   </select>
-                </div>
+                            </div>
 
-                <div class="col-md-6">
-                  <label>المبلغ</label>
-                  <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
-                </div>
+                            <div class="col-md-6">
+                                <label>المبلغ</label>
+                                <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
+                            </div>
 
-                <div class="col-md-6">
-                  <label>رقم الشيك</label>
-                  <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
-                </div>
-  
-                <div class="col-md-12">
-                  <label>ملاحظات</label>
-                  <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
-                </div>
-  
-              </div>
+                            <div class="col-md-6">
+                                <label>رقم الشيك</label>
+                                <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                            </div>
+
+                            <div class="col-md-12">
+                                <label>ملاحظات</label>
+                                <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn-blue px-5" [disabled]="discountNoticeGroup.invalid">إضافة إشعار خصم</button>
+                    </div>
+                </form>
             </div>
-  
-            <div class="text-center">
-              <button type="submit" class="btn-blue px-5" [disabled]="discountNoticeGroup.invalid">إضافة إشعار خصم</button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
 </div>

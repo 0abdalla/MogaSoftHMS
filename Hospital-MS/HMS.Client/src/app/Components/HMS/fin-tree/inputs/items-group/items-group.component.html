@@ -1,5 +1,6 @@
 <main id="items-group">
     <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between">
@@ -81,40 +82,40 @@
 
 <div class="modal fade" id="addMainGroupModal" tabindex="-1" aria-labelledby="addMainGroupModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header justify-content-center">
-              <h5 class="modal-title" id="addMainGroupModalLabel">إضافة مجموعة رئيسية</h5>
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addMainGroupModalLabel">إضافة مجموعة رئيسية</h5>
             </div>
             <div class="modal-body">
-            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-          <form [formGroup]="mainGroupForm" (ngSubmit)="addMainGroup()">
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label class="form-label" for="name">إسم المجموعة</label>
-                  <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم المجموعة">
-                  <div *ngIf="mainGroupForm.get('name')?.invalid && mainGroupForm.get('name')?.touched" class="text-danger">
-                    <ng-container *ngIf="mainGroupForm.get('name')?.errors?.['required']">إسم المجموعة مطلوب</ng-container>
-                    <ng-container *ngIf="mainGroupForm.get('name')?.errors?.['minlength']">إسم المجموعة يجب أن يكون أكثر من 3 حروف</ng-container>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12">
-                <div class="form-group">
-                  <label class="form-label" for="description">الوصف</label>
-                  <textarea class="form-control shadow-none" formControlName="description" id="description" placeholder="أدخل الوصف"></textarea>
-                  <div *ngIf="mainGroupForm.get('description')?.invalid && mainGroupForm.get('description')?.touched" class="text-danger">
-                    <ng-container *ngIf="mainGroupForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
-                  </div>
-                </div>
-              </div>
+                <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+                <form [formGroup]="mainGroupForm" (ngSubmit)="addMainGroup()">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="form-label" for="name">إسم المجموعة</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم المجموعة">
+                                <div *ngIf="mainGroupForm.get('name')?.invalid && mainGroupForm.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="mainGroupForm.get('name')?.errors?.['required']">إسم المجموعة مطلوب</ng-container>
+                                    <ng-container *ngIf="mainGroupForm.get('name')?.errors?.['minlength']">إسم المجموعة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label class="form-label" for="description">الوصف</label>
+                                <textarea class="form-control shadow-none" formControlName="description" id="description" placeholder="أدخل الوصف"></textarea>
+                                <div *ngIf="mainGroupForm.get('description')?.invalid && mainGroupForm.get('description')?.touched" class="text-danger">
+                                    <ng-container *ngIf="mainGroupForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="mainGroupForm.invalid">إضافة المجموعة </button>
+                    </div>
+                </form>
             </div>
-  
-            <div class="text-center mt-3">
-              <button type="submit" class="btn-blue" [disabled]="mainGroupForm.invalid">إضافة المجموعة </button>
-            </div>
-          </form>
         </div>
-      </div>
     </div>
 </div>

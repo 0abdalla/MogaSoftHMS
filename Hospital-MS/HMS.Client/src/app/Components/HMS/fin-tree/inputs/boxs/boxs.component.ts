@@ -7,6 +7,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
   styleUrl: './boxs.component.css'
 })
 export class BoxsComponent {
+  TitleList = ['إعدادات النظام','إعدادات الإدارة المالية','الخزائن'];
   filterForm!:FormGroup;
   accountForm!:FormGroup
   // 

@@ -1,0 +1,47 @@
+.selector-icon-up-down {
+    width: 25px;
+    height: 28px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* background-image: url("../../../assets/images/up-down-icon.png"); */
+    background-repeat: no-repeat;
+    background-position-x: 5px;
+    background-position-y: 50%;
+    background-size: 15px;
+}
+
+.dropdown-menu-search-input {
+    border-radius: 8px;
+    outline: 0;
+    border: none;
+    box-shadow: 0 0 0 2px #7c7c7c40 !important;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+}
+
+.arrow-tb {
+    content: "";
+    width: 20px;
+    height: 100%;
+    background-color: #f3f3f3;
+    position: absolute;
+    top: 0;
+    left: 5px;
+    z-index: 1;
+    /* background-image: url("../../../assets/images/up-down-icon.png"); */
+    background-repeat: no-repeat;
+    background-position-x: 0;
+    background-position-y: 45%;
+    background-size: 15px;
+}
+
+.with-no-arrow-down::after {
+    content: unset;
+}
+
+.dropdown-toggle:after {
+    content: none;
+}

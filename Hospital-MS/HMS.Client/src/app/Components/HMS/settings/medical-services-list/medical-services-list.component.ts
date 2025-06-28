@@ -11,6 +11,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
   styleUrl: './medical-services-list.component.css'
 })
 export class MedicalServicesListComponent implements OnInit {
+  TitleList = ['إعدادات النظام','إعدادات المواعيد والحجز'];
   services!:any[];
   total!:number;
   filterForm!: FormGroup;
