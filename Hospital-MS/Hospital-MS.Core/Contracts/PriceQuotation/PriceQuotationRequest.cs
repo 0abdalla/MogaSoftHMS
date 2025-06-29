@@ -9,6 +9,7 @@ public class PriceQuotationRequest
 {
     public DateTime QuotationDate { get; set; }
     public int SupplierId { get; set; }
+    public int PurchaseRequestId { get; set; }
     public string? Notes { get; set; }
     public List<PriceQuotationItemRequest> Items { get; set; } = [];
 }

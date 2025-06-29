@@ -14,5 +14,9 @@ public class PriceQuotationResponse
     public string? Notes { get; set; }
     public string Status { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
+
+    public int PurchaseRequestId { get; set; }
+    public string PurchaseRequestNumber { get; set; } 
+
     public List<PriceQuotationItemResponse> Items { get; set; } = [];
 }

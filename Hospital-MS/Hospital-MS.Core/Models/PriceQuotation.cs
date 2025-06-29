@@ -17,5 +17,8 @@ public class PriceQuotation : AuditableEntity
     public QuotationStatus Status { get; set; } = QuotationStatus.Pending;
     public bool IsActive { get; set; } = true;
 
+    public int PurchaseRequestId { get; set; }
+    public PurchaseRequest PurchaseRequest { get; set; } = null!;
+
     public ICollection<PriceQuotationItem> Items { get; set; } = new HashSet<PriceQuotationItem>();
 }

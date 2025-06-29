@@ -43,9 +43,9 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PurchaseRequestRequest request, CancellationToken cancellationToken = default)
         {
             var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
-                .GetAll()
+                .GetAll(x => x.Id == id && x.IsActive)
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (purchaseRequest == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -55,7 +55,7 @@ namespace Hospital_MS.Services.HMS
             purchaseRequest.Purpose = request.Purpose;
             purchaseRequest.StoreId = request.StoreId;
             purchaseRequest.Notes = request.Notes;
-    
+
             foreach (var item in purchaseRequest.Items)
                 item.IsActive = false;
 
@@ -132,7 +132,7 @@ namespace Hospital_MS.Services.HMS
                     StoreName = x.Store.Name,
                     Status = x.Status.ToString(),
                     Notes = x.Notes,
-                    Items = new ()
+                    Items = new()
                 })
                 .ToListAsync(cancellationToken);
 
@@ -165,6 +165,56 @@ namespace Hospital_MS.Services.HMS
             var count = await _unitOfWork.Repository<PurchaseRequest>()
                 .CountAsync(x => x.RequestDate.Year == year, cancellationToken);
             return $"MR-{year}-{count + 1}";
+        }
+
+        public async Task<ErrorResponseModel<string>> ApprovePurchaseRequestAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
+                .GetAll(x => x.Id == id && x.IsActive)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (purchaseRequest == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            purchaseRequest.Status = PurchaseStatus.Approved;
+
+            _unitOfWork.Repository<PurchaseRequest>().Update(purchaseRequest);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess, purchaseRequest.Id.ToString());
+        }
+
+        public async Task<PagedResponseModel<List<PurchaseRequestResponse>>> GetAllApprovedAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
+        {
+            var query = _unitOfWork.Repository<PurchaseRequest>().GetAll()
+                .Include(x => x.Store)
+                .Where(x => x.IsActive && x.Status == PurchaseStatus.Approved);
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchText))
+                query = query.Where(x => x.RequestNumber.Contains(filter.SearchText) || x.Purpose.Contains(filter.SearchText));
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var list = await query
+                .OrderByDescending(x => x.Id)
+                .Skip((filter.CurrentPage - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .Select(x => new PurchaseRequestResponse
+                {
+                    Id = x.Id,
+                    RequestNumber = x.RequestNumber,
+                    RequestDate = x.RequestDate,
+                    DueDate = x.DueDate,
+                    Purpose = x.Purpose,
+                    StoreName = x.Store.Name,
+                    Status = x.Status.ToString(),
+                    Notes = x.Notes,
+                    Items = new()
+                })
+                .ToListAsync(cancellationToken);
+
+            return PagedResponseModel<List<PurchaseRequestResponse>>.Success(GenericErrors.GetSuccess, totalCount, list);
         }
     }
 }

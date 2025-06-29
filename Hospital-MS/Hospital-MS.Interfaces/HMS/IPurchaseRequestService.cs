@@ -14,4 +14,6 @@ public interface IPurchaseRequestService
     Task<ErrorResponseModel<PurchaseRequestResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<PagedResponseModel<List<PurchaseRequestResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<string>> ApprovePurchaseRequestAsync(int id, CancellationToken cancellationToken = default);
+    Task<PagedResponseModel<List<PurchaseRequestResponse>>> GetAllApprovedAsync(PagingFilterModel filter, CancellationToken cancellationToken = default);
 }

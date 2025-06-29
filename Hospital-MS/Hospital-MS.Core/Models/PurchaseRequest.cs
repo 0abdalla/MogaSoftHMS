@@ -19,5 +19,6 @@ public class PurchaseRequest : AuditableEntity
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
 
+
     public ICollection<PurchaseRequestItem> Items { get; set; } = new HashSet<PurchaseRequestItem>();
 }

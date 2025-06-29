@@ -26,6 +26,15 @@ public class PriceQuotationService : IPriceQuotationService
     {
         try
         {
+            var purchase = await _unitOfWork.Repository<PurchaseRequest>()
+                .GetAll(x => x.Id == request.PurchaseRequestId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (purchase == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "طلب الشراء غير موجود");
+            else if (purchase != null && purchase.Status != PurchaseStatus.Approved)
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, "طلب الشراء غير مأكد");
+
             var quotation = new PriceQuotation
             {
                 QuotationNumber = await GenerateQuotationNumber(cancellationToken),
@@ -33,6 +42,7 @@ public class PriceQuotationService : IPriceQuotationService
                 SupplierId = request.SupplierId,
                 Notes = request.Notes,
                 Status = QuotationStatus.Pending,
+                PurchaseRequestId = request.PurchaseRequestId,
                 Items = request.Items.Select(i => new PriceQuotationItem
                 {
                     ItemId = i.ItemId,
@@ -58,7 +68,7 @@ public class PriceQuotationService : IPriceQuotationService
     {
         try
         {
-            var quotation = await _unitOfWork.Repository<PriceQuotation>().GetAll(x => x.Id == id).FirstOrDefaultAsync();
+            var quotation = await _unitOfWork.Repository<PriceQuotation>().GetAll(x => x.Id == id).FirstOrDefaultAsync(cancellationToken);
             if (quotation == null)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -84,6 +94,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .GetAll()
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
+                .Include(x=>x.PurchaseRequest)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
@@ -108,6 +119,8 @@ public class PriceQuotationService : IPriceQuotationService
                     Notes = x.Notes,
                     Status = x.Status.ToString(),
                     TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
+                    PurchaseRequestId = x.PurchaseRequestId,
+                    PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
@@ -139,6 +152,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .GetAll()
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
+                .Include(x => x.PurchaseRequest)
                 .Where(x => x.Id == id && x.IsActive)
                 .Select(x => new PriceQuotationResponse
                 {
@@ -149,6 +163,8 @@ public class PriceQuotationService : IPriceQuotationService
                     Notes = x.Notes,
                     Status = x.Status.ToString(),
                     TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
+                    PurchaseRequestId = x.PurchaseRequestId,
+                    PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
@@ -181,9 +197,21 @@ public class PriceQuotationService : IPriceQuotationService
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
+
+            var purchase = await _unitOfWork.Repository<PurchaseOrder>()
+                .GetAll(x => x.Id == request.PurchaseRequestId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (purchase == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "طلب الشراء غير موجود");
+            else if (purchase != null && purchase.Status != PurchaseStatus.Approved)
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, "طلب الشراء غير مأكد");
+
             quotation.QuotationDate = request.QuotationDate;
             quotation.SupplierId = request.SupplierId;
             quotation.Notes = request.Notes;
+            quotation.PurchaseRequestId = request.PurchaseRequestId;
+
             // Clear existing items and add new ones
             quotation.Items.Clear();
             foreach (var item in request.Items)

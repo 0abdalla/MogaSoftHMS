@@ -58,6 +58,8 @@ namespace Hospital_MS.Core._Data
         public DbSet<VacationType> VacationTypes { get; set; }
         public DbSet<EmployeeAdvance> EmployeeAdvances { get; set; }
         public DbSet<AdvanceType> AdvanceTypes { get; set; }
+        public DbSet<ReceiptPermission> ReceiptPermissions { get; set; }
+        public DbSet<ReceiptPermissionItem> ReceiptPermissionItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

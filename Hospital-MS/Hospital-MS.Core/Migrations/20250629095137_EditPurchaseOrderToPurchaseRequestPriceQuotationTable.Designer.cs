@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250629095137_EditPurchaseOrderToPurchaseRequestPriceQuotationTable")]
+    partial class EditPurchaseOrderToPurchaseRequestPriceQuotationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2403,6 +2406,9 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("PurchaseOrderId")
+                        .HasColumnType("int");
+
                     b.Property<int>("PurchaseRequestId")
                         .HasColumnType("int");
 
@@ -2429,6 +2435,8 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
+
+                    b.HasIndex("PurchaseOrderId");
 
                     b.HasIndex("PurchaseRequestId");
 
@@ -2736,134 +2744,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("PurchaseRequestItems", "finance");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.ReceiptPermission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DocumentNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateOnly>("PermissionDate")
-                        .HasColumnType("date");
-
-                    b.Property<string>("PermissionNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("PurchaseRequestId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StoreId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SupplierId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("PurchaseRequestId");
-
-                    b.HasIndex("StoreId");
-
-                    b.HasIndex("SupplierId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("ReceiptPermissions", "finance");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.ReceiptPermissionItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CreatedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ItemId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("ReceiptPermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Unit")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("ItemId");
-
-                    b.HasIndex("ReceiptPermissionId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("ReceiptPermissionItems", "finance");
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.RolePermission", b =>
@@ -4441,6 +4321,12 @@ namespace Hospital_MS.Reposatories.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Hospital_MS.Core.Models.PurchaseOrder", "PurchaseOrder")
+                        .WithMany()
+                        .HasForeignKey("PurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Hospital_MS.Core.Models.PurchaseRequest", "PurchaseRequest")
                         .WithMany()
                         .HasForeignKey("PurchaseRequestId")
@@ -4458,6 +4344,8 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasForeignKey("UpdatedById");
 
                     b.Navigation("CreatedBy");
+
+                    b.Navigation("PurchaseOrder");
 
                     b.Navigation("PurchaseRequest");
 
@@ -4619,76 +4507,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("PurchaseRequest");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.ReceiptPermission", b =>
-                {
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.PurchaseRequest", "PurchaseRequest")
-                        .WithMany()
-                        .HasForeignKey("PurchaseRequestId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.Store", "Store")
-                        .WithMany()
-                        .HasForeignKey("StoreId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.Supplier", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("PurchaseRequest");
-
-                    b.Navigation("Store");
-
-                    b.Navigation("Supplier");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.ReceiptPermissionItem", b =>
-                {
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.ReceiptPermission", null)
-                        .WithMany("Items")
-                        .HasForeignKey("ReceiptPermissionId");
-
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Item");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -5058,11 +4876,6 @@ namespace Hospital_MS.Reposatories.Migrations
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.PurchaseRequest", b =>
-                {
-                    b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.ReceiptPermission", b =>
                 {
                     b.Navigation("Items");
                 });

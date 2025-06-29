@@ -29,4 +29,12 @@ public class PurchaseRequestsController(IPurchaseRequestService service) : ApiBa
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         => Ok(await _service.DeleteAsync(id, cancellationToken));
+
+    [HttpPut("{id}/approve")]
+    public async Task<IActionResult> Approve(int id, CancellationToken cancellationToken)
+        => Ok(await _service.ApprovePurchaseRequestAsync(id, cancellationToken));
+
+    [HttpGet("approved")]
+    public async Task<IActionResult> GetAllApproved([FromQuery] PagingFilterModel filter, CancellationToken cancellationToken)
+        => Ok(await _service.GetAllApprovedAsync(filter, cancellationToken));
 }
