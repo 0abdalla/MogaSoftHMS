@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Common;
-using Hospital_MS.Core.Contracts.PurchaseOrder;
+using Hospital_MS.Core.Contracts.PurchaseOrders;
+using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
@@ -16,230 +17,163 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
-public class PurchaseOrderService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : IPurchaseOrderService
+public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
-    private readonly ISQLHelper _sqlHelper = sqlHelper;
 
     public async Task<ErrorResponseModel<string>> CreateAsync(PurchaseOrderRequest request, CancellationToken cancellationToken = default)
     {
-        try
+        var order = new PurchaseOrder
         {
-            var purchaseOrder = new PurchaseOrder
+            OrderNumber = await GenerateOrderNumber(cancellationToken),
+            ReferenceNumber = request.ReferenceNumber,
+            OrderDate = request.OrderDate,
+            SupplierId = request.SupplierId,
+            Description = request.Description,
+            Status = PurchaseStatus.Pending,
+            IsActive = true,
+            Items = request.Items.Select(i => new PurchaseOrderItem
             {
-                OrderNumber = await GenerateOrderNumber(cancellationToken),
-                Date = request.Date,
-                CostCenterId = request.CostCenterId,
-                SupplierId = request.SupplierId,
-                StoreId = request.StoreId,
-                Currency = request.Currency,
-                Notes = request.Notes,
+                ItemId = i.ItemId,
+                Unit = i.Unit,
+                RequestedQuantity = i.RequestedQuantity,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice,
                 IsActive = true
-            };
+            }).ToList()
+        };
 
-            var items = request.Items.Select(item => new PurchaseOrderItem
-            {
-                ItemId = item.ItemId,
-                Quantity = item.Quantity,
-                UnitCost = item.UnitCost,
-                TotalCost = item.Quantity * item.UnitCost,
-                IsActive = true
-            }).ToList();
+        await _unitOfWork.Repository<PurchaseOrder>().AddAsync(order, cancellationToken);
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
-            purchaseOrder.Items = items;
-            purchaseOrder.TotalCost = items.Sum(x => x.TotalCost);
-
-            await _unitOfWork.Repository<PurchaseOrder>().AddAsync(purchaseOrder, cancellationToken);
-            await _unitOfWork.CompleteAsync(cancellationToken);
-
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseOrder.Id.ToString());
-        }
-        catch (Exception)
-        {
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        }
-    }
-
-    public async Task<PagedResponseModel<List<PurchaseOrderResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var parameters = new SqlParameter[]
-            {
-                new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value),
-                new SqlParameter("@CurrentPage", pagingFilter.CurrentPage),
-                new SqlParameter("@PageSize", pagingFilter.PageSize)  
-            };
-
-            var dt = await _sqlHelper.ExecuteDataTableAsync("Finance.SP_GetPurchaseOrders", parameters);
-
-            var purchaseOrders = dt.AsEnumerable().Select(row => new PurchaseOrderResponse
-            {
-                Id = row.Field<int>("Id"),
-                OrderNumber = row.Field<string>("OrderNumber"),
-                Date = row.Field<DateTime>("Date"),
-                CostCenterName = row.Field<string>("CostCenterName"),
-                SupplierName = row.Field<string>("SupplierName"),
-                StoreName = row.Field<string>("StoreName"),
-                Currency = row.Field<string>("Currency"),
-                Notes = row.Field<string>("Notes"),
-                TotalCost = row.Field<decimal>("TotalCost"),
-                IsActive = row.Field<bool>("IsActive"),
-                Audit = new AuditResponse
-                {
-                    CreatedBy = row.Field<string>("CreatedBy"),
-                    CreatedOn = row.Field<DateTime>("CreatedOn")
-                }
-            }).ToList();
-
-            int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int>("TotalCount") : 0;
-
-            return PagedResponseModel<List<PurchaseOrderResponse>>.Success(GenericErrors.GetSuccess, totalCount, purchaseOrders);
-        }
-        catch (Exception)
-        {
-            return PagedResponseModel<List<PurchaseOrderResponse>>.Failure(GenericErrors.TransFailed);
-        }
-    }
-
-    public async Task<ErrorResponseModel<PurchaseOrderResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var purchaseOrder = await _unitOfWork.Repository<PurchaseOrder>()
-                .GetAll()
-                .Include(x => x.CostCenter)
-                .Include(x => x.Supplier)
-                .Include(x => x.Store)
-                .Include(x => x.Items)
-                    .ThenInclude(x => x.Item)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
-
-            if (purchaseOrder == null)
-                return ErrorResponseModel<PurchaseOrderResponse>.Failure(GenericErrors.NotFound);
-
-            var response = new PurchaseOrderResponse
-            {
-                Id = purchaseOrder.Id,
-                OrderNumber = purchaseOrder.OrderNumber,
-                Date = purchaseOrder.Date,
-                CostCenterName = purchaseOrder.CostCenter.Name,
-                SupplierName = purchaseOrder.Supplier.Name,
-                StoreName = purchaseOrder.Store.Name,
-                Currency = purchaseOrder.Currency,
-                Notes = purchaseOrder.Notes,
-                TotalCost = purchaseOrder.TotalCost,
-                IsActive = purchaseOrder.IsActive,
-                Items = [.. purchaseOrder.Items.Select(x => new PurchaseOrderItemResponse
-                {
-                    Id = x.Id,
-                    ItemName = x.Item.NameAr,
-                    Quantity = x.Quantity,
-                    UnitCost = x.UnitCost,
-                    TotalCost = x.TotalCost
-                })],
-                Audit = new AuditResponse
-                {
-                    CreatedBy = purchaseOrder.CreatedBy.UserName,
-                    CreatedOn = purchaseOrder.CreatedOn,
-                    UpdatedBy = purchaseOrder.UpdatedBy?.UserName,
-                    UpdatedOn = purchaseOrder.UpdatedOn
-                }
-            };
-
-            return ErrorResponseModel<PurchaseOrderResponse>.Success(GenericErrors.GetSuccess, response);
-        }
-        catch (Exception)
-        {
-            return ErrorResponseModel<PurchaseOrderResponse>.Failure(GenericErrors.TransFailed);
-        }
+        return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, order.Id.ToString());
     }
 
     public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PurchaseOrderRequest request, CancellationToken cancellationToken = default)
     {
-        try
+        var order = await _unitOfWork.Repository<PurchaseOrder>()
+            .GetAll()
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+
+        if (order == null)
+            return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+        order.ReferenceNumber = request.ReferenceNumber;
+        order.OrderDate = request.OrderDate;
+        order.SupplierId = request.SupplierId;
+        order.Description = request.Description;
+
+        foreach (var item in order.Items)
+            item.IsActive = false;
+
+        order.Items = request.Items.Select(i => new PurchaseOrderItem
         {
-            var purchaseOrder = await _unitOfWork.Repository<PurchaseOrder>()
-                .GetAll()
-                .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+            ItemId = i.ItemId,
+            Unit = i.Unit,
+            RequestedQuantity = i.RequestedQuantity,
+            Quantity = i.Quantity,
+            UnitPrice = i.UnitPrice,
+            IsActive = true
+        }).ToList();
 
-            if (purchaseOrder == null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+        _unitOfWork.Repository<PurchaseOrder>().Update(order);
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
-            purchaseOrder.Date = request.Date;
-            purchaseOrder.CostCenterId = request.CostCenterId;
-            purchaseOrder.SupplierId = request.SupplierId;
-            purchaseOrder.StoreId = request.StoreId;
-            purchaseOrder.Currency = request.Currency;
-            purchaseOrder.Notes = request.Notes;
+        return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess, order.Id.ToString());
+    }
 
-            // Remove existing items
-            foreach (var item in purchaseOrder.Items.ToList())
-            {
-                item.IsActive = false;
-            }
+    public async Task<ErrorResponseModel<PurchaseOrderResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var order = await _unitOfWork.Repository<PurchaseOrder>()
+            .GetAll()
+            .Include(x => x.Supplier)
+            .Include(x => x.Items).ThenInclude(i => i.Item)
+            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
-            // Add new items
-            var items = request.Items.Select(item => new PurchaseOrderItem
-            {
-                ItemId = item.ItemId,
-                Quantity = item.Quantity,
-                UnitCost = item.UnitCost,
-                TotalCost = item.Quantity * item.UnitCost,
-                IsActive = true
-            }).ToList();
+        if (order == null)
+            return ErrorResponseModel<PurchaseOrderResponse>.Failure(GenericErrors.NotFound);
 
-            purchaseOrder.Items = items;
-            purchaseOrder.TotalCost = items.Sum(x => x.TotalCost);
-
-            _unitOfWork.Repository<PurchaseOrder>().Update(purchaseOrder);
-            await _unitOfWork.CompleteAsync(cancellationToken);
-
-            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
-        }
-        catch (Exception)
+        var response = new PurchaseOrderResponse
         {
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        }
+            Id = order.Id,
+            OrderNumber = order.OrderNumber,
+            ReferenceNumber = order.ReferenceNumber,
+            OrderDate = order.OrderDate,
+            SupplierName = order.Supplier.Name,
+            Description = order.Description,
+            Status = order.Status.ToString(),
+            Items = order.Items.Where(i => i.IsActive).Select(i => new PurchaseOrderItemResponse
+            {
+                Id = i.Id,
+                ItemName = i.Item.NameAr,
+                Unit = i.Unit,
+                RequestedQuantity = i.RequestedQuantity,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice,
+                Total = i.Quantity * i.UnitPrice
+            }).ToList()
+        };
+
+        return ErrorResponseModel<PurchaseOrderResponse>.Success(GenericErrors.GetSuccess, response);
+    }
+
+    public async Task<PagedResponseModel<List<PurchaseOrderResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
+    {
+        var query = _unitOfWork.Repository<PurchaseOrder>().GetAll()
+            .Include(x => x.Supplier)
+            .Where(x => x.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(filter.SearchText))
+            query = query.Where(x => x.OrderNumber.Contains(filter.SearchText) || x.Description.Contains(filter.SearchText));
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var list = await query
+            .OrderByDescending(x => x.Id)
+            .Skip((filter.CurrentPage - 1) * filter.PageSize)
+            .Take(filter.PageSize)
+            .Select(x => new PurchaseOrderResponse
+            {
+                Id = x.Id,
+                OrderNumber = x.OrderNumber,
+                ReferenceNumber = x.ReferenceNumber,
+                OrderDate = x.OrderDate,
+                SupplierName = x.Supplier.Name,
+                Description = x.Description,
+                Status = x.Status.ToString(),
+                Items = new()
+            })
+            .ToListAsync(cancellationToken);
+
+        return PagedResponseModel<List<PurchaseOrderResponse>>.Success(GenericErrors.GetSuccess, totalCount, list);
     }
 
     public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var purchaseOrder = await _unitOfWork.Repository<PurchaseOrder>()
-                .GetAll()
-                .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+        var order = await _unitOfWork.Repository<PurchaseOrder>()
+            .GetAll()
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
-            if (purchaseOrder == null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+        if (order == null)
+            return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            purchaseOrder.IsActive = false;
-            foreach (var item in purchaseOrder.Items)
-            {
-                item.IsActive = false;
-            }
+        order.IsActive = false;
+        foreach (var item in order.Items)
+            item.IsActive = false;
 
-            _unitOfWork.Repository<PurchaseOrder>().Update(purchaseOrder);
-            await _unitOfWork.CompleteAsync(cancellationToken);
+        _unitOfWork.Repository<PurchaseOrder>().Update(order);
+        await _unitOfWork.CompleteAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
-        }
-        catch (Exception)
-        {
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        }
+        return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, order.Id.ToString());
     }
 
     private async Task<string> GenerateOrderNumber(CancellationToken cancellationToken)
     {
         var year = DateTime.Now.Year;
         var count = await _unitOfWork.Repository<PurchaseOrder>()
-            .CountAsync(x => x.Date.Year == year, cancellationToken);
-        return $"PO-{year}-{(count + 1).ToString().PadLeft(5, '0')}";
+            .CountAsync(x => x.OrderDate.Year == year, cancellationToken);
+        return $"PO-{year}-{(count + 1):D5}";
     }
 }

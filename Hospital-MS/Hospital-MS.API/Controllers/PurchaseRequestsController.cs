@@ -1,19 +1,17 @@
-﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.PurchaseOrders;
+using Hospital_MS.API.Controllers;
+using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.PurchaseRequests;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hospital_MS.API.Controllers;
-
 [Authorize]
-public class PurchaseOrdersController(IPurchaseOrderService service) : ApiBaseController
+public class PurchaseRequestsController(IPurchaseRequestService service) : ApiBaseController
 {
-    private readonly IPurchaseOrderService _service = service;
+    private readonly IPurchaseRequestService _service = service;
 
     [HttpPost("")]
-    public async Task<IActionResult> Create([FromBody] PurchaseOrderRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Create([FromBody] PurchaseRequestRequest request, CancellationToken cancellationToken)
         => Ok(await _service.CreateAsync(request, cancellationToken));
 
     [HttpGet("")]
@@ -25,7 +23,7 @@ public class PurchaseOrdersController(IPurchaseOrderService service) : ApiBaseCo
         => Ok(await _service.GetByIdAsync(id, cancellationToken));
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] PurchaseOrderRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> Update(int id, [FromBody] PurchaseRequestRequest request, CancellationToken cancellationToken)
         => Ok(await _service.UpdateAsync(id, request, cancellationToken));
 
     [HttpDelete("{id}")]

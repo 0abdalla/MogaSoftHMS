@@ -9,6 +9,8 @@ public class Store : AuditableEntity // مخزن
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
+
     public string? Location { get; set; } 
     public string? ContactNumber { get; set; } 
     public string? Email { get; set; } 
