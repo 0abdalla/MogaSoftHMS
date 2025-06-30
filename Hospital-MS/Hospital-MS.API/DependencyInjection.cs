@@ -91,6 +91,11 @@ namespace Hospital_MS.API
             services.AddScoped<IVacationService, VacationService>();
             services.AddScoped<IEmployeeAdvancesService, EmployeeAdvancesService>();
             services.AddScoped<IReceiptPermissionService, ReceiptPermissionService>();
+            services.AddScoped<IMaterialIssuePermissionService, MaterialIssuePermissionService>();
+            services.AddScoped<IAdditionNotificationService, AdditionNotificationService>();
+            services.AddScoped<IDebitNoticeService, DebitNoticeService>();
+            services.AddScoped<IBankService, BankService>();
+
 
 
             services.AddHealthChecks()

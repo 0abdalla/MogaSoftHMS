@@ -60,6 +60,8 @@ namespace Hospital_MS.Core._Data
         public DbSet<AdvanceType> AdvanceTypes { get; set; }
         public DbSet<ReceiptPermission> ReceiptPermissions { get; set; }
         public DbSet<ReceiptPermissionItem> ReceiptPermissionItems { get; set; }
+        public DbSet<MaterialIssuePermission> MaterialIssuePermissions { get; set; }
+        public DbSet<MaterialIssueItem> MaterialIssueItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
