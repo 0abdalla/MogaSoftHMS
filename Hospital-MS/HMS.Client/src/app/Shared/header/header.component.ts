@@ -112,7 +112,7 @@ export class HeaderComponent {
         return 'الحسابات العامة';
       case '/hms/fin-tree/add-items':
         return 'أذون الإضافة';
-      case 'hms/fin-tree/issue-items':
+      case '/hms/fin-tree/issue-items':
         return 'أذون الصرف';
       case '/hms/fin-tree/fetch-inventory':
         return 'جرد المخازن';

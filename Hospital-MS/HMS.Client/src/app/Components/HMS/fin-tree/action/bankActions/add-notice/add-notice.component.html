@@ -1,15 +1,14 @@
 <main id="add-notice">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="p-3 mt-4">
+        <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="row col-md-8">
                         <div class="col-md-6">
                             <select formControlName="type" name="" id="" class="form-select text-end shadow-none">
                                 <option selected disabled value="">اختر البنك </option>
-                                <option value="">بنك رئيسي</option>
-                                <option value="">بنك فرعية</option>
+                                <option *ngFor="let bank of banks" [value]="bank.id">{{ bank.name }}</option>
                             </select>
                         </div>
                         <div class="col-md-6">
@@ -26,6 +25,30 @@
                     </div>
                 </div>
             </form>
+        </div> -->
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addnoticePermissionModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة إشعار إضافة</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <app-filters [filterData]="banks" [filterPlaceholder]="'البنك'" [searchPlaceholder]="'أدخل إسم المريض أو رقم الهاتف ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                    </ng-container>
+                </div>
+            </div>
         </div>
         <table class="table table-hover mt-4">
             <thead>
@@ -37,30 +60,30 @@
                     <th>الإجراءات</th>
                 </tr>
             </thead>
-            <tbody *ngIf="adds?.length > 0">
-                <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
-                    <td>{{ add.documentNumber }}</td>
+            <tbody *ngIf="additionNotifications?.length > 0">
+                <tr *ngFor="let add of additionNotifications | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
+                    <td>{{ add.id }}</td>
                     <td>{{ add.date }}</td>
                     <td>{{ add.bankName }}</td>
-                    <td>{{ add.balance }}</td>
+                    <td>{{ add.amount + ' ' + 'جنيه' }}</td>
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-2" (click)="editAdditionNotification(add.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-2" (click)="deleteAdditionNotification(add.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 </tr>
             </tbody>
-            <tbody *ngIf="adds?.length === 0">
+            <tbody *ngIf="additionNotifications?.length === 0">
                 <tr>
                     <td colspan="6" class="text-center text-muted">لا يوجد إشعارات إضافة حتى الآن</td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="col-lg-12">
+        <!-- <div class="col-lg-12">
             <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
                 <div class="my-pagination">
                     <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
@@ -68,7 +91,7 @@
                     </pagination-controls>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </main>
 
@@ -79,10 +102,12 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addnoticePermissionModalLabel">إشعار إضافة جديد</h5>
+                <h5 class="modal-title" id="addnoticePermissionModalLabel">
+                    {{ isEditMode ? 'تعديل إشعار إضافة' : 'إشعار إضافة جديد' }}
+                </h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="addNoticeGroup" (ngSubmit)="submitPermission()">
+                <form [formGroup]="addNoticeGroup" (ngSubmit)="addAdditionNotification()">
                     <div class="p-3 mb-3">
                         <div class="row gy-3">
 
@@ -93,30 +118,28 @@
 
                             <div class="col-md-4">
                                 <label>اسم البنك</label>
-                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
-                    <option disabled selected value="">اختر البنك</option>
-                    <option value="بنك رئيسي">بنك رئيسي</option>
-                    <option value="بنك فرعية">بنك فرعية</option>
-                  </select>
+                                <select class="form-select shadow-none text-end" formControlName="bankId">
+                                    <option disabled selected value="">اختر البنك</option>
+                                    <option *ngFor="let bank of banks" [value]="bank.id">{{ bank.name }}</option>
+                                </select>
                             </div>
 
                             <div class="col-md-4">
                                 <label>اسم الحساب</label>
-                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
-                    <option disabled selected value="">اختر الحساب</option>
-                    <option value="حساب رئيسي">حساب رئيسي</option>
-                    <option value="حساب فرعية">حساب فرعية</option>
-                  </select>
+                                <select class="form-select shadow-none text-end" formControlName="accountId">
+                                    <option disabled selected value="">اختر الحساب</option>
+                                    <option *ngFor="let account of accounts" [value]="account.id">{{ account.name }}</option>
+                                </select>
                             </div>
 
                             <div class="col-md-6">
                                 <label>المبلغ</label>
-                                <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
+                                <input type="number" class="form-control shadow-none text-end" formControlName="amount" />
                             </div>
 
                             <div class="col-md-6">
                                 <label>رقم الشيك</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                                <input type="text" class="form-control shadow-none text-end" formControlName="checkNumber" />
                             </div>
 
                             <div class="col-md-12">
@@ -128,7 +151,7 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn-blue px-5" [disabled]="addNoticeGroup.invalid">إضافة إشعار إضافة</button>
+                        <button type="submit" class="btn-blue px-5" [disabled]="addNoticeGroup.invalid">{{ isEditMode ? 'تعديل' : 'إضافة' }}</button>
                     </div>
                 </form>
             </div>

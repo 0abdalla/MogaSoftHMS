@@ -1,15 +1,16 @@
-import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FinancialService } from '../../../../../Services/HMS/financial.service';
 
 @Component({
   selector: 'app-add-items',
   templateUrl: './add-items.component.html',
   styleUrl: './add-items.component.css'
 })
-export class AddItemsComponent {
+export class AddItemsComponent implements OnInit {
   filterForm!:FormGroup;
   addPermissionForm!:FormGroup
-  TitleList = ['المخازن','إذن إضافة'];
+  TitleList = ['المخازن','إذن إستلام'];
   // 
   adds:any[]=[];
   total:number=0;
@@ -17,7 +18,9 @@ export class AddItemsComponent {
     pageSize:16,
     currentPage:1,
   }
-  constructor(private fb:FormBuilder){
+  // 
+  allItems: any[] = [];
+  constructor(private fb:FormBuilder , private financialService : FinancialService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -30,12 +33,35 @@ export class AddItemsComponent {
       warehouseName: [''],
       supplierName: [''],
       currency: ['جنيه'],
-      itemNumber: [''],
-      quantity: [1],
-      itemCost: [0],
+      items: this.fb.array([
+        this.createItemGroup()
+      ]),
       notes: ['']
     });    
   }
+  ngOnInit(): void {
+    this.getItems();
+  }
+  createItemGroup(): FormGroup {
+    return this.fb.group({
+      itemId: [null, Validators.required],
+      quantity: [1, Validators.required],
+      notes: ['']
+    });
+  }
+  get items(): FormArray {
+      return this.addPermissionForm.get('items') as FormArray;
+    }
+    
+  addItemRow() {
+      this.items.push(this.createItemGroup());
+    }
+    
+  removeItemRow(index: number) {
+      if (this.items.length > 1) {
+        this.items.removeAt(index);
+      }
+    }
   applyFilters(){
     this.total=this.adds.length;
   }
@@ -57,5 +83,11 @@ export class AddItemsComponent {
   submitPermission(){
     console.log(this.addPermissionForm.value);
     this.addPermissionForm.reset();
+  }
+  getItems(){
+    this.financialService.getItems(this.pagingFilterModel).subscribe((res:any)=>{
+      this.allItems=res.results;
+      this.total=res.count;
+    })
   }
 }

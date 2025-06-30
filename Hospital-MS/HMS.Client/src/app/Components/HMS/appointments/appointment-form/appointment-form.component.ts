@@ -60,6 +60,8 @@ export class AppointmentFormComponent implements OnInit {
   showServicePrice:boolean = false;
   filteredDoctorsByService: any[] = [];
   selectedDate: Date | null = null;
+  // 
+  showAdditionalInfo:boolean = false;
   constructor(
     private fb: FormBuilder,
     private appointmentService: AppointmentService,

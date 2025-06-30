@@ -129,24 +129,39 @@
                   </select>
                             </div>
 
-                            <div class="col-md-4">
-                                <label>رقم الصنف</label>
-                                <select class="form-select shadow-none text-end" formControlName="itemNumber">
-                    <option disabled selected value="">اختر الصنف</option>
-                    <option value="1">صنف 1</option>
-                    <option value="2">صنف 2</option>
-                  </select>
-                            </div>
-
-                            <div class="col-md-4">
-                                <label>الرصيد</label>
-                                <input type="number" readonly class="form-control shadow-none text-end" formControlName="balance" />
-                            </div>
-
-                            <div class="col-md-4">
-                                <label>الكمية</label>
-                                <input type="number" class="form-control shadow-none text-end" formControlName="quantity" />
-                            </div>
+                            <div formArrayName="items">
+                                <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                  <div class="col-md-4">
+                                    <label>الصنف</label>
+                                    <select class="form-select shadow-none" formControlName="itemId">
+                                      <option disabled selected value="">اختر الصنف</option>
+                                      <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
+                                    </select>
+                                  </div>
+                              
+                                  <div class="col-md-3">
+                                    <label>الكمية</label>
+                                    <input type="number" class="form-control shadow-none" formControlName="quantity">
+                                  </div>
+                              
+                                  <div class="col-md-4">
+                                    <label>ملاحظات</label>
+                                    <input type="text" class="form-control shadow-none" formControlName="notes">
+                                  </div>
+                              
+                                  <div class="col-md-1 d-flex align-items-end">
+                                    <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
+                                      <i class="fa fa-trash"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              
+                                <div class="text-start mb-3">
+                                  <button type="button" class="btn btn-success" (click)="addItemRow()">
+                                    <i class="fa fa-plus"></i> إضافة صنف
+                                  </button>
+                                </div>
+                              </div>
 
                             <div class="col-md-12">
                                 <label>ملاحظات</label>

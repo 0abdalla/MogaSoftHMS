@@ -88,4 +88,36 @@ export class FinancialService {
   deleteOffer(id:number){
     return this.http.delete<any>(this.baseUrl + 'PriceQuotations/' + id);
   }
+  // 
+  getAdditionNotifications(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AdditionNotifications?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getAdditionNotificationsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'AdditionNotifications/' + id);
+  }
+  addAdditionNotification(additionNotification:any){
+    return this.http.post<any>(this.baseUrl + 'AdditionNotifications', additionNotification);
+  }
+  updateAdditionNotification(id:number,additionNotification:any){
+    return this.http.put<any>(this.baseUrl + 'AdditionNotifications/' + id, additionNotification);
+  }
+  deleteAdditionNotification(id:number){
+    return this.http.delete<any>(this.baseUrl + 'AdditionNotifications/' + id);
+  }
+  // 
+  getDebitNotification(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DebitNotification?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getDebitNotificationById(id:number){
+    return this.http.get<any>(this.baseUrl + 'DebitNotification/' + id);
+  }
+  addDebitNotification(debitNotification:any){
+    return this.http.post<any>(this.baseUrl + 'DebitNotification', debitNotification);
+  }
+  updateDebitNotification(id:number,debitNotification:any){
+    return this.http.put<any>(this.baseUrl + 'DebitNotification/' + id, debitNotification);
+  }
+  deleteDebitNotification(id:number){
+    return this.http.delete<any>(this.baseUrl + 'DebitNotification/' + id);
+  }
 }
