@@ -2,12 +2,11 @@
     <section class="section2" id="table-insurance">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="card mt-3 p-2">
-            <div class="p-3 mt-4">
+            <!-- <div class="p-3 mt-4">
                 <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
                     <div class="row justify-content-between align-items-center g-2">
                         <div class="col-lg-8 row">
                             <div class="col-lg-2">
-                                <!-- <button type="submit" class="btn-blue w-100">تطبيق</button> -->
                                 <button type="button" (click)="resetFilters()" class="btn-cancel w-100">إظهار الكل</button>
                             </div>
                             <div class="col-lg-4">
@@ -19,13 +18,39 @@
                         </div>
                     </div>
                 </form>
+            </div> -->
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                <div class="col-md-8 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/insurance/add-insurance">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة شركة تأمين</span>
+                </button>
+
+                <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
+                
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2" >
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div>
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters  [searchPlaceholder]="'أدخل إسم شركة التأمين ...'" [categoryName]="'SearchText'" (filterChanged)="filterChecked($event)"></app-filters>
+                        </ng-container>
+                    </div>
+                </div>
             </div>
 
             <table class="table table-hover mt-4">
                 <thead>
                     <tr>
                         <th>الإسم</th>
-                        <th>الشركة</th>
+                        <th>الكود</th>
                         <th>رقم الهاتف</th>
                         <th>البريد الالكتروني</th>
                         <th>الحالة</th>
@@ -45,7 +70,7 @@
                             {{ insurnace.code }}
                         </td>
                         <td>
-                            {{ insurnace.contactNumber }}
+                            {{ insurnace.phone }}
                         </td>
                         <td>
                             {{ insurnace.email }}

@@ -24,6 +24,7 @@ export class EmergencyReceptionComponent {
   emergencyForm: FormGroup;
   TitleList = ['الطوارئ والإستقبال'];
   insuranceCompanies: any;
+  showAdditionalInfo:boolean = false;
   constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private messageService: MessageService , private insuranceService: InsuranceService) {
     this.emergencyForm = this.fb.group({
       patientName: ['', Validators.required],

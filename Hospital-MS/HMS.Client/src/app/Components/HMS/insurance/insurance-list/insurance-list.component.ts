@@ -4,6 +4,7 @@ import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 import { InsuranceCompany } from '../../../../Models/HMS/insurance';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Router } from '@angular/router';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 declare var bootstrap: any;
 
 @Component({
@@ -24,7 +25,7 @@ declare var bootstrap: any;
 })
 export class InsuranceListComponent implements OnInit {
   filterForm!: FormGroup;
-  TitleList = ['وكلاء التأمين'];
+  TitleList = ['إعدادات النظام' , 'وكلاء التأمين'];
   // 
   insurnaces!: InsuranceCompany[];
   // 
@@ -34,6 +35,14 @@ export class InsuranceListComponent implements OnInit {
   fixed = Math.ceil(this.total / this.pageSize);
   // 
   selectedInsurance!: any;
+  // 
+  isFilter = true;
+  pagingFilterModel: PagingFilterModel = {
+      searchText: '',
+      currentPage: 1,
+      pageSize: 16,
+      filterList: []
+    };
   constructor(private fb: FormBuilder, private insuranceService: InsuranceService, private router: Router) {
     this.filterForm = this.fb.group({
       Search: ['', Validators.required],
@@ -49,6 +58,9 @@ export class InsuranceListComponent implements OnInit {
     this.insuranceService.getAllInsurances().subscribe({
       next: (res: any) => {
         this.insurnaces = res.results;
+        this.total = res.totalCount;
+        console.log(res);
+        console.log(this.insurnaces);
       },
       error: (err) => {
       }
@@ -95,5 +107,14 @@ export class InsuranceListComponent implements OnInit {
     document.body.innerHTML = printContents;
     window.print();
     document.body.innerHTML = originalContents;
+  }
+  filterChecked(filters: FilterModel[]) {
+        this.pagingFilterModel.currentPage = 1;
+        this.pagingFilterModel.filterList = filters;
+        if (filters.some(i => i.categoryName == 'SearchText'))
+          this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+        else
+          this.pagingFilterModel.searchText = '';
+        this.getAllInsurances();
   }
 }

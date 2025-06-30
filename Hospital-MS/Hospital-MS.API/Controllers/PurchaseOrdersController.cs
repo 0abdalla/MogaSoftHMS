@@ -1,5 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.PurchaseOrder;
+using Hospital_MS.Core.Contracts.PurchaseOrders;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,42 +8,27 @@ using Microsoft.AspNetCore.Mvc;
 namespace Hospital_MS.API.Controllers;
 
 [Authorize]
-public class PurchaseOrdersController(IPurchaseOrderService purchaseOrderService) : ApiBaseController
+public class PurchaseOrdersController(IPurchaseOrderService service) : ApiBaseController
 {
-    private readonly IPurchaseOrderService _purchaseOrderService = purchaseOrderService;
+    private readonly IPurchaseOrderService _service = service;
 
     [HttpPost("")]
     public async Task<IActionResult> Create([FromBody] PurchaseOrderRequest request, CancellationToken cancellationToken)
-    {
-        var result = await _purchaseOrderService.CreateAsync(request, cancellationToken);
-        return Ok(result);
-    }
+        => Ok(await _service.CreateAsync(request, cancellationToken));
 
     [HttpGet("")]
     public async Task<IActionResult> GetAll([FromQuery] PagingFilterModel filter, CancellationToken cancellationToken)
-    {
-        var result = await _purchaseOrderService.GetAllAsync(filter, cancellationToken);
-        return Ok(result);
-    }
+        => Ok(await _service.GetAllAsync(filter, cancellationToken));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
-    {
-        var result = await _purchaseOrderService.GetByIdAsync(id, cancellationToken);
-        return Ok(result);
-    }
+        => Ok(await _service.GetByIdAsync(id, cancellationToken));
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] PurchaseOrderRequest request, CancellationToken cancellationToken)
-    {
-        var result = await _purchaseOrderService.UpdateAsync(id, request, cancellationToken);
-        return Ok(result);
-    }
+        => Ok(await _service.UpdateAsync(id, request, cancellationToken));
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
-    {
-        var result = await _purchaseOrderService.DeleteAsync(id, cancellationToken);
-        return Ok(result);
-    }
+        => Ok(await _service.DeleteAsync(id, cancellationToken));
 }

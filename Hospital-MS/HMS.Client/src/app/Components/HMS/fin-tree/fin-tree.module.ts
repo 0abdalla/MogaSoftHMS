@@ -28,6 +28,7 @@ import { RestrictionsComponent } from './action/restrictions/restrictions.compon
 import { PurchaseRequestComponent } from './inputs/purchase-request/purchase-request.component';
 import { OffersComponent } from './inputs/offers/offers.component';
 import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -63,6 +64,8 @@ import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.c
     NgSelectModule,
     NgxPaginationModule,
     ToastModule,
+    // NgModule
+    NgbCollapseModule
   ]
 })
 export class FinTreeModule { }

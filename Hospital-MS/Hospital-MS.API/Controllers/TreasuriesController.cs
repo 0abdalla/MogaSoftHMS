@@ -46,6 +46,33 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
         var result = await _treasuryService.DeleteTreasuryAsync(id, cancellationToken);
         return Ok(result);
     }
+    [HttpGet("Enabled")] 
+    public async Task<IActionResult> GetEnabledTreasuries(CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetEnabledTreasuriesAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("Disabled")]
+    public async Task<IActionResult> GetDisabledTreasuries(CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetDisabledTreasuriesAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("Enable")]
+    public async Task<IActionResult> EnableTreasury(int id, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.EnableTreasuryAsync(id, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("Disabled")]
+    public async Task<IActionResult> DisableTreasury(int id, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.DisableTreasuryAsync(id, cancellationToken);
+        return Ok(result);
+    }
 
     [HttpPost("assign-treasury-to-staff/{treasuryId}/{staffId}")]
     [Authorize(Roles = "SystemAdmin")]

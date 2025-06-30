@@ -3,6 +3,7 @@ export interface InsuranceCompany {
     name: string;
     code: string;
     contactNumber: string;
+    phone: string;
     email: string;
     status: 'Active' | 'Inactive';
     registrationDate?: Date;

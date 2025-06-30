@@ -1,12 +1,13 @@
-import { Component } from '@angular/core';
-import { FormGroup, FormBuilder } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { FinancialService } from '../../../../../Services/HMS/financial.service';
 
 @Component({
   selector: 'app-issue-items',
   templateUrl: './issue-items.component.html',
   styleUrl: './issue-items.component.css'
 })
-export class IssueItemsComponent {
+export class IssueItemsComponent implements OnInit {
   filterForm!:FormGroup;
   addPermissionForm!:FormGroup
    TitleList = ['المخازن','إذن صرف'];
@@ -17,7 +18,10 @@ export class IssueItemsComponent {
     pageSize:16,
     currentPage:1,
   }
-  constructor(private fb:FormBuilder){
+  allItems: any[] = [];
+
+  constructor(private fb:FormBuilder , private financialService:FinancialService){
+
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -28,11 +32,34 @@ export class IssueItemsComponent {
       documentNumber: ['0'],
       warehouseName: [''],
       supplierName: [''],
-      itemNumber: [''],
-      quantity: [1],
-      balance: [0],
+      items: this.fb.array([
+        this.createItemGroup()
+      ]),
       notes: ['']
     });    
+  }
+  ngOnInit(): void {
+    this.getItems();
+  }
+  createItemGroup(): FormGroup {
+    return this.fb.group({
+      itemId: [null, Validators.required],
+      quantity: [1, Validators.required],
+      notes: ['']
+    });
+  }
+  get items(): FormArray {
+    return this.addPermissionForm.get('items') as FormArray;
+  }
+  
+  addItemRow() {
+    this.items.push(this.createItemGroup());
+  }
+  
+  removeItemRow(index: number) {
+    if (this.items.length > 1) {
+      this.items.removeAt(index);
+    }
   }
   applyFilters(){
     this.total=this.adds.length;
@@ -55,5 +82,11 @@ export class IssueItemsComponent {
   submitPermission(){
     console.log(this.addPermissionForm.value);
     this.addPermissionForm.reset();
+  }
+  getItems(){
+    this.financialService.getItems(this.pagingFilterModel).subscribe((res:any)=>{
+      this.allItems=res.results;
+      this.total=res.count;
+    })
   }
 }
