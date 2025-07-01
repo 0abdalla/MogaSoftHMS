@@ -95,6 +95,7 @@ namespace Hospital_MS.API
             services.AddScoped<IAdditionNotificationService, AdditionNotificationService>();
             services.AddScoped<IDebitNoticeService, DebitNoticeService>();
             services.AddScoped<IBankService, BankService>();
+            services.AddScoped<IStoreService, StoreService>();
 
 
 
@@ -194,6 +195,7 @@ namespace Hospital_MS.API
                     Description = "API documentation for Hospital-MS"
                 });
 
+                options.EnableAnnotations();
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -209,6 +211,9 @@ namespace Hospital_MS.API
                     """
                 });
 
+                // Enable XML comments if needed (for detailed method descriptions)
+                var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(System.IO.Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {

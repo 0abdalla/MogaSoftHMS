@@ -4,11 +4,13 @@ using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 
 namespace Hospital_MS.API.Controllers;
 
 [Authorize]
+[SwaggerTag("ايصال التوريد")]
 public class SupplyReceiptsController(ISupplyReceiptService supplyReceiptService) : ApiBaseController
 {
     private readonly ISupplyReceiptService _supplyReceiptService = supplyReceiptService;
