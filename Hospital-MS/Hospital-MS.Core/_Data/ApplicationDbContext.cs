@@ -62,6 +62,8 @@ namespace Hospital_MS.Core._Data
         public DbSet<ReceiptPermissionItem> ReceiptPermissionItems { get; set; }
         public DbSet<MaterialIssuePermission> MaterialIssuePermissions { get; set; }
         public DbSet<MaterialIssueItem> MaterialIssueItems { get; set; }
+        public DbSet<AttendanceSalary> AttendaceSalaries { get; set; }
+        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Attendance;
+using Hospital_MS.Core.Models;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -15,4 +16,6 @@ public interface IAttendanceService
     Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> EditAttendanceAsync(int id, EditAttendanceRequest request, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> ApproveAttendanceAsync(List<int> attendanceIds, CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<string>> AddAttendaceSalariesAsync(List<AttendanceSalary> Model, CancellationToken cancellationToken = default);
+    Task<PagedResponseModel<List<AttendanceSalary>>> GetAllAttendanceSalariesAsync(PagingFilterModel filter, CancellationToken cancellationToken = default);
 }

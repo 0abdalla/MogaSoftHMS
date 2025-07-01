@@ -1,16 +1,17 @@
-import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
-import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
+import { StaffService } from '../../../../Services/HMS/staff.service';
 
 @Component({
   selector: 'app-attendance-form',
   templateUrl: './attendance-form.component.html',
   styleUrl: './attendance-form.component.css'
 })
-export class AttendanceFormComponent {
+export class AttendanceFormComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('AttendanceSidePanel', { static: true }) attendanceSidePanel!: TemplateRef<any>;
   TitleList = ['الموارد البشرية', 'الحضور والانصراف'];
@@ -18,7 +19,7 @@ export class AttendanceFormComponent {
   headers: string[] = [];
   AttendanceList: any[] = [];
   total = 0;
-  isFilter = false;
+  isFilter = true;
   pagingFilterModel: PagingFilterModel = {
     filterList: [],
     currentPage: 1,
@@ -26,7 +27,11 @@ export class AttendanceFormComponent {
     searchText: ''
   }
 
-  constructor(private offcanvasService: NgbOffcanvas) { }
+  constructor(private offcanvasService: NgbOffcanvas, private staffService: StaffService) { }
+
+  ngOnInit(): void {
+    this.GetAllAttendanceSalaries();
+  }
 
   openNewSidePanel() {
     this.offcanvasService.open(this.attendanceSidePanel, { panelClass: 'add-new-panel', position: 'end' });
@@ -37,11 +42,29 @@ export class AttendanceFormComponent {
     input.click();
   }
 
+  GetAllAttendanceSalaries() {
+    this.staffService.GetAllAttendanceSalaries(this.pagingFilterModel).subscribe(data => {
+      this.AttendanceList = data?.results ?? [];
+      this.total = data?.totalCount ?? 0;
+    });
+  }
+
+  filterChecked(filters: FilterModel[]) {
+    this.pagingFilterModel.filterList = filters;
+    this.pagingFilterModel.currentPage = 1;
+    this.GetAllAttendanceSalaries();
+  }
+
+  onPageChange(obj: any) {
+    this.pagingFilterModel.currentPage = obj.page;
+    this.GetAllAttendanceSalaries();
+  }
+
   generateTemplateExcel() {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Template');
-    const headers = ['الكود', 'الاسم', 'شفت', 'عدد', 'الراتب'];
-    const headerRow = worksheet.addRow(headers);
+    const worksheet = workbook.addWorksheet('الحضور و الانصراف');
+    worksheet.views = [{ rightToLeft: true }];
+    const headers = ['رقم البصمة', 'الاسم', 'عدد الساعات', 'ايام العمل', 'الساعات المطلوبة', 'إجمالي ساعات البصمة', 'الايام الفعلية', 'اخرى', 'ايام الجمع', 'إجمالي الأيام', 'الاضافي']; const headerRow = worksheet.addRow(headers);
     headerRow.eachCell((cell) => {
       cell.protection = { locked: true };
       cell.font = { bold: true };
@@ -63,12 +86,12 @@ export class AttendanceFormComponent {
       selectLockedCells: true,
       selectUnlockedCells: true,
       formatCells: false,
-      formatColumns: false,
+      formatColumns: true,
       formatRows: false,
       insertColumns: false,
       insertRows: false,
       deleteColumns: false,
-      deleteRows: false,
+      deleteRows: true,
       sort: false,
       autoFilter: false,
       pivotTables: false
@@ -83,7 +106,6 @@ export class AttendanceFormComponent {
   }
 
   onFileUpload(event: any) {
-    debugger;
     const file: File = event.target.files[0];
     if (!file) return;
 
@@ -99,7 +121,18 @@ export class AttendanceFormComponent {
         let headerRowIndex = allRows.findIndex(row =>
           row.some(cell =>
             typeof cell === 'string' &&
-            (cell.includes('الاسم') || cell.includes('عدد') || cell.includes('شفت') || cell.includes('الراتب') || cell.includes('الكود'))
+            (cell.includes('رقم البصمة') ||
+              cell.includes('الاسم') ||
+              cell.includes('عدد الساعات') ||
+              cell.includes('ايام العمل')
+              || cell.includes('الساعات المطلوبة')
+              || cell.includes('إجمالي ساعات البصمة')
+              || cell.includes('الايام الفعلية')
+              || cell.includes('اخرى')
+              || cell.includes('ايام الجمع')
+              || cell.includes('إجمالي الأيام')
+              || cell.includes('الاضافي')
+            )
           )
         );
         if (headerRowIndex === -1) headerRowIndex = 0;
@@ -142,7 +175,18 @@ export class AttendanceFormComponent {
         let headerRowIndex = rows.findIndex(row =>
           row.some(cell =>
             typeof cell === 'string' &&
-            (cell.includes('الاسم') || cell.includes('عدد') || cell.includes('شفت') || cell.includes('الراتب') || cell.includes('الكود'))
+            (cell.includes('رقم البصمة') ||
+              cell.includes('الاسم') ||
+              cell.includes('عدد الساعات') ||
+              cell.includes('ايام العمل')
+              || cell.includes('الساعات المطلوبة')
+              || cell.includes('إجمالي ساعات البصمة')
+              || cell.includes('الايام الفعلية')
+              || cell.includes('اخرى')
+              || cell.includes('ايام الجمع')
+              || cell.includes('إجمالي الأيام')
+              || cell.includes('الاضافي')
+            )
           )
         );
         if (headerRowIndex === -1) headerRowIndex = 0;
@@ -173,23 +217,33 @@ export class AttendanceFormComponent {
     }
   }
 
-  onPageChange(obj: any) {
-    this.pagingFilterModel.currentPage = obj.page;
-  }
-
   SaveAttendanceFile() {
     const mappedData = this.data.map(row => this.mapArabicToEnglish(row));
-    console.log(mappedData);
-    // please apply the save function here, and don't be careless
+    if (mappedData.length == 0) {
+      alert('برجاء إدخال ملف يحتوي على بيانات');
+      return;
+    }
+
+    this.staffService.AddAttendaceSalaries(mappedData).subscribe(data => {
+      this.GetAllAttendanceSalaries();
+      this.offcanvasService.dismiss();
+    });
   }
 
   mapArabicToEnglish(row: any): any {
     return {
-      staffId: row["الكود"],
+      Id: 0,
+      code: row["رقم البصمة"],
       name: row["الاسم"],
-      shift: row["شفت"],
-      count: row["عدد"],
-      salary: row["الراتب"]
+      workHours: row["عدد الساعات"],
+      workDays: row["ايام العمل"],
+      requiredHours: row["الساعات المطلوبة"],
+      totalFingerprintHours: row["إجمالي ساعات البصمة"],
+      sickDays: row["الايام الفعلية"],
+      otherDays: row["اخرى"],
+      fridays: row["ايام الجمع"],
+      totalDays: row["إجمالي الأيام"],
+      overtime: row["الاضافي"]
     };
   }
 }

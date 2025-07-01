@@ -32,9 +32,9 @@
                 </div>
                 <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
                     <div class="d-flex align-items-center">
-                        <!-- <ng-container>
-                            <app-filters [filterData]="AppointmentTypes" [filterPlaceholder]="'النوع'" [searchPlaceholder]="'أدخل إسم المريض أو رقم الهاتف ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
-                        </ng-container> -->
+                        <ng-container>
+                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الموظف او رقم البصمة ...'" (filterChanged)="filterChecked($event)"></app-filters>
+                        </ng-container>
                     </div>
                 </div>
             </div>
@@ -43,26 +43,38 @@
                     <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
                         <thead>
                             <tr>
-                                <th>الكود</th>
+                                <th>رقم البصمة</th>
                                 <th>الاسم</th>
-                                <th>الراتب</th>
-                                <th>شفت</th>
-                                <th>عدد</th>
+                                <th>عدد الساعات</th>
+                                <th>ايام العمل</th>
+                                <th>الساعات المطلوبة</th>
+                                <th>إجمالي ساعات البصمة</th>
+                                <th>الايام الفعلية</th>
+                                <th>اخرى</th>
+                                <th>ايام الجمع</th>
+                                <th>إجمالي الأيام</th>
+                                <th>الاضافي</th>
                             </tr>
                         </thead>
                         <tbody>
                             <ng-container>
                                 <tr *ngFor="let item of AttendanceList">
+                                    <td>{{item.code}}</td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2 justify-content-start">
-                                            <div class="avatar-circle">{{ item.patientName.charAt(0) }}</div>
-                                            <span class="fw-bold">{{ item.patientName }}</span>
+                                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
+                                            <span class="fw-bold">{{ item.name }}</span>
                                         </div>
                                     </td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>{{item.workHours}}</td>
+                                    <td>{{item.workDays}}</td>
+                                    <td>{{item.requiredHours}}</td>
+                                    <td>{{item.totalFingerprintHours}}</td>
+                                    <td>{{item.sickDays}}</td>
+                                    <td>{{item.otherDays}}</td>
+                                    <td>{{item.fridays}}</td>
+                                    <td>{{item.totalDays}}</td>
+                                    <td>{{item.overtime}}</td>
                             </ng-container>
                         </tbody>
                     </table>
