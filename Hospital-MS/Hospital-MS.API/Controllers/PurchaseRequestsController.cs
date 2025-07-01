@@ -1,11 +1,13 @@
-using Hospital_MS.API.Controllers;
+﻿using Hospital_MS.API.Controllers;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.PurchaseRequests;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 [Authorize]
+[SwaggerTag("طلب الشراء")]
 public class PurchaseRequestsController(IPurchaseRequestService service) : ApiBaseController
 {
     private readonly IPurchaseRequestService _service = service;
