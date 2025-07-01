@@ -117,8 +117,9 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
+                var SearchText = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
                 var Params = new SqlParameter[3];
-                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                Params[0] = new SqlParameter("@SearchText", SearchText ?? (object)DBNull.Value);
                 Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
                 Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
 

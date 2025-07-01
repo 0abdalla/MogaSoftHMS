@@ -1,3 +1,22 @@
-#attendance{
+#attendance {
     min-height: 100vh;
+}
+
+.add-new-panel {
+    width: 60% !important;
+}
+
+td {
+    text-align: center;
+}
+
+::ng-deep ngb-offcanvas-panel {
+    width: 60% !important;
+}
+
+.offcanvas-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    z-index: 100;
 }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
-import { FormArray, FormBuilder, FormGroup , Validators } from '@angular/forms';
-import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { MessageService } from 'primeng/api';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 
@@ -11,33 +11,34 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
   styleUrl: './medical-services-list.component.css'
 })
 export class MedicalServicesListComponent implements OnInit {
-  TitleList = ['إعدادات النظام','إعدادات المواعيد والحجز'];
-  services!:any[];
-  total!:number;
+  TitleList = ['إعدادات النظام', 'إعدادات المواعيد والحجز'];
+  services!: any[];
+  total!: number;
   filterForm!: FormGroup;
   serviceForm!: FormGroup;
   serviceDetails!: any;
   // 
   pagingFilterModel: PagingFilterModel = {
-      searchText: '',
-      currentPage: 1,
-      pageSize: 16,
-      filterList: []
-    };
-    weekDays = [
-      {day:'الأحد',value:'Sunday'},
-      {day:'الإثنين',value:'Monday'},
-      {day:'الثلاثاء',value:'Tuesday'},
-      {day:'الأربعاء',value:'Wednesday'},
-      {day:'الخميس',value:'Thursday'},
-      {day:'الجمعة',value:'Friday'},
-      {day:'السبت',value:'Saturday'}
-    ];
-  constructor(private appointmentService : AppointmentService , private fb : FormBuilder , private messageService : MessageService){
+    searchText: '',
+    currentPage: 1,
+    pageSize: 16,
+    filterList: []
+  };
+  weekDays = [
+    { day: 'الأحد', value: 'Sunday' },
+    { day: 'الإثنين', value: 'Monday' },
+    { day: 'الثلاثاء', value: 'Tuesday' },
+    { day: 'الأربعاء', value: 'Wednesday' },
+    { day: 'الخميس', value: 'Thursday' },
+    { day: 'الجمعة', value: 'Friday' },
+    { day: 'السبت', value: 'Saturday' }
+  ];
+  isFilter = true;
+  constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService) {
     this.filterForm = this.fb.group({
       SearchText: [''],
     });
-  
+
     this.filterForm.get('SearchText')?.valueChanges
       .pipe(
         debounceTime(300),
@@ -47,11 +48,11 @@ export class MedicalServicesListComponent implements OnInit {
         this.pagingFilterModel.searchText = searchText;
         this.getServices();
       });
-    
+
     this.serviceForm = this.fb.group({
-      name: ['' , [Validators.required , Validators.minLength(3)]],
-      price: ['' , [Validators.required , Validators.pattern('^[0-9]*$') , Validators.min(1) , Validators.max(1000)] ],
-      type: ['' , Validators.required],
+      name: ['', [Validators.required, Validators.minLength(3)]],
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1), Validators.max(1000)]],
+      type: ['', Validators.required],
       medicalServiceSchedules: this.fb.array([this.createSchedule()]),
     })
   }
@@ -83,7 +84,7 @@ export class MedicalServicesListComponent implements OnInit {
       });
     }
   }
-  getServices(){
+  getServices() {
     this.appointmentService.getServices(this.pagingFilterModel.currentPage, this.pagingFilterModel.pageSize, this.pagingFilterModel.searchText, this.pagingFilterModel.filterList).subscribe({
       next: (data) => {
         this.services = data.results.map((service: any) => {
@@ -114,15 +115,12 @@ export class MedicalServicesListComponent implements OnInit {
     });
   }
   // 
-  applyFilters(){
+  applyFilters(filters: FilterModel[]) {
+    this.pagingFilterModel.filterList = filters;
+    this.pagingFilterModel.currentPage = 1;
     this.getServices();
   }
-  resetFilters() {
-    this.filterForm.patchValue({ SearchText: '' }, { emitEvent: false });
-    this.pagingFilterModel.searchText = '';
-    this.getServices();
-  }
-  
+
   openServiceDetails(serviceId: number) {
     this.appointmentService.getServices().subscribe({
       next: (data) => {
