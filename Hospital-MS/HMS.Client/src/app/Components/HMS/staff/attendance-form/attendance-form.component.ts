@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-attendance-form',
@@ -7,9 +9,55 @@ import * as XLSX from 'xlsx';
   styleUrl: './attendance-form.component.css'
 })
 export class AttendanceFormComponent {
-  TitleList = ['الموارد البشرية','الحضور والانصراف'];
+  TitleList = ['الموارد البشرية', 'الحضور والانصراف'];
   data: any[] = [];
   headers: string[] = [];
+
+  generateTemplateExcel() {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Template');
+    const headers = ['الاسم', 'العمر', 'العنوان'];
+    const headerRow = worksheet.addRow(headers);
+
+    headerRow.eachCell((cell) => {
+      cell.protection = { locked: true };
+      cell.font = { bold: true };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFDDDDDD' }
+      };
+    });
+
+    for (let i = 2; i <= 1000; i++) {
+      for (let j = 1; j <= headers.length; j++) {
+        const cell = worksheet.getCell(i, j);
+        cell.protection = { locked: false };
+      }
+    }
+
+    worksheet.protect('', {
+      selectLockedCells: true,
+      selectUnlockedCells: true,
+      formatCells: false,
+      formatColumns: false,
+      formatRows: false,
+      insertColumns: false,
+      insertRows: false,
+      deleteColumns: false,
+      deleteRows: false,
+      sort: false,
+      autoFilter: false,
+      pivotTables: false
+    }).then(() => {
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        FileSaver.saveAs(blob, 'نموذج_الادخال.xlsx');
+      });
+    });
+  }
 
   onFileUpload(event: any) {
     const file: File = event.target.files[0];
@@ -27,7 +75,7 @@ export class AttendanceFormComponent {
         let headerRowIndex = allRows.findIndex(row =>
           row.some(cell =>
             typeof cell === 'string' &&
-            (cell.includes('الاسم') || cell.includes('عدد') || cell.includes('شفت') || cell.includes('الراتب'))
+            (cell.includes('الاسم') || cell.includes('عدد') || cell.includes('شفت') || cell.includes('الراتب') || cell.includes('الكود'))
           )
         );
         if (headerRowIndex === -1) headerRowIndex = 0;
@@ -51,7 +99,6 @@ export class AttendanceFormComponent {
       };
       reader.readAsText(file);
     }
-
     else if (extension === 'xlsx') {
       reader.onload = (e: any) => {
         const binary = new Uint8Array(e.target.result);
@@ -69,7 +116,7 @@ export class AttendanceFormComponent {
         let headerRowIndex = rows.findIndex(row =>
           row.some(cell =>
             typeof cell === 'string' &&
-            (cell.includes('الاسم') || cell.includes('عدد') || cell.includes('شفت') || cell.includes('الراتب'))
+            (cell.includes('الاسم') || cell.includes('عدد') || cell.includes('شفت') || cell.includes('الراتب') || cell.includes('الكود'))
           )
         );
         if (headerRowIndex === -1) headerRowIndex = 0;
