@@ -21,12 +21,23 @@
   
         <div class="mb-3">
           <label class="form-label">كلمة المرور</label>
-          <input
-            placeholder="كلمة المرور"
-            type="password"
-            class="form-control"
-            formControlName="password"
-          />
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="كلمة المرور"
+              class="form-control"
+              formControlName="password"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="togglePassword()"
+              tabindex="-1"
+            >
+              <i class="fa" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+            </button>
+          </div>
+          
           <div *ngIf="loignForm.get('password')?.invalid && loignForm.get('password')?.touched" class="text-danger">
             كلمة المرور مطلوبة
           </div>

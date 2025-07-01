@@ -68,6 +68,77 @@
                 <label class="form-label">ملاحظات</label>
                 <textarea formControlName="notes" rows="3" class="form-control shadow-none"></textarea>
             </div>
+            <hr>
+            <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50 px-3">
+            <h5 class="mb-0 fw-bold">
+                <span>📋بيانات إضافية</span>
+            </h5>
+            <button class="btn-blue" (click)="showAdditionalInfo = !showAdditionalInfo">
+                {{ showAdditionalInfo ? 'إخفاء' : 'إظهار' }}
+            </button>
+            </div>
+            <div class="row mb-3" *ngIf="showAdditionalInfo">
+                <div class="col-lg-4">
+                    <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
+                    <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
+            <option selected disabled value="">اختر شركة التأمين</option>
+            <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{ insuranceCompany.name }}</option>
+          </select>
+                </div>
+                <div class="col-lg-4">
+                  <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
+                  <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
+                    <option selected disabled value="">اختر فئة التأمين</option>
+                    <option *ngFor="let insuranceCategory of insuranceCompanies" [value]="insuranceCategory.id">{{insuranceCategory.name}}</option>
+                  </select>
+                  <div *ngIf="emergencyForm.get('insuranceCategoryId')?.invalid && emergencyForm.get('insuranceCategoryId')?.touched" class="text-danger">
+                    فئة التأمين مطلوبة
+                  </div>
+                </div>
+                <div class="col-lg-4">
+                    <label for="insuranceNumber" class="form-label">رقم التأمين</label>
+                    <input type="text" id="insuranceNumber" class="form-control shadow-none" formControlName="insuranceNumber" placeholder="أدخل رقم التأمين" pattern="[0-9]*">
+                </div>
+
+                <div class="col-lg-4 mt-3">
+                    <label class="form-label">تم تحويله؟</label>
+                    <div class="form-check">
+                        <input type="radio" id="referredYes" class="form-check-input shadow-none" formControlName="referred" value="yes">
+                        <label for="referredYes" class="form-check-label">نعم</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" id="referredNo" class="form-check-input shadow-none" formControlName="referred" value="no">
+                        <label for="referredNo" class="form-check-label">لا</label>
+                    </div>
+                </div>
+                <div class="col-lg-4 mt-3" *ngIf="emergencyForm.get('referred')?.value === 'yes'">
+                    <label for="referredClinic" class="form-label">العيادة المحول منها</label>
+                    <select [disabled]="!emergencyForm.get('referred')?.value" id="referredClinic" class="form-select shadow-none" formControlName="referredClinic">
+            <option selected disabled value="">اختر العيادة</option>
+            <option value="عيادة العظام">عيادة العظام</option>
+            <option value="عيادة الباطنة">عيادة الباطنة</option>
+          </select>
+                </div>
+                <!-- <div class="col-lg-4 mt-3">
+          <label class="form-label">حاصل على تطعيم؟</label>
+          <div class="form-check">
+            <input type="radio" id="vaccinatedYes" class="form-check-input shadow-none" formControlName="vaccinated" value="yes">
+            <label for="vaccinatedYes" class="form-check-label">نعم</label>
+          </div>
+          <div class="form-check">
+            <input type="radio" id="vaccinatedNo" class="form-check-input shadow-none" formControlName="vaccinated" value="no">
+            <label for="vaccinatedNo" class="form-check-label">لا</label>
+          </div>
+        </div> -->
+                <div class="col-lg-4 mt-3">
+                    <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
+                    <select id="paymentMethod" class="form-select shadow-none" formControlName="paymentMethod">
+                    <option selected disabled value="">اختر وسيلة الدفع</option>
+                    <option value="نقدي">نقدي</option>
+                    <option value="تحويل لحظي">تحويل لحظي</option>
+          </select>
+                </div>
+            </div>
             <div class="row justify-content-center gap-2">
                 <button [disabled]="emergencyForm.invalid" class="btn-blue col-2" type="submit">حفظ البيانات</button>
                 <button type="reset" class="btn-outline-blue col-2">إلغاء</button>

@@ -44,6 +44,9 @@ export class PatientFormComponent implements OnInit {
   currentDate!: any
   // 
   selectedDailyPrice: number | null = null;
+  // 
+  showAdditionalInfo:boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,

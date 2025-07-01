@@ -25,6 +25,10 @@ import { AddNoticeComponent } from './action/bankActions/add-notice/add-notice.c
 import { DiscountNoticeComponent } from './action/bankActions/discount-notice/discount-notice.component';
 import { BankIndexComponent } from './action/bankActions/bank-index/bank-index.component';
 import { RestrictionsComponent } from './action/restrictions/restrictions.component';
+import { PurchaseRequestComponent } from './inputs/purchase-request/purchase-request.component';
+import { OffersComponent } from './inputs/offers/offers.component';
+import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
+import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -47,6 +51,9 @@ import { RestrictionsComponent } from './action/restrictions/restrictions.compon
     DiscountNoticeComponent,
     BankIndexComponent,
     RestrictionsComponent,
+    PurchaseRequestComponent,
+    PurchaseOrderComponent,
+    OffersComponent,
   ],
   imports: [
     CommonModule,
@@ -57,6 +64,8 @@ import { RestrictionsComponent } from './action/restrictions/restrictions.compon
     NgSelectModule,
     NgxPaginationModule,
     ToastModule,
+    // NgModule
+    NgbCollapseModule
   ]
 })
 export class FinTreeModule { }

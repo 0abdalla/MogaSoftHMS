@@ -20,7 +20,7 @@
         </div>
     </div>
 </div>
-<div *ngIf="selectMulti" ngbDropdown [autoClose]="'outside'" class="dropdown-as-input">
+<div *ngIf="selectMulti" ngbDropdown class="dropdown-as-input"> <!-- to add the autoClose property to the div element -->
     <button type="button" [disabled]="disabled" id="dropdownBasic1" ngbDropdownToggle>
         <div class="overflow-hidden"> 
             <span *ngIf="selectedItems.length === 0">{{placeholder}}</span>

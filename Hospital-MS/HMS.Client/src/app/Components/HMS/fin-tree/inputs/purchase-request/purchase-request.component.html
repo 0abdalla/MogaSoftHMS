@@ -1,0 +1,140 @@
+<main id="list-purchase-request">
+    <div class="container-fluid">
+      <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <div class="row">
+            <div class="col-md-6">
+                <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addPurchaseRequestModal">إضافة طلب شراء</button>
+            </div>
+            <div class="col-md-6 " *ngIf="total > 0 && purchaseRequests.length > 16">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+
+            <div class="col-12 mt-3">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>رقم الطلب</th>
+                            <th>تاريخ الطلب</th>
+                            <th>اسم المخزن</th>
+                            <th>الحالة</th>
+                            <th>الغرض</th>
+                            <th>العناصر</th>
+                            <th>الإجراءات</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let order of purchaseRequests; let i = index">
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ order.requestNumber }}</td>
+                            <td>{{ order.requestDate | date: 'yyyy-MM-dd – HH:mm' }}</td>
+                            <td>{{ order.storeName }}</td>
+                            <td>{{ order.status || '-' }}</td>
+                            <td>{{ order.purpose || '-' }}</td>
+                            <td>{{ order.items }}</td>
+                            <td>
+                              <button class="btn btn-primary mx-1" (click)="editPurchaseRequest(order.id)">
+                                  <i class="fa fa-edit"></i>
+                                </button>                          
+                              <button class="btn btn-danger mx-1" (click)="deletePurchaseRequest(order.id)">
+                                  <i class="fa fa-trash"></i>
+                                </button>
+                          </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+
+<div class="modal fade" id="addPurchaseRequestModal" tabindex="-1" aria-labelledby="addPurchaseRequestModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content">
+          <div class="modal-header justify-content-center">
+              <h5 class="modal-title" id="addPurchaseRequestModalLabel">
+                  {{ isEditMode ? 'تعديل طلب شراء' : 'إضافة طلب شراء' }}
+              </h5>                  
+          </div>
+          <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+              <form [formGroup]="purchaseRequestForm" (ngSubmit)="addPurchaseRequest()">
+                  <div class="row p-3 mb-3">
+                      <div class="col-md-3">
+                          <div class="form-group">
+                              <label>الغرض</label>
+                              <input type="text" formControlName="purpose" class="form-control shadow-none text-end">
+                          </div>
+                      </div>
+
+                      <div class="col-md-9">
+                          <div class="form-group">
+                              <label>اسم المخزن</label>
+                              <select class="form-select shadow-none" formControlName="storeId">
+                                <option disabled selected value="">اختر المخزن</option>
+                                <option value="1">المخزن الرئيسي</option>
+                                <option value="2">مخزن فرعي</option>
+                                <!-- <option *ngFor="let i of allStores" [value]="i.id">{{ i.nameAr }}</option> -->
+                              </select>
+                          </div>
+                      </div>
+
+                      <div class="col-md-12 mt-3">
+                          <div class="form-group">
+                              <label>ملاحظات</label>
+                              <input type="text" formControlName="notes" class="form-control shadow-none text-end">
+                          </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div formArrayName="items">
+                      <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                        <div class="col-md-4">
+                          <label>الصنف</label>
+                          <select class="form-select shadow-none" formControlName="itemId">
+                            <option disabled selected value="">اختر الصنف</option>
+                            <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
+                          </select>
+                        </div>
+                    
+                        <div class="col-md-3">
+                          <label>الكمية</label>
+                          <input type="number" class="form-control shadow-none" formControlName="quantity">
+                        </div>
+                    
+                        <div class="col-md-4">
+                          <label>ملاحظات</label>
+                          <input type="text" class="form-control shadow-none" formControlName="notes">
+                        </div>
+                    
+                        <div class="col-md-1 d-flex align-items-end">
+                          <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    
+                      <div class="text-start mb-3">
+                        <button type="button" class="btn btn-success" (click)="addItemRow()">
+                          <i class="fa fa-plus"></i> إضافة صنف
+                        </button>
+                      </div>
+                    </div>
+                    
+                  </div>
+
+                  <div class="text-center">
+                      <button type="submit" class="btn-blue px-4" [disabled]="purchaseRequestForm.invalid">
+                          {{ isEditMode ? 'حفظ التعديلات' : 'إضافة طلب شراء' }}
+                        </button>                          
+                  </div>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>

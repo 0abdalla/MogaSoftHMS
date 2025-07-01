@@ -99,7 +99,8 @@ export class AttendanceFormComponent {
       };
       reader.readAsText(file);
     }
-    else if (extension === 'xlsx') {
+
+    else if (extension === 'xlsx' || extension === 'xls') {
       reader.onload = (e: any) => {
         const binary = new Uint8Array(e.target.result);
         const workbook = XLSX.read(binary, { type: 'array' });

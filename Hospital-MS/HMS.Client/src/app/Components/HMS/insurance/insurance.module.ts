@@ -9,6 +9,7 @@ import { ToastModule } from 'primeng/toast';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { InsuranceEditComponent } from './insurance-edit/insurance-edit.component';
 import { SharedModule } from '../../../Shared/shared.module';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { SharedModule } from '../../../Shared/shared.module';
     ReactiveFormsModule,
     ToastModule,
     NgxPaginationModule,
-    SharedModule
+    SharedModule,
+    NgbModule
   ]
 })
 export class InsuranceModule { }

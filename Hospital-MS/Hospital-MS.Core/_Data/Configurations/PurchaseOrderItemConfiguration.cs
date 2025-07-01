@@ -13,22 +13,10 @@ public class PurchaseOrderItemConfiguration : IEntityTypeConfiguration<PurchaseO
     public void Configure(EntityTypeBuilder<PurchaseOrderItem> builder)
     {
         builder.ToTable("PurchaseOrderItems", schema: "finance");
-
         builder.HasKey(x => x.Id);
-
-        builder.Property(x => x.Quantity)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(x => x.UnitCost)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(x => x.TotalCost)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
+        builder.Property(x => x.Unit).HasMaxLength(50);
+        builder.Property(x => x.IsActive).HasDefaultValue(true);
+        builder.HasOne(x => x.PurchaseOrder).WithMany(x => x.Items).HasForeignKey(x => x.PurchaseOrderId);
+        builder.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
     }
 }

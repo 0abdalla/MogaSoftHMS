@@ -81,7 +81,15 @@
         </div>
         
         <div class="col-lg-3">
-          <label for="clinic" class="form-label">الخدمة الطبية</label>
+          <label for="clinic" class="form-label">
+            {{
+              reservationForm.get('appointmentType')?.value === 'Screening'
+                ? 'نوع التحليل'
+                : reservationForm.get('appointmentType')?.value === 'Radiology'
+                  ? 'نوع الأشعة'
+                  : 'الخدمة الطبية'
+            }}
+          </label>
           <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" 
                   (change)="onServiceSelected()">
             <option selected disabled value="">اختر الخدمة</option>
@@ -93,7 +101,13 @@
             </option>
           </select>
           <div *ngIf="reservationForm.get('medicalServiceId')?.invalid && reservationForm.get('medicalServiceId')?.touched" class="text-danger">
-            الخدمة الطبية مطلوبة
+            {{ 
+              reservationForm.get('appointmentType')?.value === 'Screening'
+                ? 'نوع التحليل مطلوب'
+                : reservationForm.get('appointmentType')?.value === 'Radiology'
+                  ? 'نوع الأشعة مطلوبة'
+                  : 'الخدمة الطبية مطلوبة'
+            }}
           </div>
         </div>
         
@@ -116,8 +130,15 @@
         <h5>تكلفة الخدمة : <span>{{ selectedServicePrice !== null ? selectedServicePrice + ' جنيه' : 'غير محدد' }}</span></h5>
       </div>
             <hr>
-            <h4>📋بيانات إضافية</h4>
-            <div class="row mb-3">
+            <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50 px-3">
+              <h5 class="mb-0 fw-bold">
+                <span>📋بيانات إضافية</span>
+            </h5>
+            <button class="btn-blue" (click)="showAdditionalInfo = !showAdditionalInfo">
+                {{ showAdditionalInfo ? 'إخفاء' : 'إظهار' }}
+            </button>
+            </div>
+            <div class="row mb-3" *ngIf="showAdditionalInfo">
                 <div class="col-lg-4">
                     <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
                     <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">

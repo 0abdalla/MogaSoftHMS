@@ -24,19 +24,19 @@ export class MenueService {
       route: '/hms/emergency/emergency-reception',
       isGroup: false
     },
-    {
-      displayName: 'وكلاء التأمين',
-      icon: 'fa-solid fa-file-contract',
-      route:'/hms/insurance/insurance-list',
-      isGroup: false,
-    },
+    // {
+    //   displayName: 'وكلاء التأمين',
+    //   icon: 'fa-solid fa-file-contract',
+    //   route:'/hms/insurance/insurance-list',
+    //   isGroup: false,
+    // },
     {
       displayName: 'المخازن',
       icon: 'fa-solid fa-boxes-stacked',
       isGroup: true,
       subMenus: [
         {
-          displayName: 'إذن إضافة',
+          displayName: 'إذن إستلام ',
           icon: 'fa-solid fa-circle',
           route: '/hms/fin-tree/add-items'
         },
@@ -55,27 +55,27 @@ export class MenueService {
         {
           displayName: 'طلب شراء',
           icon: 'fa-solid fa-circle',
-          route: ''
-        },
-        {
-          displayName: 'أمر شراء',
-          icon: 'fa-solid fa-circle',
-          route: ''
-        },
-        {
-          displayName: 'الموردين',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/providers'
+          route: '/hms/fin-tree/purchase-request'
         },
         {
           displayName: 'عروض الأسعار',
           icon: 'fa-solid fa-circle',
-          route: ''
-        }
-
+          route: '/hms/fin-tree/offers'
+        },
+        {
+          displayName: 'أمر شراء',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/fin-tree/purchase-order'
+        },
+        // {
+        //   displayName: 'الموردين',
+        //   icon: 'fa-solid fa-circle',
+        //   route: '/hms/fin-tree/providers'
+        // },
+        
       ]
     },
-     {
+    {
       displayName: 'الإدارة المالية',
       icon: 'fa-solid fa-money-bill-trend-up',
       isGroup: true,
@@ -83,28 +83,29 @@ export class MenueService {
         {
           displayName: 'حركة الخزينة',
           icon: 'fa-solid fa-circle',
-          subMenus: [
-            {
-              displayName: 'ايصال استلام نقدية',
-              icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/treasury/supply-receipt'
-            },
-            {
-              displayName: 'إذن صرف نقدي',
-              icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/treasury/exchange-permission'
-            },
-            {
-              displayName: 'كشف حركة الخزينة',
-              icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/treasury'
-            },
-            {
-              displayName: 'إغلاق حركة الخزينة',
-              icon: 'fa-solid fa-circle',
-              route: '/hms/staff/classification'
-            },
-          ]
+          route: '/hms/fin-tree/treasury',
+          // subMenus: [
+          //   {
+          //     displayName: 'ايصال استلام نقدية',
+          //     icon: 'fa-solid fa-circle',
+          //     route: '/hms/fin-tree/treasury/supply-receipt'
+          //   },
+          //   {
+          //     displayName: 'إذن صرف نقدي',
+          //     icon: 'fa-solid fa-circle',
+          //     route: '/hms/fin-tree/treasury/exchange-permission'
+          //   },
+          //   {
+          //     displayName: 'كشف حركة الخزينة',
+          //     icon: 'fa-solid fa-circle',
+          //     route: '/hms/fin-tree/treasury'
+          //   },
+          //   {
+          //     displayName: 'إغلاق حركة الخزينة',
+          //     icon: 'fa-solid fa-circle',
+          //     route: '/hms/staff/classification'
+          //   },
+          // ]
         },
         {
           displayName: 'حركة البنك',
@@ -130,7 +131,7 @@ export class MenueService {
         {
           displayName: 'رواتب الموظفين',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/staff/salaries'
         },
         {
           displayName: 'سلف الموظفين',
@@ -211,7 +212,7 @@ export class MenueService {
         {
           displayName: 'إعدادات وكلاء التامين',
           icon: 'fa-solid fa-circle',
-          route: ''
+          route: '/hms/insurance/insurance-list'
         },
         {
           displayName: 'إعدادات المخازن',

@@ -12,13 +12,11 @@ import { FiltersComponent } from './filters/filters.component';
 import { FormsModule } from '@angular/forms';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { EmptyDataComponent } from './empty-data/empty-data.component';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GeneralSelectorComponent } from './general-selector/general-selector.component';
 import { GoToAccountReportDirective } from '../Directives/go-to-account-report.directive';
 import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
 import { ColorWithStatusDirectiveDirective } from '../Directives/color-with-status.directive.directive';
 import { WorkflowStatusDirective } from '../Directives/workflow-status.directive';
-
 
 
 @NgModule({
@@ -43,7 +41,6 @@ import { WorkflowStatusDirective } from '../Directives/workflow-status.directive
   imports: [
     CommonModule,
     FormsModule,
-    NgbModule
   ],
   exports: [
     AgePipe,

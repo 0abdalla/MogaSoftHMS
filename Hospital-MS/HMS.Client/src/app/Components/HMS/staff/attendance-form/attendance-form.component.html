@@ -2,8 +2,17 @@
     <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
     <div class="p-4">
         <h4>استيراد ملف الحضور والإنصراف</h4>
-        <input type="file" accept=".csv,.xlsx" (change)="onFileUpload($event)" class="form-control shadow-none mb-3" />
-
+        <input 
+        type="file" 
+        accept=".csv,.xlsx,.xls" 
+        (change)="onFileUpload($event)" 
+        class="d-none" 
+        #fileInput
+      />
+      
+      <button type="button" class="btn-blue mb-3" (click)="fileInput.click()">
+        رفع ملف
+      </button>
         <div *ngIf="data.length > 0" style="overflow-x: auto;">
             <table class="table table-bordered table-sm text-center" style="min-width: max-content;">
                 <thead class="table-light">

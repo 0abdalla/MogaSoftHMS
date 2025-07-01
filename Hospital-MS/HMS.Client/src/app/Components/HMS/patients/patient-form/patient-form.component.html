@@ -221,12 +221,15 @@
             </div>
 
             <div class="inputs-wrapper border rounded bg-white mb-3">
-                <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50">
+                <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50 px-3">
                     <h5 class="mb-0 fw-bold">
                         <span>📋بيانات إضافية</span>
                     </h5>
+                    <button class="btn-blue" (click)="showAdditionalInfo = !showAdditionalInfo">
+                        {{ showAdditionalInfo ? 'إخفاء' : 'إظهار' }}
+                    </button>
                 </div>
-                <div class="inputs-sec-content px-3 py-2">
+                <div class="inputs-sec-content px-3 py-2" *ngIf="showAdditionalInfo">
                     <div class="row gy-3">
                         <div class="col-lg-4">
                             <div class="mb-2">

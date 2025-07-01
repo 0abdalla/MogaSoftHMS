@@ -81,16 +81,23 @@ namespace Hospital_MS.API
             services.AddScoped<ITreasuryService, TreasuryService>();
             services.AddScoped<ICustomerService, CustomerService>();
             services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+            services.AddScoped<IPurchaseRequestService, PurchaseRequestService>();
+            services.AddScoped<IPriceQuotationService, PriceQuotationService>();
             services.AddScoped<IDispensePermissionService, DispensePermissionService>();
             services.AddScoped<IStoreCountService, StoreCountService>();
             services.AddScoped<IAttendanceService, AttendanceService>();
             services.AddScoped<IAccountTreeService, AccountTreeService>();
             services.AddScoped<ICostCenterTreeService, CostCenterTreeService>();
-            services.AddScoped<IPenaltyService, PenaltyService>();
             services.AddScoped<IVacationService, VacationService>();
             services.AddScoped<IEmployeeAdvancesService, EmployeeAdvancesService>();
+            services.AddScoped<IReceiptPermissionService, ReceiptPermissionService>();
+            services.AddScoped<IMaterialIssuePermissionService, MaterialIssuePermissionService>();
+            services.AddScoped<IAdditionNotificationService, AdditionNotificationService>();
+            services.AddScoped<IDebitNoticeService, DebitNoticeService>();
+            services.AddScoped<IBankService, BankService>();
 
-            
+
+
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)
             .AddHangfire(options => { options.MinimumAvailableServers = 1; });
