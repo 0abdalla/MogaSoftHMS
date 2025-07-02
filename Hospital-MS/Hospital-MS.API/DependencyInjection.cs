@@ -16,6 +16,7 @@ using Hospital_MS.Services.HMS;
 using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -95,8 +96,15 @@ namespace Hospital_MS.API
             services.AddScoped<IAdditionNotificationService, AdditionNotificationService>();
             services.AddScoped<IDebitNoticeService, DebitNoticeService>();
             services.AddScoped<IBankService, BankService>();
+            services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<IStoreTypeService, StoreTypeService>();
+            services.AddScoped<IBranchService, BranchService>();
+
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IEmailSender, EmailService>();
 
 
+            services.AddHttpContextAccessor();
 
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)
@@ -194,6 +202,7 @@ namespace Hospital_MS.API
                     Description = "API documentation for Hospital-MS"
                 });
 
+                options.EnableAnnotations();
 
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
@@ -209,6 +218,9 @@ namespace Hospital_MS.API
                     """
                 });
 
+                // Enable XML comments if needed (for detailed method descriptions)
+                var xmlFilename = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                options.IncludeXmlComments(System.IO.Path.Combine(AppContext.BaseDirectory, xmlFilename));
 
                 options.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {

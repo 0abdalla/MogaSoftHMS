@@ -145,7 +145,7 @@ public class AttendanceService(IUnitOfWork unitOfWork) : IAttendanceService
         try
         {
             if (file == null || file.Length == 0)
-                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed,"لم يتم رفع ملف.");
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, "لم يتم رفع ملف.");
 
             using var stream = file.OpenReadStream();
             using var reader = new StreamReader(stream);
@@ -168,6 +168,66 @@ public class AttendanceService(IUnitOfWork unitOfWork) : IAttendanceService
             }
 
             await _unitOfWork.Repository<Attendance>().AddRangeAsync(attendances, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public async Task<PagedResponseModel<List<AttendanceSalary>>> GetAllAttendanceSalariesAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = _unitOfWork.Repository<AttendanceSalary>().GetAll();
+            var SearchText = filter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                query = query.Where(x => x.Name.Contains(SearchText) || x.Code.Contains(SearchText));
+            }
+
+            if (filter.FilterList != null)
+            {
+                //var status = filter.FilterList.FirstOrDefault(f => f.CategoryName == "Status")?.ItemValue;
+                //if (!string.IsNullOrEmpty(status) && Enum.TryParse<AttendanceStatus>(status, out var statusEnum))
+                //{
+                //    query = query.Where(x => x.Status == statusEnum);
+                //}
+
+                //var dateFilter = filter.FilterList.FirstOrDefault(f => f.CategoryName == "Date");
+                //if (dateFilter != null)
+                //{
+                //    if (dateFilter.FromDate.HasValue)
+                //        query = query.Where(x => x.Date >= DateOnly.FromDateTime(dateFilter.FromDate.Value));
+                //    if (dateFilter.ToDate.HasValue)
+                //        query = query.Where(x => x.Date <= DateOnly.FromDateTime(dateFilter.ToDate.Value));
+                //}
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var attendances = await query
+                .OrderBy(x => x.CreatedOn)
+                .Skip((filter.CurrentPage - 1) * filter.PageSize)
+                .Take(filter.PageSize)
+                .ToListAsync(cancellationToken);
+
+            return PagedResponseModel<List<AttendanceSalary>>.Success(GenericErrors.GetSuccess, totalCount, attendances);
+        }
+        catch (Exception)
+        {
+            return PagedResponseModel<List<AttendanceSalary>>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public async Task<ErrorResponseModel<string>> AddAttendaceSalariesAsync(List<AttendanceSalary> Model, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _unitOfWork.Repository<AttendanceSalary>().AddRangeAsync(Model, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess);

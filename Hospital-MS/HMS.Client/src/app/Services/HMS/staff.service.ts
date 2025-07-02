@@ -245,4 +245,14 @@ export class StaffService {
     return this.http.post<PagedResponseModel<EmployeeSalarySummaryModel[]>>(this.baseUrl + 'Attendance/GetEmployeeSalarySummary?Year=' + year + '&Month=' + month, model);
   }
 
+  // ================================= Attendance ==========================================
+
+  AddAttendaceSalaries(Model: any) {
+    return this.http.post<any>(this.baseUrl + 'Attendance/AddAttendaceSalaries', Model);
+  }
+
+  GetAllAttendanceSalaries(filter: PagingFilterModel) {
+    return this.http.post<any>(this.baseUrl + 'Attendance/GetAllAttendanceSalaries', filter);
+  }
+
 }

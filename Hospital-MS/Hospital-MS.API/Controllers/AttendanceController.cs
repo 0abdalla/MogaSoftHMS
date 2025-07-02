@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Attendance;
+using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -29,5 +30,13 @@ namespace Hospital_MS.API.Controllers
         [HttpPost("approve")]
         public async Task<IActionResult> ApproveAttendance([FromBody] List<int> attendanceIds, CancellationToken cancellationToken)
             => Ok(await _attendanceService.ApproveAttendanceAsync(attendanceIds, cancellationToken));
+
+        [HttpPost("AddAttendaceSalaries")]
+        public async Task<IActionResult> AddAttendaceSalariesAsync(List<AttendanceSalary> Model, CancellationToken cancellationToken = default)
+            => Ok(await _attendanceService.AddAttendaceSalariesAsync(Model, cancellationToken));
+
+        [HttpPost("GetAllAttendanceSalaries")]
+        public async Task<IActionResult> GetAllAttendanceSalariesAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
+            => Ok(await _attendanceService.GetAllAttendanceSalariesAsync(filter, cancellationToken));
     }
 }

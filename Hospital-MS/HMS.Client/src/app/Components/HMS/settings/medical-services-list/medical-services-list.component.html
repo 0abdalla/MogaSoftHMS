@@ -2,24 +2,29 @@
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="card p-2">
-            <div class="p-3">
-                <p-toast position="top-left"></p-toast>
-                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-                    <div class="row justify-content-between align-items-center gap-2">
-                        <div class="row col-8">
-                            <div class="col-lg-2">
-                                <button type="button" (click)="resetFilters()" class="btn-cancel ">إظهار الكل</button>
-                            </div>
-                            <div class="col-lg-6">
-                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الخدمة" formControlName="SearchText" />
-                            </div>
-                        </div>
-
-                        <div class="col-lg-2">
-                            <button data-bs-toggle="modal" data-bs-target="#addServiceModal" type="button" class="btn-purble">+ إضافة خدمة</button>
-                        </div>
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                <div class="col-md-8 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة خدمة</span>
+                </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
                     </div>
-                </form>
+                </div>
+                <div class="col-md-4 mb-2" *ngIf="total > 0">
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div>
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الخدمة ...'" (filterChanged)="applyFilters($event)"></app-filters>
+                        </ng-container>
+                    </div>
+                </div>
             </div>
             <table class="table table-hover mt-4">
                 <thead>

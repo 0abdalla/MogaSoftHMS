@@ -1,7 +1,9 @@
+using Hangfire;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.PurchaseRequests;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
@@ -9,9 +11,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class PurchaseRequestService(IUnitOfWork unitOfWork) : IPurchaseRequestService
+    public class PurchaseRequestService(IUnitOfWork unitOfWork, INotificationService notificationService) : IPurchaseRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly INotificationService _notificationService = notificationService;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(PurchaseRequestRequest request, CancellationToken cancellationToken = default)
         {
@@ -36,6 +39,10 @@ namespace Hospital_MS.Services.HMS
 
             await _unitOfWork.Repository<PurchaseRequest>().AddAsync(purchaseRequest, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
+
+            //BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
+
+            //await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
 
             return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.Id.ToString());
         }

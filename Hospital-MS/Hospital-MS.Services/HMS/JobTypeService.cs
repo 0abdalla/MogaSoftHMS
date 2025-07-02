@@ -65,7 +65,8 @@ namespace Hospital_MS.Services.HMS
                 var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
                 var FromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
                 var ToDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
-                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                var SearchText = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
+                Params[0] = new SqlParameter("@SearchText", SearchText ?? (object)DBNull.Value);
                 Params[1] = new SqlParameter("@Status", Status ?? (object)DBNull.Value);
                 Params[2] = new SqlParameter("@FromDate", FromDate ?? (object)DBNull.Value);
                 Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);

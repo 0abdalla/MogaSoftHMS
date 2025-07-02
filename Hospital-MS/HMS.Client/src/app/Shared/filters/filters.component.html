@@ -7,7 +7,7 @@
     </span>
         <input [(ngModel)]="SearchText" (input)="InputSearchChange()" type="text" [placeholder]="searchPlaceholder" class="form-control">
     </div>
-    <div class="selector-width">
+    <div class="selector-width" *ngIf="showSelector">
         <div ngbDropdown class="dropdown-as-input">
             <button type="button" style="padding-left: 80px;" id="dropdownBasic1" ngbDropdownToggle>
                 <span>{{selectedName}} <sup>*</sup>

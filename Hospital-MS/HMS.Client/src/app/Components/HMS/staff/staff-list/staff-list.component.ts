@@ -3,6 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { FilterModel } from '../../../../Models/Generics/PagingFilterModel';
 
 @Component({
   selector: 'app-staff-list',
@@ -22,7 +23,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 })
 
 export class StaffListComponent implements OnInit, OnDestroy {
-  TitleList = ['الموارد البشرية','بيانات الموظفين','الموظفين'];
+  TitleList = ['الموارد البشرية', 'بيانات الموظفين', 'الموظفين'];
   employees: any[] = [];
   employeesData: any[] = [];
   filterForm: FormGroup;
@@ -31,7 +32,7 @@ export class StaffListComponent implements OnInit, OnDestroy {
   total = 0;
   fixed = 0;
   selectedEmployee: any;
-
+  isFilter = true;
   private destroy$ = new Subject<void>();
 
   constructor(private staffService: StaffService, private fb: FormBuilder) {
@@ -76,7 +77,10 @@ export class StaffListComponent implements OnInit, OnDestroy {
       });
   }
 
-  applyFilters() {
+  applyFilters(filter: FilterModel[]) {
+    debugger;
+    let search = filter[0]?.itemValue ?? '';
+    this.filterForm.patchValue({ Search: search, Type: '' });
     this.currentPage = 1;
     this.getEmployees();
   }

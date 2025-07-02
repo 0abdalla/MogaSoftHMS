@@ -4,10 +4,12 @@ using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Hospital_MS.API.Controllers;
 
 [Authorize]
+[SwaggerTag("امر الشراء")]
 public class PurchaseOrdersController(IPurchaseOrderService service) : ApiBaseController
 {
     private readonly IPurchaseOrderService _service = service;

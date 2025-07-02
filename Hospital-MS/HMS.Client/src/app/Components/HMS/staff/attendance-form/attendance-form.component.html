@@ -1,34 +1,132 @@
-<main id="attendance">
-    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-    <div class="p-4">
-        <h4>استيراد ملف الحضور والإنصراف</h4>
-        <input 
-        type="file" 
-        accept=".csv,.xlsx,.xls" 
-        (change)="onFileUpload($event)" 
-        class="d-none" 
-        #fileInput
-      />
-      
-      <button type="button" class="btn-blue mb-3" (click)="fileInput.click()">
-        رفع ملف
-      </button>
-        <div *ngIf="data.length > 0" style="overflow-x: auto;">
-            <table class="table table-bordered table-sm text-center" style="min-width: max-content;">
-                <thead class="table-light">
-                    <tr>
-                        <th *ngFor="let col of headers">{{ col }}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let row of data; let rowIndex = index">
-                        <td *ngFor="let col of headers">
-                            <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control shadow-none text-center" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<main id="list-patients" @fadeIn>
+    <p-toast position="top-left"></p-toast>
+    <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <div class="table-card border radius-10 overflow-hidden shadow-sm">
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                <div class="col-md-8 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <div ngbDropdown class="d-inline-block">
+                            <button type="button" class="btn btn-table-action d-flex align-items-center gap-2 border rounded px-3" id="dropdownBasic1" ngbDropdownToggle>
+                                <i class="fas fa-cogs"></i>
+                                <span>الإجراءات</span>
+                            </button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="border rounded py-2" style="min-width: 180px;">
+                                <button class="dropdown-item d-flex align-items-center gap-2" (click)="generateTemplateExcel()">
+                                    <i class="fas fa-download"></i> تحميل قالب
+                                </button>
+                                <button class="dropdown-item d-flex align-items-center gap-2" (click)="triggerFileInput(fileInput)">
+                                    <i class="fas fa-upload"></i> إدخال ملف Excel
+                                </button>
+                                <input #fileInput id="fileInput" type='file' (change)="onFileUpload($event)" accept=".xlsx,.xls,.csv" hidden />
+                            </div>
+                        </div>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2" *ngIf="total > 0">
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div>
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الموظف او رقم البصمة ...'" (filterChanged)="filterChecked($event)"></app-filters>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 bg-white">
+                <div class="table-responsive shadow-sm radius-10">
+                    <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
+                        <thead>
+                            <tr>
+                                <th>رقم البصمة</th>
+                                <th>الاسم</th>
+                                <th>عدد الساعات</th>
+                                <th>ايام العمل</th>
+                                <th>الساعات المطلوبة</th>
+                                <th>إجمالي ساعات البصمة</th>
+                                <th>الايام الفعلية</th>
+                                <th>اخرى</th>
+                                <th>ايام الجمع</th>
+                                <th>إجمالي الأيام</th>
+                                <th>الاضافي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <ng-container>
+                                <tr *ngFor="let item of AttendanceList">
+                                    <td>{{item.code}}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
+                                            <span class="fw-bold">{{ item.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{item.workHours}}</td>
+                                    <td>{{item.workDays}}</td>
+                                    <td>{{item.requiredHours}}</td>
+                                    <td>{{item.totalFingerprintHours}}</td>
+                                    <td>{{item.sickDays}}</td>
+                                    <td>{{item.otherDays}}</td>
+                                    <td>{{item.fridays}}</td>
+                                    <td>{{item.totalDays}}</td>
+                                    <td>{{item.overtime}}</td>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                    <div class="col-md-8 mb-2"></div>
+                    <div class="col-md-4 mb-2" *ngIf="total > 0">
+                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
 </main>
+
+
+<ng-template #AttendanceSidePanel let-offcanvas>
+    <div class="offcanvas-header border-bottom py-4 px-4 bg-white shadow-sm">
+        <i class="fas fa-user-plus text-primary fs-3 me-2"></i>
+        <h5 class="mb-0 fw-bold">استيراد ملف الحضور والانصراف</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss()"></button>
+    </div>
+    <div class="offcanvas-body p-4 bg-light">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-body p-4">
+                <h5 class="fw-semibold mb-4 border-bottom pb-2">معاينة البيانات المستوردة</h5>
+
+                <div class="table-responsive" style="max-height: 700px;">
+                    <table class="table table-bordered align-middle text-center table-hover table-striped mb-0" style="min-width: max-content;">
+                        <thead class="table-primary text-dark">
+                            <tr>
+                                <th *ngFor="let col of headers" class="text-nowrap px-3 py-2">{{ col }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of data; let rowIndex = index">
+                                <td *ngFor="let col of headers" class="px-2 py-1">
+                                    <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control form-control-sm shadow-none text-center border-light" style="min-width: 120px;" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="offcanvas-footer p-4 border-top bg-white shadow-sm">
+        <div class="d-flex justify-content-center" (click)="SaveAttendanceFile()">
+            <button class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow-sm">
+                <i class="fas fa-save me-2"></i>
+                <span>حفظ البيانات</span>
+            </button>
+        </div>
+    </div>
+</ng-template>

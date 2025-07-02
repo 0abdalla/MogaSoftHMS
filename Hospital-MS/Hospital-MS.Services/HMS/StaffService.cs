@@ -54,7 +54,8 @@ namespace Hospital_MS.Services.HMS
                     JobDepartmentId = request.JobDepartmentId,
                     JobLevelId = request.JobLevelId,
                     JobTitleId = request.JobTitleId,
-                    JobTypeId = request.JobTypeId
+                    JobTypeId = request.JobTypeId,
+                    Code = request.Code,
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
@@ -214,7 +215,7 @@ namespace Hospital_MS.Services.HMS
                 Notes = staff.Notes,
                 Gender = staff.Gender.ToString(),
                 MaritalStatus = staff.MaritalStatus.ToString(),
-
+                Code = staff.Code,
                 AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
 
                 Audit = new AuditResponse

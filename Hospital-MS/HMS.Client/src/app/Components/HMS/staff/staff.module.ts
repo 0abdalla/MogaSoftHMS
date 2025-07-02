@@ -20,6 +20,7 @@ import { HrPenaltyComponent } from './hr-penalty/hr-penalty.component';
 import { HrVacationComponent } from './hr-vacation/hr-vacation.component';
 import { HrAdvancesComponent } from './hr-advances/hr-advances.component';
 import { HrEmployeesSalariesComponent } from './hr-employees-salaries/hr-employees-salaries.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -46,7 +47,8 @@ import { HrEmployeesSalariesComponent } from './hr-employees-salaries/hr-employe
     ToastModule,
     TableModule,
     FormsModule,
-    SharedModule
+    SharedModule,
+    NgbModule
   ]
 })
 export class StaffModule { }

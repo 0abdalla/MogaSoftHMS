@@ -21,6 +21,7 @@ import { AddEditCostCenterTreeComponent } from './cost-center-tree-container/add
 import { CostCenterTreeComponent } from './cost-center-tree-container/cost-center-tree/cost-center-tree.component';
 import { CostCenterTreeItemComponent } from './cost-center-tree-container/cost-center-tree-item/cost-center-tree-item.component';
 import { AccountTreeComponent } from './account-tree-container/account-tree/account-tree.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { AccountTreeComponent } from './account-tree-container/account-tree/acco
     NgxPaginationModule,
     FormsModule,
     NgSelectModule,
-    SharedModule
+    SharedModule,
+    NgbModule
   ]
 })
 export class SettingsModule { }

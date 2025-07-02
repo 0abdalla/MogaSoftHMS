@@ -4,14 +4,16 @@ using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Hospital_MS.API.Controllers;
 
-[Authorize] 
+[Authorize]
+[SwaggerTag("اشعار اضافة")]
 public class AdditionNotificationsController(IAdditionNotificationService additionNotificationService) : ApiBaseController
 {
     private readonly IAdditionNotificationService _additionNotificationService = additionNotificationService;
-
+   
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
     {

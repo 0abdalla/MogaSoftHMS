@@ -1,48 +1,30 @@
 <main id="staff-list" @fadeIn>
-    <!-- <section class="section1" id="cards">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-3" *ngFor="let employee of employeesData">
-          <div class="card text-white p-3 text-center" [ngStyle]="{ 'background-image': employee.color }">
-            <h4>{{ employee?.name }}</h4>
-            <p class="mt-0">{{ employee?.count }} فرد</p>
-            <div class="percentage d-flex align-items-center justify-content-center gap-1">
-              <p class="m-0"> 12%</p>
-              <i class="fa-regular fa-circle-arrow-up"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section> -->
     <section class="section2" id="table-employees">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="card p-2">
-            <div class="p-3">
-                <form [formGroup]="filterForm" (ngSubmit)="applyFilters()">
-                    <div class="row justify-content-between align-items-center gap-2">
-                        <div class="row col-lg-8">
-                            <div class="col-lg-2">
-                                <button type="button" (click)="resetFilters()" class="btn-cancel">إظهار الكل</button>
-                            </div>
-                            <div class="col-lg-4">
-                                <input type="text" class="form-control shadow-none" placeholder="أدخل إسم الموظف" formControlName="Search" />
-                            </div>
-                            <!-- <div class="col-lg-3">
-                <select class="form-select shadow-none" formControlName="Type">
-                  <option selected disabled value="">اختر نوع الموظف</option>
-                  <option value="Doctor">دكتور</option>
-                  <option value="Nurse">ممرض</option>
-                  <option value="Staff">إداري</option>
-                  <option value="Worker">عمال</option>
-                </select>
-              </div> -->
-                        </div>
-                        <div class="col-lg-2 d-flex justify-content-end">
-                            <button type="button" routerLink="/hms/staff/add" class="btn-purble">إضافة موظف</button>
-                        </div>
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                <div class="col-md-8 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/staff/add">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة موظف</span>
+                </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
                     </div>
-                </form>
+                </div>
+                <!-- <div class="col-md-4 mb-2" *ngIf="total > 0">
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div> -->
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الموظف ...'" [categoryName]="'Status'" (filterChanged)="applyFilters($event)"></app-filters>
+                        </ng-container>
+                    </div>
+                </div>
             </div>
             <table class="table table-hover mt-4">
                 <thead>

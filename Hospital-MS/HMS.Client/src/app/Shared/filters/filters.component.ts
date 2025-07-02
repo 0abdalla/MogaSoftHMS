@@ -11,6 +11,7 @@ export class FiltersComponent {
   @Input() filterData: FormDropdownModel[] = [];
   @Input() filterPlaceholder: string;
   @Input() showSearchText: boolean = true;
+  @Input() showSelector: boolean = true;
   @Input() searchPlaceholder: string = '';
   @Input() categoryName: string = '';
   @Output() filterChanged = new EventEmitter<FilterModel[]>();

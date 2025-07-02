@@ -4,10 +4,12 @@ using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Hospital_MS.API.Controllers;
 
 [Authorize]
+[SwaggerTag("اذن استلام")]
 public class ReceiptPermissionsController(IReceiptPermissionService purchasePermissionService) : ApiBaseController
 {
     private readonly IReceiptPermissionService _receiptPermissionService = purchasePermissionService;
