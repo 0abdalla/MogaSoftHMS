@@ -16,6 +16,7 @@ using Hospital_MS.Services.HMS;
 using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -96,8 +97,14 @@ namespace Hospital_MS.API
             services.AddScoped<IDebitNoticeService, DebitNoticeService>();
             services.AddScoped<IBankService, BankService>();
             services.AddScoped<IStoreService, StoreService>();
+            services.AddScoped<IStoreTypeService, StoreTypeService>();
+            services.AddScoped<IBranchService, BranchService>();
+
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IEmailSender, EmailService>();
 
 
+            services.AddHttpContextAccessor();
 
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)

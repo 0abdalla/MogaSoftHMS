@@ -13,14 +13,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
-public class StoreService : IStoreService
+public class StoreService(IUnitOfWork unitOfWork) : IStoreService
 {
-    private readonly IUnitOfWork _unitOfWork;
-
-    public StoreService(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
     public async Task<ErrorResponseModel<string>> CreateAsync(CreateStoreRequest request, CancellationToken cancellationToken = default)
     {
@@ -34,6 +29,7 @@ public class StoreService : IStoreService
         {
             Name = request.Name,
             Code = request.Code,
+            TypeId = request.StoreTypeId,
             IsActive = true
         };
 
@@ -46,6 +42,7 @@ public class StoreService : IStoreService
     {
         var store = await _unitOfWork.Repository<Store>()
             .GetAll()
+            .Include(x => x.Type)
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
         if (store == null)
@@ -59,6 +56,8 @@ public class StoreService : IStoreService
             Location = store.Location,
             ContactNumber = store.ContactNumber,
             Email = store.Email,
+            StoreTypeId = store.TypeId,
+            StoreTypeName = store.Type.Name,
             IsActive = store.IsActive
         };
 
@@ -67,7 +66,10 @@ public class StoreService : IStoreService
 
     public async Task<PagedResponseModel<List<StoreResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
     {
-        var query = _unitOfWork.Repository<Store>().GetAll().Where(x => x.IsActive);
+        var query = _unitOfWork.Repository<Store>()
+            .GetAll()
+            .Include(x => x.Type)
+            .Where(x => x.IsActive);
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
         {
@@ -88,6 +90,8 @@ public class StoreService : IStoreService
                 Location = x.Location,
                 ContactNumber = x.ContactNumber,
                 Email = x.Email,
+                StoreTypeId = x.TypeId,
+                StoreTypeName = x.Type.Name,
                 IsActive = x.IsActive
             })
             .ToListAsync(cancellationToken);
@@ -110,6 +114,7 @@ public class StoreService : IStoreService
 
         store.Name = request.Name;
         store.Code = request.Code;
+        store.TypeId = request.StoreTypeId;
 
         _unitOfWork.Repository<Store>().Update(store);
         await _unitOfWork.CompleteAsync(cancellationToken);

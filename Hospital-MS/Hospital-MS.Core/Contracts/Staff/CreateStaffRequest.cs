@@ -12,6 +12,7 @@ namespace Hospital_MS.Core.Contracts.Staff
     {
         public string FullName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string? Code { get; set; } // كود البصمه
         //public string Specialization { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
         public DateOnly HireDate { get; set; }
