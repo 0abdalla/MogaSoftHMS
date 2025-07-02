@@ -41,6 +41,22 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'Suppliers/' + id);
   }
   // 
+  getStores(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'Stores?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getStoresById(id:number){
+    return this.http.get<any>(this.baseUrl + 'Stores/' + id);
+  }
+  addStore(store:any){
+    return this.http.post<any>(this.baseUrl + 'Stores', store);
+  }
+  updateStore(id:number,store:any){
+    return this.http.put<any>(this.baseUrl + 'Stores/' + id, store);
+  }
+  deleteStore(id:number){
+    return this.http.delete<any>(this.baseUrl + 'Stores/' + id);
+  }
+  // 
   getPurchaseRequests(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseRequests?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
@@ -119,5 +135,81 @@ export class FinancialService {
   }
   deleteDebitNotification(id:number){
     return this.http.delete<any>(this.baseUrl + 'DebitNotification/' + id);
+  }
+  // 
+  getReceiptPermissions(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'ReceiptPermissions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getReceiptPermissionsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'ReceiptPermissions/' + id);
+  }
+  addReceiptPermission(receiptPermission:any){
+    return this.http.post<any>(this.baseUrl + 'ReceiptPermissions', receiptPermission);
+  }
+  updateReceiptPermission(id:number,receiptPermission:any){
+    return this.http.put<any>(this.baseUrl + 'ReceiptPermissions/' + id, receiptPermission);
+  }
+  deleteReceiptPermission(id:number){
+    return this.http.delete<any>(this.baseUrl + 'ReceiptPermissions/' + id);
+  }
+  // 
+  getMaterialIssuePermissions(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'MaterialIssuePermissions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getMaterialIssuePermissionsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'MaterialIssuePermissions/' + id);
+  }
+  addMaterialIssuePermission(materialIssuePermission:any){
+    return this.http.post<any>(this.baseUrl + 'MaterialIssuePermissions', materialIssuePermission);
+  }
+  updateMaterialIssuePermission(id:number,materialIssuePermission:any){
+    return this.http.put<any>(this.baseUrl + 'MaterialIssuePermissions/' + id, materialIssuePermission);
+  }
+  deleteMaterialIssuePermission(id:number){
+    return this.http.delete<any>(this.baseUrl + 'MaterialIssuePermissions/' + id);
+  }
+  // 
+  getDispensePermissions(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DispensePermissions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getDispensePermissionsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'DispensePermissions/' + id);
+  }
+  addDispensePermission(dispensePermission:any){
+    return this.http.post<any>(this.baseUrl + 'DispensePermissions', dispensePermission);
+  }
+  updateDispensePermission(id:number,dispensePermission:any){
+    return this.http.put<any>(this.baseUrl + 'DispensePermissions/' + id, dispensePermission);
+  }
+  deleteDispensePermission(id:number){
+    return this.http.delete<any>(this.baseUrl + 'DispensePermissions/' + id);
+  }
+  // 
+  getTreasuries(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'Treasuries?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getEnabledTreasuries(){
+    return this.http.get<any>(this.baseUrl + 'Treasuries/Enabled');
+  }
+  enableTreasury(id:number){
+    return this.http.put<any>(this.baseUrl + 'Treasuries/Enable?id=' + id, {});
+  }
+  getDisabledTreasuries(){
+    return this.http.get<any>(this.baseUrl + 'Treasuries/Disabled');
+  }
+  disableTreasury(id:number){
+    return this.http.put<any>(this.baseUrl + 'Treasuries/Disabled?id=' + id, {});
+  }
+  getTreasuriesById(id:number){
+    return this.http.get<any>(this.baseUrl + 'Treasuries/' + id);
+  }
+  addTreasury(treasury:any){
+    return this.http.post<any>(this.baseUrl + 'Treasuries', treasury);
+  }
+  updateTreasury(id:number,treasury:any){
+    return this.http.put<any>(this.baseUrl + 'Treasuries/' + id, treasury);
+  }
+  deleteTreasury(id:number){
+    return this.http.delete<any>(this.baseUrl + 'Treasuries/' + id);
   }
 }

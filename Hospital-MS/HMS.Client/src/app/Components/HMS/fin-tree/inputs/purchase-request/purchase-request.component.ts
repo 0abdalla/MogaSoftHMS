@@ -165,4 +165,21 @@ export class PurchaseRequestComponent {
       }
     });
   }
+  // 
+  getStatusName(type: string): string {
+    const map: { [key: string]: string } = {
+      Approved: 'تم الموافقة',
+      Pending: 'قيد الانتظار',
+      Rejected: 'مرفوض'
+    };
+    return map[type] || type;
+  }
+  getStatusColor(type: string): string {
+    const map: { [key: string]: string } = {
+      Approved: '#00FF00',
+      Pending: '#FFA500',
+      Rejected: '#FF0000'
+    };
+    return map[type] || '#000000';
+  }
 }

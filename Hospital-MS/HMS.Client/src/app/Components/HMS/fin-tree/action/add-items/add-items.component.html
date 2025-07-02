@@ -1,13 +1,13 @@
 <main id="add-items">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="p-3 mt-4">
+        <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="row col-md-8">
                         <div class="col-md-3">
                             <select formControlName="type" name="" id="" class="form-select text-end shadow-none">
-                                <option selected disabled value="">اختر نوع الإضافة</option>
+                                <option selected disabled value="">اختر نوع الإستلام</option>
                                 <option value="">فاتورة مورد</option>
                                 <option value="">زيادة جرد مخازن</option>
                                 <option value="">إستلام منتج جاهز</option>
@@ -23,7 +23,7 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام إذن الإضافة أو رقم الفاتورة" class="form-control text-end shadow-none" />
+                            <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام إذن الإستلام أو رقم الفاتورة" class="form-control text-end shadow-none" />
                         </div>
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
@@ -36,37 +36,60 @@
                     </div>
                 </div>
             </form>
+        </div> -->
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addPermissionModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة إذن إستلام</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <app-filters [filterData]="allItems" [filterPlaceholder]="'المخزن'" [searchPlaceholder]="'ابحث بإستخدام إذن الإستلام أو رقم الفاتورة ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                    </ng-container>
+                </div>
+            </div>
         </div>
         <table class="table table-hover mt-4">
             <thead>
                 <tr>
-                    <th>إذن الإضافة</th>
+                    <th>إذن الإستلام</th>
                     <th>التاريخ</th>
-                    <th>نوع الإضافة</th>
+                    <th>نوع الإستلام</th>
                     <th>اسم المورد</th>
                     <th>رقم المستند</th>
-                    <th>مستخدم الإنشاء</th>
-                    <th>مستخدم التعديل</th>
+                    <!-- <th>مستخدم الإنشاء</th>
+                    <th>مستخدم التعديل</th> -->
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody *ngIf="adds?.length > 0">
                 <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
                     <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ add.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ add.name }}</span>
-                        </div>
+                        <span class="fw-bold">{{ add.permissionNumber }}</span>
                     </td>
-                    <td class="text-secondary">{{ add.description }}</td>
-                    <td>{{ add.responsibleName }}</td>
-                    <td>{{ add.phoneNumber }}</td>
-
+                    <td class="text-secondary">{{ add.permissionDate | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ add.typeName }}</td>
+                    <td>{{ add.supplierName }}</td>
+                    <td>{{ add.documentNumber }}</td>
+                    <!-- <td>{{ add.audit?.createdBy || '-' }}</td>
+                    <td>{{ add.audit?.updatedBy || '-' }}</td> -->
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-2" (click)="editPermission(add.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-2" (click)="deletePermission(add.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -74,7 +97,7 @@
             </tbody>
             <tbody *ngIf="adds?.length === 0">
                 <tr>
-                    <td colspan="8" class="text-center text-muted">لا يوجد أذون إضافة حتى الآن</td>
+                    <td colspan="8" class="text-center text-muted">لا يوجد أذون إستلام حتى الآن</td>
                 </tr>
             </tbody>
         </table>
@@ -98,74 +121,88 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addPermissionModalLabel">إذن إضافة جديد</h5>
+                <h5 class="modal-title" id="addPermissionModalLabel">إذن إستلام جديد</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="addPermissionForm" (ngSubmit)="submitPermission()">
+                <form [formGroup]="addPermissionForm" (ngSubmit)="addPermission()">
                     <div class="p-3 mb-3">
                         <div class="row gy-3">
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label>التاريخ</label>
-                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                                <input type="date" class="form-control shadow-none text-end" formControlName="permissionDate" />
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label>رقم المستند</label>
                                 <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
                             </div>
-
-                            <div class="col-md-4">
+<!-- 
+                            <div class="col-md-3">
                                 <label>مركز التكلفة</label>
                                 <select class="form-select shadow-none text-end" formControlName="costCenter">
-                    <option value="بدون">بدون</option>
-                    <option value="مركز 1">مركز 1</option>
-                    <option value="مركز 2">مركز 2</option>
-                  </select>
-                            </div>
+                                    <option value="بدون">بدون</option>
+                                    <option value="مركز 1">مركز 1</option>
+                                    <option value="مركز 2">مركز 2</option>
+                                </select>
+                            </div> -->
 
                             <div class="col-md-4">
                                 <label>اسم المخزن</label>
-                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
-                    <option disabled selected value="">اختر اسم المخزن</option>
-                    <option value="المخزن الرئيسي">المخزن الرئيسي</option>
-                    <option value="مخزن فرعي">مخزن فرعي</option>
-                  </select>
+                                <select class="form-select shadow-none text-end" formControlName="storeId">
+                                    <option disabled selected value="">اختر اسم المخزن</option>
+                                    <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
+                                </select>
                             </div>
 
                             <div class="col-md-4">
                                 <label>اسم المورد</label>
-                                <select class="form-select shadow-none text-end" formControlName="supplierName">
-                    <option disabled selected value="">اختر اسم المورد</option>
-                    <option value="مورد 1">مورد 1</option>
-                    <option value="مورد 2">مورد 2</option>
-                  </select>
+                                <select class="form-select shadow-none text-end" formControlName="supplierId">
+                                    <option disabled selected value="">اختر اسم المورد</option>
+                                    <option *ngFor="let supplier of suppliers" [value]="supplier.id">{{ supplier.name }}</option>
+                                </select>
                             </div>
 
                             <div class="col-md-4">
-                                <label>العملة</label>
-                                <select class="form-select shadow-none text-end" formControlName="currency">
-                    <option value="جنيه">جنيه</option>
-                    <option value="دولار">دولار</option>
-                  </select>
+                                <label>رقم طلب الشراء</label>
+                                <select class="form-select shadow-none text-end" formControlName="purchaseRequestId">
+                                    <option disabled selected value="">اختر رقم طلب الشراء</option>
+                                    <option *ngFor="let purchaseRequest of purchaseRequests" [value]="purchaseRequest.id">{{ purchaseRequest.requestNumber }}</option>
+                                </select>
                             </div>
+
 
                             <div formArrayName="items">
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-                                  <div class="col-md-4">
+                                  <div class="col-md-2">
                                     <label>الصنف</label>
-                                    <select class="form-select shadow-none" formControlName="itemId">
+                                    <select class="form-select shadow-none" formControlName="id">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
                                     </select>
                                   </div>
                               
-                                  <div class="col-md-3">
+                                  <div class="col-md-2">
+                                    <label>الوحدة</label>
+                                    <input type="text" class="form-control shadow-none" formControlName="unit">
+                                  </div>
+
+                                  <div class="col-md-2">
                                     <label>الكمية</label>
                                     <input type="number" class="form-control shadow-none" formControlName="quantity">
                                   </div>
+                                  
+                                  <div class="col-md-2">
+                                    <label>السعر</label>
+                                    <input type="number" class="form-control shadow-none" formControlName="unitPrice">
+                                  </div>
+
+                                  <div class="col-md-2">
+                                    <label>الإجمالي</label>
+                                    <input type="number" class="form-control shadow-none" formControlName="totalPrice">
+                                  </div>
                               
-                                  <div class="col-md-4">
+                                  <div class="col-md-2">
                                     <label>ملاحظات</label>
                                     <input type="text" class="form-control shadow-none" formControlName="notes">
                                   </div>
