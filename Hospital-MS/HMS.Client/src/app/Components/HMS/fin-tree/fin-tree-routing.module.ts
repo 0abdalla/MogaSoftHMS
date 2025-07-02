@@ -21,6 +21,7 @@ import { RestrictionsComponent } from './action/restrictions/restrictions.compon
 import { PurchaseRequestComponent } from './inputs/purchase-request/purchase-request.component';
 import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
 import { OffersComponent } from './inputs/offers/offers.component';
+import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
@@ -34,6 +35,7 @@ const routes: Routes = [
   {path:"boxes" , component : BoxsComponent},
   {path:"banks" , component : BanksComponent},
   {path:"accounts" , component : AccountsComponent},
+  {path:"treasuries" , component : TreasuriesComponent},
   // actions
   {path:"add-items" , component : AddItemsComponent},
   {path:"issue-items" , component : IssueItemsComponent},

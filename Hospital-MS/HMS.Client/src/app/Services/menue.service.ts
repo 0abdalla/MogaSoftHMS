@@ -234,9 +234,9 @@ export class MenueService {
               route: '/hms/fin-tree/items'
             },
             {
-              displayName: 'انواع المخازن',
+              displayName: 'المخازن',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/boxes'
             },
             {
               displayName: 'اسماء المخازن',

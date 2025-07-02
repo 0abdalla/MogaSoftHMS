@@ -29,6 +29,7 @@ import { PurchaseRequestComponent } from './inputs/purchase-request/purchase-req
 import { OffersComponent } from './inputs/offers/offers.component';
 import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
+import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
     PurchaseRequestComponent,
     PurchaseOrderComponent,
     OffersComponent,
+    TreasuriesComponent,
   ],
   imports: [
     CommonModule,
