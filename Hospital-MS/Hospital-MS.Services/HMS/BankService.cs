@@ -28,6 +28,10 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
             var bank = new Bank
             {
                 Name = request.Name,
+                Code = request.Code,
+                AccountNumber = request.AccountNumber,
+                InitialBalance = request.InitialBalance,
+                Currency = request.Currency,
                 IsActive = true
             };
             await _unitOfWork.Repository<Bank>().AddAsync(bank, cancellationToken);
@@ -112,6 +116,10 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
                 Id = bank.Id,
                 Name = bank.Name,
                 IsActive = bank.IsActive,
+                Code = bank.Code,
+                AccountNumber = bank.AccountNumber,
+                InitialBalance = bank.InitialBalance,
+                Currency = bank.Currency,
                 Audit = new Core.Contracts.Common.AuditResponse
                 {
                     CreatedBy = bank.CreatedBy?.UserName,
