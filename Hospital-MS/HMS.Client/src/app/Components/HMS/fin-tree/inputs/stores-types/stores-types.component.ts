@@ -1,18 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { FinancialService } from '../../../../../Services/HMS/financial.service';
-import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
-export declare var bootstrap:any;
+import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { FinancialService } from '../../../../../Services/HMS/financial.service';
+declare var bootstrap:any;
+
 @Component({
-  selector: 'app-boxs',
-  templateUrl: './boxs.component.html',
-  styleUrl: './boxs.component.css'
+  selector: 'app-stores-types',
+  templateUrl: './stores-types.component.html',
+  styleUrl: './stores-types.component.css'
 })
-export class BoxsComponent implements OnInit{
-  TitleList = ['إعدادات النظام','إعدادات الإدارة المالية','الخزائن'];
+export class StoresTypesComponent {
+  TitleList = ['إعدادات النظام','إعدادات المخازن','أنواع المخازن'];
   filterForm!:FormGroup;
-  accountForm!:FormGroup
+  stotreTypeForm!:FormGroup
   // 
   items:any[]=[];
   total:number=0;
@@ -25,16 +26,12 @@ export class BoxsComponent implements OnInit{
     this.filterForm=this.fb.group({
       SearchText:[],
     })
-    this.accountForm = this.fb.group({
-      accountCode:['' , Validators.required],
+    this.stotreTypeForm = this.fb.group({
       name: ['', Validators.required],
-      branchId: ['', Validators.required],
-      currency: ['', Validators.required],
-      openingBalance: ['', Validators.required]
     });
   }
   ngOnInit(): void {
-    this.getTreasuries();
+    this.getStoresTypes();
   }
   applyFilters(){
     this.total=this.items.length;
@@ -55,35 +52,35 @@ export class BoxsComponent implements OnInit{
   }
   // 
   isEditMode: boolean = false;
-  currentTreasuryId: number | null = null;
+  currentStoreTypeId: number | null = null;
   
-  addAccount() {
-    if (this.accountForm.invalid) {
-      this.accountForm.markAllAsTouched();
+  addStoreType() {
+    if (this.stotreTypeForm.invalid) {
+      this.stotreTypeForm.markAllAsTouched();
       return;
     }
   
-    const formData = this.accountForm.value;
+    const formData = this.stotreTypeForm.value;
   
-    if (this.isEditMode && this.currentTreasuryId !== null) {
-      this.financialService.updateTreasury(this.currentTreasuryId, formData).subscribe({
+    if (this.isEditMode && this.currentStoreTypeId !== null) {
+      this.financialService.updateStoreType(this.currentStoreTypeId, formData).subscribe({
         next: () => {
-          this.getTreasuries();
+          this.getStoresTypes();
           this.closeModal();
-          this.accountForm.reset();
+          this.stotreTypeForm.reset();
           this.isEditMode = false;
-          this.currentTreasuryId = null;
+          this.currentStoreTypeId = null;
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
         }
       });
     } else {
-      this.financialService.addTreasury(formData).subscribe({
+      this.financialService.addStoreType(formData).subscribe({
         next: () => {
-          this.getTreasuries();
+          this.getStoresTypes();
           this.closeModal();
-          this.accountForm.reset();
+          this.stotreTypeForm.reset();
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -91,34 +88,34 @@ export class BoxsComponent implements OnInit{
       });
     }
   }
-  account!:any;
-  editAccount(id: number) {
+  store!:any;
+  editStoreType(id: number) {
     this.isEditMode = true;
-    this.currentTreasuryId = id;
+    this.currentStoreTypeId = id;
   
-    this.financialService.getTreasuriesById(id).subscribe({
+    this.financialService.getStoresTypesById(id).subscribe({
       next: (data) => {
-        this.account=data.results;
-        this.accountForm.patchValue({
-          name: this.account.name,
-          accountCode: this.account.accountCode,
-          branchId: this.account.branchId,
-          currency: this.account.currency,
-          openingBalance: this.account.openingBalance
+        this.store=data.results;
+        this.stotreTypeForm.patchValue({
+          name: this.store.name,
+          accountCode: this.store.accountCode,
+          branchId: this.store.branchId,
+          currency: this.store.currency,
+          openingBalance: this.store.openingBalance
         });
   
         const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
         modal.show();
       },
       error: (err) => {
-        console.error('فشل تحميل بيانات الخزنة:', err);
+        console.error('فشل تحميل بيانات النوع:', err);
       }
     });
   }
-  deleteAccount(id: number) {
+  deleteStoreType(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
-      text: 'هل تريد حذف هذه الخزنة؟',
+      text: 'هل تريد حذف هذا النوع؟',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -127,9 +124,9 @@ export class BoxsComponent implements OnInit{
       cancelButtonText: 'إلغاء'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.financialService.deleteTreasury(id).subscribe({
+        this.financialService.deleteStoreType(id).subscribe({
           next: () => {
-            this.getTreasuries();
+            this.getStoresTypes();
           },
           error: (err) => {
             console.error('فشل الحذف:', err);
@@ -160,14 +157,21 @@ export class BoxsComponent implements OnInit{
       this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
     else
       this.pagingFilterModel.searchText = '';
-    this.getTreasuries();
+    this.getStoresTypes();
   }
-  getTreasuries(){
-    this.financialService.getTreasuries(this.pagingFilterModel).subscribe((res:any)=>{
+  getStoresTypes(){
+    this.financialService.getStoresTypes(this.pagingFilterModel).subscribe((res:any)=>{
       this.items=res.results;
-      this.total=res.count;
+      this.total=res.totalCount;
       console.log(this.items);
       this.applyFilters();
     })
   }
+  getServiceColor(status: boolean): string {
+    return status ? '#198654' : '#dc3545';
+  }
+  
+  getServiceName(status: boolean): string {
+    return status ? 'نشط' : 'غير نشط';
+  }  
 }

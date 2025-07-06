@@ -30,6 +30,9 @@ import { OffersComponent } from './inputs/offers/offers.component';
 import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
 import { NgbCollapseModule } from '@ng-bootstrap/ng-bootstrap';
 import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
+import { StoresComponent } from './inputs/stores/stores.component';
+import { StoresTypesComponent } from './inputs/stores-types/stores-types.component';
+import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
 
 
 @NgModule({
@@ -56,6 +59,9 @@ import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
     PurchaseOrderComponent,
     OffersComponent,
     TreasuriesComponent,
+    StoresComponent,
+    StoresTypesComponent,
+    YearFinSettingsComponent,
   ],
   imports: [
     CommonModule,

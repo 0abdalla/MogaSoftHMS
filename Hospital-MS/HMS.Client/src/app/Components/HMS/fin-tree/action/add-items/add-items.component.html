@@ -50,7 +50,7 @@
             </button>
                 </div>
             </div>
-            <div class="col-md-4 mb-2" *ngIf="total > 0">
+            <div class="col-md-4 mb-2" *ngIf="total > 0 && adds?.length > 0">
                 <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
             </div>
             <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
@@ -219,7 +219,7 @@
                                     <i class="fa fa-plus"></i> إضافة صنف
                                   </button>
                                 </div>
-                              </div>
+                            </div>
 
                             <div class="col-md-12">
                                 <label>ملاحظات</label>
