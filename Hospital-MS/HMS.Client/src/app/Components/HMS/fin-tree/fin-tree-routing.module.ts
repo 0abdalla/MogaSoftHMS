@@ -22,6 +22,9 @@ import { PurchaseRequestComponent } from './inputs/purchase-request/purchase-req
 import { PurchaseOrderComponent } from './inputs/purchase-order/purchase-order.component';
 import { OffersComponent } from './inputs/offers/offers.component';
 import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
+import { StoresComponent } from './inputs/stores/stores.component';
+import { StoresTypesComponent } from './inputs/stores-types/stores-types.component';
+import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
@@ -33,6 +36,8 @@ const routes: Routes = [
   {path:"offers" , component : OffersComponent},
   {path:"clients" , component : ClientsComponent},
   {path:"boxes" , component : BoxsComponent},
+  {path:"stores" , component : StoresComponent},
+  {path:"stores-types" , component : StoresTypesComponent},
   {path:"banks" , component : BanksComponent},
   {path:"accounts" , component : AccountsComponent},
   {path:"treasuries" , component : TreasuriesComponent},
@@ -48,7 +53,9 @@ const routes: Routes = [
   {path:'bank',component:BankIndexComponent},
   {path:'bank/add-notice',component:AddNoticeComponent},
   {path:'bank/discount-notice',component:DiscountNoticeComponent},
-  {path:'restrictions',component:RestrictionsComponent}
+  {path:'restrictions',component:RestrictionsComponent},
+  // 
+  {path:'year-fin-settings',component:YearFinSettingsComponent}
 ];
 
 @NgModule({

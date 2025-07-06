@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { FinancialService } from '../../../../../Services/HMS/financial.service';
-import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
+import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { FinancialService } from '../../../../../Services/HMS/financial.service';
 export declare var bootstrap:any;
+
 @Component({
-  selector: 'app-boxs',
-  templateUrl: './boxs.component.html',
-  styleUrl: './boxs.component.css'
+  selector: 'app-stores',
+  templateUrl: './stores.component.html',
+  styleUrl: './stores.component.css'
 })
-export class BoxsComponent implements OnInit{
-  TitleList = ['إعدادات النظام','إعدادات الإدارة المالية','الخزائن'];
+export class StoresComponent {
+  TitleList = ['إعدادات النظام','إعدادات المخازن','المخازن'];
   filterForm!:FormGroup;
   accountForm!:FormGroup
   // 
@@ -26,15 +27,14 @@ export class BoxsComponent implements OnInit{
       SearchText:[],
     })
     this.accountForm = this.fb.group({
-      accountCode:['' , Validators.required],
+      code:['' , Validators.required],
       name: ['', Validators.required],
-      branchId: ['', Validators.required],
-      currency: ['', Validators.required],
-      openingBalance: ['', Validators.required]
+      storeTypeId: ['', Validators.required]
     });
   }
   ngOnInit(): void {
-    this.getTreasuries();
+    this.getStores();
+    this.getStoreTypes();
   }
   applyFilters(){
     this.total=this.items.length;
@@ -55,9 +55,9 @@ export class BoxsComponent implements OnInit{
   }
   // 
   isEditMode: boolean = false;
-  currentTreasuryId: number | null = null;
+  currentStoreId: number | null = null;
   
-  addAccount() {
+  addStore() {
     if (this.accountForm.invalid) {
       this.accountForm.markAllAsTouched();
       return;
@@ -65,23 +65,23 @@ export class BoxsComponent implements OnInit{
   
     const formData = this.accountForm.value;
   
-    if (this.isEditMode && this.currentTreasuryId !== null) {
-      this.financialService.updateTreasury(this.currentTreasuryId, formData).subscribe({
+    if (this.isEditMode && this.currentStoreId !== null) {
+      this.financialService.updateStore(this.currentStoreId, formData).subscribe({
         next: () => {
-          this.getTreasuries();
+          this.getStores();
           this.closeModal();
           this.accountForm.reset();
           this.isEditMode = false;
-          this.currentTreasuryId = null;
+          this.currentStoreId = null;
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
         }
       });
     } else {
-      this.financialService.addTreasury(formData).subscribe({
+      this.financialService.addStore(formData).subscribe({
         next: () => {
-          this.getTreasuries();
+          this.getStores();
           this.closeModal();
           this.accountForm.reset();
         },
@@ -91,20 +91,18 @@ export class BoxsComponent implements OnInit{
       });
     }
   }
-  account!:any;
-  editAccount(id: number) {
+  store!:any;
+  editStore(id: number) {
     this.isEditMode = true;
-    this.currentTreasuryId = id;
+    this.currentStoreId = id;
   
-    this.financialService.getTreasuriesById(id).subscribe({
+    this.financialService.getStoresById(id).subscribe({
       next: (data) => {
-        this.account=data.results;
+        this.store=data.results;
         this.accountForm.patchValue({
-          name: this.account.name,
-          accountCode: this.account.accountCode,
-          branchId: this.account.branchId,
-          currency: this.account.currency,
-          openingBalance: this.account.openingBalance
+          name: this.store.name,
+          code: this.store.code,
+          storeTypeId: this.store.storeTypeId,
         });
   
         const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
@@ -115,10 +113,10 @@ export class BoxsComponent implements OnInit{
       }
     });
   }
-  deleteAccount(id: number) {
+  deleteStore(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
-      text: 'هل تريد حذف هذه الخزنة؟',
+      text: 'هل تريد حذف هذا المخزن؟',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -127,9 +125,9 @@ export class BoxsComponent implements OnInit{
       cancelButtonText: 'إلغاء'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.financialService.deleteTreasury(id).subscribe({
+        this.financialService.deleteStore(id).subscribe({
           next: () => {
-            this.getTreasuries();
+            this.getStores();
           },
           error: (err) => {
             console.error('فشل الحذف:', err);
@@ -151,7 +149,6 @@ export class BoxsComponent implements OnInit{
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
   }
-    
   // 
   filterChecked(filters: FilterModel[]){
     this.pagingFilterModel.currentPage = 1;
@@ -160,12 +157,21 @@ export class BoxsComponent implements OnInit{
       this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
     else
       this.pagingFilterModel.searchText = '';
-    this.getTreasuries();
+    this.getStores();
   }
-  getTreasuries(){
-    this.financialService.getTreasuries(this.pagingFilterModel).subscribe((res:any)=>{
+  getStores(){
+    this.financialService.getStores(this.pagingFilterModel).subscribe((res:any)=>{
       this.items=res.results;
       this.total=res.count;
+      console.log(this.items);
+      this.applyFilters();
+    })
+  }
+  storeTypes!:any[]
+  getStoreTypes(){
+    this.financialService.getStoresTypes(this.pagingFilterModel).subscribe((res:any)=>{
+      this.storeTypes=res.results;
+      this.total=res.totalCount;
       console.log(this.items);
       this.applyFilters();
     })

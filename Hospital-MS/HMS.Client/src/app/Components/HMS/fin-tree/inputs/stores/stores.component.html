@@ -1,0 +1,143 @@
+<main id="stores">
+    <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <!-- <div class="p-3 mt-4">
+            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
+                <div class="row justify-content-between align-items-center">
+                    <div class="col-md-8 row">
+                        <input type="text" formControlName="SearchText" placeholder="إبحث بإستخادم رقم المخزن أو اسم المخزن" class="form-control text-end shadow-none">
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-end align-items-center">
+                        <button type="submit" class="btn-blue w-100 mx-2">
+                            بحث <i class="fa fa-search me-1"></i> 
+                        </button>
+                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
+                            جديد <i class="fa fa-plus me-1"></i> 
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div> -->
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة مخزن</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <app-filters [filterData]="items" [filterPlaceholder]="'المخزن'" [searchPlaceholder]="'ابحث بإستخدام اسم المخزن ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>الرقم</th>
+                    <th>المخزن</th>
+                    <th>الكود</th>
+                    <th>المنطقة</th>
+                    <th>رقم الهاتف</th>
+                    <th>نوع المخزن</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="items?.length > 0">
+                <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.code }}</td>
+                    <td>{{ item.location }}</td>
+                    <td>{{ item.contactNumber }}</td>
+                    <td>{{ item.storeTypeName }}</td>
+                    <td>
+                        <button type="button" class="btn btn-primary mx-2" (click)="editStore(item.id)">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger mx-2" (click)="deleteStore(item.id)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="items?.length === 0">
+                <tr>
+                    <td colspan="4" class="text-center text-muted">لا يوجد خزائن حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addItemModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} مخزن جديد</h5>
+            </div>
+            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+                <form [formGroup]="accountForm" (ngSubmit)="addStore()">
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <label for="code" class="form-label">الكود</label>
+                            <input type="text" class="form-control shadow-none" formControlName="code" id="code" placeholder="الكود">
+                            <div *ngIf="accountForm.get('code')?.invalid && accountForm.get('code')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('code')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <label for="name" class="form-label">اسم المخزن</label>
+                            <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم المخزن">
+                            <div *ngIf="accountForm.get('name')?.invalid && accountForm.get('name')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-2">
+                            <label for="storeTypeId" class="form-label">نوع المخزن</label>
+                            <select class="form-select shadow-none" formControlName="storeTypeId" id="storeTypeId">
+                                <option selected disabled value="">اختر نوع المخزن</option>
+                                <option *ngFor="let storeType of storeTypes" [value]="storeType.id">{{storeType.name}}</option>
+                            </select>
+                            <div *ngIf="accountForm.get('storeTypeId')?.invalid && accountForm.get('storeTypeId')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('storeTypeId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} المخزن</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

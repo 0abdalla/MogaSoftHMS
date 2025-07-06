@@ -18,7 +18,7 @@ export class IssueItemsComponent implements OnInit {
   adds:any[]=[];
   total:number=0;
   pagingFilterModel:any={
-    pageSize:16,
+    pageSize:1,
     currentPage:1,
   }
   isFilter:boolean=true;
@@ -95,8 +95,8 @@ export class IssueItemsComponent implements OnInit {
   getMaterialIssuePermissions(){
     this.financialService.getMaterialIssuePermissions(this.pagingFilterModel).subscribe((res:any)=>{
       this.adds=res.results;
+      this.total=res.totalCount;
       console.log(this.adds);
-      this.total=res.count;
       this.applyFilters();
     })
   }

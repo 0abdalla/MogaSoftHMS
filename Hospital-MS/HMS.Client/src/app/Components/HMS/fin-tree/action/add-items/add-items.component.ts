@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
@@ -16,10 +16,12 @@ export class AddItemsComponent implements OnInit {
   TitleList = ['المخازن','إذن إستلام'];
   // 
   adds:any[]=[];
-  total:number=0;
+  total = 0;
   pagingFilterModel:any={
-    pageSize:16,
-    currentPage:1,
+    searchText: '',
+    currentPage: 1,
+    pageSize: 1,
+    filterList: []
   }
   // 
   allItems: any[] = [];
@@ -28,7 +30,7 @@ export class AddItemsComponent implements OnInit {
   purchaseRequests:any[]=[];
   // 
   isFilter:boolean=true;
-  constructor(private fb:FormBuilder , private financialService : FinancialService){
+  constructor(private fb:FormBuilder , private financialService : FinancialService , private cdr : ChangeDetectorRef){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -47,8 +49,8 @@ export class AddItemsComponent implements OnInit {
     });    
   }
   ngOnInit(): void {
-    this.getItems();
     this.getReceiptPermissions();
+    this.getItems();
     this.getSuppliers();
     this.getStores();
     this.getPurchaseRequests();
@@ -83,50 +85,61 @@ export class AddItemsComponent implements OnInit {
     this.filterForm.reset();
     this.applyFilters();
   }
-  // 
-  onPageChange(event:any){
-    this.pagingFilterModel.currentPage=event.page;
-    this.pagingFilterModel.pageSize=event.itemsPerPage;
-    this.applyFilters();
-  }
+  
   // 
   openMainGroup(id:number){
     
   }
   // 
-  getReceiptPermissions(){
-    this.financialService.getReceiptPermissions(this.pagingFilterModel).subscribe((res:any)=>{
-      this.adds=res.results;
-      console.log(this.adds);
-      this.total=res.count;
-      this.applyFilters();
-    })
+  getReceiptPermissions() {
+    console.log('Sending to API:', this.pagingFilterModel);
+    this.financialService.getReceiptPermissions(this.pagingFilterModel).subscribe({
+      next: (res:any) => {
+        this.total = res.totalCount;
+        this.adds = res.results;
+        this.cdr.detectChanges();
+      
+      console.log('Current Page:', this.pagingFilterModel.currentPage);
+      console.log('Page Size:', this.pagingFilterModel.pageSize);
+      console.log('Total Items:', this.total);
+      console.log('Results:', this.adds);
+      },
+      error: (err) => {
+        console.error('فشل جلب إذن الإستلام:', err);
+      }
+    });
+  }
+  // 
+  onPageChange(page: any) {
+    console.log('Page changed to:', page);
+    this.pagingFilterModel.currentPage = page.page;
+    this.getReceiptPermissions();
   }
   getItems(){
     this.financialService.getItems(this.pagingFilterModel).subscribe((res:any)=>{
       this.allItems=res.results;
-      console.log(this.allItems);
+      // console.log(this.allItems);
       this.total=res.count;
     })
   }
   getSuppliers(){
     this.financialService.getSuppliers(this.pagingFilterModel).subscribe((res:any)=>{
       this.suppliers=res.results;
-      console.log(this.suppliers);
+      // console.log(this.suppliers);
       this.total=res.count;
     })
   }
   getStores(){
     this.financialService.getStores(this.pagingFilterModel).subscribe((res:any)=>{
       this.stores=res.results;
-      console.log(this.stores);
+      // console.log(this.stores);
       this.total=res.count;
     })
   }
   getPurchaseRequests(){
     this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res:any)=>{
       this.purchaseRequests=res.results;
-      console.log(this.purchaseRequests);
+      // console.log(this.purchaseRequests);
       this.total=res.count;
     })
   }

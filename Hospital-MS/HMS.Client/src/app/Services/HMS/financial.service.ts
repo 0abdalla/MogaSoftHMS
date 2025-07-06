@@ -57,6 +57,22 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'Stores/' + id);
   }
   // 
+  getStoresTypes(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'StoreTypes?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getStoresTypesById(id:number){
+    return this.http.get<any>(this.baseUrl + 'StoreTypes/' + id);
+  }
+  addStoreType(storeType:any){
+    return this.http.post<any>(this.baseUrl + 'StoreTypes', storeType);
+  }
+  updateStoreType(id:number,storeType:any){
+    return this.http.put<any>(this.baseUrl + 'StoreTypes/' + id, storeType);
+  }
+  deleteStoreType(id:number){
+    return this.http.delete<any>(this.baseUrl + 'StoreTypes/' + id);
+  }
+  // 
   getPurchaseRequests(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseRequests?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
@@ -211,5 +227,25 @@ export class FinancialService {
   }
   deleteTreasury(id:number){
     return this.http.delete<any>(this.baseUrl + 'Treasuries/' + id);
+  }
+  // 
+  getDailyRestrictions(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DailyRestrictions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getDailyRestrictionsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'DailyRestrictions/' + id);
+  }
+  addDailyRestriction(dailyRestriction:any){
+    return this.http.post<any>(this.baseUrl + 'DailyRestrictions', dailyRestriction);
+  }
+  updateDailyRestriction(id:number,dailyRestriction:any){
+    return this.http.put<any>(this.baseUrl + 'DailyRestrictions/' + id, dailyRestriction);
+  }
+  deleteDailyRestriction(id:number){
+    return this.http.delete<any>(this.baseUrl + 'DailyRestrictions/' + id);
+  }
+  // 
+  getAccounts(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AccountTree/GetAccountTreeData?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
 }

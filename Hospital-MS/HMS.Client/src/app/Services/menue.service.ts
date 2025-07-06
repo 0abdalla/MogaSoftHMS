@@ -236,12 +236,12 @@ export class MenueService {
             {
               displayName: 'المخازن',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/boxes'
+              route: '/hms/fin-tree/stores'
             },
             {
-              displayName: 'اسماء المخازن',
+              displayName: 'أنواع المخازن',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/stores-types'
             }
             // ,
             // {
@@ -285,7 +285,7 @@ export class MenueService {
             {
               displayName: 'إعدادات السنة المالية',
               icon: 'fa-solid fa-circle',
-              route: ''
+              route: '/hms/fin-tree/year-fin-settings'
             },
             {
               displayName: 'مراكز التكلفة',
