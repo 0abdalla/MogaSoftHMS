@@ -42,7 +42,7 @@ namespace Hospital_MS.Services.HMS
 
             //BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
 
-            //await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
+            await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
 
             return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.Id.ToString());
         }

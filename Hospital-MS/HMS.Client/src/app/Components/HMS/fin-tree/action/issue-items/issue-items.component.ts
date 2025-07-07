@@ -18,7 +18,7 @@ export class IssueItemsComponent implements OnInit {
   adds:any[]=[];
   total:number=0;
   pagingFilterModel:any={
-    pageSize:1,
+    pageSize:16,
     currentPage:1,
   }
   isFilter:boolean=true;
@@ -26,6 +26,7 @@ export class IssueItemsComponent implements OnInit {
   suppliers:any[]=[];
   stores:any[]=[];
   purchaseRequests:any[]=[];
+  branchs:any[] = [];
 
   constructor(private fb:FormBuilder , private financialService:FinancialService){
 
@@ -36,9 +37,9 @@ export class IssueItemsComponent implements OnInit {
     })
     this.addPermissionForm = this.fb.group({
       permissionDate: [new Date().toISOString().substring(0, 10)],
-      documentNumber: ['0'],
+      documentNumber: [''],
       storeId: [''],
-      branchId: ['1'],
+      branchId: [''],
       items: this.fb.array([
         this.createItemGroup()
       ]),
@@ -51,6 +52,7 @@ export class IssueItemsComponent implements OnInit {
     this.getSuppliers();
     this.getStores();
     this.getPurchaseRequests();
+    this.getBranches();
   }
   createItemGroup(): FormGroup {
     return this.fb.group({
@@ -218,5 +220,15 @@ export class IssueItemsComponent implements OnInit {
         });
       }
     });
+  }
+  // 
+  getBranches(){
+    this.financialService.getBranches(this.pagingFilterModel).subscribe({
+      next:(res:any)=>{
+        this.branchs = res.results;
+        console.log('Branchs' , this.branchs);
+        
+      }
+    })
   }
 }

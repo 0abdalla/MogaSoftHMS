@@ -221,7 +221,7 @@ export class MenueService {
             {
               displayName: 'المجموعات الرئيسية',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/providers'
+              route: '/hms/fin-tree/main-groups'
             },
             {
               displayName: 'مجموعات الاصناف',

@@ -1,7 +1,7 @@
 <main id="supply">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="p-3 mt-4">
+        <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="row col-md-8">
@@ -26,6 +26,37 @@
                     </div>
                 </div>
             </form>
+        </div> -->
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addSupplyReceiptModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة إيصال توريد</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center flex-wrap gap-2">
+              
+                  <app-filters
+                    [filterData]="adds"
+                    [filterPlaceholder]="'إيصالات توريد'"
+                    [searchPlaceholder]="'ابحث بإستخدام رقم المستند ...'"
+                    [categoryName]="'Type'"
+                    (filterChanged)="filterChecked($event)"
+                  ></app-filters>
+              
+                </div>
+              </div>
+              
         </div>
         <table class="table table-hover mt-4">
             <thead>
@@ -33,27 +64,22 @@
                     <th>التاريخ</th>
                     <th>الخزينة</th>
                     <th>المبلغ</th>
-                    <th>اسم المستخدم</th>
+                    <th>مركز التكلفة</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody *ngIf="adds?.length > 0">
                 <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
-                    <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ add.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ add.name }}</span>
-                        </div>
-                    </td>
-                    <td class="text-secondary">{{ add.description }}</td>
-                    <td>{{ add.responsibleName }}</td>
-                    <td>{{ add.phoneNumber }}</td>
+                    <td>{{ add.date }}</td>
+                    <td>{{ add.treasuryName }}</td>
+                    <td>{{ add.amount + ' جنيه' }}</td>
+                    <td>{{ add.costCenterName }}</td>
 
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-2" (click)="editSupplyReceipt(add.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-2" (click)="deleteSupplyReceipt(add.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -85,10 +111,10 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addSupplyReceiptModalLabel">إيصال توريد جديد</h5>
+                <h5 class="modal-title" id="addSupplyReceiptModalLabel">{{isEditMode ? 'تعديل إيصال توريد' : 'إيصال توريد جديد'}}</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="addPermissionForm" (ngSubmit)="submitPermission()">
+                <form [formGroup]="addPermissionForm" (ngSubmit)="addSupplyReceipt()">
                     <div class="p-3 mb-3">
                         <div class="row gy-3">
 
@@ -99,49 +125,58 @@
 
                             <div class="col-md-4">
                                 <label>صرف من</label>
-                                <select class="form-select shadow-none text-end" formControlName="warehouseName">
-                    <option disabled selected value="">اختر الخزينة</option>
-                    <option value="المخزن الرئيسي">خزينة رئيسي</option>
-                    <option value="مخزن فرعي">خزينة فرعية</option>
-                    
-                  </select>
+                                <ng-select
+                              [items]="treasuries"
+                              bindLabel="name"
+                              bindValue="id"
+                              placeholder="اختر الخزينة"
+                              formControlName="treasuryId"
+                              class="text-end shadow-none w-100"
+                              [searchable]="true"
+                            >
+                            </ng-select>
                             </div>
 
 
                             <div class="col-md-4">
                                 <label>استلمت من السيد</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="balance" />
+                                <input type="text" class="form-control shadow-none text-end" formControlName="receivedFrom" />
                             </div>
 
                             <div class="col-md-4">
                                 <label>كود الحساب</label>
-                                <select class="form-select shadow-none text-end" formControlName="supplierName">
-                      <option disabled selected value="">اختر الحساب</option>
-                      <option value="مورد 1">مورد 1</option>
-                      <option value="مورد 2">مورد 2</option>
-                    </select>
+                                <input type="text" class="form-control shadow-none text-end" formControlName="accountCode" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>مركز التكلفة</label>
+                                <ng-select
+                              [items]="costCenters"
+                              bindLabel="nameAR"
+                              bindValue="costCenterId"
+                              placeholder="اختر المركز"
+                              formControlName="costCenterId"
+                              class="text-end shadow-none w-100"
+                              [searchable]="true"
+                            >
+                            </ng-select>
                             </div>
 
                             <div class="col-md-4">
                                 <label>المبلغ</label>
-                                <input type="number" class="form-control shadow-none text-end" formControlName="balance" />
-                            </div>
-
-                            <div class="col-md-4">
-                                <label>شرح العملية/القيد</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="description" />
+                                <input type="number" class="form-control shadow-none text-end" formControlName="amount" />
                             </div>
 
                             <div class="col-md-12">
-                                <label>ملاحظات</label>
-                                <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                                <label>شرح العملية/القيد</label>
+                                <textarea rows="3" class="form-control shadow-none text-end" formControlName="description"></textarea>
                             </div>
 
                         </div>
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">إضافة إيصال</button>
+                        <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} إيصال</button>
                     </div>
                 </form>
             </div>

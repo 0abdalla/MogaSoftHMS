@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import Swal from 'sweetalert2';
+import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 declare var bootstrap: any;
 
 @Component({
@@ -16,7 +17,8 @@ export class ItemsComponent {
   // 
   isEditMode = false;
   currentItemId: number | null = null;
-// 
+  // 
+  isFilter:boolean = true;
   numericFields = [
     { name: 'openingBalance', label: 'رصيد أول المدة' },
     { name: 'cost', label: 'تكلفة الصنف' },
@@ -82,9 +84,20 @@ export class ItemsComponent {
           this.itemForm.markAllAsTouched();
           return;
         }
-      
-        const formData = this.itemForm.value;
-      
+        const rawForm = this.itemForm.value;
+        const formData = {
+          nameAr: rawForm.nameAr,
+          nameEn: rawForm.nameEn,
+          unitId: Number(rawForm.unitId),
+          groupId: Number(rawForm.groupId),
+          orderLimit: Number(rawForm.orderLimit),
+          cost: Number(rawForm.cost),
+          openingBalance: Number(rawForm.openingBalance),
+          salesTax: Number(rawForm.salesTax),
+          price: Number(rawForm.price),
+          hasBarcode: rawForm.hasBarcode === true || rawForm.hasBarcode === 'true',
+          typeId: Number(rawForm.typeId)
+        };
         if (this.isEditMode && this.currentItemId) {
           this.financialService.updateItem(this.currentItemId, formData).subscribe({
             next: (res) => {
@@ -103,7 +116,9 @@ export class ItemsComponent {
             next: (res) => {
               console.log('تم إضافة الصنف:', res);
               this.getItems();
-              this.itemForm.reset();
+              console.log(formData);
+              
+              // this.itemForm.reset();
             },
             error: (err) => {
               console.error('خطأ أثناء الإضافة:', err);
@@ -132,7 +147,6 @@ export class ItemsComponent {
               hasBarcode: this.itemRes.hasBarcode,
               typeId: this.itemRes.typeId
             });
-      
             const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
             modal.show();
           },
@@ -165,4 +179,13 @@ export class ItemsComponent {
           }
         });
       }
+    filterChecked(filters: FilterModel[]){
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = filters;
+    if (filters.some(i => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+    else
+      this.pagingFilterModel.searchText = '';
+    this.getItems();
+  }
 }

@@ -21,6 +21,8 @@ export class BanksComponent implements OnInit {
     pageSize:16,
     currentPage:1,
   }
+  // 
+  isFilter:boolean = true;
   constructor(private fb:FormBuilder , private financialService : BanksService){
     this.filterForm=this.fb.group({
       SearchText:[],
@@ -53,7 +55,6 @@ export class BanksComponent implements OnInit {
   openItem(id:number){
     
   }
-  // 
   // 
   isEditMode: boolean = false;
   currentBankId: number | null = null;
@@ -113,14 +114,14 @@ export class BanksComponent implements OnInit {
         modal.show();
       },
       error: (err) => {
-        console.error('فشل تحميل بيانات الخزنة:', err);
+        console.error('فشل تحميل بيانات البنك:', err);
       }
     });
   }
   deleteBank(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
-      text: 'هل تريد حذف هذا المخزن؟',
+      text: 'هل تريد حذف هذا البنك؟',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { FinancialService } from '../../../../../Services/HMS/financial.service';
 
 @Component({
   selector: 'app-year-fin-settings',
@@ -10,7 +12,7 @@ export class YearFinSettingsComponent {
   TitleList = ['إعدادات النظام','إعدادات الإدارة المالية' , 'إعدادات السنة المالية'];
   financialYearForm: FormGroup;
 
-  constructor(private fb:FormBuilder){}
+  constructor(private fb:FormBuilder , private financialService:FinancialService){}
   ngOnInit() {
     this.financialYearForm = this.fb.group({
       startDate: [null, Validators.required],
@@ -29,9 +31,36 @@ export class YearFinSettingsComponent {
   }
   
   submitFinancialYear() {
-    if (this.financialYearForm.valid) {
-      const data = this.financialYearForm.value;
-      console.log('تم إرسال السنة المالية:', data);
-    }
-  }
+    Swal.fire({
+      title: 'هل تريد إنشاء السنة المالية؟',
+      html: `
+        برجاء مراعاة الآتي قبل بدء إنشاء السنة المالية الجديدة:<br>
+        1- إقفال آخر حركة خزينة بالسنة المالية المنتهية<br>
+        2- ترحيل جميع قيود اليومية لحسابات الأستاذ<br>
+        3- إقفال السنة المالية المنتهية<br>
+        <br>
+        <strong>ملاحظة:</strong> يُرجى العلم أنه بعد الضغط على زر "إنشاء سنة مالية جديدة" لا يمكن التراجع نهائيًا.
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'نعم , إنشاء',
+      cancelButtonText: 'إلغاء'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.financialService.postFiscalYear(this.financialYearForm.value).subscribe({
+          next: (res:any) => {
+            console.log(res);
+            this.financialYearForm.reset();
+            Swal.fire('تم إنشاء السنة المالية بنجاح', '', 'success');
+          },
+          error: (err) => {
+            console.error('فشل الإضافة:', err);
+            Swal.fire('فشل إنشاء السنة المالية', '', 'error');
+          }
+        });
+      }
+    });
+  }  
 }

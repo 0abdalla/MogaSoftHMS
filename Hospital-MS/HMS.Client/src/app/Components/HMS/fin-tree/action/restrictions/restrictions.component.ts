@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { BanksService } from '../../../../../Services/HMS/banks.service';
 import { SettingService } from '../../../../../Services/HMS/setting.service';
-declare var bootstrap : any;
+export declare var bootstrap : any;
 
 @Component({
   selector: 'app-restrictions',
@@ -55,7 +55,7 @@ export class RestrictionsComponent {
   addItemRow() {
     const index = this.details.length;
     this.details.push(this.createdetilsGroup());
-    this.costCentersPerRow.push([]);
+    // this.costCentersPerRow.push([]);
   
     const accountControl = this.details.at(index).get('accountId');
   
@@ -64,11 +64,11 @@ export class RestrictionsComponent {
         const selectedAccount = this.accounts.find((acc:any) => acc.accountId === +selectedAccountId);
         console.log('Selected Account:', selectedAccount);
   
-        if (selectedAccount?.children) {
-          this.costCentersPerRow[index] = selectedAccount.children;
-        } else {
-          this.costCentersPerRow[index] = [];
-        }
+        // if (selectedAccount?.children) {
+        //   this.costCentersPerRow[index] = selectedAccount.children;
+        // } else {
+        //   this.costCentersPerRow[index] = [];
+        // }
   
         this.details.at(index).get('costCenterId')?.setValue(null);
       });
@@ -83,6 +83,7 @@ export class RestrictionsComponent {
   ngOnInit(): void {
     this.getDailyRestrictions();
     this.getAccounts();
+    this.getCostCenters();
   }
   applyFilters(){
     this.total=this.restrictions.length;
@@ -235,20 +236,62 @@ export class RestrictionsComponent {
     this.financialService.getDailyRestrictions(this.pagingFilterModel).subscribe((res:any)=>{
       this.restrictions=res.results;
       this.total=res.totalCount;
-      console.log(this.restrictions);
+      console.log('Restrictions:',this.restrictions);
       this.applyFilters();
     })
   }
   // 
   accounts!:any;
-  costCentersPerRow: any[][] = [];
+  costCenters: any;
   searchText = '';
-  getAccounts(){
-    this.settingService.GetAccountTreeHierarchicalData(this.searchText).subscribe(data => {
-      this.accounts = data;
-      console.log(this.accounts);
-    }, (error) => {
-      console.log(error);
+  getAccounts() {
+    this.settingService.GetAccountTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.accounts = this.extractLeafAccounts(res);
+        console.log("Filterated Accounts:", this.accounts);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
     });
+  }
+  
+  extractLeafAccounts(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isGroup === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafAccounts(node.children));
+      }
+    }
+    return result;
+  }
+  
+  getCostCenters() {
+    this.settingService.GetCostCenterTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.costCenters = this.extractLeafCostCenter(res); 
+        console.log("Filterated Cost Centers:", this.costCenters);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+  extractLeafCostCenter(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isParent === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafCostCenter(node.children));
+      }
+    }
+    return result;
   }
 }

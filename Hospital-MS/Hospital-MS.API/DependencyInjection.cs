@@ -3,6 +3,7 @@ using Hospital_MS.Core._Data;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Services;
+using Hospital_MS.Core.Settings;
 using Hospital_MS.Interfaces;
 using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
@@ -99,12 +100,23 @@ namespace Hospital_MS.API
             services.AddScoped<IStoreService, StoreService>();
             services.AddScoped<IStoreTypeService, StoreTypeService>();
             services.AddScoped<IBranchService, BranchService>();
+            services.AddScoped<IDailyRestrictionService, DailyRestrictionService>();
+            services.AddScoped<IRestrictionTypeService, RestrictionTypeService>();
+            services.AddScoped<IFiscalYearService, FiscalYearService>();
+            services.AddScoped<ISupplyReceiptService, SupplyReceiptService>();
+            services.AddScoped<IMainGroupService, MainGroupService>();
 
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IEmailSender, EmailService>();
 
 
             services.AddHttpContextAccessor();
+
+
+            services.AddOptions<MailSettings>()
+                    .BindConfiguration(nameof(MailSettings))
+                    .ValidateDataAnnotations()
+                    .ValidateOnStart();
 
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)

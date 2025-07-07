@@ -131,7 +131,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 UnitId = item.UnitId,
                 UnitName = item.Unit.NameAr,
                 GroupId = item.GroupId,
-                GroupName = item.Group?.NameAr,
+                GroupName = item.Group?.Name ?? string.Empty,
                 OrderLimit = item.OrderLimit,
                 Cost = item.Cost,
                 OpeningBalance = item.OpeningBalance,

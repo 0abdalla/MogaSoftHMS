@@ -39,4 +39,12 @@ public class PurchaseRequestsController(IPurchaseRequestService service) : ApiBa
     [HttpGet("approved")]
     public async Task<IActionResult> GetAllApproved([FromQuery] PagingFilterModel filter, CancellationToken cancellationToken)
         => Ok(await _service.GetAllApprovedAsync(filter, cancellationToken));
+
+    [HttpGet("{id}/approve-via-email")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ApproveViaEmail(int id, CancellationToken cancellationToken)
+    {
+        await _service.ApprovePurchaseRequestAsync(id, cancellationToken);
+        return Content("Purchase request approved successfully.");
+    }
 }

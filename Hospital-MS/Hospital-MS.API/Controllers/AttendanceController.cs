@@ -36,7 +36,7 @@ namespace Hospital_MS.API.Controllers
             => Ok(await _attendanceService.AddAttendaceSalariesAsync(Model, cancellationToken));
 
         [HttpPost("GetAllAttendanceSalaries")]
-        public async Task<IActionResult> GetAllAttendanceSalariesAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
-            => Ok(await _attendanceService.GetAllAttendanceSalariesAsync(filter, cancellationToken));
+        public async Task<IActionResult> GetAllAttendanceSalariesAsync(PagingFilterModel filter)
+            => Ok(await _attendanceService.GetAllAttendanceSalariesAsync(filter));
     }
 }
