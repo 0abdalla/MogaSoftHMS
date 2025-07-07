@@ -4,6 +4,7 @@ import { FinancialService } from '../../../../../../Services/HMS/financial.servi
 import { BanksService } from '../../../../../../Services/HMS/banks.service';
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
+import { SettingService } from '../../../../../../Services/HMS/setting.service';
 export declare var bootstrap:any;
 
 @Component({
@@ -29,7 +30,7 @@ export class AddNoticeComponent {
   currentAdditionNotificationId:number|null=null;
   // 
   isFilter:boolean=true;
-  constructor(private fb:FormBuilder , private financialService:FinancialService , private banksService:BanksService){
+  constructor(private fb:FormBuilder , private financialService:FinancialService , private banksService:BanksService , private settingsService : SettingService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -84,9 +85,12 @@ export class AddNoticeComponent {
       });
     } else {
       this.financialService.addAdditionNotification(formData).subscribe({
-        next: () => {
+        next: (res) => {
           this.getAdditionNotifications();
-          this.addNoticeGroup.reset();
+          console.log(this.addNoticeGroup.value);
+          console.log(res);
+          
+          // this.addNoticeGroup.reset();
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -166,9 +170,35 @@ export class AddNoticeComponent {
       this.banks=res.results;
     })
   }
-  getAccounts(){
-    this.banksService.getAccounts(this.pagingFilterModel).subscribe((res:any)=>{
-      this.accounts=res.results;
-    })
+  // getAccounts(){
+  //   this.banksService.getAccounts(this.pagingFilterModel).subscribe((res:any)=>{
+  //     this.accounts=res.results;
+  //   })
+  // }
+  // 
+  getAccounts() {
+    this.settingsService.GetAccountTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.accounts = this.extractLeafAccounts(res);
+        console.log("Accs:", this.accounts);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+  
+  extractLeafAccounts(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isGroup === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafAccounts(node.children));
+      }
+    }
+    return result;
   }
 }

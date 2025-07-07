@@ -168,12 +168,18 @@
                     <h5>الحسابات</h5>
                     <div formArrayName="details">
                         <div class="row mb-3" *ngFor="let item of details.controls; let i = index" [formGroupName]="i">
-                          <div class="col-md-2">
+                          <div class="col-md-3">
                             <label>الحساب</label>
-                            <select class="form-select shadow-none" formControlName="accountId">
-                              <option disabled selected value="">اختر الحساب</option>
-                              <option *ngFor="let i of accounts" [value]="i.accountId">{{ i.nameAR }}</option>
-                            </select>
+                            <ng-select
+                              [items]="accounts"
+                              bindLabel="nameAR"
+                              bindValue="accountId"
+                              placeholder="اختر الحساب"
+                              formControlName="accountId"
+                              class="text-end shadow-none w-100"
+                              [searchable]="true"
+                            >
+                            </ng-select>
                           </div>
                       
                           <div class="col-md-2">
@@ -186,18 +192,20 @@
                             <input type="number" class="form-control shadow-none" formControlName="credit">
                           </div>
                           
-                        <div class="col-md-2">
+                        <div class="col-md-4">
                             <label>مركز التكلفة</label>
-                            <select class="form-select shadow-none" formControlName="costCenterId">
-                                <option disabled selected value="">اختر المركز</option>
-                                <option *ngFor="let c of costCentersPerRow[i]" [value]="c.accountId">{{ c.nameAR }}</option>
-                            </select>                                                           
+                            <ng-select
+                              [items]="costCenters"
+                              bindLabel="nameAR"
+                              bindValue="costCenterId"
+                              placeholder="اختر المركز"
+                              formControlName="costCenterId"
+                              class="text-end shadow-none w-100"
+                              [searchable]="true"
+                            >
+                            </ng-select>                                                         
                         </div>
 
-                          <div class="col-md-2">
-                            <label>ملاحظات</label>
-                            <input type="text" class="form-control shadow-none" formControlName="note">
-                          </div>
                       
                           <div class="col-md-1 d-flex align-items-end">
                             <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="details.length > 1">
