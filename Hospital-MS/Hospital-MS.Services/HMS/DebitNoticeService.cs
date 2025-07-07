@@ -155,7 +155,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : 
                 CheckNumber = debitNotice.CheckNumber,
                 Date = debitNotice.Date,
                 Notes = debitNotice.Notes,
-                AccountName = debitNotice.Account.Name,
+                AccountName = debitNotice.Account.NameAR ,
                 BankName = debitNotice.Bank.Name,
                 Audit = new Core.Contracts.Common.AuditResponse
                 {

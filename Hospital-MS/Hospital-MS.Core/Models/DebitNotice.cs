@@ -17,5 +17,5 @@ public class DebitNotice : AuditableEntity // اشعار خصم
     public bool IsActive { get; set; } = true;
 
     public Bank Bank { get; set; } = default!;
-    public Account Account { get; set; } = default!;
+    public AccountTree Account { get; set; } = default!;
 }

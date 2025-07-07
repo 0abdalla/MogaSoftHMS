@@ -47,28 +47,28 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
         }
     }
 
-    public Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
-            var notification = _unitOfWork.Repository<AdditionNotice>()
+            var notification = await _unitOfWork.Repository<AdditionNotice>()
                 .GetAll(x => x.Id == id)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (notification == null)
             {
-                return Task.FromResult(ErrorResponseModel<string>.Failure(GenericErrors.NotFound));
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
             notification.IsActive = false;
 
             _unitOfWork.Repository<AdditionNotice>().Update(notification);
-            _unitOfWork.CompleteAsync(cancellationToken);
-            return Task.FromResult(ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, id.ToString()));
+            await _unitOfWork.CompleteAsync(cancellationToken);
+            return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, id.ToString());
         }
         catch (Exception)
         {
-            return Task.FromResult(ErrorResponseModel<string>.Failure(GenericErrors.TransFailed));
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
 
     }
@@ -77,67 +77,73 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
     {
         try
         {
-            var parameters = new List<SqlParameter>
-        {
-            new("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value),
-            new("@CurrentPage", pagingFilter.CurrentPage),
-            new("@PageSize", pagingFilter.PageSize)
-        };
+            var query = _unitOfWork.Repository<AdditionNotice>()
+                .GetAll(x => x.IsActive)
+                .Include(x => x.Bank)
+                .Include(x => x.Account)
+                .AsQueryable();
 
-            // Add filter parameters
+            if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))
+            {
+                var search = pagingFilter.SearchText.Trim();
+                query = query.Where(x =>
+                    x.CheckNumber.Contains(search) ||
+                    x.Bank.Name.Contains(search) ||
+                    x.Account.NameAR.Contains(search) ||
+                    x.Account.NameEN.Contains(search) ||
+                    x.Notes.Contains(search));
+            }
+
             if (pagingFilter.FilterList != null)
             {
                 var bankFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Bank");
-                if (bankFilter != null)
-                {
-                    parameters.Add(new SqlParameter("@BankId", bankFilter.ItemValue));
-                }
+                if (bankFilter != null && int.TryParse(bankFilter.ItemValue, out var bankId))
+                    query = query.Where(x => x.BankId == bankId);
 
                 var accountFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Account");
-                if (accountFilter != null)
-                {
-                    parameters.Add(new SqlParameter("@AccountId", accountFilter.ItemValue));
-                }
+                if (accountFilter != null && int.TryParse(accountFilter.ItemValue, out var accountId))
+                    query = query.Where(x => x.AccountId == accountId);
 
                 var dateFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Date");
                 if (dateFilter != null)
                 {
                     if (dateFilter.FromDate.HasValue)
-                        parameters.Add(new SqlParameter("@FromDate", dateFilter.FromDate.Value));
+                        query = query.Where(x => x.Date >= DateOnly.FromDateTime(dateFilter.FromDate.Value));
                     if (dateFilter.ToDate.HasValue)
-                        parameters.Add(new SqlParameter("@ToDate", dateFilter.ToDate.Value));
+                        query = query.Where(x => x.Date <= DateOnly.FromDateTime(dateFilter.ToDate.Value));
                 }
 
                 var checkNumberFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "CheckNumber");
-                if (checkNumberFilter != null)
-                {
-                    parameters.Add(new SqlParameter("@CheckNumber", checkNumberFilter.ItemValue));
-                }
+                if (checkNumberFilter != null && !string.IsNullOrWhiteSpace(checkNumberFilter.ItemValue))
+                    query = query.Where(x => x.CheckNumber.Contains(checkNumberFilter.ItemValue));
             }
 
-            var dt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetAdditionNotifications]", parameters.ToArray());
+            var totalCount = await query.CountAsync(cancellationToken);
 
-            var notifications = new List<AdditionNotificationResponse>();
-            int totalCount = 0;
-
-            if (dt.Rows.Count > 0)
-            {
-                totalCount = Convert.ToInt32(dt.Rows[0]["TotalCount"]);
-
-                notifications = dt.AsEnumerable().Select(row => new AdditionNotificationResponse
+            var notifications = await query
+                .OrderByDescending(x => x.Date)
+                .Skip((pagingFilter.CurrentPage - 1) * pagingFilter.PageSize)
+                .Take(pagingFilter.PageSize)
+                .Select(x => new AdditionNotificationResponse
                 {
-                    Id = row.Field<int>("Id"),
-                    Date = DateOnly.FromDateTime(row.Field<DateTime>("Date")),
-                    BankId = row.Field<int>("BankId"),
-                    BankName = row.Field<string>("BankName") ?? string.Empty,
-                    AccountId = row.Field<int>("AccountId"),
-                    AccountName = row.Field<string>("AccountName") ?? string.Empty,
-                    CheckNumber = row.Field<string>("CheckNumber") ?? string.Empty,
-                    Amount = row.Field<decimal>("Amount"),
-                    Notes = row.Field<string>("Notes")
-
-                }).ToList();
-            }
+                    Id = x.Id,
+                    Date = x.Date,
+                    BankId = x.BankId,
+                    BankName = x.Bank.Name,
+                    AccountId = x.AccountId,
+                    AccountName = x.Account.NameAR ?? x.Account.NameEN ?? "",
+                    CheckNumber = x.CheckNumber,
+                    Amount = x.Amount,
+                    Notes = x.Notes,
+                    Audit = new Core.Contracts.Common.AuditResponse
+                    {
+                        CreatedBy = x.CreatedBy != null ? x.CreatedBy.UserName : "",
+                        CreatedOn = x.CreatedOn,
+                        UpdatedBy = x.UpdatedBy != null ? x.UpdatedBy.UserName : null,
+                        UpdatedOn = x.UpdatedOn
+                    }
+                })
+                .ToListAsync(cancellationToken);
 
             return PagedResponseModel<List<AdditionNotificationResponse>>.Success(
                 GenericErrors.GetSuccess,
@@ -171,7 +177,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 BankId = notification.BankId,
                 BankName = notification.Bank.Name,
                 AccountId = notification.AccountId,
-                AccountName = notification.Account.Name,
+                AccountName = notification.Account.NameAR ?? notification.Account.NameEN ?? "",
                 CheckNumber = notification.CheckNumber,
                 Amount = notification.Amount,
                 Notes = notification.Notes,

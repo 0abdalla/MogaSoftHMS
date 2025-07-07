@@ -18,5 +18,5 @@ public class SupplyReceipt : AuditableEntity // ايصال التوريد
     public bool IsActive { get; set; } = true;
 
     public Treasury Treasury { get; set; } = default!;
-    public CostCenter CostCenter { get; set; } = default!;
+    public CostCenterTree CostCenter { get; set; } = default!;
 }
