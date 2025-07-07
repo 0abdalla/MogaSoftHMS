@@ -16,6 +16,6 @@ public class DailyRestrictionDetail
     public decimal Debit { get; set; }                // مدين
     public decimal Credit { get; set; }               // دائن
     public int? CostCenterId { get; set; }            // مركز التكلفة (FK, optional)
-    public CostCenter? CostCenter { get; set; }       // مركز التكلفة (Navigation)
+    public CostCenterTree? CostCenter { get; set; }       // مركز التكلفة (Navigation)
     public string? Note { get; set; }                 // ملاحظات
 }

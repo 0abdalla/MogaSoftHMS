@@ -103,7 +103,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 Description = supplyReceipt.Description,
                 CostCenterId = supplyReceipt.CostCenterId,
                 TreasuryId = supplyReceipt.TreasuryId,
-                CostCenterName = supplyReceipt.CostCenter?.Name,
+                CostCenterName = supplyReceipt.CostCenter?.NameAR ?? supplyReceipt.CostCenter?.NameEN ?? "",
                 TreasuryName = supplyReceipt.Treasury?.Name,
                 Audit = new Core.Contracts.Common.AuditResponse
                 {

@@ -153,7 +153,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     Debit = d.Debit,
                     Credit = d.Credit,
                     CostCenterId = d.CostCenterId,
-                    CostCenterName = d.CostCenter?.Name,
+                    CostCenterName = d.CostCenter?.NameAR,
                     Note = d.Note
                 }).ToList()
             };
