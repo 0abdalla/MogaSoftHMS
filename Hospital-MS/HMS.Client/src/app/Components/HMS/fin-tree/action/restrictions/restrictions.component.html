@@ -75,10 +75,8 @@
                     <th>رقم القيد</th>
                     <th>نوع القيد</th>
                     <th>حالة القيد</th>
-                    <th>نوع العملية</th>
+                    <th>التوجيه المحاسبي</th>
                     <th>التاريخ</th>
-                    <th>مدين كلي</th>
-                    <th>دائن كلي</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
@@ -86,10 +84,12 @@
                 <tr *ngFor="let restriction of restrictions | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openRestriction(restriction.id)" style="cursor: pointer">
                     <td>{{ restriction.restrictionNumber }}</td>
                     <td>{{ restriction.restrictionTypeName }}</td>
-                    <td>{{ restriction.restrictionStatus || 'غير مرحل' }}</td>
-                    <td>{{ restriction.restrictions }}</td>
-                    <td>{{ restriction.restrictionDate }}</td>
-                    <td>{{ restriction.restrictionDate }}</td>
+                    <td>
+                        <p class="text-white status-pill fw-bold" [ngStyle]="{ backgroundColor: getStatusColor(restriction.restrictionStatus) }">
+                            {{ getStatusName(restriction.restrictionStatus) || 'غير مرحل' }}
+                        </p>
+                      </td>
+                    <td>{{ restriction.accountingGuidanceName }}</td>
                     <td>{{ restriction.restrictionDate }}</td>
                     <td>
                         <button type="button" class="btn btn-primary mx-2" (click)="editRestriction(restriction.id)">
@@ -128,40 +128,43 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addRestrictionModalLabel">إضافة قيود</h5>
+                <h5 class="modal-title" id="addRestrictionModalLabel">
+                    {{isEditMode ? 'تعديل قيود يومية' : 'إضافة قيود يومية'}}
+                </h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
 
                 <form [formGroup]="restrictionForm" (ngSubmit)="addRestriction()">
                     <div class="row mb-3">
-                        <div class="col-md-12">
-                            <label for="date">التاريخ</label>
+                        <div class="col-md-4">
+                            <label class="form-label" for="date">التاريخ</label>
                             <input type="date" formControlName="restrictionDate" class="form-control shadow-none">
                         </div>
 
-                        <div class="col-md-4 mt-3">
-                            <label for="restrictionNumber">رقم القيد</label>
-                            <input type="number" formControlName="restrictionNumber" class="form-control shadow-none">
-                        </div>
-
-                        <div class="col-md-4 mt-3">
-                            <label for="restrictionTypeId">نوع القيد</label>
+                        <div class="col-md-4">
+                            <label class="form-label" for="restrictionTypeId">نوع القيد</label>
                             <select formControlName="restrictionTypeId" class="form-select shadow-none">
                                 <option selected disabled value="">اختر نوع القيد</option>
-                                <option value="1">قيد مزدوج</option>
-                                <option value="2">قيد مفرد</option>
+                                <option *ngFor="let restrictionType of restrictionTypes" [value]="restrictionType.id">{{ restrictionType.name }}</option>
                             </select>
                         </div>
 
-                        <div class="col-md-4 mt-3">
-                            <label for="ledgerNumber">رقم الدفتر</label>
-                            <input type="number" formControlName="ledgerNumber" class="form-control shadow-none">
+                        <div class="col-md-4">
+                            <label class="form-label" for="accountingGuidanceId">التوجيه المحاسبي</label>
+                            <select formControlName="accountingGuidanceId" class="form-select shadow-none">
+                                <option selected disabled value="">اختر التوجيه المحاسبي</option>
+                                <option *ngFor="let accountingGuidance of accountingGuidance" [value]="accountingGuidance.id">{{ accountingGuidance.name }}</option>
+                            </select>
                         </div>
+
+                        
+
+
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="description">البيان</label>
-                            <input type="text" formControlName="description" class="form-control shadow-none" placeholder="">
+                            <label class="form-label" for="description">شرح القيد</label>
+                            <textarea formControlName="description" class="form-control shadow-none" placeholder="أدخل شرح القيد"></textarea>
                         </div>
                     </div>
                     <hr>
@@ -169,7 +172,7 @@
                     <div formArrayName="details">
                         <div class="row mb-3" *ngFor="let item of details.controls; let i = index" [formGroupName]="i">
                           <div class="col-md-3">
-                            <label>الحساب</label>
+                            <label class="form-label">الحساب</label>
                             <ng-select
                               [items]="accounts"
                               bindLabel="nameAR"
@@ -183,17 +186,17 @@
                           </div>
                       
                           <div class="col-md-2">
-                            <label>مدين</label>
+                            <label class="form-label">مدين</label>
                             <input type="number" class="form-control shadow-none" formControlName="debit">
                           </div>
 
                           <div class="col-md-2">
-                            <label>دائن</label>
+                            <label class="form-label">دائن</label>
                             <input type="number" class="form-control shadow-none" formControlName="credit">
                           </div>
                           
                         <div class="col-md-4">
-                            <label>مركز التكلفة</label>
+                            <label class="form-label">مركز التكلفة</label>
                             <ng-select
                               [items]="costCenters"
                               bindLabel="nameAR"
@@ -220,9 +223,12 @@
                           </button>
                         </div>
                     </div>
-
+                    <div class="text-center text-danger" *ngIf="!isBalanced">
+                        ⚠️ مجموع المدين لا يساوي مجموع الدائن.
+                      </div>
+                      
                     <div class="text-center mt-4">
-                        <button type="submit" class="btn-blue" [disabled]="restrictionForm.invalid"> إضافة قيد</button>
+                        <button type="submit" class="btn-blue" [disabled]="restrictionForm.invalid"> {{isEditMode ? 'تعديل' : 'إضافة'}} قيود يومية</button>
                     </div>
                 </form>
             </div>

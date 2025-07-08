@@ -116,7 +116,7 @@ export class ItemsComponent {
             next: (res) => {
               console.log('تم إضافة الصنف:', res);
               this.getItems();
-              console.log(formData);
+              console.log(JSON.stringify(formData));
               
               // this.itemForm.reset();
             },
