@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
@@ -18,70 +18,99 @@ export class RestrictionsComponent {
   restrictionForm!:FormGroup
   // 
   restrictions:any[]=[];
+  restrictionTypes:any[]=[];
+  accountingGuidance:any[]=[];
   total:number=0;
   pagingFilterModel:any={
     pageSize:16,
     currentPage:1,
   }
   isFilter:boolean=true;
+  // 
+  totalDebit = 0;
+  totalCredit = 0;
+  isBalanced = true;
   constructor(private fb:FormBuilder , private financialService:FinancialService , private settingService : SettingService){
     this.filterForm=this.fb.group({
       SearchText:[],
     })
     this.restrictionForm = this.fb.group({
-      restrictionNumber:['' , Validators.required],
       restrictionDate: ['', Validators.required],
       restrictionTypeId: ['', Validators.required],
-      ledgerNumber: ['', Validators.required],
+      accountingGuidanceId: ['', Validators.required],
       description: ['', Validators.required],
       details: this.fb.array([
-        // this.createdetilsGroup()
+        this.createdetilsGroup()
       ]),
 
     });
   }
   createdetilsGroup(): FormGroup {
-    return this.fb.group({
+    const group = this.fb.group({
       accountId: [null, Validators.required],
-      debit: [null, Validators.required],
-      credit: [null, Validators.required],
+      debit: [0, Validators.required],
+      credit: [0, Validators.required],
       costCenterId: [null, Validators.required],
       note: ['']
     });
+  
+    group.get('debit')?.valueChanges.subscribe(value => {
+      if (value && value > 0) {
+        group.get('credit')?.setValue(0);
+        group.get('credit')?.disable({ emitEvent: false });
+      } else {
+        group.get('credit')?.enable({ emitEvent: false });
+      }
+      this.calculateTotals();
+    });
+  
+    group.get('credit')?.valueChanges.subscribe(value => {
+      if (value && value > 0) {
+        group.get('debit')?.setValue(0);
+        group.get('debit')?.disable({ emitEvent: false });
+      } else {
+        group.get('debit')?.enable({ emitEvent: false });
+      }
+      this.calculateTotals();
+    });
+  
+    return group;
   }
+  
   get details(): FormArray {
     return this.restrictionForm.get('details') as FormArray;
   }
+  
   addItemRow() {
-    const index = this.details.length;
     this.details.push(this.createdetilsGroup());
-    // this.costCentersPerRow.push([]);
-  
-    const accountControl = this.details.at(index).get('accountId');
-  
-    if (accountControl) {
-      accountControl.valueChanges.subscribe((selectedAccountId: number) => {
-        const selectedAccount = this.accounts.find((acc:any) => acc.accountId === +selectedAccountId);
-        console.log('Selected Account:', selectedAccount);
-  
-        // if (selectedAccount?.children) {
-        //   this.costCentersPerRow[index] = selectedAccount.children;
-        // } else {
-        //   this.costCentersPerRow[index] = [];
-        // }
-  
-        this.details.at(index).get('costCenterId')?.setValue(null);
-      });
-    }
+    this.calculateTotals();
   }
+  
   removeItemRow(index: number) {
     if (this.details.length > 1) {
       this.details.removeAt(index);
+      this.calculateTotals();
     }
   }
   
+  calculateTotals() {
+    this.totalDebit = 0;
+    this.totalCredit = 0;
+  
+    this.details.controls.forEach((group: AbstractControl) => {
+      const debit = +group.get('debit')?.value || 0;
+      const credit = +group.get('credit')?.value || 0;
+      this.totalDebit += debit;
+      this.totalCredit += credit;
+    });
+    this.isBalanced = this.totalDebit === this.totalCredit;
+  }
+  
+  
   ngOnInit(): void {
     this.getDailyRestrictions();
+    this.getRestrictionsTypes();
+    this.getAccountingGuidance();
     this.getAccounts();
     this.getCostCenters();
   }
@@ -112,7 +141,7 @@ export class RestrictionsComponent {
       return;
     }
   
-    const formData = this.restrictionForm.value;
+    const formData = this.restrictionForm.getRawValue();
     formData.restrictionNumber = String(formData.restrictionNumber);
     formData.ledgerNumber = String(formData.ledgerNumber);
     formData.restrictionTypeId = Number(formData.restrictionTypeId);
@@ -143,7 +172,7 @@ export class RestrictionsComponent {
           console.log(formData);
           this.getDailyRestrictions();
           // this.closeModal();
-          // this.restrictionForm.reset();
+          this.restrictionForm.reset();
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -240,6 +269,24 @@ export class RestrictionsComponent {
       this.applyFilters();
     })
   }
+  getRestrictionsTypes(){
+    this.financialService.getDailyRestrictionsTypes(this.pagingFilterModel).subscribe({
+      next:(res)=>{
+        this.restrictionTypes = res.results;
+        this.total = res.totalCount;
+        console.log('Types:' , this.restrictionTypes)
+      }
+    })
+  }
+  getAccountingGuidance(){
+    this.financialService.getAccountingGuidance(this.pagingFilterModel).subscribe({
+      next:(res)=>{
+        this.accountingGuidance = res.results;
+        this.total = res.totalCount;
+        console.log('Accounting Guidance:' , this.accountingGuidance)
+      }
+    })
+  }
   // 
   accounts!:any;
   costCenters: any;
@@ -293,5 +340,21 @@ export class RestrictionsComponent {
       }
     }
     return result;
+  }
+  // 
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'Approved': return 'green';
+      case 'Rejected': return 'red';
+      default: return 'gray';
+    }
+  }
+  
+  getStatusName(status: string): string {
+    switch (status) {
+      case 'Approved': return 'غير مرحل';
+      case 'Rejected': return 'مرحل';
+      default: return 'غير محدد';
+    }
   }
 }

@@ -1,3 +1,19 @@
 #restrictions{
     min-height: 90vh;
 }
+
+.table td p.status-pill {
+    width: auto;
+    min-width: 120px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    color: white;
+    height: 30px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}

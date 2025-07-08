@@ -1,4 +1,5 @@
 using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.DailyRestrictions;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.HMS;
@@ -19,11 +20,12 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
         {
             var entity = new DailyRestriction
             {
-                RestrictionNumber = request.RestrictionNumber,
+                RestrictionNumber = await GenerateRestrictionNumberAsync(cancellationToken),
                 RestrictionDate = request.RestrictionDate,
                 RestrictionTypeId = request.RestrictionTypeId,
-                LedgerNumber = request.LedgerNumber,
+                //LedgerNumber = request.LedgerNumber,
                 Description = request.Description,
+                AccountingGuidanceId = request.AccountingGuidanceId,
                 IsActive = true,
                 Details = request.Details.Select(d => new DailyRestrictionDetail
                 {
@@ -61,11 +63,15 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             if (entity == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            entity.RestrictionNumber = request.RestrictionNumber;
+            if (string.IsNullOrWhiteSpace(entity.RestrictionNumber))
+            {
+                entity.RestrictionNumber = await GenerateRestrictionNumberAsync(cancellationToken);
+            }
             entity.RestrictionDate = request.RestrictionDate;
             entity.RestrictionTypeId = request.RestrictionTypeId;
-            entity.LedgerNumber = request.LedgerNumber;
+            //entity.LedgerNumber = request.LedgerNumber;
             entity.Description = request.Description;
+            entity.AccountingGuidanceId = request.AccountingGuidanceId;
 
             entity.Details.Clear();
             foreach (var d in request.Details)
@@ -130,6 +136,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     .ThenInclude(d => d.CostCenter)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
+                .Include(x=> x.AccountingGuidance)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (entity == null)
@@ -142,9 +149,8 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 RestrictionDate = entity.RestrictionDate,
                 RestrictionTypeId = entity.RestrictionTypeId,
                 RestrictionTypeName = entity.RestrictionType.Name,
-                LedgerNumber = entity.LedgerNumber,
+                //LedgerNumber = entity.LedgerNumber,
                 Description = entity.Description,
-                CreatedBy = entity.CreatedBy?.FirstName + " " + entity.CreatedBy?.LastName,
                 Details = entity.Details.Select(d => new DailyRestrictionDetailResponse
                 {
                     Id = d.Id,
@@ -155,7 +161,18 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     CostCenterId = d.CostCenterId,
                     CostCenterName = d.CostCenter?.NameAR,
                     Note = d.Note
-                }).ToList()
+                }).ToList(),
+
+                AccountingGuidanceId = entity.AccountingGuidanceId,
+                AccountingGuidanceName = entity.AccountingGuidance?.Name ?? "",
+                Audit = new AuditResponse
+                {
+                    CreatedBy = entity.CreatedBy != null ? entity.CreatedBy.UserName : null,
+                    CreatedOn = entity.CreatedOn,
+                    UpdatedBy = entity.UpdatedBy != null ? entity.UpdatedBy.UserName : null,
+                    UpdatedOn = entity.UpdatedOn
+                }
+
             };
 
             return ErrorResponseModel<DailyRestrictionResponse>.Success(GenericErrors.GetSuccess, response);
@@ -197,9 +214,10 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     RestrictionDate = x.RestrictionDate,
                     RestrictionTypeId = x.RestrictionTypeId,
                     RestrictionTypeName = x.RestrictionType.Name,
-                    LedgerNumber = x.LedgerNumber,
+                    //LedgerNumber = x.LedgerNumber,
                     Description = x.Description,
-                    CreatedBy = x.CreatedBy != null ? x.CreatedBy.FirstName + " " + x.CreatedBy.LastName : null
+                    AccountingGuidanceId = x.AccountingGuidanceId,
+                    AccountingGuidanceName = x.AccountingGuidance != null ? x.AccountingGuidance.Name : null,
                 })
                 .ToListAsync(cancellationToken);
 
@@ -209,5 +227,24 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
         {
             return PagedResponseModel<List<DailyRestrictionResponse>>.Failure(GenericErrors.TransFailed);
         }
+    }
+
+    private async Task<string> GenerateRestrictionNumberAsync(CancellationToken cancellationToken = default)
+    {
+        var lastRestriction = await _unitOfWork.Repository<DailyRestriction>()
+            .GetAll()
+            .OrderByDescending(x => x.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        int nextNumber = 1;
+
+        if (lastRestriction != null)
+        {
+            if (int.TryParse(lastRestriction.RestrictionNumber, out int lastNumber))
+            {
+                nextNumber = lastNumber + 1;
+            }
+        }
+        return nextNumber.ToString("D3");
     }
 }

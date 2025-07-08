@@ -14,4 +14,6 @@ public interface IPriceQuotationService
     Task<ErrorResponseModel<PriceQuotationResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> UpdateAsync(int id, PriceQuotationRequest request, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default);
+    Task<PagedResponseModel<List<PriceQuotationResponse>>> GetAllByPurchaseRequestIdAsync(int purchaseRequestId, CancellationToken cancellationToken = default);
+    Task<PagedResponseModel<string>> SubmitPriceQuotationByPurchaseRequestIdAsync(int purchaseRequestId, CancellationToken cancellationToken = default);
 }

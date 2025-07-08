@@ -94,7 +94,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .GetAll()
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
-                .Include(x=>x.PurchaseRequest)
+                .Include(x => x.PurchaseRequest)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
@@ -144,6 +144,55 @@ public class PriceQuotationService : IPriceQuotationService
         }
     }
 
+    public async Task<PagedResponseModel<List<PriceQuotationResponse>>> GetAllByPurchaseRequestIdAsync(int purchaseRequestId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = _unitOfWork.Repository<PriceQuotation>()
+                .GetAll()
+                .Include(x => x.Supplier)
+                .Include(x => x.Items)
+                .ThenInclude(i => i.Item.Unit)
+                .Include(x => x.PurchaseRequest)
+                .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var quotations = await query
+                .OrderByDescending(x => x.QuotationDate)
+                .Select(x => new PriceQuotationResponse
+                {
+                    Id = x.Id,
+                    QuotationNumber = x.QuotationNumber,
+                    QuotationDate = x.QuotationDate,
+                    SupplierName = x.Supplier.Name,
+                    Notes = x.Notes,
+                    Status = x.Status.ToString(),
+                    TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
+                    PurchaseRequestId = x.PurchaseRequestId,
+                    PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
+                    Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                    {
+                        Id = i.Id,
+                        ItemName = i.Item.NameAr,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice,
+                        Total = i.Quantity * i.UnitPrice,
+                        Notes = i.Notes,
+                        Unit = i.Item.Unit.NameAr ?? ""
+                    }).ToList()
+
+                }).ToListAsync(cancellationToken);
+
+
+            return PagedResponseModel<List<PriceQuotationResponse>>.Success(GenericErrors.GetSuccess, totalCount, quotations);
+        }
+        catch (Exception)
+        {
+            return PagedResponseModel<List<PriceQuotationResponse>>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
     public async Task<ErrorResponseModel<PriceQuotationResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         try
@@ -185,6 +234,48 @@ public class PriceQuotationService : IPriceQuotationService
         catch (Exception)
         {
             return ErrorResponseModel<PriceQuotationResponse>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public async Task<PagedResponseModel<string>> SubmitPriceQuotationByPurchaseRequestIdAsync(int purchaseRequestId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var quotations = await _unitOfWork.Repository<PriceQuotation>()
+                .GetAll()
+                .Include(x => x.Items)
+                .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId)
+                .ToListAsync(cancellationToken);
+
+            if (quotations.Count == 0)
+                return PagedResponseModel<string>.Failure(GenericErrors.NotFound);
+
+
+            var quotationsWithTotal = quotations
+                .Select(q => new
+                {
+                    Quotation = q,
+                    TotalAmount = q.Items.Where(i => i.IsActive).Sum(i => i.Quantity * i.UnitPrice)
+                })
+                .ToList();
+
+            var minQuotation = quotationsWithTotal
+                .OrderBy(q => q.TotalAmount)
+                .First();
+
+            foreach (var q in quotationsWithTotal)
+            {
+                q.Quotation.Status = q == minQuotation ? QuotationStatus.Approved : QuotationStatus.Rejected;
+                _unitOfWork.Repository<PriceQuotation>().Update(q.Quotation);
+            }
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return PagedResponseModel<string>.Success(GenericErrors.GetSuccess, 1, "تم التحديث بنجاح");
+        }
+        catch (Exception)
+        {
+            return PagedResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
 

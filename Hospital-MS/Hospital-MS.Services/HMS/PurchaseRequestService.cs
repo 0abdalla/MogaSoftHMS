@@ -42,7 +42,7 @@ namespace Hospital_MS.Services.HMS
 
             //BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
 
-            await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
+            //await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
 
             return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.Id.ToString());
         }
@@ -105,6 +105,7 @@ namespace Hospital_MS.Services.HMS
                 Items = pr.Items.Where(i => i.IsActive).Select(i => new PurchaseRequestItemResponse
                 {
                     Id = i.Id,
+                    ItemId = i.ItemId,
                     ItemName = i.Item.NameAr,
                     Quantity = i.Quantity,
                     Notes = i.Notes

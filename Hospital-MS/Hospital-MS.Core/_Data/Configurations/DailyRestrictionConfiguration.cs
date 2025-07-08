@@ -22,8 +22,8 @@ public class DailyRestrictionConfiguration : IEntityTypeConfiguration<DailyRestr
         builder.Property(x => x.RestrictionDate)
             .IsRequired();
 
-        builder.Property(x => x.LedgerNumber)
-            .HasMaxLength(50);
+        //builder.Property(x => x.LedgerNumber)
+        //    .HasMaxLength(50);
 
         builder.Property(x => x.Description)
             .HasMaxLength(500);

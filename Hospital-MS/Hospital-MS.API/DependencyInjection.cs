@@ -105,6 +105,8 @@ namespace Hospital_MS.API
             services.AddScoped<IFiscalYearService, FiscalYearService>();
             services.AddScoped<ISupplyReceiptService, SupplyReceiptService>();
             services.AddScoped<IMainGroupService, MainGroupService>();
+            services.AddScoped<IItemGroupService, ItemGroupService>();
+            services.AddScoped<IAccountingGuidanceService, AccountingGuidanceService>();
 
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IEmailSender, EmailService>();

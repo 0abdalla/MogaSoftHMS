@@ -49,8 +49,5 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
 
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
-
-        builder.HasIndex(x => new { x.NameAr, x.GroupId }).IsUnique();
-        builder.HasIndex(x => x.NameEn);
     }
 }

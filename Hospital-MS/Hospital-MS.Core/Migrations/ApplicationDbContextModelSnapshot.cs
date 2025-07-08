@@ -139,6 +139,43 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.ToTable("AccountTrees", "Finance");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.AccountingGuidance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("UpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("AccountingGuidance", "finance");
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.AdditionNotice", b =>
                 {
                     b.Property<int>("Id")
@@ -1043,6 +1080,9 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AccountingGuidanceId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
 
@@ -1055,10 +1095,6 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("LedgerNumber")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateOnly>("RestrictionDate")
                         .HasColumnType("date");
@@ -1078,6 +1114,8 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountingGuidanceId");
 
                     b.HasIndex("CreatedById");
 
@@ -2186,17 +2224,11 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("GroupId");
 
-                    b.HasIndex("NameEn");
-
                     b.HasIndex("TypeId");
 
                     b.HasIndex("UnitId");
 
                     b.HasIndex("UpdatedById");
-
-                    b.HasIndex("NameAr", "GroupId")
-                        .IsUnique()
-                        .HasFilter("[GroupId] IS NOT NULL");
 
                     b.ToTable("Items", "finance");
                 });
@@ -4285,6 +4317,21 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("MedicalService");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.AccountingGuidance", b =>
+                {
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.AdditionNotice", b =>
                 {
                     b.HasOne("Hospital_MS.Core.Models.AccountTree", "Account")
@@ -4589,6 +4636,10 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DailyRestriction", b =>
                 {
+                    b.HasOne("Hospital_MS.Core.Models.AccountingGuidance", "AccountingGuidance")
+                        .WithMany()
+                        .HasForeignKey("AccountingGuidanceId");
+
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
@@ -4602,6 +4653,8 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
+
+                    b.Navigation("AccountingGuidance");
 
                     b.Navigation("CreatedBy");
 

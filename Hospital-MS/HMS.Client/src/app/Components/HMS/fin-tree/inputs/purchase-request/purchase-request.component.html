@@ -17,7 +17,7 @@
                             <th>#</th>
                             <th>رقم الطلب</th>
                             <th>تاريخ الطلب</th>
-                            <th>تاريخ الإستحقاق</th>
+                            <!-- <th>تاريخ الإستحقاق</th> -->
                             <th>اسم المخزن</th>
                             <th>الغرض</th>
                             <!-- <th>العناصر</th> -->
@@ -27,10 +27,10 @@
                         </thead>
                         <tbody>
                           <tr *ngFor="let order of purchaseRequests; let i = index">
-                            <td>{{ i + 1 }}</td>
+                            <td>{{ order.id }}</td>
                             <td>{{ order.requestNumber }}</td>
                             <td>{{ order.requestDate | date: 'yyyy-MM-dd – HH:mm' }}</td>
-                            <td>{{ order.expiryDate | date: 'yyyy-MM-dd – HH:mm' }}</td>
+                            <!-- <td>{{ order.expiryDate | date: 'yyyy-MM-dd – HH:mm' }}</td> -->
                             <td>{{ order.storeName }}</td>
                             <td>{{ order.purpose || '-' }}</td>
                             <!-- <td [ngStyle]="{  'background-color': order.status === 'Approved' ? 'green' : order.status === 'Pending' ? 'yellow' : 'red', 'color': order.status === 'Approved' ? 'white' : order.status === 'Pending' ? 'black' : 'white' }">{{ order.status || '-' }}</td> -->
@@ -38,7 +38,7 @@
                               <p class="text-white status-pill fw-bold" *ngIf="order.status" [ngStyle]="{ backgroundColor: getStatusColor(order.status) }">
                                   {{ getStatusName(order.status) }}
                               </p>
-                          </td>
+                            </td>
                             <!-- <td>{{ order.items }}</td> -->
                             <td>
                               <button class="btn btn-primary mx-1" (click)="editPurchaseRequest(order.id)">
