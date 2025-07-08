@@ -26,6 +26,13 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
     {
         try
         {
+            var existingItem = await _unitOfWork.Repository<Item>()
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.NameAr == request.NameAr && x.NameEn == request.NameEn && x.IsActive, cancellationToken);
+
+            if (existingItem != null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
+
             var item = new Item
             {
                 NameAr = request.NameAr,
