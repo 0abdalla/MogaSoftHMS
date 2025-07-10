@@ -151,6 +151,9 @@ export class FinancialService {
   getPriceQuotationById(id:number){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + `PriceQuotations/GetByPurchaseRequest/${id}`);
   }
+  getApprovedPriceQutations(){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + `PriceQuotations/Approved`);
+  }
   putPriceQutataion(id:number , price:any){
     return this.http.put<any>(this.baseUrl + `PriceQuotations/SubmitPriceQuotation/${id}`, price);
   }
@@ -262,6 +265,9 @@ export class FinancialService {
   }
   getTreasuriesById(id:number){
     return this.http.get<any>(this.baseUrl + 'Treasuries/' + id);
+  }
+  getTransactionsForTreasury(id:any){
+    return this.http.get<any>(this.baseUrl + 'Treasuries/transactions/' + id);
   }
   addTreasury(treasury:any){
     return this.http.post<any>(this.baseUrl + 'Treasuries', treasury);
