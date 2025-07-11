@@ -64,6 +64,7 @@ namespace Hospital_MS.Core._Data
         public DbSet<MaterialIssueItem> MaterialIssueItems { get; set; }
         public DbSet<AttendanceSalary> AttendaceSalaries { get; set; }
         public DbSet<StoreType> StoreTypes { get; set; }
+        public DbSet<MedicalServiceDetail> MedicalServiceDetails { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

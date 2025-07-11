@@ -15,6 +15,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string Department { get; set; }
         public int DepartmentId { get; set; }
         public int? MedicalServiceId { get; set; }
+        public double? Price { get; set; }
         public List<DoctorMedicalServiceResponse> MedicalServices { get; set; } = [];
         public List<DoctorScheduleResponse> DoctorSchedules { get; set; } = [];
 

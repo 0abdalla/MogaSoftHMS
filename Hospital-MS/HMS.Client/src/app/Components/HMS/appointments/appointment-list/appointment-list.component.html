@@ -65,7 +65,9 @@
                                             <span class="fw-bold">{{ appointment.patientName }}</span>
                                         </div>
                                     </td>
-                                    <td class="text-secondary fw-semibold">{{ appointment.medicalServiceName || 'طوارئ' }}</td>
+                                    <td class="text-secondary fw-semibold">
+                                        <app-tag [tags]="appointment.medicalServiceName" [header]="'العيادة الطبية'" [showWithMore]="true"></app-tag>
+                                    </td>
                                     <td>
                                         <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
                                             {{ getServiceName(appointment.type) }}
@@ -90,7 +92,7 @@
 <div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
             <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="bookingDetailsLabel">تفاصيل الحجز</h5>
             </div>
@@ -131,14 +133,54 @@
                         <div class="col-lg-3">
                             <strong class="strong">نوع الحجز:</strong> <span class="span"> {{ selectedAppointment?.type || '---' }}</span>
                         </div>
-                        <div class="col-lg-3">
-                            <strong class="strong">العيادة:</strong> <span class="span"> {{ selectedAppointment?.medicalServiceName || '---' }}</span>
-                        </div>
+                        <!-- <div class="col-lg-3">
+                            <strong class="strong">العيادة:</strong> <span class="span"> {{ item.medicalServiceName || '---' }}</span>
+                        </div> -->
                         <div class="col-lg-3">
                             <strong class="strong">الطبيب:</strong> <span class="span"> {{ selectedAppointment?.doctorName || '---' }}</span>
                         </div>
                         <div class="col-lg-3">
                             <strong class="strong">طريقة الحجز:</strong> عبر التطبيق
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="p-3 bg-white">
+                                <div class="table-responsive shadow-sm radius-10">
+                                    <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
+                                        <thead>
+                                            <tr>
+                                                <th>تاريخ الحجز</th>
+                                                <th>نوع الخدمة</th>
+                                                <th>الدكتور المختص</th>
+                                                <th>التكلفة</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <ng-container>
+                                                <tr *ngFor="let item of selectedAppointment?.medicalServices">
+                                                    <td>{{ item.medicalServiceDate | date: 'dd/MM/yyyy' }}</td>
+                                                    <td>{{ item.medicalServiceName }}</td>
+                                                    <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
+                                                    <td *ngIf="item.medicalServiceType == 'Screening' || item.medicalServiceType == 'Radiology'">{{ '---' }}</td>
+                                                    <td>{{ item.medicalServicePrice }} جنيه</td>
+                                                </tr>
+                                                <tr *ngIf="selectedAppointment?.medicalServices?.length">
+                                                    <td></td>
+                                                    <td class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
+                                                    <td></td>
+                                                    <td class="fw-bold">{{ totalPrice }} جنيه</td>
+                                                </tr>
+                                            </ng-container>
+                                            <ng-container>
+                                                <tr *ngIf="!selectedAppointment?.medicalServices?.length">
+                                                    <td colspan="12" class="text-right">
+                                                        <app-empty-data [showEmptyData]="!selectedAppointment?.medicalServices?.length"></app-empty-data>
+                                                    </td>
+                                                </tr>
+                                            </ng-container>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

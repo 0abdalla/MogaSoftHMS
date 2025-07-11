@@ -4,99 +4,99 @@
             <p-toast position="top-left"></p-toast>
             <h4 class="mb-3">🧑‍⚕️بيانات الطبيب</h4>
             <div class="row mb-3">
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">الاسم بالكامل</label>
-                <input type="text" class="form-control shadow-none" formControlName="FullName" placeholder="أدخل الاسم الكامل">
-                <div *ngIf="doctorForm.get('FullName')?.invalid && doctorForm.get('FullName')?.touched" class="text-danger">
-                  الاسم مطلوب
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">الاسم بالكامل</label>
+                    <input type="text" class="form-control shadow-none" formControlName="FullName" placeholder="أدخل الاسم الكامل">
+                    <div *ngIf="doctorForm.get('FullName')?.invalid && doctorForm.get('FullName')?.touched" class="text-danger">
+                        الاسم مطلوب
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">الرقم القومي</label>
-                <input type="text" class="form-control shadow-none" formControlName="NationalId" placeholder="أدخل الرقم القومي">
-                <div *ngIf="doctorForm.get('NationalId')?.invalid && doctorForm.get('NationalId')?.touched" class="text-danger">
-                  الرقم القومي مطلوب
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">الرقم القومي</label>
+                    <input type="text" class="form-control shadow-none" formControlName="NationalId" placeholder="أدخل الرقم القومي">
+                    <div *ngIf="doctorForm.get('NationalId')?.invalid && doctorForm.get('NationalId')?.touched" class="text-danger">
+                        الرقم القومي مطلوب
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">تاريخ الميلاد</label>
-                <input type="date" class="form-control shadow-none" formControlName="DateOfBirth" placeholder="اختر تاريخ الميلاد">
-                <div *ngIf="doctorForm.get('DateOfBirth')?.invalid && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
-                  تاريخ الميلاد مطلوب
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">تاريخ الميلاد</label>
+                    <input type="date" class="form-control shadow-none" formControlName="DateOfBirth" placeholder="اختر تاريخ الميلاد">
+                    <div *ngIf="doctorForm.get('DateOfBirth')?.invalid && doctorForm.get('DateOfBirth')?.touched" class="text-danger">
+                        تاريخ الميلاد مطلوب
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">النوع</label>
-                <select class="form-select shadow-none" formControlName="Gender">
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">النوع</label>
+                    <select class="form-select shadow-none" formControlName="Gender">
                   <option selected disabled value="">اختر النوع</option>
                   <option value="Male">ذكر</option>
                   <option value="Female">أنثى</option>
                 </select>
-                <div *ngIf="doctorForm.get('Gender')?.invalid && doctorForm.get('Gender')?.touched" class="text-danger">
-                  النوع مطلوب
+                    <div *ngIf="doctorForm.get('Gender')?.invalid && doctorForm.get('Gender')?.touched" class="text-danger">
+                        النوع مطلوب
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">الحالة الاجتماعية</label>
-                <select class="form-select shadow-none" formControlName="MaritalStatus">
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">الحالة الاجتماعية</label>
+                    <select class="form-select shadow-none" formControlName="MaritalStatus">
                   <option selected disabled value="">اختر الحالة</option>
                   <option value="Single">أعزب</option>
                   <option value="Married">متزوج</option>
                   <option value="Divorced">مطلق</option>
                   <option value="Widowed">أرمل</option>
                 </select>
-                <div *ngIf="doctorForm.get('MaritalStatus')?.invalid && doctorForm.get('MaritalStatus')?.touched" class="text-danger">
-                  الحالة الاجتماعية مطلوبة
+                    <div *ngIf="doctorForm.get('MaritalStatus')?.invalid && doctorForm.get('MaritalStatus')?.touched" class="text-danger">
+                        الحالة الاجتماعية مطلوبة
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">الصورة الشخصية</label>
-                <input type="file" class="form-control shadow-none" accept="image/*" (change)="onFileChange($event)">
-                <div *ngIf="photoError" class="text-danger">الصورة مطلوبة</div>
-              </div>
-              
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">الصورة الشخصية</label>
+                    <input type="file" class="form-control shadow-none" accept="image/*" (change)="onFileChange($event)">
+                    <div *ngIf="photoError" class="text-danger">الصورة مطلوبة</div>
+                </div>
+
             </div>
-          
+
             <h4 class="mb-3">📞طرق الاتصال</h4>
             <div class="row mb-3">
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">رقم الهاتف</label>
-                <input type="text" class="form-control shadow-none" formControlName="Phone" placeholder="أدخل رقم الهاتف">
-                <div *ngIf="doctorForm.get('Phone')?.invalid && doctorForm.get('Phone')?.touched" class="text-danger">
-                  رقم الهاتف مطلوب
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">رقم الهاتف</label>
+                    <input type="text" class="form-control shadow-none" formControlName="Phone" placeholder="أدخل رقم الهاتف">
+                    <div *ngIf="doctorForm.get('Phone')?.invalid && doctorForm.get('Phone')?.touched" class="text-danger">
+                        رقم الهاتف مطلوب
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">البريد الإلكتروني</label>
-                <input type="email" class="form-control shadow-none" formControlName="Email" placeholder="أدخل البريد الإلكتروني">
-                <div *ngIf="doctorForm.get('Email')?.invalid && doctorForm.get('Email')?.touched" class="text-danger">
-                  البريد الإلكتروني غير صحيح
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-control shadow-none" formControlName="Email" placeholder="أدخل البريد الإلكتروني">
+                    <div *ngIf="doctorForm.get('Email')?.invalid && doctorForm.get('Email')?.touched" class="text-danger">
+                        البريد الإلكتروني غير صحيح
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-4 mt-1">
-                <label class="form-label">العنوان</label>
-                <input type="text" class="form-control shadow-none" formControlName="Address" placeholder="أدخل العنوان">
-                <div *ngIf="doctorForm.get('Address')?.invalid && doctorForm.get('Address')?.touched" class="text-danger">
-                  العنوان مطلوب
+                <div class="col-lg-4 mt-1">
+                    <label class="form-label">العنوان</label>
+                    <input type="text" class="form-control shadow-none" formControlName="Address" placeholder="أدخل العنوان">
+                    <div *ngIf="doctorForm.get('Address')?.invalid && doctorForm.get('Address')?.touched" class="text-danger">
+                        العنوان مطلوب
+                    </div>
                 </div>
-              </div>
             </div>
-          
+
             <h4 class="mb-3">💼بيانات العمل</h4>
             <div class="row mb-3">
-              <div class="col-lg-3 mt-1">
-                <label class="form-label">التخصص الطبي</label>
-                <select class="form-select shadow-none" formControlName="DepartmentId">
+                <div class="col-lg-3 mt-1">
+                    <label class="form-label">التخصص الطبي</label>
+                    <select class="form-select shadow-none" formControlName="DepartmentId">
                   <option selected disabled value="">اختر التخصص</option>
                   <option *ngFor="let dept of departments" [value]="dept.id">{{ dept.name }}</option>
                 </select>
-                <div *ngIf="doctorForm.get('DepartmentId')?.invalid && doctorForm.get('DepartmentId')?.touched" class="text-danger">
-                  التخصص مطلوب
+                    <div *ngIf="doctorForm.get('DepartmentId')?.invalid && doctorForm.get('DepartmentId')?.touched" class="text-danger">
+                        التخصص مطلوب
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-3 mt-1">
-                <label class="form-label">الدرجة العلمية</label>
-                <select class="form-select shadow-none" formControlName="Degree">
+                <div class="col-lg-3 mt-1">
+                    <label class="form-label">الدرجة العلمية</label>
+                    <select class="form-select shadow-none" formControlName="Degree">
                   <option selected disabled value="">اختر الدرجة العلمية</option>
                   <option value="PhD">دكتوراة</option>
                   <option value="Consultant">استشاري</option>
@@ -105,72 +105,79 @@
                   <option value="Master">ماجستير</option>
                   <option value="Bachelor">بكالوريوس</option>
                 </select>
-                <div *ngIf="doctorForm.get('Degree')?.invalid && doctorForm.get('Degree')?.touched" class="text-danger">
-                  الدرجة العلمية مطلوبة
+                    <div *ngIf="doctorForm.get('Degree')?.invalid && doctorForm.get('Degree')?.touched" class="text-danger">
+                        الدرجة العلمية مطلوبة
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-3 mt-1">
-                <label class="form-label">الحالة</label>
-                <select class="form-select shadow-none" formControlName="Status">
+                <div class="col-lg-3 mt-1">
+                    <label class="form-label">الحالة</label>
+                    <select class="form-select shadow-none" formControlName="Status">
                   <option selected disabled value="">اختر الحالة</option>
                   <option value="Active">مفعل</option>
                   <option value="Inactive">غير مفعل</option>
                 </select>
-                <div *ngIf="doctorForm.get('Status')?.invalid && doctorForm.get('Status')?.touched" class="text-danger">
-                  الحالة مطلوبة
+                    <div *ngIf="doctorForm.get('Status')?.invalid && doctorForm.get('Status')?.touched" class="text-danger">
+                        الحالة مطلوبة
+                    </div>
                 </div>
-              </div>
-              <div class="col-lg-3 mt-1">
-                <label class="form-label">تاريخ التعيين</label>
-                <input type="date" class="form-control shadow-none" formControlName="StartDate" readonly placeholder="تاريخ التعيين">
-                <div *ngIf="doctorForm.get('StartDate')?.invalid && doctorForm.get('StartDate')?.touched" class="text-danger">
-                  تاريخ التعيين مطلوب
+                <div class="col-lg-3 mt-1">
+                    <label class="form-label">تاريخ التعيين</label>
+                    <input type="date" class="form-control shadow-none" formControlName="StartDate" placeholder="تاريخ التعيين">
+                    <div *ngIf="doctorForm.get('StartDate')?.invalid && doctorForm.get('StartDate')?.touched" class="text-danger">
+                        تاريخ التعيين مطلوب
+                    </div>
                 </div>
-              </div>
+                <div class="col-lg-3 mt-1">
+                    <label class="form-label">التكلفة</label>
+                    <input type="number" class="form-control shadow-none" formControlName="Price" placeholder="التكلفة">
+                    <div *ngIf="doctorForm.get('Price')?.invalid && doctorForm.get('Price')?.touched" class="text-danger">
+                        التكلفة مطلوبة
+                    </div>
+                </div>
             </div>
-          
+
             <h4 class="mb-3">📅 جدول الحضور</h4>
             <div class="mb-3" formArrayName="DoctorSchedules">
-              <div *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
-                <div class="col-lg-4">
-                  <label class="form-label">اليوم</label>
-                  <select class="form-select shadow-none" formControlName="weekDay">
+                <div *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
+                    <div class="col-lg-4">
+                        <label class="form-label">اليوم</label>
+                        <select class="form-select shadow-none" formControlName="weekDay">
                     <option value="" disabled>اختر اليوم</option>
-                    <option *ngFor="let day of days" [value]="day.value">{{ day.label }}</option>
+                    <option *ngFor="let day of getAvailableDays(i)" [value]="day.value">{{ day.label }}</option>
                   </select>
-                  <div *ngIf="schedule.get('weekDay')?.invalid && schedule.get('weekDay')?.touched" class="text-danger">
-                    اليوم مطلوب
-                  </div>
+                        <div *ngIf="schedule.get('weekDay')?.invalid && schedule.get('weekDay')?.touched" class="text-danger">
+                            اليوم مطلوب
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">من الساعة</label>
+                        <input type="time" class="form-control shadow-none" formControlName="startTime" placeholder="اختر وقت البدء" />
+                        <div *ngIf="schedule.get('startTime')?.invalid && schedule.get('startTime')?.touched" class="text-danger">
+                            وقت البدء مطلوب
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <label class="form-label">إلى الساعة</label>
+                        <input type="time" class="form-control shadow-none" formControlName="endTime" placeholder="اختر وقت الانتهاء" />
+                        <div *ngIf="schedule.get('endTime')?.invalid && schedule.get('endTime')?.touched" class="text-danger">
+                            وقت الانتهاء مطلوب
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <button type="button" class="btn-blue" (click)="addSchedule()">أضف معاد</button>
+                        <button type="button" class="btn-red mx-1" (click)="removeSchedule(i)">حذف</button>
+                    </div>
                 </div>
-                <div class="col-lg-3">
-                  <label class="form-label">من الساعة</label>
-                  <input type="time" class="form-control shadow-none" formControlName="startTime" placeholder="اختر وقت البدء" />
-                  <div *ngIf="schedule.get('startTime')?.invalid && schedule.get('startTime')?.touched" class="text-danger">
-                    وقت البدء مطلوب
-                  </div>
-                </div>
-                <div class="col-lg-3">
-                  <label class="form-label">إلى الساعة</label>
-                  <input type="time" class="form-control shadow-none" formControlName="endTime" placeholder="اختر وقت الانتهاء" />
-                  <div *ngIf="schedule.get('endTime')?.invalid && schedule.get('endTime')?.touched" class="text-danger">
-                    وقت الانتهاء مطلوب
-                  </div>
-                </div>
-                <div class="col-lg-2">
-                  <button type="button" class="btn-blue" (click)="addSchedule()">أضف معاد</button>
-                  <button type="button" class="btn-red mx-1" (click)="removeSchedule(i)">حذف</button>
-                </div>
-              </div>
             </div>
-          
+
             <div class="mb-3">
-              <label class="form-label">ملاحظات</label>
-              <textarea class="form-control shadow-none" formControlName="Notes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+                <label class="form-label">ملاحظات</label>
+                <textarea class="form-control shadow-none" formControlName="Notes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
             </div>
-          
+
             <div class="row justify-content-center gap-2 px-3">
-              <button type="submit" [disabled]="!doctorForm.valid" class="btn-blue col-2">حفظ البيانات</button>
-              <button type="reset" class="btn-outline-blue col-2">إلغاء</button>
+                <button type="submit" [disabled]="!doctorForm.valid" class="btn-blue col-2">حفظ البيانات</button>
+                <button type="reset" class="btn-outline-blue col-2">إلغاء</button>
             </div>
         </form>
     </div>

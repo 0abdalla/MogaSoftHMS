@@ -9,10 +9,9 @@ namespace Hospital_MS.Core.Contracts.MedicalServices
 {
     public class MedicalServiceRequest
     {
-        public string Name { get; set; } 
-        public decimal Price { get; set; }
+        public string Name { get; set; }
+        public decimal? Price { get; set; }
         public string Type { get; set; }
-
-        public List<MedicalServiceScheduleRequest> MedicalServiceSchedules { get; set; } = [];
+        public List<string> WeekDays { get; set; } = [];
     }
 }

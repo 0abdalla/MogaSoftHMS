@@ -1,9 +1,9 @@
-import { trigger, transition, style, animate } from '@angular/animations';
+import { trigger, transition, style, animate, query } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffService } from '../../../../Services/HMS/staff.service';
-import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { SharedService } from '../../../../Services/shared.service';
 declare var bootstrap: any;
@@ -24,6 +24,7 @@ declare var bootstrap: any;
   ],
 })
 export class DoctorsListComponent implements OnInit {
+  TitleList = ['إدارة الأطباء', 'الأطباء'];
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
@@ -42,7 +43,8 @@ export class DoctorsListComponent implements OnInit {
   fixed = Math.ceil(this.total / this.pageSize);
   // 
   selectedDoctor!: any;
-  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router,private sharedService: SharedService) {
+  isFilter = false;
+  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router, private sharedService: SharedService) {
     this.filterForm = this.fb.group({
       Search: [null],
       Status: [''],
@@ -56,7 +58,7 @@ export class DoctorsListComponent implements OnInit {
     this.doctorService.getDoctors(this.pagingFilterModel).subscribe({
       next: (res) => {
         this.doctors = res.results.map((doctor: any) => {
-          
+
           if (doctor.status === 'Active') {
             doctor.status = 'متاح';
           } else {
@@ -64,34 +66,24 @@ export class DoctorsListComponent implements OnInit {
           }
           return doctor;
         });
-        
+
         this.total = res.totalCount;
       },
       error: () => {
       }
     })
   }
-  // 
-  applyFilters() {
-    this.currentPage = 1;
-    this.getDoctors();
-  }
-  resetFilters() {
-    this.filterForm.reset();
+
+
+  filterChecked(filters: FilterModel[]) {
+    debugger;
+    this.pagingFilterModel.filterList = filters;
     this.pagingFilterModel.currentPage = 1;
-    this.pagingFilterModel.filterList = [];
-    this.pagingFilterModel.searchText = '';
     this.getDoctors();
+
   }
 
-  SearchTextChange() {
-    if(this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
-      this.pagingFilterModel.searchText = this.filterForm.value.Search;
-      this.pagingFilterModel.currentPage = 1;
-      this.getDoctors();
-    }
-  }
-   ApplyCardFilter(item: any) {
+  ApplyCardFilter(item: any) {
     debugger;
     this.pagingFilterModel.currentPage = 1;
     this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
@@ -100,6 +92,8 @@ export class DoctorsListComponent implements OnInit {
   // 
   openDoctorModal(id: number) {
     this.getDoctorById(id);
+    const modal = new bootstrap.Modal(document.getElementById('doctorDetailsModal')!);
+    modal.show();
   }
   getDoctorById(id: number) {
     this.doctorService.getDoctorById(id).subscribe(res => {
@@ -112,7 +106,7 @@ export class DoctorsListComponent implements OnInit {
           ...schedule,
           weekDay: this.translateWeekDay(schedule.weekDay)
         }))
-        
+
       };
     });
   }
@@ -121,7 +115,7 @@ export class DoctorsListComponent implements OnInit {
     this.doctorService.getDoctorsCount().subscribe({
       next: (data: any) => {
         this.doctorsData = data.results;
-        
+
       },
       error: (err) => {
       }
@@ -150,6 +144,12 @@ export class DoctorsListComponent implements OnInit {
   onPageChange(page: number) {
     this.pagingFilterModel.currentPage = page;
     this.getDoctors();
+  }
+
+  goToEditDoctor(id: any, event: Event) {
+    event.stopPropagation();
+    this.router.navigate(['/hms/settings/doctors'], { queryParams: { id: id } });
+
   }
   // =======================================================================================
 

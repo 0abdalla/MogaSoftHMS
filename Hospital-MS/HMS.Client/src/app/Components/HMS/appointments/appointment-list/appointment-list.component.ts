@@ -29,7 +29,7 @@ import { FormDropdownModel } from '../../../../Models/Generics/FormDropdownModel
   ],
 })
 export class AppointmentListComponent implements OnInit {
- TitleList = ['المواعيد والحجز']; 
+  TitleList = ['المواعيد والحجز'];
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
@@ -131,21 +131,21 @@ export class AppointmentListComponent implements OnInit {
     });
   }
 
-   filterChecked(filters: FilterModel[]) {
-      this.pagingFilterModel.currentPage = 1;
-      this.pagingFilterModel.filterList = filters;
-      if (filters.some(i => i.categoryName == 'SearchText'))
-        this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
-      else
-        this.pagingFilterModel.searchText = '';
-      this.getPatients();
-    }
-  
-    ApplyCardFilter(item: any) {
-      this.pagingFilterModel.currentPage = 1;
-      this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
-      this.getPatients();
-    }
+  filterChecked(filters: FilterModel[]) {
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = filters;
+    if (filters.some(i => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+    else
+      this.pagingFilterModel.searchText = '';
+    this.getPatients();
+  }
+
+  ApplyCardFilter(item: any) {
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Type', item.value);
+    this.getPatients();
+  }
 
   SearchTextChange() {
     if (this.filterForm.value.Search.length > 2 || this.filterForm.value.Search.length == 0) {
@@ -165,14 +165,16 @@ export class AppointmentListComponent implements OnInit {
     this.getCounts();
   }
 
- onPageChange(page: any) {
+  onPageChange(page: any) {
     this.pagingFilterModel.currentPage = page.page;
     this.getPatients();
   }
+  totalPrice = 0;
   openAppointmentModal(id: number) {
     this.appointmentService.getAppointmentById(id).subscribe({
       next: (data) => {
         this.selectedAppointment = data.results;
+        this.totalPrice = this.selectedAppointment.medicalServices.reduce((sum: number, item: any) => sum + item.medicalServicePrice, 0);
       },
       error: (err) => {
         console.error('Failed to fetch appointment', err);

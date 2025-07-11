@@ -1,5 +1,4 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Doctors;
 using Hospital_MS.Core.Contracts.MedicalServices;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
@@ -7,15 +6,8 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -45,16 +37,16 @@ namespace Hospital_MS.Services.HMS
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                if (request.MedicalServiceSchedules is not null && request.MedicalServiceSchedules.Count > 0)
+                if (request.WeekDays is not null && request.WeekDays.Count > 0)
                 {
                     var schedules = new List<MedicalServiceSchedule>();
 
-                    foreach (var schedule in request.MedicalServiceSchedules)
+                    foreach (var WeekDay in request.WeekDays)
                     {
                         var medicalSchedule = new MedicalServiceSchedule
                         {
                             MedicalServiceId = medicalService.Id,
-                            WeekDay = schedule.WeekDay,
+                            WeekDay = WeekDay,
                         };
 
                         schedules.Add(medicalSchedule);
@@ -76,42 +68,6 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
-
-        //public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
-        //{
-        //    try
-        //    {
-        //        // Define SQL parameters
-        //        var parameters = new SqlParameter[6];
-        //        var status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
-        //        var fromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
-        //        var toDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
-
-        //        parameters[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
-        //        parameters[1] = new SqlParameter("@Status", status ?? (object)DBNull.Value);
-        //        parameters[2] = new SqlParameter("@FromDate", fromDate ?? (object)DBNull.Value);
-        //        parameters[3] = new SqlParameter("@ToDate", toDate ?? (object)DBNull.Value);
-        //        parameters[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-        //        parameters[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-
-        //        // Execute stored procedure and get DataTable
-        //        var dataTable = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetMedicalServices", parameters);
-
-        //        int totalCount = 0;
-        //        if (dataTable.Rows.Count > 0)
-        //        {
-        //            int.TryParse(dataTable.Rows[0]["TotalCount"]?.ToString(), out totalCount);
-        //        }
-
-        //        // Return paginated response
-        //        return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dataTable);
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
-        //    }
-
-        //}
 
         public async Task<PagedResponseModel<List<MedicalServiceResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
@@ -176,12 +132,12 @@ namespace Hospital_MS.Services.HMS
                 _unitOfWork.Repository<MedicalServiceSchedule>().DeleteRange(existingSchedules);
             }
 
-            if (request.MedicalServiceSchedules is not null && request.MedicalServiceSchedules.Count > 0)
+            if (request.WeekDays is not null && request.WeekDays.Count > 0)
             {
-                var newSchedules = request.MedicalServiceSchedules.Select(schedule => new MedicalServiceSchedule
+                var newSchedules = request.WeekDays.Select(WeekDay => new MedicalServiceSchedule
                 {
                     MedicalServiceId = id,
-                    WeekDay = schedule.WeekDay
+                    WeekDay = WeekDay
 
                 }).ToList();
 

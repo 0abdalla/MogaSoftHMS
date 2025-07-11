@@ -12,8 +12,8 @@ import { AdmissionService } from '../../../../Services/HMS/admission.service';
 })
 export class DoctorsSettingsEditComponent implements OnInit {
   doctorForm!: FormGroup;
-  departments!: any;
-  doctorId!: number;
+  departments: any[] = [];
+  doctorId: any;
   days = [
     { value: 'Friday', label: 'الجمعة' },
     { value: 'Saturday', label: 'السبت' },
@@ -34,9 +34,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
     private admissionService: AdmissionService,
     private router: Router
   ) {
-    this.activ.params.subscribe((params) => {
-      this.doctorId = params['id'];
-    });
+    this.doctorId = this.activ.snapshot.queryParamMap.get('id');
 
     this.doctorForm = this.fb.group({
       FullName: ['', Validators.required],
@@ -53,21 +51,22 @@ export class DoctorsSettingsEditComponent implements OnInit {
       Status: ['', Validators.required],
       StartDate: ['', Validators.required],
       Notes: [''],
-      DoctorSchedules: this.fb.array([]), // Initialize empty FormArray
+      Price:['', Validators.required],
+      DoctorSchedules: this.fb.array([]),
     });
   }
 
   ngOnInit(): void {
     this.getDeps();
-    this.getDoctorById(this.doctorId);
+    this.addSchedule();
+    if (this.doctorId)
+      this.getDoctorById(this.doctorId);
   }
 
-  // Getter for DoctorSchedules FormArray
   get schedules(): FormArray {
     return this.doctorForm.get('DoctorSchedules') as FormArray;
   }
 
-  // Add a new schedule row
   addSchedule(): void {
     this.schedules.push(
       this.fb.group({
@@ -78,7 +77,6 @@ export class DoctorsSettingsEditComponent implements OnInit {
     );
   }
 
-  // Remove a schedule row
   removeSchedule(index: number): void {
     if (this.schedules.length > 1) {
       this.schedules.removeAt(index);
@@ -93,12 +91,13 @@ export class DoctorsSettingsEditComponent implements OnInit {
 
   getDeps() {
     this.admissionService.getDepartments().subscribe((res) => {
-      this.departments = res;
+      this.departments = res.results;
     });
   }
 
   getDoctorById(id: number) {
-    this.staffService.getDoctorById(id).subscribe((doctor) => {
+    this.staffService.getDoctorById(id).subscribe((data) => {
+      let doctor = data.results;
       this.doctorForm.patchValue({
         FullName: doctor.fullName,
         NationalId: doctor.nationalId,
@@ -113,7 +112,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
         Status: doctor.status === 'Suspended' ? 'Inactive' : 'Active',
         StartDate: doctor.startDate,
         Notes: doctor.notes,
-        // PhotoUrl is not patched into the form as it's handled via file input
+        Price: doctor.price,
       });
       this.patchDoctorSchedules(doctor.doctorSchedules);
     });
@@ -121,7 +120,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
 
   patchDoctorSchedules(schedules: any[]) {
     const formArray = this.schedules;
-    formArray.clear(); // Clear existing schedules
+    formArray.clear();
 
     if (schedules && schedules.length > 0) {
       schedules.forEach((schedule) => {
@@ -134,13 +133,12 @@ export class DoctorsSettingsEditComponent implements OnInit {
         );
       });
     } else {
-      this.addSchedule(); // Add one empty schedule if none exist
+      this.addSchedule();
     }
   }
 
   formatTime(timeString: string): string {
     if (!timeString) return '';
-    // Assuming timeString is in "HH:mm:ss" format, convert to "HH:mm"
     return timeString.substring(0, 5);
   }
 
@@ -156,36 +154,51 @@ export class DoctorsSettingsEditComponent implements OnInit {
 
     const formData = new FormData();
     const formValue: any = this.doctorForm.value;
-    this.buildFormData(formData,formValue);
-    // Append schedules
-    formValue.DoctorSchedules.forEach((schedule: any, index: number) => {
-      if (schedule.weekDay && schedule.startTime && schedule.endTime) {
-        formData.append(`DoctorSchedules[${index}].weekDay`, schedule.weekDay);
-        formData.append(`DoctorSchedules[${index}].startTime`, schedule.startTime);
-        formData.append(`DoctorSchedules[${index}].endTime`, schedule.endTime);
-      }
-    });
+    this.buildFormData(formData, formValue);
+    if (!this.doctorId) {
+      this.staffService.postDoctor(formData).subscribe({
+        next: (res) => {
 
-    this.staffService.putDoctor(formData, this.doctorId).subscribe({
-      next: (res: any) => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'عملية ناجحة',
-          detail: 'تم تحديث بيانات الطبيب بنجاح',
-        });
-        setTimeout(() => {
-          this.router.navigate(['/settings/doctors-list']);
-        }, 1000);
-      },
-      error: (err) => {
-        console.error('Error:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'حدث خطأ',
-          detail: 'فشل في تحديث بيانات الطبيب',
-        });
-      },
-    });
+          this.messageService.add({
+            severity: 'success',
+            summary: 'عملية ناجحة',
+            detail: 'تمت إضافة الطبيب بنجاح',
+          });
+          setTimeout(() => {
+            this.router.navigate(['/hms/settings/doctors-list']);
+          }, 1000);
+        },
+        error: (err) => {
+          console.error('Error:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'حدث خطأ',
+            detail: 'حدث خطأ في تسجيل البيانات',
+          });
+        },
+      });
+    } else {
+      this.staffService.putDoctor(formData, this.doctorId).subscribe({
+        next: (res: any) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'عملية ناجحة',
+            detail: 'تم تحديث بيانات الطبيب بنجاح',
+          });
+          setTimeout(() => {
+            this.router.navigate(['/hms/settings/doctors-list']);
+          }, 1000);
+        },
+        error: (err) => {
+          console.error('Error:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'حدث خطأ',
+            detail: 'فشل في تحديث بيانات الطبيب',
+          });
+        },
+      });
+    }
   }
 
   onFileChange(event: Event): void {
@@ -232,5 +245,13 @@ export class DoctorsSettingsEditComponent implements OnInit {
 
       formData.append(parentKey, value);
     }
+  }
+
+  getAvailableDays(currentIndex: number): { value: string; label: string }[] {
+    const selectedDays = this.schedules.controls
+      .map((ctrl, index) => index !== currentIndex ? ctrl.get('weekDay')?.value : null)
+      .filter(day => day);
+
+    return this.days.filter(day => !selectedDays.includes(day.value));
   }
 }

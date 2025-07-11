@@ -74,7 +74,7 @@ namespace Hospital_MS.Services.HMS
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
                 var appointmentNumber = await _unitOfWork.Repository<Appointment>()
-                                .CountAsync(a => a.MedicalServiceId == request.MedicalServiceId && a.AppointmentDate == request.AppointmentDate, cancellationToken) + 1;
+                               .CountAsync(a => a.MedicalServiceId == request.MedicalServices[0].MedicalServiceId && a.AppointmentDate == request.AppointmentDate, cancellationToken) + 1;
 
                 var appointment = new Appointment
                 {
@@ -82,8 +82,6 @@ namespace Hospital_MS.Services.HMS
                     DoctorId = request.DoctorId,
                     AppointmentDate = request.AppointmentDate,
                     PaymentMethod = request.PaymentMethod,
-                    Type = appointmentType,
-                    MedicalServiceId = request.MedicalServiceId,
                     AppointmentNumber = appointmentNumber,
                     EmergencyLevel = request.EmergencyLevel,
                     CompanionName = request.CompanionName,
@@ -92,9 +90,26 @@ namespace Hospital_MS.Services.HMS
                 };
 
                 await _unitOfWork.Repository<Appointment>().AddAsync(appointment, cancellationToken);
-
+                await _unitOfWork.CompleteAsync(cancellationToken);
                 schedule.CurrentAppointments++;
                 _unitOfWork.Repository<DoctorSchedule>().Update(schedule);
+
+                if (request.MedicalServices.Count > 0)
+                {
+                    var serviceDetails = new List<MedicalServiceDetail>();
+                    foreach (var item in request.MedicalServices)
+                    {
+                        var serviceDetail = new MedicalServiceDetail
+                        {
+                            AppointmentId = appointment.Id,
+                            MedicalServiceId = item.MedicalServiceId,
+                            AppointmentDate = item.AppointmentDate,
+                        };
+
+                        serviceDetails.Add(serviceDetail);
+                    }
+                    await _unitOfWork.Repository<MedicalServiceDetail>().AddRangeAsync(serviceDetails, cancellationToken);
+                }
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -118,10 +133,6 @@ namespace Hospital_MS.Services.HMS
                 await transaction.RollbackAsync(cancellationToken);
                 return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.TransFailed);
             }
-        }
-        private async Task<int> GetNewAppointmentNumber()
-        {
-            return await _sQLHelper.ExecuteScalarAsync("[dbo].[SP_AppointmentNumberSequences]", Array.Empty<SqlParameter>());
         }
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
@@ -168,11 +179,38 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.Patient.InsuranceCompany)
                 .Include(x => x.Patient.InsuranceCategory)
                 .Include(x => x.Clinic)
-                .Include(x => x.MedicalService)
+                .Include(x => x.MedicalServiceDetails)
                 .FirstOrDefaultAsync(cancellationToken);
+
+            var medicalServiceTypes = await _unitOfWork.Repository<MedicalService>().GetAll().ToListAsync();
 
             if (appointment == null)
                 return ErrorResponseModel<AppointmentResponse>.Failure(GenericErrors.NotFound);
+
+            var medicalServices = new List<MedicalServicesModel>();
+
+            if (appointment.MedicalServiceDetails?.Count > 0)
+            {
+                foreach (var item in appointment.MedicalServiceDetails)
+                {
+                    var serviceType = medicalServiceTypes.FirstOrDefault(i => i.Id == item.MedicalServiceId);
+                    if (serviceType != null)
+                    {
+                        var obj = new MedicalServicesModel
+                        {
+                            MedicalServiceId = serviceType?.Id,
+                            MedicalServiceName = serviceType?.Name,
+                            MedicalServiceType = serviceType?.Type,
+                            MedicalServicePrice = serviceType?.Price ?? 0,
+                            MedicalServiceDate = item.AppointmentDate,
+                            DoctorName = appointment?.Doctor?.FullName
+                        };
+
+                        medicalServices.Add(obj);
+                    }
+                }
+
+            }
 
             var response = new AppointmentResponse
             {
@@ -196,9 +234,7 @@ namespace Hospital_MS.Services.HMS
                 EmergencyLevel = appointment?.EmergencyLevel,
                 ClinicId = appointment?.ClinicId,
                 ClinicName = appointment?.Clinic?.Name,
-                MedicalServiceId = appointment?.MedicalServiceId,
-                MedicalServiceName = appointment?.MedicalService?.Name,
-                MedicalServicePrice = appointment?.MedicalService?.Price ?? 0,
+                MedicalServices = medicalServices,
                 Gender = appointment.Patient.Gender.GetArabicValue(),
                 AppointmentNumber = appointment.AppointmentNumber
             };
@@ -245,6 +281,7 @@ namespace Hospital_MS.Services.HMS
                 var appointment = await _unitOfWork.Repository<Appointment>()
                     .GetAll(i => i.Id == id)
                     .Include(x => x.Patient)
+                    .Include(x => x.MedicalServiceDetails)
                     .FirstOrDefaultAsync(cancellationToken: cancellationToken);
 
                 if (appointment == null)
@@ -298,7 +335,6 @@ namespace Hospital_MS.Services.HMS
                 appointment.CompanionName = request.CompanionName;
                 appointment.CompanionNationalId = request.CompanionNationalId;
                 appointment.CompanionPhone = request.CompanionPhone;
-                appointment.MedicalServiceId = request.MedicalServiceId;
                 appointment.Patient.FullName = request.PatientName;
                 appointment.Patient.Phone = request.PatientPhone;
                 appointment.Patient.InsuranceCompanyId = request.InsuranceCompanyId;
@@ -307,6 +343,23 @@ namespace Hospital_MS.Services.HMS
                 appointment.Patient.Gender = gender;
 
                 _unitOfWork.Repository<Appointment>().Update(appointment);
+                if (appointment.MedicalServiceDetails?.Count > 0)
+                    _unitOfWork.Repository<MedicalServiceDetail>().DeleteRange(appointment.MedicalServiceDetails);
+                if (request.MedicalServiceIds?.Count > 0)
+                {
+                    var serviceDetails = new List<MedicalServiceDetail>();
+                    foreach (var item in request.MedicalServiceIds)
+                    {
+                        var serviceDetail = new MedicalServiceDetail
+                        {
+                            AppointmentId = appointment.Id,
+                            MedicalServiceId = item
+                        };
+
+                        serviceDetails.Add(serviceDetail);
+                    }
+                    await _unitOfWork.Repository<MedicalServiceDetail>().AddRangeAsync(serviceDetails, cancellationToken);
+                }
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 

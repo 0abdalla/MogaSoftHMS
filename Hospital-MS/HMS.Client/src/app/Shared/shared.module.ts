@@ -17,7 +17,10 @@ import { GoToAccountReportDirective } from '../Directives/go-to-account-report.d
 import { DropDownFormControlComponent } from './drop-down-form-control/drop-down-form-control.component';
 import { ColorWithStatusDirectiveDirective } from '../Directives/color-with-status.directive.directive';
 import { WorkflowStatusDirective } from '../Directives/workflow-status.directive';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
+import { TagComponent } from './tag/tag.component';
+import { DayToArabicPipe } from '../Pipes/day-to-arabic.pipe';
+import { MedicalTypeToArabicPipe } from '../Pipes/medical-type-to-arabic.pipe';
 
 
 @NgModule({
@@ -37,12 +40,16 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     GoToAccountReportDirective,
     DropDownFormControlComponent,
     ColorWithStatusDirectiveDirective,
-    WorkflowStatusDirective
+    WorkflowStatusDirective,
+    TagComponent,
+    DayToArabicPipe,
+    MedicalTypeToArabicPipe
   ],
   imports: [
     CommonModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    NgbPopoverModule
   ],
   exports: [
     AgePipe,
@@ -59,7 +66,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     GoToAccountReportDirective,
     DropDownFormControlComponent,
     ColorWithStatusDirectiveDirective,
-    WorkflowStatusDirective
+    WorkflowStatusDirective,
+    TagComponent,
+    DayToArabicPipe,
+    MedicalTypeToArabicPipe
   ],
   providers: [DatePipe]
 })

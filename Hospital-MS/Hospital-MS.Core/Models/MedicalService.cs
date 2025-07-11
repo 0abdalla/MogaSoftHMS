@@ -10,7 +10,7 @@ namespace Hospital_MS.Core.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public decimal Price { get; set; } = 0M;
+        public decimal? Price { get; set; } = 0M;
         public string Type { get; set; } = string.Empty;
 
         public ICollection<DoctorMedicalService> DoctorMedicalServices { get; set; } = new HashSet<DoctorMedicalService>();

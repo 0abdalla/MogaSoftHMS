@@ -14,12 +14,13 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public string? Email { get; set; }
         public string? Address { get; set; }
         //public int? SpecialtyId { get; set; } = null;
-        //public int? DepartmentId { get; set; } = null;
+        public int? DepartmentId { get; set; } = null;
         public DateOnly StartDate { get; set; }
         public string? Notes { get; set; }
         public string Status { get; set; }
         public string MaritalStatus { get; set; }
         public string? Degree { get; set; }
+        public double? Price { get; set; }
         public IFormFile? Photo { get; set; }
         //public bool IsActive { get; set; }
 

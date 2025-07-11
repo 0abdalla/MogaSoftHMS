@@ -24,12 +24,23 @@ export class MenueService {
       route: '/hms/emergency/emergency-reception',
       isGroup: false
     },
-    // {
-    //   displayName: 'وكلاء التأمين',
-    //   icon: 'fa-solid fa-file-contract',
-    //   route:'/hms/insurance/insurance-list',
-    //   isGroup: false,
-    // },
+    {
+      displayName: 'الأطباء',
+      icon: 'fa-solid fa-boxes-stacked',
+      isGroup: true,
+      subMenus: [
+        {
+          displayName: 'الأطباء',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/settings/doctors-list'
+        },
+        {
+          displayName: 'نوع الخدمة',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/settings/medical-service'
+        }
+      ]
+    },
     {
       displayName: 'المخازن',
       icon: 'fa-solid fa-boxes-stacked',
