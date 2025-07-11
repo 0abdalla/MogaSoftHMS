@@ -4,6 +4,7 @@ import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel
 import { BanksService } from '../../../../../../Services/HMS/banks.service';
 import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 import Swal from 'sweetalert2';
+import { SettingService } from '../../../../../../Services/HMS/setting.service';
 declare var bootstrap:any;
 
 @Component({
@@ -26,7 +27,7 @@ export class DiscountNoticeComponent implements OnInit {
   isFilter:boolean=true;
   banks!:any[]
   accounts!:any[]
-  constructor(private fb:FormBuilder , private banksService:BanksService , private financialService:FinancialService){
+  constructor(private fb:FormBuilder , private banksService:BanksService , private financialService:FinancialService , private settingsService : SettingService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -167,9 +168,29 @@ export class DiscountNoticeComponent implements OnInit {
       this.banks=res.results;
     })
   }
-  getAccounts(){
-    this.banksService.getAccounts(this.pagingFilterModel).subscribe((res:any)=>{
-      this.accounts=res.results;
-    })
+  getAccounts() {
+    this.settingsService.GetAccountTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.accounts = this.extractLeafAccounts(res);
+        console.log("Accs:", this.accounts);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+  
+  extractLeafAccounts(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isGroup === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafAccounts(node.children));
+      }
+    }
+    return result;
   }
 }

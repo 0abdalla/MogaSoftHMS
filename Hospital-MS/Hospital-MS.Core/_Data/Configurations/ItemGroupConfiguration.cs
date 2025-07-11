@@ -12,18 +12,10 @@ public class ItemGroupConfiguration : IEntityTypeConfiguration<ItemGroup>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.NameAr)
-            .IsRequired()
-            .HasMaxLength(100);
-
-        builder.Property(x => x.NameEn)
+        builder.Property(x => x.Name)
             .HasMaxLength(100);
 
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
-
-        // Indexes
-        builder.HasIndex(x => x.NameAr).IsUnique();
-        builder.HasIndex(x => x.NameEn);
     }
 }

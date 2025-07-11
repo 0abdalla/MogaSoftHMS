@@ -50,7 +50,7 @@
             </button>
                 </div>
             </div>
-            <div class="col-md-4 mb-2" *ngIf="total > 0">
+            <div class="col-md-4 mb-2" *ngIf="total > 0 && adds?.length > 0">
                 <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
             </div>
             <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
@@ -121,7 +121,9 @@
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addPermissionModalLabel">إذن إستلام جديد</h5>
+                <h5 class="modal-title" id="addPermissionModalLabel">
+                    {{isEditMode ? 'تعديل إذن إستلام' : 'إذن إستلام جديد'}}
+                </h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
                 <form [formGroup]="addPermissionForm" (ngSubmit)="addPermission()">
@@ -219,7 +221,7 @@
                                     <i class="fa fa-plus"></i> إضافة صنف
                                   </button>
                                 </div>
-                              </div>
+                            </div>
 
                             <div class="col-md-12">
                                 <label>ملاحظات</label>
@@ -230,7 +232,9 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">إضافة إذن</button>
+                        <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">
+                            {{isEditMode ? 'تعديل إذن إستلام' : 'إضافة إذن إستلام'}}
+                        </button>
                     </div>
                 </form>
             </div>

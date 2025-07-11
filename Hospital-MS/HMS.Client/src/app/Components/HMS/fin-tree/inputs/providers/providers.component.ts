@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import Swal from 'sweetalert2';
+import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 declare var bootstrap: any;
 
 @Component({
@@ -13,6 +14,7 @@ export class ProvidersComponent {
   filterForm!:FormGroup;
     providerForm!:FormGroup
     TitleList = ['المشتريات','الموردين'];
+    isFilter:boolean = true
     // 
     providers:any[]=[];
     total:number=0;
@@ -147,4 +149,14 @@ export class ProvidersComponent {
         }
       });
     }
+  // 
+  filterChecked(filters: FilterModel[]){
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = filters;
+    if (filters.some(i => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+    else
+      this.pagingFilterModel.searchText = '';
+    this.getProviders();
+  }
 }

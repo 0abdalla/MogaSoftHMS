@@ -27,6 +27,7 @@ export class PurchaseRequestComponent {
 
   constructor(private financialService : FinancialService , private fb : FormBuilder){
     this.purchaseRequestForm=this.fb.group({
+      requestDate: [new Date().toISOString()],
       purpose:[null,Validators.required],
       storeId:[null,Validators.required],
       notes:[null],

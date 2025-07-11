@@ -12,6 +12,18 @@ export class BanksService {
   getBanks(pagingFilter: PagingFilterModel){
     return this.http.get<any>(this.baseUrl + 'Banks?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
+  getBankById(id:number){
+    return this.http.get<any>(this.baseUrl + 'Banks/' + id);
+  }
+  addBank(Bank:any){
+    return this.http.post<any>(this.baseUrl + 'Banks', Bank);
+  }
+  updateBank(id:number,Bank:any){
+    return this.http.put<any>(this.baseUrl + 'Banks/' + id, Bank);
+  }
+  deleteBank(id:number){
+    return this.http.delete<any>(this.baseUrl + 'Banks/' + id);
+  }
   getAccounts(pagingFilter: PagingFilterModel){
     return this.http.get<any>(this.baseUrl + 'Accounts?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }

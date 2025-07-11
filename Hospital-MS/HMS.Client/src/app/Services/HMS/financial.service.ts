@@ -9,6 +9,38 @@ import { PagedResponseModel } from '../../Models/Generics/PagedResponseModel';
 export class FinancialService {
   baseUrl = environment.baseUrl;
   constructor(private http : HttpClient) { }
+  getMainGroups(pagingFilter : PagingFilterModel){
+    return this.http.get<any>(this.baseUrl + 'MainGroups?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getMainGroupsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'MainGroups/' + id);
+  }
+  addMainGroups(MainGroups:any){
+    return this.http.post<any>(this.baseUrl + 'MainGroups', MainGroups);
+  }
+  updateMainGroups(id:number,MainGroups:any){
+    return this.http.put<any>(this.baseUrl + 'MainGroups/' + id, MainGroups);
+  }
+  deleteMainGroups(id:number){
+    return this.http.delete<any>(this.baseUrl + 'MainGroups/' + id);
+  }
+  // 
+  getItemsGroups(pagingFilter : PagingFilterModel){
+    return this.http.get<any>(this.baseUrl + 'ItemsGroups?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getItemsGroupsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'ItemsGroups/' + id);
+  }
+  addItemsGroups(ItemsGroups:any){
+    return this.http.post<any>(this.baseUrl + 'ItemsGroups', ItemsGroups);
+  }
+  updateItemsGroups(id:number,ItemsGroups:any){
+    return this.http.put<any>(this.baseUrl + 'ItemsGroups/' + id, ItemsGroups);
+  }
+  deleteItemsGroups(id:number){
+    return this.http.delete<any>(this.baseUrl + 'ItemsGroups/' + id);
+  }
+  // 
   getItems(pagingFilter: PagingFilterModel){
     return this.http.get<any>(this.baseUrl + 'Items?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
@@ -57,6 +89,22 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'Stores/' + id);
   }
   // 
+  getStoresTypes(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'StoreTypes?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getStoresTypesById(id:number){
+    return this.http.get<any>(this.baseUrl + 'StoreTypes/' + id);
+  }
+  addStoreType(storeType:any){
+    return this.http.post<any>(this.baseUrl + 'StoreTypes', storeType);
+  }
+  updateStoreType(id:number,storeType:any){
+    return this.http.put<any>(this.baseUrl + 'StoreTypes/' + id, storeType);
+  }
+  deleteStoreType(id:number){
+    return this.http.delete<any>(this.baseUrl + 'StoreTypes/' + id);
+  }
+  // 
   getPurchaseRequests(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseRequests?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
@@ -72,6 +120,11 @@ export class FinancialService {
   deletePurchaseRequest(id:number){
     return this.http.delete<any>(this.baseUrl + 'PurchaseRequests/' + id);
   }
+  // 
+  getapprovedPurchaseRequests(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseRequests/approved?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  
   // 
   getPurchaseOrders(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseOrders?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
@@ -95,6 +148,15 @@ export class FinancialService {
   getOffersById(id:number){
     return this.http.get<any>(this.baseUrl + 'PriceQuotations/' + id);
   }
+  getPriceQuotationById(id:number){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + `PriceQuotations/GetByPurchaseRequest/${id}`);
+  }
+  getApprovedPriceQutations(){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + `PriceQuotations/Approved`);
+  }
+  putPriceQutataion(id:number , price:any){
+    return this.http.put<any>(this.baseUrl + `PriceQuotations/SubmitPriceQuotation/${id}`, price);
+  }
   addOffer(offer:any){
     return this.http.post<any>(this.baseUrl + 'PriceQuotations', offer);
   }
@@ -104,6 +166,7 @@ export class FinancialService {
   deleteOffer(id:number){
     return this.http.delete<any>(this.baseUrl + 'PriceQuotations/' + id);
   }
+  
   // 
   getAdditionNotifications(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AdditionNotifications?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
@@ -203,6 +266,9 @@ export class FinancialService {
   getTreasuriesById(id:number){
     return this.http.get<any>(this.baseUrl + 'Treasuries/' + id);
   }
+  getTransactionsForTreasury(id:any){
+    return this.http.get<any>(this.baseUrl + 'Treasuries/transactions/' + id);
+  }
   addTreasury(treasury:any){
     return this.http.post<any>(this.baseUrl + 'Treasuries', treasury);
   }
@@ -211,5 +277,96 @@ export class FinancialService {
   }
   deleteTreasury(id:number){
     return this.http.delete<any>(this.baseUrl + 'Treasuries/' + id);
+  }
+  // 
+  getDailyRestrictions(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DailyRestrictions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getDailyRestrictionsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'DailyRestrictions/' + id);
+  }
+  addDailyRestriction(dailyRestriction:any){
+    return this.http.post<any>(this.baseUrl + 'DailyRestrictions', dailyRestriction);
+  }
+  updateDailyRestriction(id:number,dailyRestriction:any){
+    return this.http.put<any>(this.baseUrl + 'DailyRestrictions/' + id, dailyRestriction);
+  }
+  deleteDailyRestriction(id:number){
+    return this.http.delete<any>(this.baseUrl + 'DailyRestrictions/' + id);
+  }
+  // 
+  getDailyRestrictionsTypes(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'RestrictionTypes?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getDailyRestrictionsTypesById(id:number){
+    return this.http.get<any>(this.baseUrl + 'RestrictionTypes/' + id);
+  }
+  addDailyRestrictionTypes(dailyRestriction:any){
+    return this.http.post<any>(this.baseUrl + 'RestrictionTypes', dailyRestriction);
+  }
+  updateDailyRestrictionTypes(id:number,dailyRestriction:any){
+    return this.http.put<any>(this.baseUrl + 'RestrictionTypes/' + id, dailyRestriction);
+  }
+  deleteDailyRestrictionTypes(id:number){
+    return this.http.delete<any>(this.baseUrl + 'RestrictionTypes/' + id);
+  }
+  // 
+  getAccountingGuidance(pagingFilter:PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AccountingGuidance?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getAccountingGuidanceById(id:number){
+    return this.http.get<any>(this.baseUrl + 'AccountingGuidance/' + id);
+  }
+  addAccountingGuidance(accountingGuidance:any){
+    return this.http.post<any>(this.baseUrl + 'AccountingGuidance', accountingGuidance);
+  }
+  updateAccountingGuidance(id:number,accountingGuidance:any){
+    return this.http.put<any>(this.baseUrl + 'AccountingGuidance/' + id, accountingGuidance);
+  }
+  deleteAccountingGuidance(id:number){
+    return this.http.delete<any>(this.baseUrl + 'AccountingGuidance/' + id);
+  }
+  // 
+  getAccounts(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AccountTree/GetAccountTreeData?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  // 
+  getBranches(pagingFilter : PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'Branches?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getBranchesById(id:number){
+    return this.http.get<any>(this.baseUrl + 'Branches/' + id);
+  }
+  addBranch(branch:any){
+    return this.http.post<any>(this.baseUrl + 'Branches', branch);
+  }
+  updateBranch(id:number,branch:any){
+    return this.http.put<any>(this.baseUrl + 'Branches/' + id, branch);
+  }
+  deleteBranch(id:number){
+    return this.http.delete<any>(this.baseUrl + 'Branches/' + id);
+  }
+  // 
+  getSupplyReceipts(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'SupplyReceipts?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getSupplyReceiptsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'SupplyReceipts/' + id);
+  }
+  addSupplyReceipt(supplyReceipt:any){
+    return this.http.post<any>(this.baseUrl + 'SupplyReceipts', supplyReceipt);
+  }
+  updateSupplyReceipt(id:number,supplyReceipt:any){
+    return this.http.put<any>(this.baseUrl + 'SupplyReceipts/' + id, supplyReceipt);
+  }
+  deleteSupplyReceipt(id:number){
+    return this.http.delete<any>(this.baseUrl + 'SupplyReceipts/' + id);
+  }
+  // 
+  getFiscalYears(){
+    return this.http.get<any>(this.baseUrl + 'FiscalYears');
+  }
+  postFiscalYear(fiscalYear:any){
+    return this.http.post<any>(this.baseUrl + 'FiscalYears', fiscalYear);
   }
 }

@@ -64,6 +64,15 @@ namespace Hospital_MS.Core._Data
         public DbSet<MaterialIssueItem> MaterialIssueItems { get; set; }
         public DbSet<AttendanceSalary> AttendaceSalaries { get; set; }
         public DbSet<StoreType> StoreTypes { get; set; }
+        public DbSet<DailyRestriction> DailyRestrictions { get; set; }
+        public DbSet<DailyRestrictionDetail> DailyRestrictionDetails { get; set; }
+        public DbSet<RestrictionType> RestrictionTypes { get; set; }
+        public DbSet<FiscalYear> FiscalYears { get; set; }
+        public DbSet<AdditionNotice> AdditionNotices { get; set; }
+        public DbSet<DebitNotice> DebitNotices { get; set; }
+        public DbSet<MainGroup> MainGroups { get; set; }
+
+
         public DbSet<MedicalServiceDetail> MedicalServiceDetails { get; set; }
 
 

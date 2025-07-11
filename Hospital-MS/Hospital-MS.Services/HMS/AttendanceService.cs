@@ -3,18 +3,21 @@ using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Attendance;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Globalization;
 
 namespace Hospital_MS.Services.HMS;
-public class AttendanceService(IUnitOfWork unitOfWork) : IAttendanceService
+public class AttendanceService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IAttendanceService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly ISQLHelper _sQLHelper = sQLHelper;
 
     public async Task<ErrorResponseModel<string>> ApproveAttendanceAsync(List<int> attendanceIds, CancellationToken cancellationToken = default)
     {
@@ -178,48 +181,30 @@ public class AttendanceService(IUnitOfWork unitOfWork) : IAttendanceService
         }
     }
 
-    public async Task<PagedResponseModel<List<AttendanceSalary>>> GetAllAttendanceSalariesAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
+    public async Task<PagedResponseModel<DataTable>> GetAllAttendanceSalariesAsync(PagingFilterModel filter)
     {
         try
         {
-            var query = _unitOfWork.Repository<AttendanceSalary>().GetAll();
-            var SearchText = filter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
-            if (!string.IsNullOrWhiteSpace(SearchText))
+            var searchText = filter.FilterList?.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
+
+            var parameters = new[]
             {
-                query = query.Where(x => x.Name.Contains(SearchText) || x.Code.Contains(SearchText));
-            }
+                new SqlParameter("@SearchText", searchText ?? (object)DBNull.Value),
+                new SqlParameter("@CurrentPage", filter.CurrentPage),
+                new SqlParameter("@PageSize", filter.PageSize)
+            };
 
-            if (filter.FilterList != null)
-            {
-                //var status = filter.FilterList.FirstOrDefault(f => f.CategoryName == "Status")?.ItemValue;
-                //if (!string.IsNullOrEmpty(status) && Enum.TryParse<AttendanceStatus>(status, out var statusEnum))
-                //{
-                //    query = query.Where(x => x.Status == statusEnum);
-                //}
+            var dt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetAllAttendanceSalaries]", parameters);
 
-                //var dateFilter = filter.FilterList.FirstOrDefault(f => f.CategoryName == "Date");
-                //if (dateFilter != null)
-                //{
-                //    if (dateFilter.FromDate.HasValue)
-                //        query = query.Where(x => x.Date >= DateOnly.FromDateTime(dateFilter.FromDate.Value));
-                //    if (dateFilter.ToDate.HasValue)
-                //        query = query.Where(x => x.Date <= DateOnly.FromDateTime(dateFilter.ToDate.Value));
-                //}
-            }
+            int totalCount = dt.Rows.Count > 0 && dt.Columns.Contains("TotalCount")
+                ? dt.Rows[0].Field<int?>("TotalCount") ?? 0
+                : dt.Rows.Count;
 
-            var totalCount = await query.CountAsync(cancellationToken);
-
-            var attendances = await query
-                .OrderBy(x => x.CreatedOn)
-                .Skip((filter.CurrentPage - 1) * filter.PageSize)
-                .Take(filter.PageSize)
-                .ToListAsync(cancellationToken);
-
-            return PagedResponseModel<List<AttendanceSalary>>.Success(GenericErrors.GetSuccess, totalCount, attendances);
+            return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
         }
         catch (Exception)
         {
-            return PagedResponseModel<List<AttendanceSalary>>.Failure(GenericErrors.TransFailed);
+            return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
         }
     }
 

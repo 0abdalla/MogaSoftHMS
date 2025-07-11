@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
-declare var bootstrap:any;
+export declare var bootstrap:any;
 @Component({
   selector: 'app-boxs',
   templateUrl: './boxs.component.html',

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 import { PagingFilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
-
+declare var bootstrap : any;
 @Component({
   selector: 'app-treasury-index',
   templateUrl: './treasury-index.component.html',
@@ -22,6 +22,8 @@ export class TreasuryIndexComponent {
   treasuries:any[]=[];
   enabledTreasuries:any;
   disabledTreasuries:any;
+  // 
+  treasuryReportData: any = null;
   constructor(private fb:FormBuilder,private financialService:FinancialService){
     this.closeTreasuryForm=this.fb.group({
       date: [new Date().toISOString().substring(0, 10)],
@@ -33,10 +35,10 @@ export class TreasuryIndexComponent {
       treasuryId:['' , Validators.required],
       notes:['']
     }); 
-    this.treasuryReportForm=this.fb.group({
-      treasuryId:['' , Validators.required],
-      treasuryNumber:['']
-    }); 
+    this.treasuryReportForm = this.fb.group({
+      treasuryId: ['', Validators.required],
+      toDate: ['', Validators.required]
+    });    
   }
   ngOnInit(): void {
     this.getTreasuries();
@@ -103,5 +105,21 @@ export class TreasuryIndexComponent {
         console.log(err);
       }
     })
+  }
+  // 
+  showTreasuryReport() {
+    const treasuryId = this.treasuryReportForm.value.treasuryId;
+    const toDate = this.treasuryReportForm.value.toDate;
+  
+    if (!treasuryId || !toDate) return;
+  
+    const encodedDate = encodeURIComponent(toDate);
+    this.financialService.getTransactionsForTreasury(treasuryId + '?toDate=' + encodedDate).subscribe(res => {
+      if (res.isSuccess) {
+        this.treasuryReportData = res.results;
+        const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal'));
+        modal.show();
+      }
+    });
   }
 }

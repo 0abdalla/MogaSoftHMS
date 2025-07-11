@@ -25,9 +25,14 @@ export class PurchaseOrderComponent {
   allItems: any[] = [];
   allSuppliers: any[] = [];
   TitleList = ['المشتريات','أمور شراء'];
+  // 
+  approvedPrices!:any;
   constructor(private financialService : FinancialService , private fb : FormBuilder){
     this.purchaseOrderForm=this.fb.group({
+      orderDate:[new Date().toISOString()],
+      priceQuotationId:[null , Validators.required],
       supplierId:[null,Validators.required],
+      referenceNumber:[null,Validators.required],
       description:[''],
       items: this.fb.array([
         this.createItemGroup()
@@ -37,9 +42,10 @@ export class PurchaseOrderComponent {
   createItemGroup(): FormGroup {
     return this.fb.group({
       itemId: [null, Validators.required],
-      unit: [0, [Validators.required, Validators.min(1)]],
+      unitId: [null, Validators.required],
       requestedQuantity: [0, [Validators.required, Validators.min(1)]],
       unitPrice: [0, [Validators.required, Validators.min(1)]],
+      totalPrice: [0, [Validators.required, Validators.min(1)]]
     });
   }
   
@@ -61,13 +67,62 @@ export class PurchaseOrderComponent {
     this.getpurchaseOrders();
     this.getItems();
     this.getSuppliers();
+    this.getPriceQutations();
+    this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
+      if (id) {
+        this.financialService.getOffersById(id).subscribe((res: any) => {
+          const price = res.results;
+          console.log(price);
+          this.purchaseOrderForm.patchValue({
+            supplierId: price.supplierId,
+            description: price.notes
+          });
+        
+          this.items.clear();
+          price.items.forEach((item: any) => {
+            this.items.push(this.fb.group({
+              itemId: [item.id],
+              requestedQuantity: [item.quantity],
+              unitPrice: [item.unitPrice],
+              totalPrice : [item.total]
+            }));
+          });
+        });
+        
+      }
+    });
   }
   getItems(){
     this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
       this.allItems = res.results;
       this.total = res.totalCount;
       console.log(this.allItems);
+      this.setupQuotationSelectionListener();
     })
+  }
+  setupQuotationSelectionListener() {
+    this.purchaseOrderForm.get('priceQutationId')?.valueChanges.subscribe((id: number) => {
+      if (id) {
+        this.financialService.getOffersById(id).subscribe((res: any) => {
+          const price = res.results;
+  
+          this.purchaseOrderForm.patchValue({
+            supplierId: price.supplierId,
+            description: price.notes
+          });
+  
+          this.items.clear();
+          price.items.forEach((item: any) => {
+            this.items.push(this.fb.group({
+              itemId: [item.id],
+              requestedQuantity: [item.quantity],
+              unitPrice: [item.unitPrice],
+              totalPrice: [item.total]
+            }));
+          });
+        });
+      }
+    });
   }
 
   getSuppliers(){
@@ -83,6 +138,16 @@ export class PurchaseOrderComponent {
       this.purchaseOrders = res.results;
       this.total = res.totalCount;
       console.log(this.purchaseOrders);
+    })
+  }
+
+  getPriceQutations(){
+    this.financialService.getApprovedPriceQutations().subscribe({
+      next:(res)=>{
+        this.approvedPrices = res.results;
+        console.log('Approved : ' , this.approvedPrices);
+        
+      }
     })
   }
 

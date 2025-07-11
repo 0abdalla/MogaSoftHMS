@@ -118,19 +118,32 @@
 
                             <div class="col-md-4">
                                 <label>اسم البنك</label>
-                                <select class="form-select shadow-none text-end" formControlName="bankId">
-                                    <option disabled selected value="">اختر البنك</option>
-                                    <option *ngFor="let bank of banks" [value]="bank.id">{{ bank.name }}</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-4">
+                                <ng-select
+                                  [items]="banks"
+                                  bindLabel="name"
+                                  bindValue="id"
+                                  placeholder="اختر البنك"
+                                  formControlName="bankId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select>
+                              </div>
+                              
+                              <div class="col-md-4">
                                 <label>اسم الحساب</label>
-                                <select class="form-select shadow-none text-end" formControlName="accountId">
-                                    <option disabled selected value="">اختر الحساب</option>
-                                    <option *ngFor="let account of accounts" [value]="account.id">{{ account.name }}</option>
-                                </select>
-                            </div>
+                                <ng-select
+                                  [items]="accounts"
+                                  bindLabel="nameAR"
+                                  bindValue="accountId"
+                                  placeholder="اختر الحساب"
+                                  formControlName="accountId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select>
+                              </div>
+                              
 
                             <div class="col-md-6">
                                 <label>المبلغ</label>

@@ -1,7 +1,7 @@
 <main id="items-group">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="p-3 mt-4">
+        <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between">
                     <div class="col-md-8 row">
@@ -27,6 +27,30 @@
                     </div>
                 </div>
             </form>
+        </div> -->
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة مجموعة أصناف</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <app-filters [filterData]="itemGroups" [filterPlaceholder]="'المجموعة أصناف'" [searchPlaceholder]="'ابحث بإستخدام اسم المجموعة أصناف ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                    </ng-container>
+                </div>
+            </div>
         </div>
         <table class="table table-hover mt-4">
             <thead>
@@ -37,8 +61,8 @@
                     <th>إجراءات</th>
                 </tr>
             </thead>
-            <tbody *ngIf="mainGroups?.length > 0">
-                <tr *ngFor="let mainGroup of mainGroups | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(mainGroup.id)" style="cursor: pointer">
+            <tbody *ngIf="itemGroups?.length > 0">
+                <tr *ngFor="let mainGroup of itemGroups | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(mainGroup.id)" style="cursor: pointer">
                     <td>
                         <div class="d-flex align-items-center gap-2 justify-content-start">
                             <div class="avatar-circle">{{ mainGroup.mainGroupName.charAt(0) }}</div>
@@ -48,18 +72,18 @@
                     <td class="text-secondary">{{ mainGroup.mainGroupDescription }}</td>
                     <td>{{ mainGroup.mainGroups }}</td>
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-2" (click)="editItemGroup(mainGroup.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-2" (click)="deleteItemGroup(mainGroup.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
                 </tr>
             </tbody>
-            <tbody *ngIf="mainGroups?.length === 0">
+            <tbody *ngIf="itemGroups?.length === 0">
                 <tr>
-                    <td colspan="4" class="text-center text-muted">لا يوجد مجموعات رئيسية حتى الآن</td>
+                    <td colspan="4" class="text-center text-muted">لا يوجد مجموعات أصناف حتى الآن</td>
                 </tr>
             </tbody>
         </table>
@@ -80,23 +104,23 @@
 
 
 
-<div class="modal fade" id="addMainGroupModal" tabindex="-1" aria-labelledby="addMainGroupModalLabel" aria-hidden="true">
+<div class="modal fade" id="addItemGropModal" tabindex="-1" aria-labelledby="addItemGropModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addMainGroupModalLabel">إضافة مجموعة رئيسية</h5>
+                <h5 class="modal-title" id="addItemGropModalLabel">إضافة مجموعة أصناف</h5>
             </div>
             <div class="modal-body">
                 <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-                <form [formGroup]="mainGroupForm" (ngSubmit)="addMainGroup()">
+                <form [formGroup]="itemGroup" (ngSubmit)="addItemGroup()">
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم المجموعة</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم المجموعة">
-                                <div *ngIf="mainGroupForm.get('name')?.invalid && mainGroupForm.get('name')?.touched" class="text-danger">
-                                    <ng-container *ngIf="mainGroupForm.get('name')?.errors?.['required']">إسم المجموعة مطلوب</ng-container>
-                                    <ng-container *ngIf="mainGroupForm.get('name')?.errors?.['minlength']">إسم المجموعة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                <div *ngIf="itemGroup.get('name')?.invalid && itemGroup.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="itemGroup.get('name')?.errors?.['required']">إسم المجموعة مطلوب</ng-container>
+                                    <ng-container *ngIf="itemGroup.get('name')?.errors?.['minlength']">إسم المجموعة يجب أن يكون أكثر من 3 حروف</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -104,15 +128,15 @@
                             <div class="form-group">
                                 <label class="form-label" for="description">الوصف</label>
                                 <textarea class="form-control shadow-none" formControlName="description" id="description" placeholder="أدخل الوصف"></textarea>
-                                <div *ngIf="mainGroupForm.get('description')?.invalid && mainGroupForm.get('description')?.touched" class="text-danger">
-                                    <ng-container *ngIf="mainGroupForm.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
+                                <div *ngIf="itemGroup.get('description')?.invalid && itemGroup.get('description')?.touched" class="text-danger">
+                                    <ng-container *ngIf="itemGroup.get('description')?.errors?.['required']">الوصف مطلوب</ng-container>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="mainGroupForm.invalid">إضافة المجموعة </button>
+                        <button type="submit" class="btn-blue" [disabled]="itemGroup.invalid">إضافة المجموعة </button>
                     </div>
                 </form>
             </div>

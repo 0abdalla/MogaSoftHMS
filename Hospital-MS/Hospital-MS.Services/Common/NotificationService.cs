@@ -42,6 +42,7 @@ public class NotificationService(IUnitOfWork unitOfWork,
             return;
 
         var subject = $"New Purchase Request: {purchaseRequest.RequestNumber}";
+
         var templateModel = new Dictionary<string, string>
         {
             { "{RequestNumber}", purchaseRequest.RequestNumber },
@@ -55,6 +56,8 @@ public class NotificationService(IUnitOfWork unitOfWork,
         var body = EmailBodyBuilder.GenerateEmailBody("NewPurchaseRequest", templateModel);
 
         await _emailService.SendEmailAsync("eslam.eltayarr@gmail.com", subject, body);
+
+        // TODO: Uncomment the following lines to send emails to all admin users
 
         //foreach (var admin in adminUsers)
         //{

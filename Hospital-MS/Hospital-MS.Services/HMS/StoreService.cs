@@ -57,7 +57,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             ContactNumber = store.ContactNumber,
             Email = store.Email,
             StoreTypeId = store.TypeId,
-            StoreTypeName = store.Type.Name,
+            StoreTypeName = store.Type?.Name,
             IsActive = store.IsActive
         };
 

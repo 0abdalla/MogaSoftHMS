@@ -1,7 +1,7 @@
 <main id="banks">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="p-3 mt-4">
+        <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="col-md-8 row">
@@ -17,6 +17,30 @@
                     </div>
                 </div>
             </form>
+        </div> -->
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة بنك</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <app-filters [filterData]="banks" [filterPlaceholder]="'البنك'" [searchPlaceholder]="'ابحث بإستخدام اسم البنك ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                    </ng-container>
+                </div>
+            </div>
         </div>
         <table class="table table-hover mt-4">
             <thead>
@@ -30,19 +54,17 @@
             </thead>
             <tbody *ngIf="banks?.length > 0">
                 <tr *ngFor="let item of banks | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
+                    <td>{{item.id}}</td>
                     <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ item.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ item.name }}</span>
-                        </div>
+                        <span class="fw-bold">{{ item.name }}</span>
                     </td>
                     <td>{{ item.accountNumber }}</td>
                     <td>{{ item.currency }}</td>
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-2" (click)="editBank(item.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-2" (click)="deleteBank(item.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -74,16 +96,16 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addItemModalLabel">إضافة بنك جديد</h5>
+                <h5 class="modal-title" id="addItemModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} بنك</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
+                <form [formGroup]="accountForm" (ngSubmit)="addBank()">
                     <div class="row">
                         <div class="col-md-12 mb-2">
-                            <label for="safe" class="form-label">تكويد الحسابات</label>
-                            <input type="text" class="form-control shadow-none" formControlName="safe" id="safe" placeholder="أدخل تكويد الحسابات">
-                            <div *ngIf="accountForm.get('safe')?.invalid && accountForm.get('safe')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('safe')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            <label for="code" class="form-label">الكود</label>
+                            <input type="text" class="form-control shadow-none" formControlName="code" id="code" placeholder="أدخل الكود">
+                            <div *ngIf="accountForm.get('code')?.invalid && accountForm.get('code')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('code')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                             </div>
                         </div>
 
@@ -106,26 +128,27 @@
                         <div class="col-md-6 mb-2">
                             <label for="currency" class="form-label">العملة</label>
                             <select class="form-select shadow-none" formControlName="currency" id="currency">
-                      <option selected disabled value="">اختر العملة</option>
-                      <option value="ريال">ريال</option>
-                      <option value="دولار">دولار</option>
-                    </select>
+                                <option selected disabled value="">اختر العملة</option>
+                                <option value="جنيه">جنيه</option>
+                                <option value="ريال">ريال</option>
+                                <option value="دولار">دولار</option>
+                            </select>
                             <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
                                 <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-2">
-                            <label for="openingBalance" class="form-label">رصيد أول المدة</label>
-                            <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="أدخل رصيد أول المدة">
-                            <div *ngIf="accountForm.get('openingBalance')?.invalid && accountForm.get('openingBalance')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('openingBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            <label for="initialBalance" class="form-label">رصيد أول المدة</label>
+                            <input type="number" class="form-control shadow-none" formControlName="initialBalance" id="initialBalance" placeholder="أدخل رصيد أول المدة">
+                            <div *ngIf="accountForm.get('initialBalance')?.invalid && accountForm.get('initialBalance')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('initialBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                             </div>
                         </div>
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">إضافة البنك</button>
+                        <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} بنك</button>
                     </div>
                 </form>
 

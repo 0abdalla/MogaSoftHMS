@@ -52,4 +52,18 @@ public class PriceQuotationsController : ApiBaseController
         var result = await _service.DeleteAsync(id, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("GetByPurchaseRequest/{purchaseRequestId}")]
+    public async Task<IActionResult> GetByPurchaseRequest(int purchaseRequestId, CancellationToken cancellationToken)
+    {
+        var result = await _service.GetAllByPurchaseRequestIdAsync(purchaseRequestId, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("SubmitPriceQuotation/{purchaseRequestId}")]
+    public async Task<IActionResult> PriceQuotation(int purchaseRequestId, CancellationToken cancellationToken)
+    {
+        var result = await _service.SubmitPriceQuotationByPurchaseRequestIdAsync(purchaseRequestId, cancellationToken);
+        return Ok(result);
+    }
 }

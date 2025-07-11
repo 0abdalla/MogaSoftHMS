@@ -26,6 +26,13 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
     {
         try
         {
+            var existingItem = await _unitOfWork.Repository<Item>()
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.NameAr == request.NameAr && x.NameEn == request.NameEn && x.IsActive, cancellationToken);
+
+            if (existingItem != null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
+
             var item = new Item
             {
                 NameAr = request.NameAr,
@@ -131,7 +138,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 UnitId = item.UnitId,
                 UnitName = item.Unit.NameAr,
                 GroupId = item.GroupId,
-                GroupName = item.Group?.NameAr,
+                GroupName = item.Group?.Name ?? string.Empty,
                 OrderLimit = item.OrderLimit,
                 Cost = item.Cost,
                 OpeningBalance = item.OpeningBalance,
