@@ -84,6 +84,54 @@ public class PriceQuotationService : IPriceQuotationService
         }
     }
 
+    public async Task<PagedResponseModel<List<PriceQuotationResponse>>> GetAllApprovedAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = _unitOfWork.Repository<PriceQuotation>()
+                  .GetAll()
+                  .Include(x => x.Supplier)
+                  .Include(x => x.Items)
+                  .Include(x => x.PurchaseRequest)
+                  .Where(x => x.IsActive && x.Status == QuotationStatus.Approved);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var quotations = await query
+                  .OrderByDescending(x => x.QuotationDate)
+                  .Select(x => new PriceQuotationResponse
+                  {
+                      Id = x.Id,
+                      QuotationNumber = x.QuotationNumber,
+                      QuotationDate = x.QuotationDate,
+                      SupplierId = x.SupplierId,
+                      SupplierName = x.Supplier.Name,
+                      Notes = x.Notes,
+                      Status = x.Status.ToString(),
+                      TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
+                      PurchaseRequestId = x.PurchaseRequestId,
+                      PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
+                      Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                      {
+                          Id = i.Id,
+                          ItemName = i.Item.NameAr,
+                          Quantity = i.Quantity,
+                          UnitPrice = i.UnitPrice,
+                          Total = i.Quantity * i.UnitPrice,
+                          Notes = i.Notes
+                      }).ToList()
+                  })
+                  .ToListAsync(cancellationToken);
+
+            return PagedResponseModel<List<PriceQuotationResponse>>.Success(GenericErrors.GetSuccess, totalCount, quotations);
+
+        }
+        catch (Exception)
+        {
+            return PagedResponseModel<List<PriceQuotationResponse>>.Failure(GenericErrors.TransFailed); throw;
+        }
+    }
+
     public async Task<PagedResponseModel<List<PriceQuotationResponse>>> GetAllAsync(
         PagingFilterModel filter,
         CancellationToken cancellationToken = default)
@@ -115,6 +163,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Id = x.Id,
                     QuotationNumber = x.QuotationNumber,
                     QuotationDate = x.QuotationDate,
+                    SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
                     Notes = x.Notes,
                     Status = x.Status.ToString(),
@@ -165,6 +214,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Id = x.Id,
                     QuotationNumber = x.QuotationNumber,
                     QuotationDate = x.QuotationDate,
+                    SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
                     Notes = x.Notes,
                     Status = x.Status.ToString(),
@@ -208,6 +258,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Id = x.Id,
                     QuotationNumber = x.QuotationNumber,
                     QuotationDate = x.QuotationDate,
+                    SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
                     Notes = x.Notes,
                     Status = x.Status.ToString(),

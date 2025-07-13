@@ -1,20 +1,12 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.PurchaseOrders;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderService
@@ -31,6 +23,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             SupplierId = request.SupplierId,
             Description = request.Description,
             Status = PurchaseStatus.Pending,
+            PriceQuotationId = request.PriceQuotationId,
             IsActive = true,
             Items = request.Items.Select(i => new PurchaseOrderItem
             {
@@ -39,7 +32,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
                 RequestedQuantity = i.RequestedQuantity,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                IsActive = true
+                IsActive = true,
+                TotalPrice = i.TotalPrice,
             }).ToList()
         };
 
@@ -63,6 +57,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         order.OrderDate = request.OrderDate;
         order.SupplierId = request.SupplierId;
         order.Description = request.Description;
+        order.PriceQuotationId = request.PriceQuotationId;
+
 
         foreach (var item in order.Items)
             item.IsActive = false;
@@ -74,7 +70,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             RequestedQuantity = i.RequestedQuantity,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
-            IsActive = true
+            IsActive = true,
+            TotalPrice = i.TotalPrice,
         }).ToList();
 
         _unitOfWork.Repository<PurchaseOrder>().Update(order);
@@ -88,6 +85,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         var order = await _unitOfWork.Repository<PurchaseOrder>()
             .GetAll()
             .Include(x => x.Supplier)
+            .Include(x=>x.PriceQuotation)
             .Include(x => x.Items).ThenInclude(i => i.Item)
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
@@ -101,6 +99,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             ReferenceNumber = order.ReferenceNumber,
             OrderDate = order.OrderDate,
             SupplierName = order.Supplier.Name,
+            PriceQuotationId = order.PriceQuotationId,
+            PriceQuotationNumber = order.PriceQuotation?.QuotationNumber,
             Description = order.Description,
             Status = order.Status.ToString(),
             Items = order.Items.Where(i => i.IsActive).Select(i => new PurchaseOrderItemResponse
@@ -111,7 +111,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
                 RequestedQuantity = i.RequestedQuantity,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                Total = i.Quantity * i.UnitPrice
+                Total = i.Quantity * i.UnitPrice,
+                TotalPrice = i.TotalPrice
             }).ToList()
         };
 
@@ -122,6 +123,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
     {
         var query = _unitOfWork.Repository<PurchaseOrder>().GetAll()
             .Include(x => x.Supplier)
+            .Include(x=>x.PriceQuotation)
             .Where(x => x.IsActive);
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
@@ -142,7 +144,9 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
                 SupplierName = x.Supplier.Name,
                 Description = x.Description,
                 Status = x.Status.ToString(),
-                Items = new()
+                Items = new(),
+                PriceQuotationId = x.PriceQuotationId,
+                PriceQuotationNumber = x.PriceQuotation.QuotationNumber
             })
             .ToListAsync(cancellationToken);
 

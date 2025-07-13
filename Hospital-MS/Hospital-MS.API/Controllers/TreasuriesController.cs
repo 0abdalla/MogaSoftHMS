@@ -81,4 +81,11 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
         var result = await _treasuryService.AssignTreasuryToStaffAsync(staffId, treasuryId, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("transactions/{treasuryId}")]
+    public async Task<IActionResult> GetTreasuryTransactions(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetTreasuryTransactionsAsync(treasuryId, fromDate, toDate, cancellationToken);
+        return Ok(result);
+    }
 }
