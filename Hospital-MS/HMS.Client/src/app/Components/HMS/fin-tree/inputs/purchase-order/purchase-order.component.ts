@@ -17,6 +17,11 @@ export class PurchaseOrderComponent {
     pageSize : 16,
     filterList : []
   };
+  pagingFilterModelSelect : PagingFilterModel = {
+    currentPage : 1,
+    pageSize : 16,
+    filterList : []
+  };
   total : number = 0;
   // 
   purchaseOrderForm!:FormGroup;
@@ -64,8 +69,8 @@ export class PurchaseOrderComponent {
   }
   
   ngOnInit(): void {
-    this.getpurchaseOrders();
     this.getItems();
+    this.getpurchaseOrders();
     this.getSuppliers();
     this.getPriceQutations();
     this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
@@ -126,7 +131,7 @@ export class PurchaseOrderComponent {
   }
 
   getSuppliers(){
-    this.financialService.getSuppliers(this.pagingFilterModel).subscribe((res : any)=>{
+    this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res : any)=>{
       this.allSuppliers = res.results;
       this.total = res.totalCount;
       console.log(this.allSuppliers);
@@ -134,7 +139,7 @@ export class PurchaseOrderComponent {
   }
 
   getpurchaseOrders(){
-    this.financialService.getPurchaseOrders(this.pagingFilterModel).subscribe((res : any)=>{
+    this.financialService.getPurchaseOrders(this.pagingFilterModelSelect).subscribe((res : any)=>{
       this.purchaseOrders = res.results;
       this.total = res.totalCount;
       console.log(this.purchaseOrders);

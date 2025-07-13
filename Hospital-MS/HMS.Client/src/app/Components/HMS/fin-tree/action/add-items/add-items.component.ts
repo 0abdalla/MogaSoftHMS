@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
-import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
 export declare var bootstrap:any;
 
@@ -11,23 +11,37 @@ export declare var bootstrap:any;
   styleUrl: './add-items.component.css'
 })
 export class AddItemsComponent implements OnInit {
+  @ViewChild('printSection') printSection!: ElementRef;
+  @ViewChild('printEntrySection') printEntrySection!: ElementRef;
+  data: any = {};
+  username = sessionStorage.getItem('firstName') + '' + sessionStorage.getItem('lastName') ; 
+  printTime = new Date().toLocaleString('ar-EG');
+
+
+  // 
   filterForm!:FormGroup;
   addPermissionForm!:FormGroup
   TitleList = ['المخازن','إذن إستلام'];
   // 
   adds:any[]=[];
   total = 0;
-  pagingFilterModel:any={
+  pagingFilterModel : PagingFilterModel = {
     searchText: '',
     currentPage: 1,
-    pageSize: 1,
+    pageSize: 16,
     filterList: []
   }
+  pagingFilterModelSelect : PagingFilterModel = {
+    currentPage : 1,
+    pageSize : 100,
+    filterList : []
+  };
   // 
   allItems: any[] = [];
   suppliers:any[]=[];
   stores:any[]=[];
   purchaseRequests:any[]=[];
+  purchaseOrders:any[]=[];
   // 
   isFilter:boolean=true;
   constructor(private fb:FormBuilder , private financialService : FinancialService , private cdr : ChangeDetectorRef){
@@ -37,7 +51,7 @@ export class AddItemsComponent implements OnInit {
       responsible:[''],
     })
     this.addPermissionForm = this.fb.group({
-      documentNumber: ['1'],
+      documentNumber: ['' , Validators.required],
       permissionDate: [new Date().toISOString().substring(0, 10)],
       notes: [''],
       items: this.fb.array([
@@ -45,7 +59,7 @@ export class AddItemsComponent implements OnInit {
       ]),
       storeId: [''],
       supplierId: [''],
-      purchaseRequestId: [''],
+      purchaseOrderId: [''],
     });    
   }
   ngOnInit(): void {
@@ -54,11 +68,13 @@ export class AddItemsComponent implements OnInit {
     this.getSuppliers();
     this.getStores();
     this.getPurchaseRequests();
+    this.getPurchaseOrders();
+    this.setupQuotationSelectionListener();
   }
   createItemGroup(): FormGroup {
     return this.fb.group({
       id: [null, Validators.required],
-      unit: [null, Validators.required],
+      unit: ['', Validators.required],
       quantity: [1, Validators.required],
       unitPrice: [1, Validators.required],
       totalPrice: [''],
@@ -67,17 +83,48 @@ export class AddItemsComponent implements OnInit {
   }
   get items(): FormArray {
       return this.addPermissionForm.get('items') as FormArray;
-    }
+  }
     
   addItemRow() {
       this.items.push(this.createItemGroup());
-    }
+  }
     
   removeItemRow(index: number) {
-      if (this.items.length > 1) {
-        this.items.removeAt(index);
-      }
+    if (this.items.length > 1) {
+    this.items.removeAt(index);
     }
+  }
+
+  setupQuotationSelectionListener() {
+    this.addPermissionForm.get('purchaseOrderId')?.valueChanges.subscribe((id: number) => {
+      if (id) {
+        this.financialService.getPurchaseOrdersById(id).subscribe((res: any) => {
+          const order = res.results;
+          console.log(order);
+          
+          this.addPermissionForm.patchValue({
+            supplierId: order.supplierId,
+            notes: order.description || ''
+          });
+          this.items.clear();
+          order.items.forEach((item: any) => {
+            this.items.push(this.fb.group({
+              id: [item.id, Validators.required],
+              unit: [item.unit || '', Validators.required],
+              quantity: [item.requestedQuantity || 1, Validators.required],
+              unitPrice: [item.unitPrice || 0, Validators.required],
+              totalPrice: [item.totalPrice || 0],
+              notes: ['']
+            }));
+          });
+        });
+      }
+    });
+  }
+  
+
+
+
   applyFilters(){
     this.total=this.adds.length;
   }
@@ -92,16 +139,11 @@ export class AddItemsComponent implements OnInit {
   }
   // 
   getReceiptPermissions() {
-    console.log('Sending to API:', this.pagingFilterModel);
     this.financialService.getReceiptPermissions(this.pagingFilterModel).subscribe({
       next: (res:any) => {
         this.total = res.totalCount;
         this.adds = res.results;
         this.cdr.detectChanges();
-      
-      console.log('Current Page:', this.pagingFilterModel.currentPage);
-      console.log('Page Size:', this.pagingFilterModel.pageSize);
-      console.log('Total Items:', this.total);
       console.log('Results:', this.adds);
       },
       error: (err) => {
@@ -116,30 +158,37 @@ export class AddItemsComponent implements OnInit {
     this.getReceiptPermissions();
   }
   getItems(){
-    this.financialService.getItems(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getItems(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.allItems=res.results;
       // console.log(this.allItems);
       this.total=res.count;
     })
   }
   getSuppliers(){
-    this.financialService.getSuppliers(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.suppliers=res.results;
       // console.log(this.suppliers);
       this.total=res.count;
     })
   }
   getStores(){
-    this.financialService.getStores(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getStores(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.stores=res.results;
       // console.log(this.stores);
       this.total=res.count;
     })
   }
   getPurchaseRequests(){
-    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getPurchaseRequests(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.purchaseRequests=res.results;
       // console.log(this.purchaseRequests);
+      this.total=res.count;
+    })
+  }
+  getPurchaseOrders(){
+    this.financialService.getPurchaseOrders(this.pagingFilterModelSelect).subscribe((res:any)=>{
+      this.purchaseOrders=res.results;
+      console.log('Orders:',this.purchaseOrders);
       this.total=res.count;
     })
   }
@@ -154,7 +203,7 @@ export class AddItemsComponent implements OnInit {
   }
   // 
   isEditMode : boolean = false;
-  currentPurchaseRequestId: number | null = null;
+  currentpurchaseOrderId: number | null = null;
   addPermission() {
     if (this.addPermissionForm.invalid) {
       this.addPermissionForm.markAllAsTouched();
@@ -163,8 +212,8 @@ export class AddItemsComponent implements OnInit {
   
     const formData = this.addPermissionForm.value;
   
-    if (this.isEditMode && this.currentPurchaseRequestId) {
-      this.financialService.updateReceiptPermission(this.currentPurchaseRequestId, formData).subscribe({
+    if (this.isEditMode && this.currentpurchaseOrderId) {
+      this.financialService.updateReceiptPermission(this.currentpurchaseOrderId, formData).subscribe({
         next: () => {
           this.getReceiptPermissions();
         },
@@ -187,7 +236,7 @@ export class AddItemsComponent implements OnInit {
   permission!:any;
   editPermission(id: number) {
     this.isEditMode = true;
-    this.currentPurchaseRequestId = id;
+    this.currentpurchaseOrderId = id;
   
     this.financialService.getReceiptPermissionsById(id).subscribe({
       next: (data) => {
@@ -200,7 +249,7 @@ export class AddItemsComponent implements OnInit {
           notes: this.permission.notes,
           items: this.permission.items,
           storeId: this.permission.storeId,
-          purchaseRequestId: this.permission.purchaseRequestId
+          purchaseOrderId: this.permission.purchaseOrderId
         });
   
         const modal = new bootstrap.Modal(document.getElementById('addPermissionModal')!);
@@ -233,5 +282,59 @@ export class AddItemsComponent implements OnInit {
         });
       }
     });
+  }
+
+  // 
+  
+  getTotal(): number {
+    return this.items.value.reduce((sum: number, item: any) => sum + (+item.totalPrice || 0), 0);
+  }
+  
+  getItemName(id: number): string {
+    return this.allItems.find(i => i.id === id)?.nameAr || '---';
+  }
+  
+  getSupplierName(id: number): string {
+    return this.suppliers.find(s => s.id === id)?.name || '---';
+  }
+  
+  getStoreName(id: number): string {
+    return this.stores.find(s => s.id === id)?.name || '---';
+  }
+
+  printPermission() {
+    this.data = this.addPermissionForm.value;
+    setTimeout(() => {
+      const printContents = this.printSection.nativeElement.innerHTML;
+      const win = window.open('', '', 'width=900,height=1000');
+      win?.document.write(`
+        <html>
+          <head>
+            <title>طباعة إذن الإضافة</title>
+          </head>
+          <body>${printContents}</body>
+        </html>
+      `);
+      win?.document.close();
+      win?.print();
+    }, 200);
+  }
+
+  printEntry() {
+    this.data = this.addPermissionForm.value;
+    setTimeout(() => {
+        const printContents = this.printEntrySection.nativeElement.innerHTML;
+        const win = window.open('', '', 'width=900,height=1000');
+        win?.document.write(`
+            <html>
+                <head>
+                    <title>طباعة القيد</title>
+                </head>
+                <body>${printContents}</body>
+            </html>
+        `);
+        win?.document.close();
+        win?.print();
+    }, 200);
   }
 }

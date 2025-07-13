@@ -216,6 +216,22 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'ReceiptPermissions/' + id);
   }
   // 
+  getIssueRequests(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DisbursementRequest?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getIssueRequestById(id:number){
+    return this.http.get<any>(this.baseUrl + 'DisbursementRequest/' + id);
+  }
+  addIssueRequest(IssueRequest:any){
+    return this.http.post<any>(this.baseUrl + 'DisbursementRequest', IssueRequest);
+  }
+  updateIssueRequest(id:number,IssueRequest:any){
+    return this.http.put<any>(this.baseUrl + 'DisbursementRequest/' + id, IssueRequest);
+  }
+  deleteIssueRequest(id:number){
+    return this.http.delete<any>(this.baseUrl + 'DisbursementRequest/' + id);
+  }
+  // 
   getMaterialIssuePermissions(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'MaterialIssuePermissions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }

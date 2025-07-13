@@ -25,6 +25,7 @@ import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
 import { StoresComponent } from './inputs/stores/stores.component';
 import { StoresTypesComponent } from './inputs/stores-types/stores-types.component';
 import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
+import { IssueRequestComponent } from './action/issue-request/issue-request.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
@@ -43,6 +44,7 @@ const routes: Routes = [
   {path:"treasuries" , component : TreasuriesComponent},
   // actions
   {path:"add-items" , component : AddItemsComponent},
+  {path:"issue-request" , component : IssueRequestComponent},
   {path:"issue-items" , component : IssueItemsComponent},
   {path:"fetch-inventory" , component : FetchInventoryComponent},
   // treasury

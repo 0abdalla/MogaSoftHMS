@@ -52,6 +52,11 @@ export class MenueService {
           route: '/hms/fin-tree/add-items'
         },
         {
+          displayName: 'طلب صرف ',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/fin-tree/issue-request'
+        },
+        {
           displayName: 'إذن صرف',
           icon: 'fa-solid fa-circle',
           route: '/hms/fin-tree/issue-items'

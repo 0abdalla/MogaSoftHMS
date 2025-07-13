@@ -10,6 +10,15 @@
                     </div>
                 </a>
             </div>
+
+            <div class="col-lg-6 mt-3">
+                <a data-bs-toggle="modal" data-bs-target="#closeFinYear" class="card text-decoration-none">
+                    <div class="card-body">
+                        <i class="fa-solid fa-calendar"></i>
+                        <h5 class="card-title">إغلاق سنة مالية</h5>
+                    </div>
+                </a>
+            </div>
         </div>
     </div>
 </main>
@@ -23,15 +32,15 @@
           <h5 class="modal-title" id="newFinYearLabel">إنشاء سنة مالية جديدة</h5>
         </div>
   
-        <div class="modal-body">
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
           <form [formGroup]="financialYearForm" (ngSubmit)="submitFinancialYear()">
             <div class="mb-3">
-              <label>تاريخ البداية</label>
+              <label class="form-label">تاريخ البداية</label>
               <input type="date" class="form-control shadow-none" formControlName="startDate">
             </div>
   
             <div class="mb-3">
-              <label>تاريخ النهاية</label>
+              <label class="form-label">تاريخ النهاية</label>
               <input type="date" class="form-control shadow-none" formControlName="endDate">
               <div *ngIf="financialYearForm.hasError('invalidRange') && financialYearForm.get('endDate')?.touched" class="text-danger mt-1">
                 لا يمكن أن تكون النهاية قبل البداية.
@@ -47,5 +56,38 @@
         </div>
       </div>
     </div>
-  </div>
+</div>
+
+
+<div class="modal fade" id="closeFinYear" tabindex="-1" aria-labelledby="closeFinYearLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="closeFinYearLabel">إغلاق سنة مالية</h5>
+        </div>
   
+        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+          <form [formGroup]="financialYearForm" (ngSubmit)="closeFinancialYear()">
+            <div class="mb-3">
+              <label class="form-label">تاريخ البداية</label>
+              <input type="date" class="form-control shadow-none" formControlName="startDate">
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">تاريخ النهاية</label>
+              <input type="date" class="form-control shadow-none" formControlName="endDate">
+              <div *ngIf="financialYearForm.hasError('invalidRange') && financialYearForm.get('endDate')?.touched" class="text-danger mt-1">
+                لا يمكن أن تكون النهاية قبل البداية.
+              </div>
+            </div>
+  
+            <div class="text-center">
+              <button type="submit" class="btn-blue px-5" [disabled]="financialYearForm.invalid">
+                إغلاق السنة المالية
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+</div>

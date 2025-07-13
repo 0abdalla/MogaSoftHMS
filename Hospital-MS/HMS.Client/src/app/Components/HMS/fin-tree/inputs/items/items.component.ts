@@ -41,7 +41,7 @@ export class ItemsComponent {
         this.itemForm = this.fb.group({
           nameAr: ['', Validators.required],
           nameEn: ['', Validators.required],
-          unitId: [null, Validators.required],
+          unit: [null, Validators.required],
           groupId: [null, Validators.required],
           orderLimit: [0],
           cost: [0],
@@ -88,7 +88,7 @@ export class ItemsComponent {
         const formData = {
           nameAr: rawForm.nameAr,
           nameEn: rawForm.nameEn,
-          unitId: Number(rawForm.unitId),
+          unit: rawForm.unit,
           groupId: Number(rawForm.groupId),
           orderLimit: Number(rawForm.orderLimit),
           cost: Number(rawForm.cost),
@@ -137,7 +137,7 @@ export class ItemsComponent {
             this.itemForm.patchValue({
               nameAr: this.itemRes.nameAr,
               nameEn: this.itemRes.nameEn,
-              unitId: this.itemRes.unitId,
+              unit: this.itemRes.unit,
               groupId: this.itemRes.groupId,
               orderLimit: this.itemRes.orderLimit,
               cost: this.itemRes.cost,
