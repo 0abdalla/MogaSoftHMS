@@ -229,7 +229,7 @@ public class PriceQuotationService : IPriceQuotationService
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,
                         Notes = i.Notes,
-                        Unit = i.Item.Unit.NameAr ?? ""
+                        Unit = i.Item.Unit
                     }).ToList()
 
                 }).ToListAsync(cancellationToken);

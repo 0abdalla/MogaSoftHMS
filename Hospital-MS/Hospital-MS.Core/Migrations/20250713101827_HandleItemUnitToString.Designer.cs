@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250713101827_HandleItemUnitToString")]
+    partial class HandleItemUnitToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -3305,7 +3308,7 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("PurchaseOrderId")
+                    b.Property<int>("PurchaseRequestId")
                         .HasColumnType("int");
 
                     b.Property<int>("Status")
@@ -3327,7 +3330,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("PurchaseOrderId");
+                    b.HasIndex("PurchaseRequestId");
 
                     b.HasIndex("StoreId");
 
@@ -5556,9 +5559,9 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("Hospital_MS.Core.Models.PurchaseOrder", "PurchaseOrder")
+                    b.HasOne("Hospital_MS.Core.Models.PurchaseRequest", "PurchaseRequest")
                         .WithMany()
-                        .HasForeignKey("PurchaseOrderId")
+                        .HasForeignKey("PurchaseRequestId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -5580,7 +5583,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("PurchaseOrder");
+                    b.Navigation("PurchaseRequest");
 
                     b.Navigation("Store");
 

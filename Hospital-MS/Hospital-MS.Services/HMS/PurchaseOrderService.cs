@@ -85,8 +85,9 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         var order = await _unitOfWork.Repository<PurchaseOrder>()
             .GetAll()
             .Include(x => x.Supplier)
-            .Include(x=>x.PriceQuotation)
-            .Include(x => x.Items).ThenInclude(i => i.Item)
+            .Include(x => x.PriceQuotation)
+            .Include(x => x.Items)
+            .ThenInclude(i => i.Item)
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
         if (order == null)
@@ -98,6 +99,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             OrderNumber = order.OrderNumber,
             ReferenceNumber = order.ReferenceNumber,
             OrderDate = order.OrderDate,
+            SupplierId = order.SupplierId,
             SupplierName = order.Supplier.Name,
             PriceQuotationId = order.PriceQuotationId,
             PriceQuotationNumber = order.PriceQuotation?.QuotationNumber,
@@ -107,7 +109,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             {
                 Id = i.Id,
                 ItemName = i.Item.NameAr,
-                Unit = i.Unit,
+                Unit = i.Item.Unit,
                 RequestedQuantity = i.RequestedQuantity,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
@@ -123,7 +125,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
     {
         var query = _unitOfWork.Repository<PurchaseOrder>().GetAll()
             .Include(x => x.Supplier)
-            .Include(x=>x.PriceQuotation)
+            .Include(x => x.PriceQuotation)
             .Where(x => x.IsActive);
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
