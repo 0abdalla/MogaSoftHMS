@@ -33,6 +33,7 @@ import { TreasuriesComponent } from './inputs/treasuries/treasuries.component';
 import { StoresComponent } from './inputs/stores/stores.component';
 import { StoresTypesComponent } from './inputs/stores-types/stores-types.component';
 import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
+import { IssueRequestComponent } from './action/issue-request/issue-request.component';
 
 
 @NgModule({
@@ -62,6 +63,7 @@ import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-se
     StoresComponent,
     StoresTypesComponent,
     YearFinSettingsComponent,
+    IssueRequestComponent,
   ],
   imports: [
     CommonModule,

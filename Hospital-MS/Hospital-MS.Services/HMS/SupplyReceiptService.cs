@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.SupplyReceipts;
+using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
@@ -23,8 +24,10 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
 
     public async Task<ErrorResponseModel<string>> CreateSupplyReceiptAsync(SupplyReceiptRequest request, CancellationToken cancellationToken = default)
     {
+        var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+
             var supplyReceipt = new SupplyReceipt
             {
                 Date = request.Date,
@@ -38,12 +41,28 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
 
             await _unitOfWork.Repository<SupplyReceipt>().AddAsync(supplyReceipt, cancellationToken);
 
+            // handle treasury transaction
+            var treasuryTransaction = new TreasuryTransaction
+            {
+                Date = request.Date,
+                Amount = request.Amount,
+                Description = request.Description,
+                TreasuryId = request.TreasuryId,
+                ReceivedFrom = request.ReceivedFrom,
+                TransactionType = TransactionType.Credit,
+                DocumentNumber = supplyReceipt.Id.ToString(),
+            };
+
+            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
 
             return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, supplyReceipt.Id.ToString());
         }
         catch (Exception)
         {
+            await transaction.RollbackAsync(cancellationToken);
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }

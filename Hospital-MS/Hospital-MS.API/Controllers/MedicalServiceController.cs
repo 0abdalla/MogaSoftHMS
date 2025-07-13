@@ -26,6 +26,13 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("GetMedicalService")]
+        public async Task<IActionResult> GetMedicalService(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        {
+            var result = await _medicalServiceService.GetAllAsync(pagingFilter, cancellationToken);
+            return Ok(result);
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMedicalService([FromRoute] int id, [FromBody] MedicalServiceRequest request, CancellationToken cancellationToken)
         {

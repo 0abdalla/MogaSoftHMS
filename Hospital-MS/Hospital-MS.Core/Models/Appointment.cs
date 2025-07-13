@@ -11,7 +11,7 @@ namespace Hospital_MS.Core.Models
         public int? ClinicId { get; set; }
         public int? MedicalServiceId { get; set; }
 
-        public DateOnly? AppointmentDate { get; set; } 
+        public DateOnly? AppointmentDate { get; set; }
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public AppointmentType Type { get; set; }
         public string? PaymentMethod { get; set; }
@@ -27,5 +27,6 @@ namespace Hospital_MS.Core.Models
         public Patient Patient { get; set; } = default!;
         public Doctor? Doctor { get; set; } = default!;
         public MedicalService? MedicalService { get; set; }
+        public ICollection<MedicalServiceDetail>? MedicalServiceDetails { get; set; } = new HashSet<MedicalServiceDetail>();
     }
 }

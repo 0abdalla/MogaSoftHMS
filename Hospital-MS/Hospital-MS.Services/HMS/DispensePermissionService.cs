@@ -58,6 +58,21 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
 
             await _unitOfWork.Repository<DispensePermission>().AddAsync(permission, cancellationToken);
 
+            //// assuming that store is a treasury
+            
+            //var treasuryTransaction = new TreasuryTransaction
+            //{
+            //    Date = request.Date,
+            //    Amount = request.Quantity * item.Price, // Assuming Price is the cost per item
+            //    Description = request.Notes,
+            //    TreasuryId = fromStore.Id,
+            //    ReceivedFrom = fromStore.Name,
+            //    TransactionType = TransactionType.Debit,
+            //    DocumentNumber = permission.Id.ToString(),
+            //};
+
+            //await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);

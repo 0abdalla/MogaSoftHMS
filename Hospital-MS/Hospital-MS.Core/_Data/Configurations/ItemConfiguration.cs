@@ -19,9 +19,8 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
         builder.Property(x => x.NameEn)
             .HasMaxLength(100);
 
-        builder.Property(x => x.UnitId)
-            .IsRequired()
-            .HasMaxLength(50);
+        builder.Property(x => x.Unit)
+            .HasMaxLength(150);
 
         builder.Property(x => x.OrderLimit)
             .HasPrecision(18, 2)

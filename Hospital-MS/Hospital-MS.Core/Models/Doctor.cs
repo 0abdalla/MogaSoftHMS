@@ -21,6 +21,7 @@ namespace Hospital_MS.Core.Models
         public string Phone { get; set; } = string.Empty;
         public string? Email { get; set; }
         public string? Address { get; set; }
+        public double? Price { get; set; }
         public int? SpecialtyId { get; set; }
         public int? DepartmentId { get; set; }
         public DateOnly StartDate { get; set; }
@@ -34,7 +35,6 @@ namespace Hospital_MS.Core.Models
         // Navigation Properties
         public Specialty? Specialty { get; set; } = null!;
         public Department? Department { get; set; } = null!;
-
         public ICollection<DoctorMedicalService> DoctorMedicalServices { get; set; } = new List<DoctorMedicalService>();
         public ICollection<DoctorRating>? Ratings { get; set; } = new HashSet<DoctorRating>();
         public ICollection<DoctorSchedule> Schedules { get; set; } = new HashSet<DoctorSchedule>();

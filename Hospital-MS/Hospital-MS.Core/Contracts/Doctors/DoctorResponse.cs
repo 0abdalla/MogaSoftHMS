@@ -27,7 +27,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
 
         public string Specialty { get; set; }
         public string Department { get; set; }
-
+        public double? Price { get; set; }
         public string? Notes { get; set; }
         public string Status { get; set; }
         public string MaritalStatus { get; set; }

@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Treasuries;
+using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
@@ -295,4 +296,63 @@ public class TreasuryService : ITreasuryService
         }
     }
 
+    public async Task<ErrorResponseModel<TreasuryTransactionResponse>> GetTreasuryTransactionsAsync(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var transactionsQuery = _unitOfWork.Repository<TreasuryTransaction>()
+                .GetAll()
+                .Where(t => t.TreasuryId == treasuryId && t.IsActive);
+
+
+            var previousBalance = await transactionsQuery
+                .Where(t => t.Date < fromDate)
+                .SumAsync(t => t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount, cancellationToken);
+
+            var periodTransactions = await transactionsQuery
+                .Where(t => t.Date >= fromDate && t.Date <= toDate)
+                .OrderBy(t => t.Date)
+                .ThenBy(t => t.DocumentNumber)
+                .ToListAsync(cancellationToken);
+
+            if (!periodTransactions.Any())
+                return ErrorResponseModel<TreasuryTransactionResponse>.Failure(GenericErrors.NotFound);
+
+            var totalCredits = periodTransactions
+                .Where(t => t.TransactionType == TransactionType.Credit)
+                .Sum(t => t.Amount);
+
+            var totalDebits = periodTransactions
+                .Where(t => t.TransactionType == TransactionType.Debit)
+                .Sum(t => t.Amount);
+
+            var currentBalance = previousBalance + (totalCredits - totalDebits);
+
+            var response = new TreasuryTransactionResponse
+            {
+                TreasuryId = treasuryId,
+                FromDate = fromDate,
+                ToDate = toDate,
+                PreviousBalance = previousBalance,
+                TotalCredits = totalCredits,
+                TotalDebits = totalDebits,
+                CurrentBalance = currentBalance,
+                Transactions = periodTransactions.Select(t => new TransactionDetail
+                {
+                    DocumentId = t.DocumentNumber,
+                    Date = t.Date.ToDateTime(TimeOnly.MinValue),
+                    Description = t.Description ?? string.Empty,
+                    ReceivedFrom = t.ReceivedFrom ?? string.Empty,
+                    Credit = t.TransactionType == TransactionType.Credit ? t.Amount : 0,
+                    Debit = t.TransactionType == TransactionType.Debit ? t.Amount : 0
+                }).ToList()
+            };
+
+            return ErrorResponseModel<TreasuryTransactionResponse>.Success(GenericErrors.GetSuccess, response);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<TreasuryTransactionResponse>.Failure(GenericErrors.TransFailed);
+        }
+    }
 }

@@ -51,8 +51,8 @@ namespace Hospital_MS.Services.HMS
                     Gender = gender,
                     Phone = request.Phone,
                     NationalId = request.NationalId,
-                    //DepartmentId = request.DepartmentId,
-                    //SpecialtyId = request.SpecialtyId,
+                    DepartmentId = request.DepartmentId,
+                    Price = request.Price,
                     MaritalStatus = maritalStatus,
                     StartDate = request.StartDate,
                     Status = staffStatus,
@@ -131,7 +131,8 @@ namespace Hospital_MS.Services.HMS
             {
                 var Params = new SqlParameter[4];
                 var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemValue;
-                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
+                var SearchText = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
+                Params[0] = new SqlParameter("@SearchText", SearchText ?? (object)DBNull.Value);
                 Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
                 Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
                 Params[3] = new SqlParameter("@Type", Type ?? (object)DBNull.Value);
@@ -146,8 +147,9 @@ namespace Hospital_MS.Services.HMS
                     Status = row.Field<string>("Status") ?? string.Empty,
                     DepartmentId = row.Field<int?>("DepartmentId") ?? 0,
                     Department = row.Field<string>("Department") ?? string.Empty,
-                    MedicalServices = JsonConvert.DeserializeObject<List<DoctorMedicalServiceResponse>>(row.Field<string>("MedicalServiceNames") ?? "[]"), 
-                    DoctorSchedules = JsonConvert.DeserializeObject<List<DoctorScheduleResponse>>(row.Field<string>("DoctorSchedules") ?? "[]") 
+                    Price = row.Field<double?>("Price"),
+                    MedicalServices = JsonConvert.DeserializeObject<List<DoctorMedicalServiceResponse>>(row.Field<string>("MedicalServiceNames") ?? "[]"),
+                    DoctorSchedules = JsonConvert.DeserializeObject<List<DoctorScheduleResponse>>(row.Field<string>("DoctorSchedules") ?? "[]")
                 }).ToList();
 
                 int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int?>("TotalCount") ?? 0 : 0;
@@ -195,6 +197,7 @@ namespace Hospital_MS.Services.HMS
                 StartDate = doctor.StartDate,
                 Degree = doctor.Degree,
                 Notes = doctor.Notes,
+                Price = doctor.Price,
                 Status = doctor.Status.GetArabicValue(),
                 MaritalStatus = doctor.MaritalStatus.GetArabicValue(),
 
@@ -265,6 +268,7 @@ namespace Hospital_MS.Services.HMS
                 doctor.Address = request.Address;
                 doctor.FullName = request.FullName;
                 doctor.DateOfBirth = request.DateOfBirth;
+                doctor.DepartmentId = request.DepartmentId;
                 doctor.Email = request.Email;
                 doctor.Gender = gender;
                 doctor.Phone = request.Phone;
@@ -274,7 +278,8 @@ namespace Hospital_MS.Services.HMS
                 doctor.Status = staffStatus;
                 doctor.Degree = request.Degree;
                 doctor.Notes = request.Notes;
-                
+                doctor.Price = request.Price;
+
 
 
                 if (request.Photo != null && request.Photo.Length > 0)

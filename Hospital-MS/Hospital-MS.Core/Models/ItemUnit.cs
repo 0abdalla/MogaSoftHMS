@@ -6,5 +6,5 @@ public class ItemUnit : AuditableEntity
     public string NameEn { get; set; } = string.Empty;
     public bool IsActive { get; set; } = true;
 
-    public ICollection<Item> Items { get; set; } = new HashSet<Item>();
+    //public ICollection<Item> Items { get; set; } = new HashSet<Item>();
 }

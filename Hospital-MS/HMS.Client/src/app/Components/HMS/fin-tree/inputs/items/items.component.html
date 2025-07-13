@@ -117,7 +117,6 @@
           <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
             <form [formGroup]="itemForm" (ngSubmit)="addItem()">
               <div class="row">
-                <!-- الاسم بالعربية -->
                 <div class="col-md-6 mb-2">
                   <label for="nameAr" class="form-label">اسم الصنف</label>
                   <input type="text" class="form-control shadow-none" formControlName="nameAr" id="nameAr" placeholder="اسم الصنف">
@@ -126,7 +125,6 @@
                   </div>
                 </div>
     
-                <!-- الاسم بالإنجليزية -->
                 <div class="col-md-6 mb-2">
                   <label for="nameEn" class="form-label">اسم الصنف بالإنجليزية</label>
                   <input type="text" class="form-control shadow-none" formControlName="nameEn" id="nameEn" placeholder="الاسم بالإنجليزية">
@@ -135,7 +133,6 @@
                   </div>
                 </div>
     
-                <!-- المجموعة -->
                 <div class="col-md-6 mb-2">
                   <label for="groupId" class="form-label">المجموعة</label>
                   <select class="form-select shadow-none" formControlName="groupId" id="groupId">
@@ -149,21 +146,19 @@
                   </div>
                 </div>
     
-                <!-- الوحدة -->
                 <div class="col-md-6 mb-2">
-                  <label for="unitId" class="form-label">الوحدة</label>
-                  <select class="form-select shadow-none" formControlName="unitId" id="unitId">
+                  <label for="unit" class="form-label">الوحدة</label>
+                  <select class="form-select shadow-none" formControlName="unit" id="unit">
                     <option selected disabled value="">اختر الوحدة</option>
-                    <option [value]="1">كجم</option>
-                    <option [value]="2">قطعة</option>
-                    <option [value]="3">لتر</option>
+                    <option value="كجم">كجم</option>
+                    <option value="قطعة">قطعة</option>
+                    <option value="لتر">لتر</option>
                   </select>
-                  <div *ngIf="itemForm.get('unitId')?.invalid && itemForm.get('unitId')?.touched" class="text-danger">
-                    <ng-container *ngIf="itemForm.get('unitId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                  <div *ngIf="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched" class="text-danger">
+                    <ng-container *ngIf="itemForm.get('unit')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                   </div>
                 </div>
     
-                <!-- الحقول الرقمية -->
                 <div class="col-md-4 mb-2">
                   <label for="orderLimit" class="form-label">حد الطلب</label>
                   <input type="number" class="form-control shadow-none" formControlName="orderLimit" id="orderLimit" placeholder="حد الطلب">
@@ -189,7 +184,6 @@
                   <input type="number" class="form-control shadow-none" formControlName="price" id="price" placeholder="السعر">
                 </div>
     
-                <!-- الباركود -->
                 <div class="col-md-4 mb-2">
                   <label for="hasBarcode" class="form-label">له باركود؟</label>
                   <select class="form-select shadow-none" formControlName="hasBarcode" id="hasBarcode">
@@ -198,7 +192,6 @@
                   </select>
                 </div>
     
-                <!-- نوع الصنف -->
                 <div class="col-md-6 mb-2">
                   <label for="typeId" class="form-label">نوع الصنف</label>
                   <select class="form-select shadow-none" formControlName="typeId" id="typeId">

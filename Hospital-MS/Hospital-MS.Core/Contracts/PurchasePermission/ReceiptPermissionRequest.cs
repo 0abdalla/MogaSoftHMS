@@ -14,5 +14,5 @@ public class ReceiptPermissionRequest
     public List<ReceiptPermissionItemRequest> Items { get; set; } = new List<ReceiptPermissionItemRequest>();
     public int StoreId { get; set; }
     public int SupplierId { get; set; }
-    public int PurchaseRequestId { get; set; }
+    public int PurchaseOrderId { get; set; }
 }

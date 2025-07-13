@@ -1,0 +1,142 @@
+<main id="doctors-list">
+    <section class="section1" id="cards">
+        <div class="container-fluid">
+            <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+            <div class="table-card border radius-10 overflow-hidden shadow-sm">
+                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                    <div class="col-md-8 mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openMedicalServiceModalModal(null)">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة خدمة</span>
+                </button>
+                            <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                    <i class="uil uil-filter"></i>
+                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                </button>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-2" *ngIf="total > 0">
+                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                    </div>
+                    <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                        <div class="d-flex align-items-center">
+                            <ng-container>
+                                <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الطبيب أو رقم الهاتف ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 bg-white">
+                    <div class="table-responsive shadow-sm radius-10">
+                        <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
+                            <thead>
+                                <tr>
+                                    <th>الإسم</th>
+                                    <th>السعر</th>
+                                    <th>النوع</th>
+                                    <th>الأيام</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <ng-container>
+                                    <tr *ngFor="let item of pagedResponseModel.results">
+                                        <td>{{ item.name }}</td>
+                                        <td>{{ item.price }}</td>
+                                        <td>{{ item.type | medicalTypeToArabic }}</td>
+                                        <td>
+                                            <app-tag [tags]="item.days" [header]="'الأيام'" [showWithMore]="true"></app-tag>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-warning" (click)="openMedicalServiceModalModal(item)">
+                                              <i class="fa-light fa-pen-to-square"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                        <div class="col-md-8 mb-2"></div>
+                        <div class="col-md-4 mb-2" *ngIf="total > 0">
+                            <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div class="modal fade" id="MedicalServiceModal" tabindex="-1" aria-labelledby="MedicalServiceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="MedicalServiceLabel">إضافة خدمة</h5>
+            </div>
+            <div class="modal-body p-4">
+                <form [formGroup]="serviceForm" (ngSubmit)="AddMedicalService()">
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input class="form-control" formControlName="name">
+                        <div *ngIf="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched" class="text-danger">
+                            يرجى إدخال الاسم
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clinic-type" class="form-label">نوع الخدمة</label>
+                        <select id="clinic-type" class="form-select shadow-none" formControlName="type">
+                          <option selected disabled [value]="null">اختر نوع الخدمة</option>
+                          <option value="General">كشف</option>
+                          <option value="Consultation">استشارة</option>
+                          <option value="Surgery">عمليات</option>
+                          <option value="Screening">تحاليل</option>
+                          <option value="Radiology">أشعة</option>
+                        </select>
+                        <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
+                            يرجى إدخال النوع
+                        </div>
+                    </div>
+                    <div class="mb-3" *ngIf="serviceForm.get('type')?.value == 'Screening' || serviceForm.get('type')?.value == 'Radiology'">
+                        <label class="form-label">السعر</label>
+                        <input type="number" class="form-control" formControlName="price">
+                        <div *ngIf="serviceForm.get('price')?.invalid && serviceForm.get('price')?.touched" class="text-danger">
+                            يرجى إدخال السعر
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الأيام</label>
+                        <select class="form-select shadow-none" formControlName="weekDays">
+                          <option selected disabled [value]="null">اختر أيام</option>
+                          <option value="الجمعة">الجمعة</option>
+                          <option value="السبت">السبت</option>
+                          <option value="الأحد">الأحد</option>
+                          <option value="الإثنين">الإثنين</option>
+                          <option value="الثلاثاء">الثلاثاء</option>
+                          <option value="الأربعاء">الأربعاء</option>
+                          <option value="الخميس">الخميس</option>
+                        </select>
+                        <div class="min-width-200 max-width-500 small-scroll overflow-auto p-2">
+                            <span class="badge round min-width-60 badge-muted me-1 mb-1" *ngFor="let tag of DaysWeekSelected;let i = index">
+                            {{ tag }}
+                            <i class="fas fa-times ms-1 cursor-pointer"
+                          (click)="removeDay(i)"
+                          title="حذف"
+                          style="font-size: 0.8rem;"></i>
+                          </span>
+                        </div>
+                        <div *ngIf="serviceForm.get('weekDays')?.invalid && serviceForm.get('weekDays')?.touched" class="text-danger">
+                            يرجى اختيار يوم واحد على الاقل
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn-blue" [disabled]="serviceForm.invalid">حفظ التغييرات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

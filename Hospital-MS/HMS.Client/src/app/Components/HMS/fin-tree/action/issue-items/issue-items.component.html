@@ -163,8 +163,14 @@
                               
                                   <div class="col-md-2">
                                     <label>الوحدة</label>
-                                    <input type="text" class="form-control shadow-none" formControlName="unit">
+                                    <select class="form-select shadow-none" formControlName="unit">
+                                        <option value="" selected disabled>اختر الوحدة</option>
+                                        <option value="لتر">لتر</option>
+                                        <option value="كجم">كجم</option>
+                                        <option value="قطعة">قطعة</option>
+                                    </select>
                                   </div>
+
                                   <div class="col-md-2">
                                     <label>الكمية</label>
                                     <input type="number" class="form-control shadow-none" formControlName="quantity">

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { SettingsRoutingModule } from './settings-routing.module';
-import { DoctorsSettingsComponent } from './doctors-settings/doctors-settings.component';
+import { DoctorsMedicalServiceComponent } from './doctors-settings/doctors-medical-service.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { DoctorsListComponent } from './doctors-list/doctors-list.component';
@@ -26,7 +26,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
-    DoctorsSettingsComponent,
+    DoctorsMedicalServiceComponent,
     DoctorsListComponent,
     DoctorsSettingsEditComponent,
     PermissionsComponent,

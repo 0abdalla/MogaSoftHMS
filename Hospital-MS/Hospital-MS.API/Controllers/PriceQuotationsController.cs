@@ -66,4 +66,11 @@ public class PriceQuotationsController : ApiBaseController
         var result = await _service.SubmitPriceQuotationByPurchaseRequestIdAsync(purchaseRequestId, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("Approved")]
+    public async Task<IActionResult> GetAllApproved(CancellationToken cancellationToken)
+    {
+        var result = await _service.GetAllApprovedAsync(cancellationToken);
+        return Ok(result);
+    }
 }

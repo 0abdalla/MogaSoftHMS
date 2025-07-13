@@ -1,0 +1,27 @@
+.min-width-60 {
+    min-width: 60px;
+}
+
+.round {
+    border-radius: 1.5rem;
+}
+
+.badge-muted {
+    color: #fff;
+    background-color: #6B6F82;
+}
+
+.badge-light {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.small-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}

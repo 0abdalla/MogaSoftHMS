@@ -60,6 +60,11 @@ export class AppointmentService {
   
     return this.http.get<any>(`${this.baseUrl}MedicalService`, { params });
   }
+
+   GetMedicalService(pagingFilter: PagingFilterModel){
+    return this.http.post<any>(`${this.baseUrl}MedicalService/GetMedicalService`, pagingFilter);
+  }
+
   addService(service: any){
     return this.http.post<any>(`${this.baseUrl}MedicalService`, service);
   }
