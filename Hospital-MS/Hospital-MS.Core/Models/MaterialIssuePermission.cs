@@ -17,5 +17,9 @@ public class MaterialIssuePermission : AuditableEntity // اذن الصرف
     public Branch Branch { get; set; }
     public string? Notes { get; set; }
     public bool IsActive { get; set; } = true;
+
+    public int? DisbursementRequestId { get; set; }
+    public DisbursementRequest? DisbursementRequest { get; set; } = default!;
+
     public ICollection<MaterialIssueItem> Items { get; set; } = new List<MaterialIssueItem>();
 }

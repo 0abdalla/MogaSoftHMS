@@ -7,14 +7,8 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IDispensePermissionService
@@ -27,57 +21,57 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
         using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var fromStore = await _unitOfWork.Repository<Store>()
-                .GetByIdAsync(request.FromStoreId, cancellationToken);
+            var treasury = await _unitOfWork.Repository<Treasury>()
+                .GetByIdAsync(request.TreasuryId, cancellationToken);
 
-            if (fromStore is null)
-                return ErrorResponseModel<string>.Failure(new Error("المخزن المصدر غير موجود", Status.NotFound));
+            if (treasury is null)
+                return ErrorResponseModel<string>.Failure(new Error("الخزينه غير موجوده", Status.NotFound));
 
-            var toStore = await _unitOfWork.Repository<Store>()
-                .GetByIdAsync(request.ToStoreId, cancellationToken);
+            var account = await _unitOfWork.Repository<AccountTree>()
+                .GetByIdAsync(request.AccountId, cancellationToken);
 
-            if (toStore is null)
-                return ErrorResponseModel<string>.Failure(new Error("المخزن الهدف غير موجود", Status.NotFound));
+            if (account is null)
+                return ErrorResponseModel<string>.Failure(new Error("الحساب غير موجود", Status.NotFound));
 
-            var item = await _unitOfWork.Repository<Item>().GetByIdAsync(request.ItemId, cancellationToken);
+            var costCenter = await _unitOfWork.Repository<CostCenterTree>().GetByIdAsync(request.CostCenterId, cancellationToken);
 
-            if (item is null)
-                return ErrorResponseModel<string>.Failure(new Error("الصنف غير موجود في المخزن", Status.NotFound));
+            if (costCenter is null)
+                return ErrorResponseModel<string>.Failure(new Error("مركز التكلفة غير موجود", Status.NotFound));
 
 
             var permission = new DispensePermission
             {
                 Date = request.Date,
-                FromStoreId = request.FromStoreId,
-                ToStoreId = request.ToStoreId,
-                Quantity = request.Quantity,
-                ItemId = request.ItemId,
+                CostCenterId = request.CostCenterId,
+                DispenseTo = request.DispenseTo,
+                AccountId = request.AccountId,
                 Notes = request.Notes,
-
+                TreasuryId = request.TreasuryId,
+                Amount = request.Amount
             };
 
             await _unitOfWork.Repository<DispensePermission>().AddAsync(permission, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
-            //// assuming that store is a treasury
-            
-            //var treasuryTransaction = new TreasuryTransaction
-            //{
-            //    Date = request.Date,
-            //    Amount = request.Quantity * item.Price, // Assuming Price is the cost per item
-            //    Description = request.Notes,
-            //    TreasuryId = fromStore.Id,
-            //    ReceivedFrom = fromStore.Name,
-            //    TransactionType = TransactionType.Debit,
-            //    DocumentNumber = permission.Id.ToString(),
-            //};
+            // add transaction to treasury
+            var treasuryTransaction = new TreasuryTransaction
+            {
+                Date = request.Date,
+                Amount = request.Amount,
+                Description = request.Notes,
+                TreasuryId = request.TreasuryId,
+                ReceivedFrom = treasury.Name,
+                TransactionType = TransactionType.Debit,
+                DocumentNumber = permission.Id.ToString(),
+            };
 
-            //await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess,permission.Id.ToString());
         }
         catch (Exception)
         {
@@ -86,58 +80,105 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
         }
     }
 
-    public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var Params = new SqlParameter[6];
-            var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
-            var FromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
-            var ToDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
-
-            Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
-            Params[1] = new SqlParameter("@Status", Status ?? (object)DBNull.Value);
-            Params[2] = new SqlParameter("@FromDate", FromDate ?? (object)DBNull.Value);
-            Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);
-            Params[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-            Params[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-
-            var dt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetAllIDispensePermission]", Params);
-
-            int totalCount = 0;
-            if (dt.Rows.Count > 0)
-            {
-                int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
-            }
-
-            foreach (DataRow row in dt.Rows)
-            {
-                if (row["Status"] != null)
-                {
-                    row["Status"] = TranslateStatus(row["Status"].ToString());
-                }
-            }
-
-            return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
-        }
-        catch (Exception)
-        {
-            return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
-        }
-    }
-
-    public async Task<ErrorResponseModel<DispensePermissionResponse>> GetByIdAsync(
-        int id,
-        CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
         try
         {
             var permission = await _unitOfWork.Repository<DispensePermission>()
+                .GetByIdAsync(id, cancellationToken);
+
+            if (permission is null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            permission.IsActive = false;
+
+            _unitOfWork.Repository<DispensePermission>().Update(permission);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+        }
+        catch (Exception)
+        {
+            
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public async Task<PagedResponseModel<IReadOnlyList<DispensePermissionResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
+    {
+
+        try
+        {
+            var query = _unitOfWork.Repository<DispensePermission>()
                 .GetAll()
-                .Include(x => x.FromStore)
-                .Include(x => x.ToStore)
+                .Include(x => x.Treasury)
+                .Include(x => x.CostCenter)
+                .Include(x => x.Account)
                 .Include(x => x.CreatedBy)
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                .Include(x => x.UpdatedBy)
+                .Where(x => x.IsActive);
+                
+
+            if (!string.IsNullOrEmpty(filter.SearchText))
+            {
+                query = query.Where(x => x.Notes.Contains(filter.SearchText) ||
+                                         x.Treasury.Name.Contains(filter.SearchText));
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var permissions = await query
+                .OrderByDescending(x => x.Id)
+                .Skip(filter.PageSize * (filter.CurrentPage - 1))
+                .Take(filter.PageSize)
+                .ToListAsync(cancellationToken);
+
+
+            var response = permissions.Select(permission => new DispensePermissionResponse
+            {
+                Id = permission.Id,
+                Date = permission.Date,
+                AccountId = permission.AccountId,
+                AccountNumber = permission?.Account?.AccountNumber ?? string.Empty,
+                Amount = permission.Amount,
+                CostCenterId = permission.CostCenterId,
+                CostCenterNumber = permission?.CostCenter?.CostCenterNumber,
+                DispenseTo = permission?.DispenseTo,
+                TreasuryId = permission?.TreasuryId,
+                TreasuryName = permission?.Treasury?.Name,
+                Notes = permission?.Notes,
+                Audit = new AuditResponse
+                {
+                    CreatedBy = permission.CreatedBy?.UserName,
+                    CreatedOn = permission.CreatedOn,
+                    UpdatedBy = permission.UpdatedBy?.UserName,
+                    UpdatedOn = permission.UpdatedOn
+                }
+            }).ToList();
+
+
+            return PagedResponseModel<IReadOnlyList<DispensePermissionResponse>>.Success(GenericErrors.GetSuccess, totalCount, response);
+        }
+        catch (Exception)
+        {
+            return PagedResponseModel<IReadOnlyList<DispensePermissionResponse>>.Failure(GenericErrors.TransFailed);
+        }
+
+    }
+
+    public async Task<ErrorResponseModel<DispensePermissionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var permission = await _unitOfWork.Repository<DispensePermission>()
+                .GetAll(x => x.Id == id)
+                .Include(x => x.Treasury)
+                .Include(x => x.CostCenter)
+                .Include(x => x.Account)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
+                .FirstOrDefaultAsync(cancellationToken);
 
             if (permission is null)
                 return ErrorResponseModel<DispensePermissionResponse>.Failure(GenericErrors.NotFound);
@@ -146,13 +187,15 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             {
                 Id = permission.Id,
                 Date = permission.Date,
-                FromStoreName = permission.FromStore.Name,
-                ToStoreName = permission.ToStore.Name,
-                Quantity = permission.Quantity,
-                ItemName = permission.Item.NameAr,
-                Balance = permission.Balance,
-                Status = permission.Status,
-                Notes = permission.Notes,
+                AccountId = permission.AccountId,
+                AccountNumber = permission?.Account?.AccountNumber ?? string.Empty,
+                Amount = permission.Amount,
+                CostCenterId = permission.CostCenterId,
+                CostCenterNumber = permission?.CostCenter?.CostCenterNumber,
+                DispenseTo = permission?.DispenseTo,
+                TreasuryId = permission?.TreasuryId,
+                TreasuryName = permission?.Treasury?.Name,
+                Notes = permission?.Notes,
                 Audit = new AuditResponse
                 {
                     CreatedBy = permission.CreatedBy?.UserName,
@@ -171,12 +214,69 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
         }
     }
 
-    private string TranslateStatus(string status) => status.ToLower() switch
+    public async Task<ErrorResponseModel<string>> UpdateAsync(int id, DispensePermissionRequest request, CancellationToken cancellationToken = default)
     {
-        "pending" => "قيد الانتظار",
-        "in_progress" => "جاري التنفيذ",
-        "completed" => "مكتمل",
-        "cancelled" => "ملغي",
-        _ => status
-    };
+
+        using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var permission = await _unitOfWork.Repository<DispensePermission>()
+                .GetByIdAsync(id, cancellationToken);
+
+            if (permission is null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            var treasury = await _unitOfWork.Repository<Treasury>()
+                .GetByIdAsync(request.TreasuryId, cancellationToken);
+
+            if (treasury is null)
+                return ErrorResponseModel<string>.Failure(new Error("الخزينه غير موجوده", Status.NotFound));
+
+            var account = await _unitOfWork.Repository<AccountTree>()
+                .GetByIdAsync(request.AccountId, cancellationToken);
+
+            if (account is null)
+                return ErrorResponseModel<string>.Failure(new Error("الحساب غير موجود", Status.NotFound));
+
+            var costCenter = await _unitOfWork.Repository<CostCenterTree>().GetByIdAsync(request.CostCenterId, cancellationToken);
+
+            if (costCenter is null)
+                return ErrorResponseModel<string>.Failure(new Error("مركز التكلفة غير موجود", Status.NotFound));
+
+            permission.Date = request.Date;
+            permission.CostCenterId = request.CostCenterId;
+            permission.DispenseTo = request.DispenseTo;
+            permission.AccountId = request.AccountId;
+            permission.Notes = request.Notes;
+            permission.TreasuryId = request.TreasuryId;
+            permission.Amount = request.Amount;
+
+            _unitOfWork.Repository<DispensePermission>().Update(permission);
+
+            // add transaction to treasury
+            var treasuryTransaction = new TreasuryTransaction
+            {
+                Date = request.Date,
+                Amount = request.Amount,
+                Description = request.Notes,
+                TreasuryId = request.TreasuryId,
+                ReceivedFrom = treasury.Name,
+                TransactionType = TransactionType.Debit,
+                DocumentNumber = permission.Id.ToString(),
+            };
+
+            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+        }
+        catch (Exception)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
 }

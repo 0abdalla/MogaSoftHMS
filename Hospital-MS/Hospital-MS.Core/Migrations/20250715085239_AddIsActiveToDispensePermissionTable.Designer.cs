@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250715085239_AddIsActiveToDispensePermissionTable")]
+    partial class AddIsActiveToDispensePermissionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4015,8 +4018,9 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("int");
+                    b.Property<string>("AccountCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
@@ -4057,8 +4061,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
 
                     b.HasIndex("CostCenterId");
 
@@ -5931,10 +5933,6 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.SupplyReceipt", b =>
                 {
-                    b.HasOne("Hospital_MS.Core.Models.AccountTree", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId");
-
                     b.HasOne("Hospital_MS.Core.Models.CostCenterTree", "CostCenter")
                         .WithMany()
                         .HasForeignKey("CostCenterId");
@@ -5952,8 +5950,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Account");
 
                     b.Navigation("CostCenter");
 

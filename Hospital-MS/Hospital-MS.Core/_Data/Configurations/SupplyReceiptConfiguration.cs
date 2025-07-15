@@ -23,9 +23,6 @@ public class SupplyReceiptConfiguration : IEntityTypeConfiguration<SupplyReceipt
         builder.Property(x => x.ReceivedFrom)
             .HasMaxLength(100);
 
-        builder.Property(x => x.AccountCode)
-            .HasMaxLength(50);
-
         builder.Property(x => x.Amount)
             .HasPrecision(18, 2)
             .IsRequired();

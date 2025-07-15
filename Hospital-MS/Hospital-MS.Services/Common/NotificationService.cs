@@ -26,12 +26,12 @@ public class NotificationService(IUnitOfWork unitOfWork,
 
 
     public async Task SendNewPurchaseRequestNotification(int purchaseId)
-   {
+    {
 
         var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
             .GetAll(x => x.Id == purchaseId)
             .Include(pr => pr.Store)
-            .Include(pr => pr.Items).ThenInclude(pr=>pr.Item)
+            .Include(pr => pr.Items).ThenInclude(pr => pr.Item)
             .FirstOrDefaultAsync();
 
         if (purchaseRequest == null)
@@ -45,6 +45,7 @@ public class NotificationService(IUnitOfWork unitOfWork,
 
         var templateModel = new Dictionary<string, string>
         {
+            { "{RequestId}", purchaseRequest.Id.ToString() },
             { "{RequestNumber}", purchaseRequest.RequestNumber },
             { "{RequestDate}", purchaseRequest.RequestDate.ToString("yyyy-MM-dd") },
             { "{StoreName}", purchaseRequest.Store?.Name ?? string.Empty },
@@ -52,6 +53,7 @@ public class NotificationService(IUnitOfWork unitOfWork,
             { "{Status}", purchaseRequest.Status.ToString() },
             { "{Notes}", purchaseRequest.Notes ?? string.Empty },
             { "{Items}", string.Join("<br/>", purchaseRequest.Items.Select(i => $"- {i.Item.NameAr} ({i.Quantity})")) }
+
         };
         var body = EmailBodyBuilder.GenerateEmailBody("NewPurchaseRequest", templateModel);
 

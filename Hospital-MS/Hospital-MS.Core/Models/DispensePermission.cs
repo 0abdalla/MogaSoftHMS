@@ -1,18 +1,22 @@
-namespace Hospital_MS.Core.Models;
+﻿namespace Hospital_MS.Core.Models;
 
 public class DispensePermission : AuditableEntity
 {
     public int Id { get; set; }
     public DateOnly Date { get; set; }
-    public int FromStoreId { get; set; }
-    public int ToStoreId { get; set; }
-    public decimal Quantity { get; set; }
-    public int ItemId { get; set; }
-    public decimal Balance { get; set; }
-    public string Notes { get; set; }
-    public string Status { get; set; } = "Pending";
+    public decimal Amount { get; set; } = 0M;
+    public string? DispenseTo { get; set; } // يصرف الي السيد:
+    public string? Notes { get; set; }
 
-    public Store FromStore { get; set; }
-    public Store ToStore { get; set; }
-    public Item Item { get; set; }
+    public int? TreasuryId { get; set; }
+    public int? CostCenterId { get; set; }
+    public int? AccountId { get; set; }
+
+    public bool IsActive { get; set; } = true;
+
+    public CostCenterTree? CostCenter { get; set; }
+    public AccountTree? Account { get; set; }
+    public Treasury? Treasury { get; set; }
+
+    //public string Status { get; set; } = "Pending";
 }

@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250714094707_AddRelationBetweenMatrialIssuesAndDisbursementRequest")]
+    partial class AddRelationBetweenMatrialIssuesAndDisbursementRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1346,14 +1349,9 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Amount")
+                    b.Property<decimal>("Balance")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<int?>("CostCenterId")
-                        .HasColumnType("int");
 
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
@@ -1364,18 +1362,28 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<string>("DispenseTo")
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                    b.Property<int>("FromStoreId")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int?>("TreasuryId")
+                    b.Property<decimal>("Quantity")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<int>("ToStoreId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdatedById")
@@ -1386,15 +1394,17 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("CostCenterId");
-
                     b.HasIndex("CreatedById");
 
-                    b.HasIndex("TreasuryId");
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("Status");
+
+                    b.HasIndex("ToStoreId");
 
                     b.HasIndex("UpdatedById");
+
+                    b.HasIndex("FromStoreId", "ToStoreId", "ItemId", "Date");
 
                     b.ToTable("DispensePermissions", "finance");
                 });
@@ -4015,8 +4025,9 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AccountId")
-                        .HasColumnType("int");
+                    b.Property<string>("AccountCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
@@ -4057,8 +4068,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
 
                     b.HasIndex("CostCenterId");
 
@@ -4933,33 +4942,39 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DispensePermission", b =>
                 {
-                    b.HasOne("Hospital_MS.Core.Models.AccountTree", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId");
-
-                    b.HasOne("Hospital_MS.Core.Models.CostCenterTree", "CostCenter")
-                        .WithMany()
-                        .HasForeignKey("CostCenterId");
-
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("Hospital_MS.Core.Models.Treasury", "Treasury")
+                    b.HasOne("Hospital_MS.Core.Models.Store", "FromStore")
                         .WithMany()
-                        .HasForeignKey("TreasuryId");
+                        .HasForeignKey("FromStoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.Item", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.Store", "ToStore")
+                        .WithMany()
+                        .HasForeignKey("ToStoreId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
 
-                    b.Navigation("Account");
-
-                    b.Navigation("CostCenter");
-
                     b.Navigation("CreatedBy");
 
-                    b.Navigation("Treasury");
+                    b.Navigation("FromStore");
+
+                    b.Navigation("Item");
+
+                    b.Navigation("ToStore");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -5931,10 +5946,6 @@ namespace Hospital_MS.Reposatories.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.SupplyReceipt", b =>
                 {
-                    b.HasOne("Hospital_MS.Core.Models.AccountTree", "Account")
-                        .WithMany()
-                        .HasForeignKey("AccountId");
-
                     b.HasOne("Hospital_MS.Core.Models.CostCenterTree", "CostCenter")
                         .WithMany()
                         .HasForeignKey("CostCenterId");
@@ -5952,8 +5963,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Account");
 
                     b.Navigation("CostCenter");
 
