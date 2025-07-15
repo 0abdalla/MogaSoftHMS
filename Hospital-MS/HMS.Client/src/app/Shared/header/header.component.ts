@@ -121,7 +121,7 @@ export class HeaderComponent {
       case '/hms/fin-tree/treasury':
         return 'حركة الخزينة';
       case '/hms/fin-tree/treasury/supply-receipt':
-        return 'إيصال استلام نقدية';
+        return 'إيصال توريد';
       case '/hms/fin-tree/treasury/exchange-permission':
         return 'إذن صرف نقدي';
       case '/hms/fin-tree/bank':

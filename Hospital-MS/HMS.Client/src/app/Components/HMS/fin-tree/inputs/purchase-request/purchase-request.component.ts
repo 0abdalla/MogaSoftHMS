@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
-import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 export declare var bootstrap: any;
@@ -15,7 +15,8 @@ export class PurchaseRequestComponent {
   pagingFilterModel : PagingFilterModel = {
     currentPage : 1,
     pageSize : 16,
-    filterList : []
+    filterList : [],
+    searchText: ''
   };
   total : number = 0;
   // 
@@ -24,7 +25,7 @@ export class PurchaseRequestComponent {
   currentPurchaseRequestId: number | null = null;
   allItems: any[] = [];
   TitleList = ['المشتريات','طلبات شراء'];
-
+  isFilter : boolean = true;
   constructor(private financialService : FinancialService , private fb : FormBuilder){
     this.purchaseRequestForm=this.fb.group({
       requestDate: [new Date().toISOString()],
@@ -36,6 +37,11 @@ export class PurchaseRequestComponent {
       ]),
     })
   }
+  onSearchInputChanged(value: any) {
+    this.pagingFilterModel.searchText = value;
+    this.getpurchaseRequests();
+  }
+  
   createItemGroup(): FormGroup {
     return this.fb.group({
       itemId: [null, Validators.required],
@@ -72,12 +78,22 @@ export class PurchaseRequestComponent {
 
 
 
-  getpurchaseRequests(){
-    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res : any)=>{
-      this.purchaseRequests = res.results;
-      this.total = res.totalCount;
-      console.log(this.purchaseRequests);
-    })
+  getpurchaseRequests() {
+    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe({
+      next: (res: any) => {
+        console.log('Full API Response:', res);
+        this.purchaseRequests = res.results;
+        this.total = res.totalCount;
+        console.log('Purchase Requests:', this.purchaseRequests);
+        if (!res.results.length) {
+          console.log('No results returned for SearchText:', this.pagingFilterModel.searchText);
+        }
+      },
+      error: (err) => {
+        console.error('API Error:', err);
+        alert('Error fetching purchase requests. Check the console for details.');
+      }
+    });
   }
 
   onPageChange(event:any){
@@ -87,6 +103,13 @@ export class PurchaseRequestComponent {
   }
 
   applyFilters(){
+    this.getpurchaseRequests();
+  }
+  filterChecked(event: any) {
+    console.log('Filter Changed Event:', event);
+    this.pagingFilterModel.searchText = typeof event.searchText === 'string' ? event.searchText : '';
+    this.pagingFilterModel.filterList = event.filterList || {};
+    console.log('Updated Paging Filter Model:', this.pagingFilterModel);
     this.getpurchaseRequests();
   }
 
@@ -177,9 +200,9 @@ export class PurchaseRequestComponent {
   }
   getStatusColor(type: string): string {
     const map: { [key: string]: string } = {
-      Approved: '#00FF00',
+      Approved: '#198654',
       Pending: '#FFA500',
-      Rejected: '#FF0000'
+      Rejected: '#dc3545'
     };
     return map[type] || '#000000';
   }

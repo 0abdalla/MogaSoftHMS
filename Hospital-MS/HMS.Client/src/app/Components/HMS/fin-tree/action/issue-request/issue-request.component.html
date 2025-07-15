@@ -30,6 +30,7 @@
                 <tr>
                     <th>طلب الصرف</th>
                     <th>التاريخ</th>
+                    <th>جهة الطلب</th>
                     <th>الحالة</th>
                     <th>الإجراءات</th>
                 </tr>
@@ -37,9 +38,10 @@
             <tbody *ngIf="issues?.length > 0">
                 <tr *ngFor="let issue of issues | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(issue.id)" style="cursor: pointer">
                     <td>
-                        <span class="fw-bold">{{ issue.permissionNumber }}</span>
+                        <span class="fw-bold">{{ issue.number }}</span>
                     </td>
-                    <td class="text-secondary">{{ issue.permissionDate | date:'yyyy-MM-dd' }}</td>
+                    <td class="text-secondary">{{ issue.date | date:'yyyy-MM-dd' }}</td>
+                    <td>{{issue.jobDepartmentName}}</td>
                     <td>
                         <p class="text-white status-pill fw-bold" *ngIf="issue.status" [ngStyle]="{ backgroundColor: getStatusColor(issue.status) }">
                             {{ getStatusName(issue.status) }}

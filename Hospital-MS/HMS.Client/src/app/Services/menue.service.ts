@@ -102,7 +102,7 @@ export class MenueService {
           route: '/hms/fin-tree/treasury',
           // subMenus: [
           //   {
-          //     displayName: 'ايصال استلام نقدية',
+          //     displayName: 'إيصال توريد',
           //     icon: 'fa-solid fa-circle',
           //     route: '/hms/fin-tree/treasury/supply-receipt'
           //   },
