@@ -21,13 +21,17 @@ export class IssueItemsComponent implements OnInit {
     pageSize:16,
     currentPage:1,
   }
+  pagingFilterModelSelect:any={
+    pageSize:100,
+    currentPage:1,
+  }
   isFilter:boolean=true;
   allItems: any[] = [];
   suppliers:any[]=[];
   stores:any[]=[];
   purchaseRequests:any[]=[];
   branchs:any[] = [];
-
+  allRequests:any[]=[]
   constructor(private fb:FormBuilder , private financialService:FinancialService){
 
     this.filterForm=this.fb.group({
@@ -37,7 +41,7 @@ export class IssueItemsComponent implements OnInit {
     })
     this.addPermissionForm = this.fb.group({
       permissionDate: [new Date().toISOString().substring(0, 10)],
-      documentNumber: [''],
+      disbursementRequestId: [''],
       storeId: [''],
       branchId: [''],
       items: this.fb.array([
@@ -51,18 +55,46 @@ export class IssueItemsComponent implements OnInit {
     this.getMaterialIssuePermissions();
     this.getSuppliers();
     this.getStores();
-    this.getPurchaseRequests();
+    // this.getPurchaseRequests();
     this.getBranches();
-  }
-  createItemGroup(): FormGroup {
-    return this.fb.group({
-      itemId: [null, Validators.required],
-      unit: [1, Validators.required],
-      quantity: [1, Validators.required],
-      unitPrice: [1, Validators.required],
-      totalPrice: [1, Validators.required]
+    this.getAllRequests();
+
+    // 
+    this.addPermissionForm.get('disbursementRequestId')?.valueChanges.subscribe(id => {
+      if (id) {
+        this.financialService.getIssueRequestById(id).subscribe(res => {
+          const data = res.results;
+          this.addPermissionForm.patchValue({
+            permissionDate: data.date,
+            notes: data.notes
+          });
+          const itemsControl = this.items;
+          itemsControl.clear();
+          data.items.forEach((item: any) => {
+            itemsControl.push(this.createItemGroup(item));
+          });
+        });
+      }
     });
+    
   }
+  createItemGroup(item: any = null): FormGroup {
+    const unitPriceValue = item?.priceAfterTax ?? 1;
+    const quantityValue = item?.quantity ?? 1;
+    const group = this.fb.group({
+      itemId: [item?.itemId ?? '', Validators.required],
+      unit: [item?.unit ?? '', Validators.required],
+      quantity: [quantityValue, [Validators.required , Validators.min(1)]],
+      unitPrice: [{ value: unitPriceValue, disabled: true }, Validators.required],
+      totalPrice: [quantityValue * unitPriceValue, Validators.required]
+    });
+    group.get('quantity')?.valueChanges.subscribe(qty => {
+      const price = group.get('unitPrice')?.value || 0;
+      group.get('totalPrice')?.setValue(qty * price, { emitEvent: false });
+    });
+    return group;
+  }
+  
   get items(): FormArray {
     return this.addPermissionForm.get('items') as FormArray;
   }
@@ -98,35 +130,42 @@ export class IssueItemsComponent implements OnInit {
     this.financialService.getMaterialIssuePermissions(this.pagingFilterModel).subscribe((res:any)=>{
       this.adds=res.results;
       this.total=res.totalCount;
-      console.log(this.adds);
+      console.log('Issues:',this.adds);
       this.applyFilters();
     })
   }
   getItems(){
-    this.financialService.getItems(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getItems(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.allItems=res.results;
-      console.log(this.allItems);
+      console.log('Items:',this.allItems);
       this.total=res.count;
     })
   }
   getSuppliers(){
-    this.financialService.getSuppliers(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.suppliers=res.results;
-      console.log(this.suppliers);
+      console.log('Suppliers:',this.suppliers);
       this.total=res.count;
     })
   }
   getStores(){
-    this.financialService.getStores(this.pagingFilterModel).subscribe((res:any)=>{
+    this.financialService.getStores(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.stores=res.results;
-      console.log(this.stores);
+      console.log('Stores:',this.stores);
       this.total=res.count;
     })
   }
-  getPurchaseRequests(){
-    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res:any)=>{
-      this.purchaseRequests=res.results;
-      console.log(this.purchaseRequests);
+  // getPurchaseRequests(){
+  //   this.financialService.getPurchaseRequests(this.pagingFilterModelSelect).subscribe((res:any)=>{
+  //     this.purchaseRequests=res.results;
+  //     console.log('Purchase Requests:',this.purchaseRequests);
+  //     this.total=res.count;
+  //   })
+  // }
+  getAllRequests(){
+    this.financialService.getIssueRequests(this.pagingFilterModelSelect).subscribe((res:any)=>{
+      this.allRequests=res.results;
+      console.log('Issue Requests:',this.allRequests);
       this.total=res.count;
     })
   }
@@ -148,7 +187,7 @@ export class IssueItemsComponent implements OnInit {
       return;
     }
   
-    const formData = this.addPermissionForm.value;
+    const formData = this.addPermissionForm.getRawValue();
     if (this.isEditMode && this.currentMaterialIssuePermissionId) {
       
       this.financialService.updateMaterialIssuePermission(this.currentMaterialIssuePermissionId, formData).subscribe({
@@ -179,7 +218,7 @@ export class IssueItemsComponent implements OnInit {
     this.financialService.getMaterialIssuePermissionsById(id).subscribe({
       next: (data) => {
         this.permission=data.results;
-        console.log(this.permission);
+        console.log('Permission:',this.permission);
         this.addPermissionForm.patchValue({
           supplierId: this.permission.supplierId,
           documentNumber: this.permission.documentNumber,

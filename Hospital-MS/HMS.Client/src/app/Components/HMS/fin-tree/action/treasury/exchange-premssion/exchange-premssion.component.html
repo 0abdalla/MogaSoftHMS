@@ -58,23 +58,23 @@
                     <th>التاريخ</th>
                     <th>الخزينة</th>
                     <th>المبلغ</th>
-                    <th>اسم المستخدم</th>
+                    <th>صرف إلى</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody *ngIf="exchanges?.length > 0">
                 <tr *ngFor="let exchange of exchanges | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(exchange.id)" style="cursor: pointer">
-                    <td>{{ exchange.documentNumber }}</td>
+                    <td class="fw-bold">{{ exchange.id }}</td>
                     <td>{{ exchange.date }}</td>
-                    <td>{{ exchange.warehouseName }}</td>
-                    <td>{{ exchange.balance }}</td>
-                    <td>{{ exchange.responsibleName }}</td>
+                    <td>{{ exchange.treasuryName }}</td>
+                    <td>{{ exchange.amount + '' + 'جنيه مصري' }}</td>
+                    <td>{{ exchange.dispenseTo }}</td>
 
                     <td>
-                        <button type="button" class="btn btn-primary">
+                        <button type="button" class="btn btn-primary mx-2">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger">
+                        <button type="button" class="btn btn-danger mx-2">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -114,45 +114,68 @@
                         <div class="row gy-3">
 
                             <div class="col-md-4">
-                                <label class="form-label">التاريخ</label>
+                                <label class="form-label" class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="date" />
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label">صرف من</label>
-                                <select class="form-select shadow-none text-end" formControlName="fromStoreId">
-                                    <option disabled selected value="">اختر الخزينة</option>
-                                    <option *ngFor="let treasury of treasuries" [value]="treasury.id">{{ treasury.name }}</option>
-                                </select>
+                                <label class="form-label" class="form-label">الخزينة</label>
+                                <ng-select
+                                  [items]="treasuries"
+                                  bindLabel="name"
+                                  bindValue="id"
+                                  placeholder="اختر الخزينة"
+                                  formControlName="treasuryId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select> 
                             </div>
 
 
                             <div class="col-md-4">
-                                <label class="form-label">استلمت من السيد</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="toStoreId" />
+                                <label class="form-label" class="form-label">يصرف إلى السيد</label>
+                                <input type="text" class="form-control shadow-none text-end" formControlName="dispenseTo" />
                             </div>
 
                             <div class="col-md-4">
-                                <label class="form-label">كود الحساب</label>
-                                <select class="form-select shadow-none text-end" formControlName="toStoreId">
-                                    <option disabled selected value="">اختر الحساب</option>
-                                    <option *ngFor="let treasury of treasuries" [value]="treasury.id">{{ treasury.name }}</option>
-                                </select>
+                                <label class="form-label">اسم الحساب</label>
+                                <ng-select
+                                  [items]="accounts"
+                                  bindLabel="nameAR"
+                                  bindValue="accountId"
+                                  placeholder="اختر الحساب"
+                                  formControlName="accountId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select>
+                              </div>
+
+                              <div class="col-md-4">
+                                <label class="form-label">مركز التكلفة</label>
+                                <ng-select
+                                  [items]="costCenters"
+                                  bindLabel="nameAR"
+                                  bindValue="costCenterId"
+                                  placeholder="اختر المركز"
+                                  formControlName="costCenterId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select>                                                         
                             </div>
+
 
                             <div class="col-md-4">
-                                <label class="form-label">الكمية</label>
-                                <input type="number" class="form-control shadow-none text-end" formControlName="quantity" />
+                                <label class="form-label" class="form-label">المبلغ</label>
+                                <input type="number" class="form-control shadow-none text-end" formControlName="amount" min="1" />
                             </div>
 
-                            <div class="col-md-4">
-                                <label class="form-label">الصنف</label>
-                                <select class="form-select shadow-none text-end" formControlName="itemId">
-                                    <option disabled selected value="">اختر الصنف</option>
-                                    <option *ngFor="let item of items" [value]="item.id">{{ item.nameAr }}</option>
-                                </select>
+                            <div class="col-md-12">
+                                <label class="form-label" class="form-label">شرح القيد</label>
+                                <textarea class="form-control shadow-none text-end" formControlName="notes" ></textarea>
                             </div>
-
 
                         </div>
                     </div>
@@ -164,4 +187,118 @@
             </div>
         </div>
     </div>
+</div>
+
+
+<div #printSection dir="rtl" class="container p-4">
+
+    <!-- إذن الصرف -->
+    <div class="p-2 mb-5" style="border: 1px solid #5A607F; border-radius: 10px;">
+      <div class="d-flex justify-content-around align-items-center mb-2">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <div>
+          <span>إذن صرف رقم</span>
+          <span>{{ receiptNumber }}</span>
+        </div>
+      </div>
+    
+      <div class="mb-2">
+          <strong>تحريرًا في:</strong> {{ exPermissionForm.value.date }}
+      </div>
+  
+      <div class="row mb-2">
+          <div class="col-md-6">
+              <strong>يصرف إلى السيد:</strong> {{ exPermissionForm.value.dispenseTo }}
+          </div>
+          <div class="col-md-6">
+              <strong>المبلغ:</strong> {{ exPermissionForm.value.amount + ' ' + 'جنيه مصري' }}
+          </div>
+      </div>
+      
+      <div class="row mb-2">
+            <div class="col-md-6">
+              <strong>كود الحساب:</strong> {{ exPermissionForm.value.accountId }}
+            </div>
+            <div class="col-md-6">
+                <strong>اسم الحساب:</strong> {{getAccountName(exPermissionForm.value.accountId)}}
+            </div>
+      </div>
+      
+      <div class="mb-2">
+            <strong>المبلغ وقدره:</strong> {{ amountInWords }}
+      </div>
+    
+      <div class="mb-3">
+        <strong>شرح العملية:</strong> {{ exPermissionForm.value.notes }}
+      </div>
+    
+      <table class="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th>الخزينة</th>
+            <th>مراجعة</th>
+            <th>اعتماد</th>
+            <th>المستلم</th>
+            <th>التوقيع</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- قيد اليومية -->
+    <div class="p-2 mt-5" style="border: 1px solid #5A607F; border-radius: 10px;">
+        <div class="d-flex justify-content-around align-items-center mb-2">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <div>
+              <span>قيد يومية رقم</span>
+              <span>{{ receiptNumber }}</span>
+            </div>
+          </div>
+
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <strong>التاريخ:</strong> {{ exPermissionForm.value.date }}
+        </div>
+        <div class="col-md-6">
+            <strong>رقم المستند:</strong> {{ receiptNumber }}
+        </div>
+    </div>
+
+    <div class="mb-2">
+      <strong>التوجيه المحاسبي:</strong> {{ getTreasuryName(exPermissionForm.value.treasuryId) }}
+    </div>
+  
+    <hr />
+  
+    <div class="mb-2">
+      {{ exPermissionForm.value.amount }} &nbsp; &nbsp; من حـ/ <strong>{{ getTreasuryName(exPermissionForm.value.treasuryId) }}</strong>
+    </div>
+    <hr />
+    <div class="mb-2">
+      {{ exPermissionForm.value.amount }} &nbsp; &nbsp; إلى حـ/ <strong>{{ getAccountName(exPermissionForm.value.accountId) }}</strong>
+    </div>
+    <hr />
+    <div class="mb-2">
+      <strong>شرح القيد:</strong> {{ exPermissionForm.value.notes }}
+    </div>
+  
+    <hr />
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <small class="fw-bold">الإسم:</small> {{userName}}
+        </div>
+        <div class="col-md-6">
+            <small class="fw-bold">التاريخ:</small> {{ today }}
+        </div>
+    </div>
+    </div>
+
 </div>

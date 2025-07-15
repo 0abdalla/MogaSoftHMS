@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
+import { SettingService } from '../../../../../../Services/HMS/setting.service';
+import html2pdf from 'html2pdf.js';
 declare var bootstrap:any;
 
 @Component({
@@ -11,6 +13,11 @@ declare var bootstrap:any;
   styleUrl: './exchange-premssion.component.css'
 })
 export class ExchangePremssionComponent implements OnInit {
+  // @ViewChild('receiptSection') receiptSection!: ElementRef;
+  // @ViewChild('journalSection') journalSection!: ElementRef;
+  @ViewChild('printSection') printSection!: ElementRef;
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+
   filterForm!:FormGroup;
   TitleList = ['الإدارة المالية','حركة الخزينة','إذن صرف نقدي'];
   exPermissionForm!:FormGroup
@@ -25,7 +32,29 @@ export class ExchangePremssionComponent implements OnInit {
   }
   // 
   isFilter:boolean=true
-  constructor(private fb:FormBuilder , private financialService:FinancialService){
+  receiptNumber!:any
+  amountInWords!:any
+  // 
+  accounts!:any[]
+  costCenters!:any[]
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
+  constructor(private fb:FormBuilder , private financialService:FinancialService , private settingsService : SettingService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -33,10 +62,11 @@ export class ExchangePremssionComponent implements OnInit {
     })
     this.exPermissionForm = this.fb.group({
       date: [new Date().toISOString().substring(0, 10)],
-      fromStoreId: ['' , Validators.required],
-      toStoreId: ['' , Validators.required],
-      quantity: [1 , Validators.required],
-      itemId: ['' , Validators.required],
+      treasuryId: ['' , Validators.required],
+      dispenseTo: ['' , Validators.required],
+      accountId:['' , Validators.required],
+      costCenterId:['' , Validators.required],
+      amount: [1 , [Validators.required , Validators.min(1)]],
       notes: ['']
     });    
   }
@@ -44,6 +74,8 @@ export class ExchangePremssionComponent implements OnInit {
     this.getDispensePermissions();
     this.getTreasuries();
     this.getItems();
+    this.getAccounts();
+    this.getCostCenters();
   }
   applyFilters(){
     this.total=this.exchanges.length;
@@ -139,19 +171,15 @@ export class ExchangePremssionComponent implements OnInit {
       });
     } else {
       this.financialService.addDispensePermission(formData).subscribe({
-        next: () => {
+        next: (res:any) => {
+          console.log(res);
+          this.receiptNumber = res.results;
+          this.amountInWords = this.convertToArabicWords(formData.amount);
           this.getDispensePermissions();
-          console.log('Data:',formData);
-          console.log();
-          
+          this.generateCombinedPDF();
           // this.exPermissionForm.reset();
-          console.log('تم الإضافة بنجاح');
         },
         error: (err) => {
-          console.log('Data:',formData);
-          console.log('Errors:' , this.exPermissionForm.errors);
-          console.log('Form:' , this.exPermissionForm);
-          
           console.error('فشل الإضافة:', err);
         }
       });
@@ -208,4 +236,179 @@ export class ExchangePremssionComponent implements OnInit {
       }
     });
   }
+  // 
+  getAccounts() {
+    this.settingsService.GetAccountTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.accounts = this.extractLeafAccounts(res);
+        console.log("Accs:", this.accounts);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+  
+  extractLeafAccounts(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isGroup === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafAccounts(node.children));
+      }
+    }
+    return result;
+  }
+
+  getCostCenters() {
+    this.settingsService.GetCostCenterTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.costCenters = this.extractLeafCostCenter(res); 
+        console.log("Filterated Cost Centers:", this.costCenters);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+  extractLeafCostCenter(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isParent === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafCostCenter(node.children));
+      }
+    }
+    return result;
+  }
+  // 
+  // generateReceiptPDF() {
+  //   const options = {
+  //     margin: 0.5,
+  //     filename: `receipt-${new Date().getTime()}.pdf`,
+  //     image: { type: 'jpeg', quality: 0.98 },
+  //     html2canvas: { scale: 2 },
+  //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  //   };
+  
+  //   html2pdf().from(this.receiptSection.nativeElement).set(options).save();
+  // }
+
+  // generateJournalPDF() {
+  //   const options = {
+  //     margin: 0.5,
+  //     filename: `journal-${this.receiptNumber}.pdf`,
+  //     image: { type: 'jpeg', quality: 0.98 },
+  //     html2canvas: { scale: 2 },
+  //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  //   };
+  
+  //   html2pdf().from(this.journalSection.nativeElement).set(options).save();
+  // }
+  generateCombinedPDF() {
+    const opt = {
+      margin: 0.5,
+      filename: `exchange-permission-${this.receiptNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+  
+    html2pdf().from(this.printSection.nativeElement).set(opt).save();
+  }
+  // 
+  convertToArabicWords(amount: number): string {
+    const ones = ["", "واحد", "اثنان", "ثلاثة", "أربعة", "خمسة", "ستة", "سبعة", "ثمانية", "تسعة"];
+    const tens = ["", "عشرة", "عشرون", "ثلاثون", "أربعون", "خمسون", "ستون", "سبعون", "ثمانون", "تسعون"];
+    const teens = ["عشرة", "أحد عشر", "اثنا عشر", "ثلاثة عشر", "أربعة عشر", "خمسة عشر", "ستة عشر", "سبعة عشر", "ثمانية عشر", "تسعة عشر"];
+    const hundreds = ["", "مئة", "مئتان", "ثلاثمئة", "أربعمئة", "خمسمئة", "ستمئة", "سبعمئة", "ثمانمئة", "تسعمئة"];
+    const scales = ["", "ألف", "مليون", "مليار"];
+    const scalesPlural = ["", "آلاف", "ملايين", "مليارات"];
+  
+    function groupToWords(n: number): string {
+      const h = Math.floor(n / 100);
+      const t = Math.floor((n % 100) / 10);
+      const u = n % 10;
+      const parts = [];
+  
+      if (h > 0) parts.push(hundreds[h]);
+  
+      if (t > 1) {
+        if (u > 0) parts.push(`${ones[u]} و${tens[t]}`);
+        else parts.push(tens[t]);
+      } else if (t === 1) {
+        parts.push(teens[u]);
+      } else if (u > 0) {
+        parts.push(ones[u]);
+      }
+  
+      return parts.join(" و ");
+    }
+  
+    function integerToWords(n: number): string {
+      if (n === 0) return "صفر";
+  
+      const str = n.toString();
+      const groups = [];
+      for (let i = str.length; i > 0; i -= 3) {
+        const start = Math.max(i - 3, 0);
+        const group = parseInt(str.substring(start, i), 10);
+        groups.unshift(group); 
+      }
+  
+      const parts: string[] = [];
+  
+      const groupCount = groups.length;
+      for (let i = 0; i < groupCount; i++) {
+        const group = groups[i];
+        if (group === 0) continue;
+  
+        const words = groupToWords(group);
+        const scaleIndex = groupCount - i - 1;
+        let scaleWord = "";
+  
+        if (scaleIndex > 0) {
+          if (group === 1) {
+            scaleWord = scales[scaleIndex];
+          } else if (group === 2) {
+            scaleWord = scales[scaleIndex] + "ان";
+          } else if (group >= 3 && group <= 10) {
+            scaleWord = scalesPlural[scaleIndex];
+          } else {
+            scaleWord = scales[scaleIndex];
+          }
+        }
+  
+        parts.push(words + (scaleWord ? ` ${scaleWord}` : ""));
+      }
+  
+      return parts.join(" و ");
+    }
+  
+    const integerPart = Math.floor(amount);
+    const fractionPart = Math.round((amount - integerPart) * 100);
+  
+    let result = `فقط وقدره ${integerToWords(integerPart)} جنيه`;
+    if (fractionPart > 0) {
+      result += ` و${integerToWords(fractionPart)} قرش`;
+    }
+  
+    return result + " لا غير";
+  }  
+  getAccountName(id: number): string {
+    if (!this.accounts || !Array.isArray(this.accounts)) return '---';
+    return this.accounts.find(s => s.accountId === id)?.nameAR || '---';
+  }
+  
+  getTreasuryName(id: number): string {
+    if (!this.treasuries || !Array.isArray(this.treasuries)) return '---';
+    return this.treasuries.find(s => s.id === id)?.name || '---';
+  }
+  
 }

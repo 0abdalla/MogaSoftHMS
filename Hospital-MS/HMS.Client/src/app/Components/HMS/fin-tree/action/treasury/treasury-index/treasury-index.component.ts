@@ -37,7 +37,8 @@ export class TreasuryIndexComponent {
     }); 
     this.treasuryReportForm = this.fb.group({
       treasuryId: ['', Validators.required],
-      toDate: ['', Validators.required]
+      toDate: ['', Validators.required],
+      fromDate: ['', Validators.required]
     });    
   }
   ngOnInit(): void {
@@ -110,11 +111,13 @@ export class TreasuryIndexComponent {
   showTreasuryReport() {
     const treasuryId = this.treasuryReportForm.value.treasuryId;
     const toDate = this.treasuryReportForm.value.toDate;
+    const fromDate = this.treasuryReportForm.value.fromDate;
   
     if (!treasuryId || !toDate) return;
   
     const encodedDate = encodeURIComponent(toDate);
-    this.financialService.getTransactionsForTreasury(treasuryId + '?toDate=' + encodedDate).subscribe(res => {
+    const encodedFromDate = encodeURIComponent(fromDate);
+    this.financialService.getTransactionsForTreasury(treasuryId + '?toDate=' + encodedDate + '&fromDate=' + encodedFromDate).subscribe(res => {
       if (res.isSuccess) {
         this.treasuryReportData = res.results;
         const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal'));
@@ -122,4 +125,14 @@ export class TreasuryIndexComponent {
       }
     });
   }
+  get creditTransactions() {
+    return this.treasuryReportData?.transactions.filter(t => t.credit > 0) || [];
+  }
+  
+  get debitTransactions() {
+    return this.treasuryReportData?.transactions.filter(t => t.debit > 0) || [];
+  }
+  getAbsolute(value: number): number {
+    return Math.abs(value);
+  }  
 }

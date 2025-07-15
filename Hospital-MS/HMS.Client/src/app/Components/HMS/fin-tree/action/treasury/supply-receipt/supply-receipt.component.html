@@ -119,37 +119,46 @@
                         <div class="row gy-3">
 
                             <div class="col-md-4">
-                                <label>التاريخ</label>
+                                <label class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="date" />
                             </div>
 
                             <div class="col-md-4">
-                                <label>صرف من</label>
+                                <label class="form-label">الخزينة</label>
                                 <ng-select
-                              [items]="treasuries"
-                              bindLabel="name"
-                              bindValue="id"
-                              placeholder="اختر الخزينة"
-                              formControlName="treasuryId"
-                              class="text-end shadow-none w-100"
-                              [searchable]="true"
-                            >
-                            </ng-select>
+                                  [items]="treasuries"
+                                  bindLabel="name"
+                                  bindValue="id"
+                                  placeholder="اختر الخزينة"
+                                  formControlName="treasuryId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select> 
                             </div>
 
 
                             <div class="col-md-4">
-                                <label>استلمت من السيد</label>
+                                <label class="form-label">استلمت من السيد</label>
                                 <input type="text" class="form-control shadow-none text-end" formControlName="receivedFrom" />
                             </div>
 
                             <div class="col-md-4">
-                                <label>كود الحساب</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="accountCode" />
-                            </div>
+                                <label class="form-label">اسم الحساب</label>
+                                <ng-select
+                                  [items]="accounts"
+                                  bindLabel="nameAR"
+                                  bindValue="accountId"
+                                  placeholder="اختر الحساب"
+                                  formControlName="accountId"
+                                  class="text-end shadow-none w-100"
+                                  [searchable]="true"
+                                >
+                                </ng-select>
+                              </div>
 
                             <div class="col-md-4">
-                                <label>مركز التكلفة</label>
+                                <label class="form-label">مركز التكلفة</label>
                                 <ng-select
                               [items]="costCenters"
                               bindLabel="nameAR"
@@ -163,12 +172,12 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label>المبلغ</label>
+                                <label class="form-label">المبلغ</label>
                                 <input type="number" class="form-control shadow-none text-end" formControlName="amount" />
                             </div>
 
                             <div class="col-md-12">
-                                <label>شرح العملية/القيد</label>
+                                <label class="form-label">شرح العملية/القيد</label>
                                 <textarea rows="3" class="form-control shadow-none text-end" formControlName="description"></textarea>
                             </div>
 
@@ -182,4 +191,119 @@
             </div>
         </div>
     </div>
+</div>
+
+
+
+<div #printSection dir="rtl" class="container p-4">
+
+    <!-- إذن الصرف -->
+    <div class="p-2 mb-5" style="border: 1px solid #5A607F; border-radius: 10px;">
+      <div class="d-flex justify-content-around align-items-center mb-2">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <div>
+          <span>إيصال توريد رقم</span>
+          <span>{{ receiptNumber }}</span>
+        </div>
+      </div>
+    
+      <div class="mb-2">
+          <strong>تحريرًا في:</strong> {{ addPermissionForm.value.date }}
+      </div>
+  
+      <div class="row mb-2">
+          <div class="col-md-6">
+              <strong>استلمت من السيد:</strong> {{ addPermissionForm.value.receivedFrom }}
+          </div>
+          <div class="col-md-6">
+              <strong>المبلغ:</strong> {{ addPermissionForm.value.amount + ' ' + 'جنيه مصري' }}
+          </div>
+      </div>
+      
+      <div class="row mb-2">
+            <div class="col-md-6">
+              <strong>كود الحساب:</strong> {{ addPermissionForm.value.accountId }}
+            </div>
+            <div class="col-md-6">
+                <strong>اسم الحساب:</strong> {{getAccountName(addPermissionForm.value.accountId)}}
+            </div>
+      </div>
+      
+      <div class="mb-2">
+            <strong>المبلغ وقدره:</strong> {{ amountInWords }}
+      </div>
+    
+      <div class="mb-3">
+        <strong>شرح العملية:</strong> {{ addPermissionForm.value.description }}
+      </div>
+    
+      <table class="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th>الخزينة</th>
+            <th>مراجعة</th>
+            <th>اعتماد</th>
+            <th>المستلم</th>
+            <th>التوقيع</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- قيد اليومية -->
+    <div class="p-2 mt-5" style="border: 1px solid #5A607F; border-radius: 10px;">
+        <div class="d-flex justify-content-around align-items-center mb-2">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <div>
+              <span>قيد يومية رقم</span>
+              <span>{{ receiptNumber }}</span>
+            </div>
+          </div>
+
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <strong>التاريخ:</strong> {{ addPermissionForm.value.date }}
+        </div>
+        <div class="col-md-6">
+            <strong>رقم المستند:</strong> {{ receiptNumber }}
+        </div>
+    </div>
+
+    <div class="mb-2">
+      <strong>التوجيه المحاسبي:</strong> {{ getTreasuryName(addPermissionForm.value.treasuryId) }}
+    </div>
+  
+    <hr />
+  
+    <div class="mb-2">
+      {{ addPermissionForm.value.amount }} &nbsp; &nbsp; من حـ/ <strong>{{ getTreasuryName(addPermissionForm.value.treasuryId) }}</strong>
+    </div>
+    <hr />
+    <div class="mb-2">
+      {{ addPermissionForm.value.amount }} &nbsp; &nbsp; إلى حـ/ <strong>{{ getAccountName(addPermissionForm.value.accountId) }}</strong>
+    </div>
+    <hr />
+    <div class="mb-2">
+      <strong>شرح القيد:</strong> {{ addPermissionForm.value.description }}
+    </div>
+  
+    <hr />
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <small class="fw-bold">الإسم:</small> {{userName}}
+        </div>
+        <div class="col-md-6">
+            <small class="fw-bold">التاريخ:</small> {{ today }}
+        </div>
+    </div>
+    </div>
+
 </div>

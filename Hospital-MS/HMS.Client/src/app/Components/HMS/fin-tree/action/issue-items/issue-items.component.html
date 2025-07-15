@@ -68,18 +68,15 @@
                     <th>التاريخ</th>
                     <th>نوع الصرف</th>
                     <th>يصرف إلى</th>
-                    <th>رقم المستند</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody *ngIf="adds?.length > 0">
                 <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
-                    <td>{{ add.permissionNumber }}</td>
+                    <td class="fw-bold">{{ add.permissionNumber }}</td>
                     <td>{{ add.permissionDate | date:'yyyy-MM-dd' }}</td>
                     <td>{{ add.typeName }}</td>
                     <td>{{ add.storeName }}</td>
-                    <td>{{ add.documentNumber }}</td>
-
                     <td>
                         <button type="button" class="btn btn-primary mx-2" (click)="editPermission(add.id)">
                             <i class="fa fa-edit"></i>
@@ -126,17 +123,27 @@
                         <div class="row gy-3">
 
                             <div class="col-md-3">
-                                <label>التاريخ</label>
+                                <label class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="permissionDate" />
                             </div>
 
                             <div class="col-md-3">
-                                <label>رقم المستند</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                                <label class="form-label">رقم طلب الصرف</label>
+                                <!-- <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" /> -->
+                                <ng-select
+                                [items]="allRequests"
+                                bindLabel="number"
+                                bindValue="id"
+                                placeholder="اختر طلب الصرف"
+                                formControlName="disbursementRequestId"
+                                class="text-end shadow-none w-100"
+                                [searchable]="true"
+                              >
+                              </ng-select>
                             </div>
 
                             <div class="col-md-3">
-                                <label>صرف من</label>
+                                <label class="form-label">صرف من</label>
                                 <select class="form-select shadow-none text-end" formControlName="storeId">
                                     <option disabled selected value="">اختر صرف من</option>
                                     <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
@@ -144,7 +151,7 @@
                             </div>
 
                             <div class="col-md-3">
-                                <label>صرف إلى</label>
+                                <label class="form-label">صرف إلى</label>
                                 <select class="form-select shadow-none text-end" formControlName="branchId">
                                     <option disabled selected value="">اختر صرف إلى</option>
                                     <option *ngFor="let branch of branchs" [value]="branch.id">{{ branch.name }}</option>
@@ -154,7 +161,7 @@
                             <div formArrayName="items">
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                                   <div class="col-md-2">
-                                    <label>الصنف</label>
+                                    <label class="form-label">الصنف</label>
                                     <select class="form-select shadow-none" formControlName="itemId">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
@@ -162,7 +169,7 @@
                                   </div>
                               
                                   <div class="col-md-2">
-                                    <label>الوحدة</label>
+                                    <label class="form-label">الوحدة</label>
                                     <select class="form-select shadow-none" formControlName="unit">
                                         <option value="" selected disabled>اختر الوحدة</option>
                                         <option value="لتر">لتر</option>
@@ -172,16 +179,16 @@
                                   </div>
 
                                   <div class="col-md-2">
-                                    <label>الكمية</label>
-                                    <input type="number" class="form-control shadow-none" formControlName="quantity">
+                                    <label class="form-label">الكمية</label>
+                                    <input type="number" class="form-control shadow-none" formControlName="quantity" min="1">
                                   </div>
                                   <div class="col-md-2">
-                                    <label>السعر</label>
-                                    <input type="number" class="form-control shadow-none" formControlName="unitPrice">
-                                  </div>
+                                    <label class="form-label">السعر</label>
+                                    <input type="number" class="form-control shadow-none bg-light" formControlName="unitPrice" readonly>
+                                </div>
                                   <div class="col-md-2">
-                                    <label>الإجمالي</label>
-                                    <input type="number" class="form-control shadow-none" formControlName="totalPrice">
+                                    <label class="form-label">الإجمالي</label>
+                                    <input type="number" class="form-control shadow-none bg-light" formControlName="totalPrice" readonly>
                                   </div>
                               
                                   <div class="col-md-1 d-flex align-items-end">
@@ -199,7 +206,7 @@
                               </div>
 
                             <div class="col-md-12">
-                                <label>ملاحظات</label>
+                                <label class="form-label">ملاحظات</label>
                                 <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
                             </div>
 

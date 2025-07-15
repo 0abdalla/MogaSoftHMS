@@ -2,13 +2,30 @@
     <div class="container-fluid">
       <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="row">
-            <div class="col-md-6">
-                <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addPurchaseRequestModal">إضافة طلب شراء</button>
+            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+              <div class="col-md-8 mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                      <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addPurchaseRequestModal">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>إضافة طلب شراء</span>
+              </button>
+                      <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                  <i class="uil uil-filter"></i>
+                  <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+              </button>
+                  </div>
+              </div>
+              <div class="col-md-4 mb-2" *ngIf="total > 0">
+                  <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+              </div>
+              <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                  <div class="d-flex align-items-center">
+                      <ng-container>
+                          <app-filters [filterData]="allItems" [filterPlaceholder]="'الحالة'" [searchPlaceholder]="'ابحث بإستخدام رقم الطلب أو رقم الفاتورة ...'" [categoryName]="'Type'" (filterChanged)="onSearchInputChanged($event)"></app-filters>
+                      </ng-container>
+                  </div>
+              </div>
             </div>
-            <div class="col-md-6 " *ngIf="total > 0 && purchaseRequests.length > 16">
-                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-            </div>
-
             <div class="col-12 mt-3">
                 <div class="table-responsive">
                     <table class="table table-hover">
@@ -17,10 +34,8 @@
                             <th>#</th>
                             <th>رقم الطلب</th>
                             <th>تاريخ الطلب</th>
-                            <!-- <th>تاريخ الإستحقاق</th> -->
                             <th>اسم المخزن</th>
                             <th>الغرض</th>
-                            <!-- <th>العناصر</th> -->
                             <th>الحالة</th>
                             <th>الإجراءات</th>
                           </tr>
@@ -28,7 +43,7 @@
                         <tbody>
                           <tr *ngFor="let order of purchaseRequests; let i = index">
                             <td>{{ order.id }}</td>
-                            <td>{{ order.requestNumber }}</td>
+                            <td class="fw-bold">{{ order.requestNumber }}</td>
                             <td>{{ order.requestDate | date: 'yyyy-MM-dd – HH:mm' }}</td>
                             <!-- <td>{{ order.expiryDate | date: 'yyyy-MM-dd – HH:mm' }}</td> -->
                             <td>{{ order.storeName }}</td>
@@ -50,7 +65,7 @@
                           </td>
                           </tr>
                         </tbody>
-                      </table>
+                    </table>
                 </div>
             </div>
         </div>
