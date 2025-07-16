@@ -23,16 +23,16 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
         {
             var store = await _unitOfWork.Repository<Store>().GetByIdAsync(request.StoreId, cancellationToken);
             if (store is null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound,"المخزن غير موجود");
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "المخزن غير موجود");
 
             var branch = await _unitOfWork.Repository<Branch>().GetByIdAsync(request.BranchId, cancellationToken);
             if (branch is null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound,"الفرع غير موجود");
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "الفرع غير موجود");
 
             var permission = new MaterialIssuePermission
             {
                 PermissionNumber = await GeneratePermissionNumber(cancellationToken),
-                DocumentNumber = request.DocumentNumber,
+                //DocumentNumber = request.DocumentNumber,
                 PermissionDate = DateOnly.FromDateTime(request.PermissionDate),
                 StoreId = request.StoreId,
                 BranchId = request.BranchId,
@@ -46,7 +46,9 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                     UnitPrice = i.UnitPrice,
                     TotalPrice = i.TotalPrice,
                     IsActive = true
-                }).ToList()
+                }).ToList(),
+
+                DisbursementRequestId = request.DisbursementRequestId
             };
 
             await _unitOfWork.Repository<MaterialIssuePermission>().AddAsync(permission, cancellationToken);
@@ -75,11 +77,12 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             if (permission == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            permission.DocumentNumber = request.DocumentNumber;
+            //permission.DocumentNumber = request.DocumentNumber;
             permission.PermissionDate = DateOnly.FromDateTime(request.PermissionDate);
             permission.StoreId = request.StoreId;
             permission.BranchId = request.BranchId;
             permission.Notes = request.Notes;
+            permission.DisbursementRequestId = request.DisbursementRequestId;
 
             foreach (var item in permission.Items)
                 item.IsActive = false;
@@ -120,8 +123,10 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
             permission.IsActive = false;
-            foreach (var item in permission.Items)
-                item.IsActive = false;
+            //foreach (var item in permission.Items)
+            //    item.IsActive = false;
+
+            permission.Items.Clear();
 
             _unitOfWork.Repository<MaterialIssuePermission>().Update(permission);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -142,6 +147,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 .GetAll()
                 .Include(x => x.Store)
                 .Include(x => x.Branch)
+                .Include(x => x.DisbursementRequest)
                 .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
@@ -168,7 +174,10 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
                     TotalPrice = i.TotalPrice
-                }).ToList()
+                }).ToList(),
+
+                DisbursementRequestId = permission.DisbursementRequestId,
+                DisbursementRequestNumber = permission?.DisbursementRequest?.Number ?? ""
             };
 
             return ErrorResponseModel<MaterialIssuePermissionResponse>.Success(GenericErrors.GetSuccess, response);
@@ -187,6 +196,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 .GetAll()
                 .Include(x => x.Store)
                 .Include(x => x.Branch)
+                .Include(x => x.DisbursementRequest)
                 .Include(x => x.Items)
                 .Where(x => x.IsActive);
 
@@ -222,7 +232,10 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         TotalPrice = i.TotalPrice
-                    }).ToList()
+                    }).ToList(),
+
+                    DisbursementRequestId = x.DisbursementRequestId,
+                    DisbursementRequestNumber = x.DisbursementRequest.Number ?? ""
                 })
                 .ToListAsync(cancellationToken);
 

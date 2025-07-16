@@ -209,50 +209,111 @@
       </div>
       <div class="modal-body">
 
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>#</th>
-                <th>اسم الصنف</th>
-                <th>الكمية</th>
-                <th *ngFor="let supplier of supplierNames">المورد: {{ supplier }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of structuredTable; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ row.itemName }}</td>
-                <td>
-                  {{ row[supplierNames[0]]?.quantity || 0 }}
-                </td>
-                <td *ngFor="let supplier of supplierNames">
-                  {{ row[supplier]?.unitPrice ? row[supplier].unitPrice + ' ج.م' : '-' }}
-                </td>
-              </tr>
-            </tbody>
-            <tfoot class="table-light fw-bold">
-              <tr>
-                <td colspan="3">الإجمالي</td>
-                <td *ngFor="let supplier of supplierNames">
-                  {{ getTotalForSupplier(supplier) }} ج.م
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-
-        <div class="text-center mt-3">
-          <h5>تم الترسية على المورد: 
-            <span class="text-success">{{ getWinningSupplier() }}</span>
-          </h5>
-        </div>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>#</th>
+                  <th>اسم الصنف</th>
+                  <th>الكمية</th>
+                  <th *ngFor="let supplier of supplierNames">المورد: {{ supplier }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of structuredTable; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ row.itemName }}</td>
+                  <td>
+                    {{ row[supplierNames[0]]?.quantity || 0 }}
+                  </td>
+                  <td *ngFor="let supplier of supplierNames">
+                    {{ row[supplier]?.unitPrice ? row[supplier].unitPrice + ' ج.م' : '-' }}
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot class="table-light fw-bold">
+                <tr>
+                  <td colspan="3">الإجمالي</td>
+                  <td *ngFor="let supplier of supplierNames">
+                    {{ getTotalForSupplier(supplier) }} ج.م
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+  
+          <div class="text-center mt-3">
+            <h5>تم الترسية على المورد: 
+              <span class="text-success">{{ getWinningSupplier() }}</span>
+            </h5>
+          </div>
 
       </div>
       <div class="modal-footer justify-content-center">
         <button type="button" class="btn-blue" (click)="postPrice()">إتمام الترسية</button>
+        <button type="button" class="btn btn-secondary" (click)="printOffers()">طباعة</button>
       </div>
     </div>
   </div>
 </div>
 
+
+
+
+
+
+<div id="printableOffers" class="p-4">
+
+  <div class="d-flex justify-content-around align-items-center mb-4">
+    <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+    <div class="text-center">
+      <h5 class="fw-bold mb-1">كشف تفريغ عطائات طلب أسعار رقم <span class="text-primary">{{ purNumber }}</span> عن توريدات</h5>
+      <div><strong>التاريخ : </strong> {{ quotationDate | date: 'yyyy-MM-dd' }}</div>
+    </div>
+  </div>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>اسم الصنف</th>
+          <th>الكمية</th>
+          <th *ngFor="let supplier of supplierNames">المورد: {{ supplier }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of structuredTable; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ row.itemName }}</td>
+          <td>{{ row[supplierNames[0]]?.quantity || 0 }}</td>
+          <td *ngFor="let supplier of supplierNames">
+            {{ row[supplier]?.unitPrice ? row[supplier].unitPrice + ' ج.م' : '-' }}
+          </td>
+        </tr>
+      </tbody>
+      <tfoot class="table-light fw-bold">
+        <tr>
+          <td colspan="3">الإجمالي</td>
+          <td *ngFor="let supplier of supplierNames">
+            {{ getTotalForSupplier(supplier) }} ج.م
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <div class="text-center mb-4">
+    <h5>تم الترسية على المورد: 
+      <span class="text-success">{{ getWinningSupplier() }}</span>
+    </h5>
+  </div>
+
+  <div class="mt-5">
+    <strong>ملاحظات لجنة البت في الإعتماد:</strong>
+    <div style="border: 1px dashed #aaa; padding: 30px 15px; margin-top: 10px;">
+      ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    </div>
+  </div>
+
+</div>

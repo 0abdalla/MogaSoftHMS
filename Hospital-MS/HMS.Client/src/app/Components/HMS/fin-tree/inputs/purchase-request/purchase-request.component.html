@@ -87,21 +87,26 @@
           <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
               <form [formGroup]="purchaseRequestForm" (ngSubmit)="addPurchaseRequest()">
                   <div class="row p-3 mb-3">
-                      <div class="col-md-3">
+                      <div class="col-md-4">
                           <div class="form-group">
                               <label>الغرض</label>
                               <input type="text" formControlName="purpose" class="form-control shadow-none text-end">
                           </div>
                       </div>
 
-                      <div class="col-md-9">
+                      <div class="col-md-4">
+                          <div class="form-group">
+                              <label>تاريخ الطلب</label>
+                              <input type="date" formControlName="requestDate" class="form-control shadow-none text-end">
+                          </div>
+                      </div>
+
+                      <div class="col-md-4">
                           <div class="form-group">
                               <label>اسم المخزن</label>
                               <select class="form-select shadow-none" formControlName="storeId">
                                 <option disabled selected value="">اختر المخزن</option>
-                                <option value="1">المخزن الرئيسي</option>
-                                <option value="2">مخزن فرعي</option>
-                                <!-- <option *ngFor="let i of allStores" [value]="i.id">{{ i.nameAr }}</option> -->
+                                <option *ngFor="let i of stores" [value]="i.id">{{ i.name }}</option>
                               </select>
                           </div>
                       </div>
@@ -158,5 +163,58 @@
               </form>
           </div>
       </div>
+  </div>
+</div>
+
+
+
+<div id="printablePurchaseRequest" dir="rtl" class="container p-4">
+  <div class="p-3" style="border: 1px solid #5A607F; border-radius: 10px;">
+    <div class="d-flex justify-content-around align-items-center mb-2">
+      <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+      <div>
+        <span>طلب شراء رقم</span>
+        <span>{{ purNumber }}</span>
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <strong>تاريخ الطلب:</strong> {{ purchaseRequestForm.value.requestDate | date: 'yyyy-MM-dd' }}
+    </div>
+    <div class="mb-2">
+      <strong>المخزن:</strong> {{ getStoreName(purchaseRequestForm.value.storeId) }}
+    </div>
+    <div class="mb-2">
+      <strong>الغرض:</strong> {{ purchaseRequestForm.value.purpose }}
+    </div>
+    <div class="mb-2">
+      <strong>الملاحظات:</strong> {{ purchaseRequestForm.value.notes || '----' }} 
+    </div>
+
+    <table class="table table-bordered mt-4">
+      <thead>
+        <tr>
+          <th>الصنف</th>
+          <th>الكمية</th>
+          <th>ملاحظات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of purchaseRequestForm.value.items">
+          <td>{{ getItemName(item.itemId) }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.notes || '----' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+        <strong>إسم المستخدم:</strong> {{ userName }}
+      </div>
+      <div class="col-md-6 text-end">
+        <strong>التاريخ:</strong> {{ today }}
+      </div>
+    </div>
   </div>
 </div>

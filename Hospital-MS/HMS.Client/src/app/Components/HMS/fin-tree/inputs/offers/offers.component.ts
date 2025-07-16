@@ -4,6 +4,8 @@ import Swal from 'sweetalert2';
 import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 export declare var bootstrap: any;
+declare var html2pdf: any;
+
 
 @Component({
   selector: 'app-offers',
@@ -229,13 +231,24 @@ export class OffersComponent {
     });
   }
   //
+  purNumber!:number;
+  quotationDate!:string;
   loadQuotationsByRequestId(purchaseRequestId: number) {
     this.selectedPurchaseRequestId = purchaseRequestId;
+    this.purNumber = purchaseRequestId;
+  
     this.financialService.getPriceQuotationById(purchaseRequestId).subscribe((res: any) => {
-      this.quotationData = res.results;
-      console.log(this.quotationData);
+      this.quotationDate = res.results[0].quotationDate;
+      this.quotationData = res?.results || [];
+      if (!this.quotationData.length) {
+        alert('لا توجد عروض أسعار لهذا الطلب');
+        return;
+      }
+  
       this.supplierNames = this.quotationData.map(q => q.supplierName);
-      this.uniqueItems = this.quotationData[0]?.items.map((i: any) => i.itemName) || [];
+      const allItemNames = this.quotationData.flatMap(q => q.items.map((i: any) => i.itemName));
+      this.uniqueItems = Array.from(new Set(allItemNames));
+        
       this.structuredTable = this.uniqueItems.map(itemName => {
         const row: any = { itemName };
         this.quotationData.forEach(quotation => {
@@ -249,17 +262,20 @@ export class OffersComponent {
   
         return row;
       });
-  
       const selectModalEl = document.getElementById('selectRequestModal');
       const selectModal = bootstrap.Modal.getInstance(selectModalEl); 
       selectModal?.hide();
-
+  
       const detailsModalEl = document.getElementById('requestDetailsModal');
       const detailsModal = new bootstrap.Modal(detailsModalEl);
       detailsModal.show();
-
+  
+    }, error => {
+      console.error('فشل تحميل عروض الأسعار:', error);
+      alert('حدث خطأ أثناء تحميل عروض الأسعار.');
     });
   }
+  
 
   getTotalForSupplier(supplier: string): number {
     if (!this.structuredTable) return 0;
@@ -313,4 +329,27 @@ export class OffersComponent {
     };
     return map[type] || '#000000';
   }
+  // 
+  printOffers() {
+    const element = document.getElementById('printableOffers');
+    if (!element) {
+      console.error('العنصر غير موجود');
+      return;
+    }
+    element.style.display = 'block';
+    const opt = {
+      margin: 0.5,
+      filename: 'تفريغ_العروض.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.style.display = 'none';
+    }).catch(err => {
+      console.error('حدث خطأ أثناء توليد PDF:', err);
+      element.style.display = 'none';
+    });
+  }
+  
 }

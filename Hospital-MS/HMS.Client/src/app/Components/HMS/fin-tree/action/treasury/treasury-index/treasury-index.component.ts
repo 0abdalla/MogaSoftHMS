@@ -3,13 +3,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 import { PagingFilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
 declare var bootstrap : any;
+import html2pdf from 'html2pdf.js';
+import { SettingService } from '../../../../../../Services/HMS/setting.service';
+
 @Component({
   selector: 'app-treasury-index',
   templateUrl: './treasury-index.component.html',
   styleUrl: './treasury-index.component.css'
 })
 export class TreasuryIndexComponent {
-  TitleList = ['الإدارة المالية','حركة الخزينة','كشف حركة الخزينة'];
+  TitleList = ['الإدارة المالية','حركة الخزينة'];
   closeTreasuryForm!:FormGroup;
   openTreasuryForm!:FormGroup;
   treasuryReportForm!:FormGroup;
@@ -23,8 +26,9 @@ export class TreasuryIndexComponent {
   enabledTreasuries:any;
   disabledTreasuries:any;
   // 
+  accounts:any[]=[];
   treasuryReportData: any = null;
-  constructor(private fb:FormBuilder,private financialService:FinancialService){
+  constructor(private fb:FormBuilder,private financialService:FinancialService , private settingService:SettingService){
     this.closeTreasuryForm=this.fb.group({
       date: [new Date().toISOString().substring(0, 10)],
       treasuryId:['' , Validators.required],
@@ -45,6 +49,7 @@ export class TreasuryIndexComponent {
     this.getTreasuries();
     this.getEnabledTreasuries();
     this.getDisabledTreasuries();
+    this.getAccounts();
   }
   submitCloseTreasury(){
     this.financialService.disableTreasury(this.closeTreasuryForm.value.treasuryId).subscribe({
@@ -135,4 +140,46 @@ export class TreasuryIndexComponent {
   getAbsolute(value: number): number {
     return Math.abs(value);
   }  
+  printTreasuryReport() {
+    const element = document.getElementById('treasury-report-print');
+    const treasuryId = this.treasuryReportData?.treasuryId || 'بدون_رقم';
+  
+    const opt = {
+      margin:       0.5,
+      filename:     `كشف حركة خزينة ${treasuryId}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+  
+    html2pdf().from(element).set(opt).save();
+  }
+  getAccounts(){
+    this.settingService.GetAccountTreeHierarchicalData('').subscribe({
+      next: (res: any[]) => {
+        this.accounts = this.extractLeafAccounts(res);
+        console.log("Accs:", this.accounts);
+      },
+      error: (err: any) => {
+        console.log(err);
+      }
+    });
+  }
+  extractLeafAccounts(nodes: any[]): any[] {
+    let result: any[] = [];
+  
+    for (const node of nodes) {
+      if (node.isGroup === false) {
+        result.push(node);
+      }
+      if (node.children && node.children.length > 0) {
+        result = result.concat(this.extractLeafAccounts(node.children));
+      }
+    }
+    return result;
+  }
+  getAccountName(id: number): string {
+    if (!this.accounts || !Array.isArray(this.accounts)) return '---';
+    return this.accounts.find(s => s.accountId === id)?.nameAR || '---';
+  }
 }

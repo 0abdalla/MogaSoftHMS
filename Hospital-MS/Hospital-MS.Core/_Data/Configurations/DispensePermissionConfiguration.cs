@@ -15,24 +15,13 @@ public class DispensePermissionConfiguration : IEntityTypeConfiguration<Dispense
         builder.Property(x => x.Date)
             .IsRequired();
 
-        builder.Property(x => x.Quantity)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
-        builder.Property(x => x.Balance)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
         builder.Property(x => x.Notes)
             .HasMaxLength(500)
             .IsRequired(false);
 
-        builder.Property(x => x.Status)
-            .HasMaxLength(50)
-            .IsRequired()
-            .HasDefaultValue("Pending");
 
-        builder.HasIndex(x => new { x.FromStoreId, x.ToStoreId, x.ItemId, x.Date });
-        builder.HasIndex(x => x.Status);
+        builder.Property(x => x.DispenseTo)
+            .HasMaxLength(250)
+            .IsRequired(false);
     }
 }

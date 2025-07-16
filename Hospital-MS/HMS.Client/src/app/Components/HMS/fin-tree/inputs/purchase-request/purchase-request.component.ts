@@ -4,6 +4,7 @@ import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/P
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 export declare var bootstrap: any;
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-purchase-request',
@@ -24,11 +25,31 @@ export class PurchaseRequestComponent {
   isEditMode : boolean = false;
   currentPurchaseRequestId: number | null = null;
   allItems: any[] = [];
+  stores: any[] = [];
   TitleList = ['المشتريات','طلبات شراء'];
   isFilter : boolean = true;
+  // 
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
   constructor(private financialService : FinancialService , private fb : FormBuilder){
     this.purchaseRequestForm=this.fb.group({
-      requestDate: [new Date().toISOString()],
+      requestDate: [,Validators.required],
       purpose:[null,Validators.required],
       storeId:[null,Validators.required],
       notes:[null],
@@ -67,6 +88,7 @@ export class PurchaseRequestComponent {
   ngOnInit(): void {
     this.getpurchaseRequests();
     this.getItems();
+    this.getStores();
   }
   getItems(){
     this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
@@ -76,24 +98,28 @@ export class PurchaseRequestComponent {
     })
   }
 
-
+  getStores(){
+    this.financialService.getStores(this.pagingFilterModel).subscribe((res : any)=>{
+      this.stores = res.results;
+      this.total = res.totalCount;
+      console.log(this.stores);
+    },error=>{
+      console.log(error);
+    })
+  }
 
   getpurchaseRequests() {
-    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe({
-      next: (res: any) => {
-        console.log('Full API Response:', res);
-        this.purchaseRequests = res.results;
-        this.total = res.totalCount;
-        console.log('Purchase Requests:', this.purchaseRequests);
+    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res : any)=>{
+      console.log('Full API Response:', res);
+      this.purchaseRequests = res.results;
+      this.total = res.totalCount;
+      console.log('Purchase Requests:', this.purchaseRequests);
         if (!res.results.length) {
           console.log('No results returned for SearchText:', this.pagingFilterModel.searchText);
         }
-      },
-      error: (err) => {
-        console.error('API Error:', err);
-        alert('Error fetching purchase requests. Check the console for details.');
-      }
-    });
+      },error=>{
+        console.log(error);
+      })
   }
 
   onPageChange(event:any){
@@ -112,7 +138,7 @@ export class PurchaseRequestComponent {
     console.log('Updated Paging Filter Model:', this.pagingFilterModel);
     this.getpurchaseRequests();
   }
-
+  purNumber!:number;
   addPurchaseRequest() {
     if (this.purchaseRequestForm.invalid) {
       this.purchaseRequestForm.markAllAsTouched();
@@ -123,8 +149,9 @@ export class PurchaseRequestComponent {
   
     if (this.isEditMode && this.currentPurchaseRequestId) {
       this.financialService.updatePurchaseRequest(this.currentPurchaseRequestId, formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getpurchaseRequests();
+
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -132,9 +159,11 @@ export class PurchaseRequestComponent {
       });
     } else {
       this.financialService.addPurchaseRequest(formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getpurchaseRequests();
-          this.purchaseRequestForm.reset();
+          // this.purchaseRequestForm.reset();
+          this.generatePurchaseRequestPDF();
+          this.purNumber=res.results;
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -206,4 +235,29 @@ export class PurchaseRequestComponent {
     };
     return map[type] || '#000000';
   }
+  // 
+  getItemName(itemId: number | string): string {
+    const item = this.allItems.find(i => i.id == itemId);
+    return item ? item.nameAr : '—';
+  }
+  
+  getStoreName(storeId: number | string): string {
+    const store = this.stores.find(s => s.id == storeId);
+    return store ? store.name : '—';
+  }
+  
+  generatePurchaseRequestPDF() {
+    const element = document.getElementById('printablePurchaseRequest');
+    if (!element) return;
+    element.classList.remove('d-none');
+    html2pdf().set({
+      margin: 10,
+      filename: `طلب-شراء-${new Date().getTime()}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { orientation: 'portrait' }
+    }).from(element).save().then(() => {
+      element.classList.add('d-none');
+    });
+  }
+  
 }

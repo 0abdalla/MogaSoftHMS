@@ -32,17 +32,19 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
             {
                 Date = request.Date,
                 ReceivedFrom = request.ReceivedFrom,
-                AccountCode = request.AccountCode,
                 Amount = request.Amount,
                 Description = request.Description,
                 CostCenterId = request.CostCenterId,
-                TreasuryId = request.TreasuryId
+                TreasuryId = request.TreasuryId,
+                AccountId = request.AccountId
             };
 
             await _unitOfWork.Repository<SupplyReceipt>().AddAsync(supplyReceipt, cancellationToken);
 
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
             // handle treasury transaction
-            var treasuryTransaction = new TreasuryTransaction
+            var treasuryOperation = new TreasuryOperation
             {
                 Date = request.Date,
                 Amount = request.Amount,
@@ -51,9 +53,11 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 ReceivedFrom = request.ReceivedFrom,
                 TransactionType = TransactionType.Credit,
                 DocumentNumber = supplyReceipt.Id.ToString(),
+                AccountId = request.AccountId
             };
 
-            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+            await _unitOfWork.Repository<TreasuryOperation>().AddAsync(treasuryOperation, cancellationToken);
+
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
@@ -103,6 +107,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 .GetAll(x => x.Id == id)
                 .Include(x => x.CostCenter)
                 .Include(x => x.Treasury)
+                .Include(x => x.Account)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -117,7 +122,8 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 Id = supplyReceipt.Id,
                 Date = supplyReceipt.Date,
                 ReceivedFrom = supplyReceipt.ReceivedFrom,
-                AccountCode = supplyReceipt.AccountCode,
+                AccountNumber = supplyReceipt.Account.AccountNumber,
+                AccountId = supplyReceipt.Account.AccountId,
                 Amount = supplyReceipt.Amount,
                 Description = supplyReceipt.Description,
                 CostCenterId = supplyReceipt.CostCenterId,
@@ -205,7 +211,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
 
             supplyReceipt.Date = request.Date;
             supplyReceipt.ReceivedFrom = request.ReceivedFrom;
-            supplyReceipt.AccountCode = request.AccountCode;
+            supplyReceipt.AccountId = request.AccountId;
             supplyReceipt.Amount = request.Amount;
             supplyReceipt.Description = request.Description;
             supplyReceipt.CostCenterId = request.CostCenterId;

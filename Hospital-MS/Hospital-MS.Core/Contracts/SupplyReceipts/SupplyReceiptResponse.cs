@@ -13,7 +13,8 @@ public class SupplyReceiptResponse
     public string? TreasuryName { get; set; }
     public DateOnly Date { get; set; }
     public string? ReceivedFrom { get; set; }
-    public string? AccountCode { get; set; }
+    public string? AccountNumber { get; set; }
+    public int? AccountId { get; set; }
     public decimal Amount { get; set; }
     public string? Description { get; set; }
     public int? CostCenterId { get; set; }

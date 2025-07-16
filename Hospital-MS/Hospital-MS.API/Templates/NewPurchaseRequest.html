@@ -1,25 +1,4 @@
-﻿<!--<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>New Purchase Request</title>
-</head>
-<body>
-    <h2>New Purchase Request Submitted</h2>
-    <p><strong>Request Number:</strong> {RequestNumber}</p>
-    <p><strong>Date:</strong> {RequestDate}</p>
-    <p><strong>Store:</strong> {StoreName}</p>
-    <p><strong>Purpose:</strong> {Purpose}</p>
-    <p><strong>Status:</strong> {Status}</p>
-    <p><strong>Notes:</strong> {Notes}</p>
-    <h3>Items:</h3>
-    <ul>
-        {Items}
-    </ul>
-</body>
-</html>-->
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -61,8 +40,8 @@
             display: block;
             margin: 32px auto 0 auto;
             padding: 12px 32px;
-            background: #4caf50; 
-            color: #ffffff; 
+            background: #4caf50;
+            color: #ffffff;
             border-radius: 6px;
             font-size: 1.1rem;
             text-align: center;
@@ -70,9 +49,9 @@
             transition: background 0.2s;
         }
 
-            .approve-btn:hover {
-                background: #388e3c; 
-            }
+        .approve-btn:hover {
+            background: #388e3c;
+        }
 
         .status-pill {
             display: inline-block;
@@ -84,21 +63,21 @@
             margin-left: 8px;
         }
 
-            .status-pill.approved {
-                background: #4caf50;
-            }
+        .status-pill.approved {
+            background: #4caf50;
+        }
 
-            .status-pill.pending {
-                background: #ff9800;
-            }
+        .status-pill.pending {
+            background: #ff9800;
+        }
 
-            .status-pill.rejected {
-                background: #f44336;
-            }
+        .status-pill.rejected {
+            background: #f44336;
+        }
 
-            .status-pill.cancelled {
-                background: #607d8b;
-            }
+        .status-pill.cancelled {
+            background: #607d8b;
+        }
     </style>
 </head>
 <body>

@@ -10,16 +10,15 @@ public class DispensePermissionResponse
 {
     public int Id { get; set; }
     public DateOnly Date { get; set; }
-    public int FromStoreId { get; set; }
-    public string FromStoreName { get; set; }
-    public int ToStoreId { get; set; }
-    public string ToStoreName { get; set; }
-    public decimal Quantity { get; set; }
-    public int ItemId { get; set; }
-    public string ItemName { get; set; }
-    public decimal Balance { get; set; }
-    public string Notes { get; set; }
-    public string Status { get; set; }
+    public decimal Amount { get; set; }
+    public string? DispenseTo { get; set; } // يصرف الي السيد:
+    public string? Notes { get; set; }
+    public int? TreasuryId { get; set; }
+    public string? TreasuryName { get; set; }
 
-    public AuditResponse Audit { get; set; }
+    public string? CostCenterNumber { get; set; }
+    public int? CostCenterId { get; set; }
+    public string? AccountNumber { get; set; }
+    public int? AccountId { get; set; }
+    public AuditResponse Audit { get; set; } = new();
 }

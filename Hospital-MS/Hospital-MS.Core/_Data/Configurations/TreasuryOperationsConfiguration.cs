@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hospital_MS.Core._Data.Configurations;
 
-public class TreasuryTransactionConfiguration : IEntityTypeConfiguration<TreasuryTransaction>
+public class TreasuryOperationsConfiguration : IEntityTypeConfiguration<TreasuryOperation>
 {
-    public void Configure(EntityTypeBuilder<TreasuryTransaction> builder)
+    public void Configure(EntityTypeBuilder<TreasuryOperation> builder)
     {
-        builder.ToTable("TreasuryTransactions", "finance");
+        builder.ToTable("TreasuryOperations", "finance");
 
         builder.HasKey(x => x.Id);
 

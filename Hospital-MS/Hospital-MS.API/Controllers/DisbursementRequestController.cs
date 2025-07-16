@@ -1,101 +1,69 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Disbursement;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Interfaces.Services;
+using Hospital_MS.Interfaces.HMS;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Hospital_MS.API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class DisbursementRequestController : ControllerBase
+    [Authorize]
+    [SwaggerTag("طلب صرف")]
+    public class DisbursementRequestController(IDisbursementRequestService disbursementRequestService) : ApiBaseController
     {
-        private readonly IDisbursementRequestService _disbursementRequestService;
-
-        public DisbursementRequestController(IDisbursementRequestService disbursementRequestService)
-        {
-            _disbursementRequestService = disbursementRequestService;
-        }
+        private readonly IDisbursementRequestService _disbursementRequestService = disbursementRequestService;
 
         [HttpPost]
-        public async Task<ActionResult<DisbursementRequest>> CreateRequest(DisbursementRequest request)
+        public async Task<IActionResult> CreateAsync([FromBody] DisbursementReq request, CancellationToken cancellationToken)
         {
-            try
-            {
-                // Check stock availability
-                var isAvailable = await _disbursementRequestService.CheckStockAvailabilityAsync(
-                    request.ItemCode, 
-                    request.RequestedQuantity);
-
-                if (!isAvailable)
-                {
-                    return BadRequest(new { 
-                        message = "?????? ??? ????? ?????",
-                        availableQuantity = await _disbursementRequestService.GetAvailableStockQuantityAsync(request.ItemCode)
-                    });
-                }
-
-                var result = await _disbursementRequestService.CreateRequestAsync(request);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _disbursementRequestService.CreateAsync(request, cancellationToken);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<DisbursementRequest>>> GetAllRequests()
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] DisbursementReq request, CancellationToken cancellationToken)
         {
-            var requests = await _disbursementRequestService.GetAllRequestsAsync();
-            return Ok(requests);
+            var result = await _disbursementRequestService.UpdateAsync(id, request, cancellationToken);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id, CancellationToken cancellationToken)
+        {
+            var result = await _disbursementRequestService.DeleteAsync(id, cancellationToken);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<DisbursementRequest>> GetRequest(int id)
+        public async Task<IActionResult> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var request = await _disbursementRequestService.GetRequestByIdAsync(id);
-            if (request == null)
-                return NotFound();
-
-            return Ok(request);
+            var result = await _disbursementRequestService.GetByIdAsync(id, cancellationToken);
+            return result.IsSuccess ? Ok(result) : NotFound(result);
         }
 
-        [HttpPut("{id}/process")]
-        public async Task<ActionResult<DisbursementRequest>> ProcessRequest(
-            int id, 
-            [FromBody] ProcessRequestModel model)
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync([FromQuery] PagingFilterModel filter, CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = await _disbursementRequestService.ProcessRequestAsync(
-                    id, 
-                    model.Status, 
-                    model.ProcessedBy);
-                return Ok(result);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            var result = await _disbursementRequestService.GetAllAsync(filter, cancellationToken);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        [HttpGet("stock/{itemCode}")]
-        public async Task<ActionResult<decimal>> GetAvailableStock(string itemCode)
+        [HttpPut("{id}/approve")]
+        public async Task<IActionResult> ApproveAsync(int id, CancellationToken cancellationToken)
         {
-            var quantity = await _disbursementRequestService.GetAvailableStockQuantityAsync(itemCode);
-            return Ok(new { availableQuantity = quantity });
+            var result = await _disbursementRequestService.ApproveDisbursementRequestAsync(id, cancellationToken);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
-    }
 
-    public class ProcessRequestModel
-    {
-        public string Status { get; set; }
-        public string ProcessedBy { get; set; }
+        [HttpGet("approved")]
+        public async Task<IActionResult> GetAllApprovedAsync( CancellationToken cancellationToken)
+        {
+            var result = await _disbursementRequestService.GetAllApprovedAsync(cancellationToken);
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
     }
 }

@@ -12,7 +12,7 @@ public class TreasuryConfiguration : IEntityTypeConfiguration<Treasury>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.AccountCode)
+        builder.Property(x => x.Code)
             .IsRequired()
             .HasMaxLength(100);
 
@@ -24,16 +24,7 @@ public class TreasuryConfiguration : IEntityTypeConfiguration<Treasury>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(x => x.OpeningBalance)
-            .HasPrecision(18, 2)
-            .IsRequired();
-
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
-
-        // Indexes
-        builder.HasIndex(x => x.AccountCode).IsUnique();
-        builder.HasIndex(x => new { x.Name, x.BranchId }).IsUnique();
-        builder.HasIndex(x => x.Currency);
     }
 }
