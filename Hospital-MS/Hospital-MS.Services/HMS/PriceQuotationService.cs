@@ -201,7 +201,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .GetAll()
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
-                .ThenInclude(i => i.Item.Unit)
+                .ThenInclude(i => i.Item)
                 .Include(x => x.PurchaseRequest)
                 .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId);
 

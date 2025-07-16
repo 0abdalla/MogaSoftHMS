@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Enums;
 public enum TransactionType
 {
-    Debit,
-    Credit,
+    Debit, //0
+    Credit, //1
 }
 

@@ -44,7 +44,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             // handle treasury transaction
-            var treasuryTransaction = new TreasuryTransaction
+            var treasuryOperation = new TreasuryOperation
             {
                 Date = request.Date,
                 Amount = request.Amount,
@@ -53,9 +53,10 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 ReceivedFrom = request.ReceivedFrom,
                 TransactionType = TransactionType.Credit,
                 DocumentNumber = supplyReceipt.Id.ToString(),
+                AccountId = request.AccountId
             };
 
-            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+            await _unitOfWork.Repository<TreasuryOperation>().AddAsync(treasuryOperation, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

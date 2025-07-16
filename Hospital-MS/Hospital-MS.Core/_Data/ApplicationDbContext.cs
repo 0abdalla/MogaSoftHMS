@@ -71,7 +71,8 @@ namespace Hospital_MS.Core._Data
         public DbSet<AdditionNotice> AdditionNotices { get; set; }
         public DbSet<DebitNotice> DebitNotices { get; set; }
         public DbSet<MainGroup> MainGroups { get; set; }
-        public DbSet<TreasuryTransaction> TreasuryTransactions { get; set; }
+        public DbSet<TreasuryOperation> TreasuryOperations { get; set; }
+        public DbSet<TreasuryMovement> TreasuryMovements { get; set; }
 
 
 

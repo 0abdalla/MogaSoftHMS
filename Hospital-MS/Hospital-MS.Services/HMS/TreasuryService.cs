@@ -9,13 +9,7 @@ using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class TreasuryService : ITreasuryService
@@ -55,7 +49,7 @@ public class TreasuryService : ITreasuryService
         try
         {
             var existingTreasury = await _unitOfWork.Repository<Treasury>()
-                .AnyAsync(x => x.AccountCode == request.AccountCode ||
+                .AnyAsync(x => x.Code == request.Code ||
                               (x.Name == request.Name && x.BranchId == request.BranchId),
                          cancellationToken);
 
@@ -64,11 +58,10 @@ public class TreasuryService : ITreasuryService
 
             var treasury = new Treasury
             {
-                AccountCode = request.AccountCode,
+                Code = request.Code,
                 Name = request.Name,
                 BranchId = request.BranchId,
                 Currency = request.Currency,
-                OpeningBalance = request.OpeningBalance,
                 IsActive = true
             };
 
@@ -99,12 +92,11 @@ public class TreasuryService : ITreasuryService
             var treasuries = dt.AsEnumerable().Select(row => new TreasuryResponse
             {
                 Id = row.Field<int>("Id"),
-                AccountCode = row.Field<string>("AccountCode"),
+                Code = row.Field<string>("Code"),
                 Name = row.Field<string>("Name"),
                 BranchId = row.Field<int>("BranchId"),
                 BranchName = row.Field<string>("BranchName"),
                 Currency = row.Field<string>("Currency"),
-                OpeningBalance = row.Field<decimal>("OpeningBalance"),
                 IsActive = row.Field<bool>("IsActive"),
                 Audit = new AuditResponse
                 {
@@ -140,12 +132,11 @@ public class TreasuryService : ITreasuryService
             var response = new TreasuryResponse
             {
                 Id = treasury.Id,
-                AccountCode = treasury.AccountCode,
+                Code = treasury.Code,
                 Name = treasury.Name,
                 BranchId = treasury.BranchId,
                 BranchName = treasury.Branch.Name,
                 Currency = treasury.Currency,
-                OpeningBalance = treasury.OpeningBalance,
                 IsActive = treasury.IsActive,
                 Audit = new AuditResponse
                 {
@@ -176,18 +167,18 @@ public class TreasuryService : ITreasuryService
 
             var isExist = await _unitOfWork.Repository<Treasury>()
                 .AnyAsync(x => x.Id != id &&
-                    (x.AccountCode == request.AccountCode ||
+                    (x.Code == request.Code ||
                     (x.Name == request.Name && x.BranchId == request.BranchId)),
                     cancellationToken);
 
             if (isExist)
                 return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
 
-            treasury.AccountCode = request.AccountCode;
+            treasury.Code = request.Code;
             treasury.Name = request.Name;
             treasury.BranchId = request.BranchId;
             treasury.Currency = request.Currency;
-            treasury.OpeningBalance = request.OpeningBalance;
+
 
             _unitOfWork.Repository<Treasury>().Update(treasury);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -224,8 +215,10 @@ public class TreasuryService : ITreasuryService
 
     public async Task<ErrorResponseModel<List<TreasuryResponse>>> GetEnabledTreasuriesAsync(CancellationToken cancellationToken = default)
     {
+        // Deprecated: This method is not used in the current implementation.
+
         var treasuries = await _unitOfWork.Repository<Treasury>()
-            .GetAll(x => x.IsActive && x.IsEnabled)
+            .GetAll(x => x.IsActive /*&& x.IsEnabled*/)
             .Select(x => new TreasuryResponse
             {
                 Id = x.Id,
@@ -238,8 +231,10 @@ public class TreasuryService : ITreasuryService
 
     public async Task<ErrorResponseModel<List<TreasuryResponse>>> GetDisabledTreasuriesAsync(CancellationToken cancellationToken = default)
     {
+        // Deprecated: This method is not used in the current implementation.
+
         var treasuries = await _unitOfWork.Repository<Treasury>()
-            .GetAll(x => x.IsActive && !x.IsEnabled)
+            .GetAll(x => x.IsActive/* && !x.IsEnabled*/)
             .Select(x => new TreasuryResponse
             {
                 Id = x.Id,
@@ -252,6 +247,7 @@ public class TreasuryService : ITreasuryService
 
     public async Task<ErrorResponseModel<string>> EnableTreasuryAsync(int id, CancellationToken cancellationToken = default)
     {
+        // Deprecated: This method is not used in the current implementation.
         try
         {
             var treasury = await _unitOfWork.Repository<Treasury>().GetByIdAsync(id, cancellationToken);
@@ -259,7 +255,7 @@ public class TreasuryService : ITreasuryService
             if (treasury == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            treasury.IsEnabled = true;
+            // treasury.IsEnabled = true;
 
             _unitOfWork.Repository<Treasury>().Update(treasury);
 
@@ -275,32 +271,59 @@ public class TreasuryService : ITreasuryService
 
     public async Task<ErrorResponseModel<string>> DisableTreasuryAsync(int id, CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var treasury = await _unitOfWork.Repository<Treasury>().GetByIdAsync(id, cancellationToken);
+        //try
+        //{
+        //    var treasury = await _unitOfWork.Repository<Treasury>()
+        //        .GetAll()
+        //        .Include(x => x.Branch)
+        //        .FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsEnabled, cancellationToken);
 
-            if (treasury == null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+        //    if (treasury == null)
+        //        return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            treasury.IsEnabled = false;
+        //    // حساب الرصيد الحالي
+        //    var transactions = await _unitOfWork.Repository<TreasuryOperation>()
+        //        .GetAll(t => t.TreasuryId == id && t.IsActive)
+        //        .ToListAsync(cancellationToken);
 
-            _unitOfWork.Repository<Treasury>().Update(treasury);
+        //    var balance = treasury.OpeningBalance + transactions.Sum(t =>
+        //        t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount);
 
-            await _unitOfWork.CompleteAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
-        }
-        catch (Exception)
-        {
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        }
+        //    treasury.IsEnabled = false;
+        //    treasury.ClosedIn = DateOnly.FromDateTime(DateTime.Today);
+
+        //    var newTreasury = new Treasury
+        //    {
+        //        AccountCode = $"TR-{DateTime.Now:yyyyMMdd}-{id + 1}",
+        //        Name = $"{id + 1}خزينه",
+        //        BranchId = treasury.BranchId,
+        //        Currency = treasury.Currency,
+        //        OpeningBalance = balance,
+        //        IsActive = true,
+        //        IsEnabled = true,
+        //        OpenedIn = DateOnly.FromDateTime(DateTime.Today)
+        //    };
+
+        //    _unitOfWork.Repository<Treasury>().Update(treasury);
+        //    await _unitOfWork.Repository<Treasury>().AddAsync(newTreasury, cancellationToken);
+        //    await _unitOfWork.CompleteAsync(cancellationToken);
+
+        //    return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        //}
+        //catch (Exception)
+        //{
+        //    return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        //}
+
+        throw new NotImplementedException();
     }
 
     public async Task<ErrorResponseModel<TreasuryTransactionResponse>> GetTreasuryTransactionsAsync(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
     {
         try
         {
-            var transactionsQuery = _unitOfWork.Repository<TreasuryTransaction>()
+            var transactionsQuery = _unitOfWork.Repository<TreasuryOperation>()
                 .GetAll()
                 .Where(t => t.TreasuryId == treasuryId && t.IsActive);
 
@@ -344,7 +367,8 @@ public class TreasuryService : ITreasuryService
                     Description = t.Description ?? string.Empty,
                     ReceivedFrom = t.ReceivedFrom ?? string.Empty,
                     Credit = t.TransactionType == TransactionType.Credit ? t.Amount : 0,
-                    Debit = t.TransactionType == TransactionType.Debit ? t.Amount : 0
+                    Debit = t.TransactionType == TransactionType.Debit ? t.Amount : 0,
+                    AccountId = t.AccountId,
                 }).ToList()
             };
 
@@ -353,6 +377,73 @@ public class TreasuryService : ITreasuryService
         catch (Exception)
         {
             return ErrorResponseModel<TreasuryTransactionResponse>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public Task<ErrorResponseModel<string>> EnableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<ErrorResponseModel<string>> DisableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var treasury = await _unitOfWork.Repository<Treasury>()
+                .GetAll()
+                .Include(x => x.Branch)
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+
+            if (treasury == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "الخزينه غير موجوده");
+
+            var treasuryMovement = await _unitOfWork.Repository<TreasuryMovement>()
+                .GetAll(x => x.TreasuryId == id && x.IsActive && !x.IsClosed)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // i need to handle if there is no movement yet to add new one 
+            if (treasuryMovement == null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "لا يوجد حركه مفتوحه لهذه الخزينه");
+
+            // حساب الرصيد الحالي
+            var operations = await _unitOfWork.Repository<TreasuryOperation>()
+                .GetAll(t => t.TreasuryId == id && t.IsActive)
+                .ToListAsync(cancellationToken);
+
+            var newBalance = treasuryMovement.OpeningBalance + operations.Sum(t =>
+                t.TransactionType == Core.Enums.TransactionType.Credit ? t.Amount : -t.Amount);
+
+            var balance = operations.Sum(t =>
+                t.TransactionType == Core.Enums.TransactionType.Credit ? t.Amount : -t.Amount);
+
+            treasuryMovement.IsClosed = true;
+            treasuryMovement.ClosedIn = DateOnly.FromDateTime(DateTime.Today);
+
+            var newMovement = new TreasuryMovement
+            {
+                TreasuryId = treasury.Id,
+                OpenedIn = DateOnly.FromDateTime(DateTime.Today.AddDays(1)),
+                OpeningBalance = newBalance,
+                TreasuryNumber = treasuryMovement.TreasuryNumber + 1,
+                TotalCredits = operations
+                    .Where(t => t.TransactionType == TransactionType.Credit)
+                    .Sum(t => t.Amount),
+                TotalDebits = operations
+                    .Where(t => t.TransactionType == TransactionType.Debit)
+                    .Sum(t => t.Amount),
+                Balance = balance,
+            };
+
+            _unitOfWork.Repository<TreasuryMovement>().Update(treasuryMovement);
+            await _unitOfWork.Repository<TreasuryMovement>().AddAsync(newMovement, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
 }

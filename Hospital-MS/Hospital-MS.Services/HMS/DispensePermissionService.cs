@@ -54,7 +54,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             await _unitOfWork.CompleteAsync(cancellationToken);
 
             // add transaction to treasury
-            var treasuryTransaction = new TreasuryTransaction
+            var treasuryOperation = new TreasuryOperation
             {
                 Date = request.Date,
                 Amount = request.Amount,
@@ -63,9 +63,10 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 ReceivedFrom = treasury.Name,
                 TransactionType = TransactionType.Debit,
                 DocumentNumber = permission.Id.ToString(),
+                AccountId = request.AccountId
             };
 
-            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+            await _unitOfWork.Repository<TreasuryOperation>().AddAsync(treasuryOperation, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -254,7 +255,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             _unitOfWork.Repository<DispensePermission>().Update(permission);
 
             // add transaction to treasury
-            var treasuryTransaction = new TreasuryTransaction
+            var treasuryTransaction = new TreasuryOperation
             {
                 Date = request.Date,
                 Amount = request.Amount,
@@ -265,7 +266,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 DocumentNumber = permission.Id.ToString(),
             };
 
-            await _unitOfWork.Repository<TreasuryTransaction>().AddAsync(treasuryTransaction, cancellationToken);
+            await _unitOfWork.Repository<TreasuryOperation>().AddAsync(treasuryTransaction, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 

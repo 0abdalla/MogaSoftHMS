@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716133508_AddTreasuryMovementTable")]
+    partial class AddTreasuryMovementTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -4125,67 +4128,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.ToTable("Treasuries", "finance");
                 });
 
-            modelBuilder.Entity("Hospital_MS.Core.Models.TreasuryMovement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateOnly?>("ClosedIn")
-                        .HasColumnType("date");
-
-                    b.Property<string>("CreatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("bit");
-
-                    b.Property<DateOnly>("OpenedIn")
-                        .HasColumnType("date");
-
-                    b.Property<decimal>("OpeningBalance")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalCredits")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalDebits")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TreasuryId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TreasuryNumber")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UpdatedById")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime?>("UpdatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("TreasuryId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("TreasuryMovements", "finance");
-                });
-
             modelBuilder.Entity("Hospital_MS.Core.Models.TreasuryOperation", b =>
                 {
                     b.Property<int>("Id")
@@ -6032,29 +5974,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("Branch");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("Hospital_MS.Core.Models.TreasuryMovement", b =>
-                {
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("Hospital_MS.Core.Models.Treasury", "Treasury")
-                        .WithMany()
-                        .HasForeignKey("TreasuryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Treasury");
 
                     b.Navigation("UpdatedBy");
                 });

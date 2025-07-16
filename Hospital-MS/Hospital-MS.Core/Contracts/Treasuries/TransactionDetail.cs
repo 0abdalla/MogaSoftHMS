@@ -13,4 +13,5 @@ public class TransactionDetail
     public string ReceivedFrom { get; set; } = string.Empty;
     public decimal Credit { get; set; }
     public decimal Debit { get; set; }
+    public int? AccountId { get; set; }
 }
