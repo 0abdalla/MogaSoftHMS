@@ -213,51 +213,58 @@ public class TreasuryService : ITreasuryService
         }
     }
 
-    public async Task<ErrorResponseModel<List<TreasuryResponse>>> GetEnabledTreasuriesAsync(CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetEnabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default)
     {
-        // Deprecated: This method is not used in the current implementation.
 
-        var treasuries = await _unitOfWork.Repository<Treasury>()
-            .GetAll(x => x.IsActive /*&& x.IsEnabled*/)
-            .Select(x => new TreasuryResponse
+        var treasuries = await _unitOfWork.Repository<TreasuryMovement>()
+            .GetAll(x => x.IsActive && !x.IsClosed)
+            .Include(x => x.Treasury)
+            .Select(x => new TreasuryMovementResponse
             {
                 Id = x.Id,
-                Name = x.Name,
+                ClosedIn = x.ClosedIn,
+                OpenedId = x.OpenedIn,
+                TreasuryId = x.TreasuryId,
+                TreasuryName = x.Treasury.Name,
+                IsClosed = x.IsClosed
             })
             .ToListAsync(cancellationToken);
 
-        return ErrorResponseModel<List<TreasuryResponse>>.Success(GenericErrors.GetSuccess, treasuries);
+        return ErrorResponseModel<List<TreasuryMovementResponse>>.Success(GenericErrors.GetSuccess, treasuries);
     }
 
-    public async Task<ErrorResponseModel<List<TreasuryResponse>>> GetDisabledTreasuriesAsync(CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetDisabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default)
     {
-        // Deprecated: This method is not used in the current implementation.
-
-        var treasuries = await _unitOfWork.Repository<Treasury>()
-            .GetAll(x => x.IsActive/* && !x.IsEnabled*/)
-            .Select(x => new TreasuryResponse
+        var treasuries = await _unitOfWork.Repository<TreasuryMovement>()
+            .GetAll(x => x.IsActive && !x.IsClosed)
+            .Include(x => x.Treasury)
+            .Select(x => new TreasuryMovementResponse
             {
                 Id = x.Id,
-                Name = x.Name,
+                ClosedIn = x.ClosedIn,
+                OpenedId = x.OpenedIn,
+                TreasuryId = x.TreasuryId,
+                TreasuryName = x.Treasury.Name,
+                IsClosed = x.IsClosed
             })
             .ToListAsync(cancellationToken);
 
-        return ErrorResponseModel<List<TreasuryResponse>>.Success(GenericErrors.GetSuccess, treasuries);
+        return ErrorResponseModel<List<TreasuryMovementResponse>>.Success(GenericErrors.GetSuccess, treasuries);
     }
 
-    public async Task<ErrorResponseModel<string>> EnableTreasuryAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<string>> EnableTreasuryMovementAsync(int treasuryMovementId, CancellationToken cancellationToken = default)
     {
-        // Deprecated: This method is not used in the current implementation.
         try
         {
-            var treasury = await _unitOfWork.Repository<Treasury>().GetByIdAsync(id, cancellationToken);
+            var movement = await _unitOfWork.Repository<TreasuryMovement>()
+                .GetByIdAsync(treasuryMovementId, cancellationToken);
 
-            if (treasury == null)
+            if (movement == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            // treasury.IsEnabled = true;
+            movement.IsClosed = false;
 
-            _unitOfWork.Repository<Treasury>().Update(treasury);
+            _unitOfWork.Repository<TreasuryMovement>().Update(movement);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -267,56 +274,6 @@ public class TreasuryService : ITreasuryService
         {
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
-    }
-
-    public async Task<ErrorResponseModel<string>> DisableTreasuryAsync(int id, CancellationToken cancellationToken = default)
-    {
-        //try
-        //{
-        //    var treasury = await _unitOfWork.Repository<Treasury>()
-        //        .GetAll()
-        //        .Include(x => x.Branch)
-        //        .FirstOrDefaultAsync(x => x.Id == id && x.IsActive && x.IsEnabled, cancellationToken);
-
-        //    if (treasury == null)
-        //        return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
-
-        //    // حساب الرصيد الحالي
-        //    var transactions = await _unitOfWork.Repository<TreasuryOperation>()
-        //        .GetAll(t => t.TreasuryId == id && t.IsActive)
-        //        .ToListAsync(cancellationToken);
-
-        //    var balance = treasury.OpeningBalance + transactions.Sum(t =>
-        //        t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount);
-
-
-        //    treasury.IsEnabled = false;
-        //    treasury.ClosedIn = DateOnly.FromDateTime(DateTime.Today);
-
-        //    var newTreasury = new Treasury
-        //    {
-        //        AccountCode = $"TR-{DateTime.Now:yyyyMMdd}-{id + 1}",
-        //        Name = $"{id + 1}خزينه",
-        //        BranchId = treasury.BranchId,
-        //        Currency = treasury.Currency,
-        //        OpeningBalance = balance,
-        //        IsActive = true,
-        //        IsEnabled = true,
-        //        OpenedIn = DateOnly.FromDateTime(DateTime.Today)
-        //    };
-
-        //    _unitOfWork.Repository<Treasury>().Update(treasury);
-        //    await _unitOfWork.Repository<Treasury>().AddAsync(newTreasury, cancellationToken);
-        //    await _unitOfWork.CompleteAsync(cancellationToken);
-
-        //    return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
-        //}
-        //catch (Exception)
-        //{
-        //    return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        //}
-
-        throw new NotImplementedException();
     }
 
     public async Task<ErrorResponseModel<TreasuryTransactionResponse>> GetTreasuryTransactionsAsync(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
@@ -380,11 +337,6 @@ public class TreasuryService : ITreasuryService
         }
     }
 
-    public Task<ErrorResponseModel<string>> EnableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<ErrorResponseModel<string>> DisableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default)
     {
         try
@@ -402,7 +354,7 @@ public class TreasuryService : ITreasuryService
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            // i need to handle if there is no movement yet to add new one 
+
             if (treasuryMovement == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "لا يوجد حركه مفتوحه لهذه الخزينه");
 
@@ -445,5 +397,29 @@ public class TreasuryService : ITreasuryService
         {
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
+    }
+
+    public async Task<PagedResponseModel<List<TreasuryMovementResponse>>> GetAllMovementsAsync(CancellationToken cancellationToken = default)
+    {
+
+        var movements = _unitOfWork.Repository<TreasuryMovement>()
+            .GetAll(x => x.IsActive)
+            .Include(x => x.Treasury)
+            .AsQueryable();
+
+        var totalCount = await movements.CountAsync(cancellationToken: cancellationToken);
+
+        var response = await movements.Select(mov => new TreasuryMovementResponse
+        {
+            Id = mov.Id,
+            ClosedIn = mov.ClosedIn,
+            OpenedId = mov.OpenedIn,
+            TreasuryId = mov.TreasuryId,
+            TreasuryName = mov.Treasury.Name,
+            IsClosed = mov.IsClosed,
+            
+        }).ToListAsync(cancellationToken);
+
+        return PagedResponseModel<List<TreasuryMovementResponse>>.Success(GenericErrors.GetSuccess, totalCount, response);
     }
 }

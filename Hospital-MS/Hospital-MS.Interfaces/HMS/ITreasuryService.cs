@@ -9,17 +9,14 @@ public interface ITreasuryService
     Task<ErrorResponseModel<TreasuryResponse>> GetTreasuryByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<PagedResponseModel<List<TreasuryResponse>>> GetTreasuriesAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> DeleteTreasuryAsync(int id, CancellationToken cancellationToken = default);
-
-    Task<ErrorResponseModel<List<TreasuryResponse>>> GetEnabledTreasuriesAsync(CancellationToken cancellationToken = default);
-    Task<ErrorResponseModel<List<TreasuryResponse>>> GetDisabledTreasuriesAsync(CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> AssignTreasuryToStaffAsync(int staffId, int treasuryId, CancellationToken cancellationToken);
     Task<ErrorResponseModel<TreasuryTransactionResponse>> GetTreasuryTransactionsAsync(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
 
 
-    Task<ErrorResponseModel<string>> EnableTreasuryAsync(int id, CancellationToken cancellationToken = default);
-    Task<ErrorResponseModel<string>> DisableTreasuryAsync(int id, CancellationToken cancellationToken = default);
-
 
     Task<ErrorResponseModel<string>> EnableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> DisableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default);
+    Task<PagedResponseModel<List<TreasuryMovementResponse>>> GetAllMovementsAsync(CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetEnabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetDisabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default);
 }
