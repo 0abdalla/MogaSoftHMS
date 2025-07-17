@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 export declare var bootstrap: any;
+declare var html2pdf: any;
 
 @Component({
   selector: 'app-purchase-order',
@@ -24,6 +25,24 @@ export class PurchaseOrderComponent {
   };
   total : number = 0;
   // 
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
   purchaseOrderForm!:FormGroup;
   isEditMode : boolean = false;
   currentPurchaseRequestId: number | null = null;
@@ -165,7 +184,7 @@ export class PurchaseOrderComponent {
   applyFilters(){
     this.getpurchaseOrders();
   }
-
+  savedOrderData: any;
   addPurchaseorder() {
     if (this.purchaseOrderForm.invalid) {
       this.purchaseOrderForm.markAllAsTouched();
@@ -185,14 +204,19 @@ export class PurchaseOrderComponent {
       });
     } else {
       this.financialService.addPurchaseOrder(formData).subscribe({
-        next: () => {
+        next: async() => {
           this.getpurchaseOrders();
-          this.purchaseOrderForm.reset();
+          // this.savedOrderData = res;
+          // const modal = new bootstrap.Modal(document.getElementById('confirmationModal')!);
+          // modal.show();
+          await this.onQuotationChange();
+          this.printOffers();
+
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
         }
-      });
+      });      
     }
   }
   order!:any;
@@ -241,4 +265,64 @@ export class PurchaseOrderComponent {
       }
     });
   }
+  // 
+  structuredTable: any[] = [];
+  buildStructuredTable() {
+    const selected = this.selectedQuotation;
+    if (!selected || !selected.items) return;
+  
+    this.structuredTable = selected.items.map((item: any) => ({
+      itemName: item.itemName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.unitPrice * item.quantity
+    }));
+  }
+  onQuotationChange() {
+    this.buildStructuredTable();
+  }
+  
+  get selectedQuotation() {
+    if (!this.approvedPrices || !Array.isArray(this.approvedPrices)) return null;
+    return this.approvedPrices.find(q => q.id === this.purchaseOrderForm.value.priceQuotationId);
+  }  
+  
+  get selectedSupplier() {
+    if (!this.allSuppliers || !Array.isArray(this.allSuppliers)) return null;
+    return this.allSuppliers.find(s => s.id === this.purchaseOrderForm.value.supplierId);
+  }
+  
+  getItemNameById(id: number) {
+    return this.allItems.find(x => x.id === id)?.itemName || '';
+  }
+
+  getTotalOrderPrice(): number {
+    const total = this.structuredTable?.reduce((acc, item) => acc + (+item.totalPrice || 0), 0) || 0;
+    return total;
+  }    
+
+  printOffers() {
+    const element = document.getElementById('printablePurchaseOrder');
+    if (!element) {
+      console.error('العنصر غير موجود');
+      return;
+    }
+    element.style.display = 'block';
+    const opt = {
+      margin: 0.5,
+      filename: 'أمر_شراء.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.style.display = 'none';
+    }).catch(err => {
+      console.error('حدث خطأ أثناء توليد PDF:', err);
+      element.style.display = 'none';
+    });
+  }
+  
+  
 }
+

@@ -280,13 +280,13 @@ export class FinancialService {
     return this.http.get<any>(this.baseUrl + 'Treasuries/Enabled');
   }
   enableTreasury(id:number){
-    return this.http.put<any>(this.baseUrl + 'Treasuries/Enable?id=' + id, {});
+    return this.http.put<any>(this.baseUrl + `Treasuries/Movement/${id}/Enable`, {});
   }
   getDisabledTreasuries(){
     return this.http.get<any>(this.baseUrl + 'Treasuries/Disabled');
   }
   disableTreasury(id:number){
-    return this.http.put<any>(this.baseUrl + 'Treasuries/Disabled?id=' + id, {});
+    return this.http.put<any>(this.baseUrl + `Treasuries/Movement/${id}/Disable`, {});
   }
   getTreasuriesById(id:number){
     return this.http.get<any>(this.baseUrl + 'Treasuries/' + id);
