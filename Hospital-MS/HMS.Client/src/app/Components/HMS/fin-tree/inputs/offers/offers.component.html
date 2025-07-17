@@ -243,7 +243,7 @@
           </div>
   
           <div class="text-center mt-3">
-            <h5>تم الترسية على المورد: 
+            <h5>تم الترسية على المورد : 
               <span class="text-success">{{ getWinningSupplier() }}</span>
             </h5>
           </div>
@@ -262,12 +262,12 @@
 
 
 
-<div id="printableOffers" class="p-4">
+<div id="printableOffers" dir="rtl" class="p-4 border rounded">
 
   <div class="d-flex justify-content-around align-items-center mb-4">
     <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
     <div class="text-center">
-      <h5 class="fw-bold mb-1">كشف تفريغ عطائات طلب أسعار رقم <span class="text-primary">{{ purNumber }}</span> عن توريدات</h5>
+      <h5 class="fw-bold mb-1">كشف تفريغ عطائات طلب أسعار رقم  <span class="text-primary"> {{ purNumber }}</span> عن توريدات</h5>
       <div><strong>التاريخ : </strong> {{ quotationDate | date: 'yyyy-MM-dd' }}</div>
     </div>
   </div>
@@ -276,10 +276,10 @@
     <table class="table table-bordered">
       <thead class="table-light">
         <tr>
-          <th>#</th>
+          <th>م</th>
           <th>اسم الصنف</th>
           <th>الكمية</th>
-          <th *ngFor="let supplier of supplierNames">المورد: {{ supplier }}</th>
+          <th *ngFor="let supplier of supplierNames">المورد : {{ supplier }}</th>
         </tr>
       </thead>
       <tbody>
@@ -304,15 +304,14 @@
   </div>
 
   <div class="text-center mb-4">
-    <h5>تم الترسية على المورد: 
+    <h5>تم الترسية على المورد : 
       <span class="text-success">{{ getWinningSupplier() }}</span>
     </h5>
   </div>
 
   <div class="mt-5">
-    <strong>ملاحظات لجنة البت في الإعتماد:</strong>
+    <strong>ملاحظات لجنة البت في الإعتماد : </strong>
     <div style="border: 1px dashed #aaa; padding: 30px 15px; margin-top: 10px;">
-      ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     </div>
   </div>
 

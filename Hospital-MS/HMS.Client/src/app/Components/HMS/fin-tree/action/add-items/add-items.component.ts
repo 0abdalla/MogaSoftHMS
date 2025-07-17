@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
+import html2pdf from 'html2pdf.js';
 export declare var bootstrap:any;
 
 @Component({
@@ -15,8 +16,23 @@ export class AddItemsComponent implements OnInit {
   @ViewChild('printEntrySection') printEntrySection!: ElementRef;
   data: any = {};
   username = sessionStorage.getItem('firstName') + '' + sessionStorage.getItem('lastName') ; 
-  printTime = new Date().toLocaleString('ar-EG');
-
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
 
   // 
   filterForm!:FormGroup;
@@ -160,21 +176,21 @@ export class AddItemsComponent implements OnInit {
   getItems(){
     this.financialService.getItems(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.allItems=res.results;
-      // console.log(this.allItems);
+      console.log('Items',this.allItems);
       this.total=res.count;
     })
   }
   getSuppliers(){
     this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.suppliers=res.results;
-      // console.log(this.suppliers);
+      // console.log('Supps',this.suppliers);
       this.total=res.count;
     })
   }
   getStores(){
     this.financialService.getStores(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.stores=res.results;
-      // console.log(this.stores);
+      console.log('Stores',this.stores);
       this.total=res.count;
     })
   }
@@ -204,6 +220,7 @@ export class AddItemsComponent implements OnInit {
   // 
   isEditMode : boolean = false;
   currentpurchaseOrderId: number | null = null;
+  savedOrderData!:any;
   addPermission() {
     if (this.addPermissionForm.invalid) {
       this.addPermissionForm.markAllAsTouched();
@@ -211,20 +228,58 @@ export class AddItemsComponent implements OnInit {
     }
   
     const formData = this.addPermissionForm.value;
-  
+
+    const supplierName = this.getSupplierName(formData.supplierId);
+    const storeName = this.getStoreName(formData.storeId);
+    
+    const itemsWithNames = formData.items.map((item: any) => {
+      const itemName = this.getItemName(item.id);
+      const totalPrice = item.quantity * item.unitPrice;
+      return { ...item, itemName, totalPrice };
+    });
+    
+    const totalAmount = itemsWithNames.reduce((sum, i) => sum + i.totalPrice, 0);
+    
+    this.savedOrderData = {
+      ...formData,
+      supplierName,
+      storeName,
+      items: itemsWithNames,
+      totalAmount
+    };
+      
     if (this.isEditMode && this.currentpurchaseOrderId) {
       this.financialService.updateReceiptPermission(this.currentpurchaseOrderId, formData).subscribe({
-        next: () => {
-          this.getReceiptPermissions();
-        },
-        error: (err) => {
-          console.error('فشل التعديل:', err);
-        }
+        next: () => this.getReceiptPermissions(),
+        error: (err) => console.error('فشل التعديل:', err)
       });
     } else {
       this.financialService.addReceiptPermission(formData).subscribe({
-        next: () => {
+        next: (res: any) => {
           this.getReceiptPermissions();
+  
+          // تجهيز بيانات العرض للمودال والطباعة
+          const supplier = this.getSupplierName(formData.supplierId);
+          const store = this.getStoreName(formData.storeId);
+  
+          const itemsWithNames = formData.items.map((item: any) => {
+            const itemName = this.getItemName(item.id); // item.id هو ID الصنف
+            const totalPrice = item.quantity * item.unitPrice;
+            return { ...item, itemName, totalPrice };
+          });
+  
+          const totalAmount = itemsWithNames.reduce((sum, i) => sum + i.totalPrice, 0);
+  
+          this.savedOrderData = {
+            ...formData,
+            supplierName: supplier,
+            storeName: store,
+            items: itemsWithNames,
+            totalAmount
+          };
+  
+          const modal = new bootstrap.Modal(document.getElementById('confirmationModal')!);
+          modal.show();
           this.addPermissionForm.reset();
         },
         error: (err) => {
@@ -233,6 +288,7 @@ export class AddItemsComponent implements OnInit {
       });
     }
   }
+  
   permission!:any;
   editPermission(id: number) {
     this.isEditMode = true;
@@ -302,39 +358,77 @@ export class AddItemsComponent implements OnInit {
     return this.stores.find(s => s.id === id)?.name || '---';
   }
 
-  printPermission() {
-    this.data = this.addPermissionForm.value;
-    setTimeout(() => {
-      const printContents = this.printSection.nativeElement.innerHTML;
-      const win = window.open('', '', 'width=900,height=1000');
-      win?.document.write(`
-        <html>
-          <head>
-            <title>طباعة إذن الإضافة</title>
-          </head>
-          <body>${printContents}</body>
-        </html>
-      `);
-      win?.document.close();
-      win?.print();
-    }, 200);
-  }
+  // printPermission() {
+  //   this.data = this.addPermissionForm.value;
+  //   setTimeout(() => {
+  //     const printContents = this.printSection.nativeElement.innerHTML;
+  //     const win = window.open('', '', 'width=900,height=1000');
+  //     win?.document.write(`
+  //       <html>
+  //         <head>
+  //           <title>طباعة إذن الإضافة</title>
+  //         </head>
+  //         <body>${printContents}</body>
+  //       </html>
+  //     `);
+  //     win?.document.close();
+  //     win?.print();
+  //   }, 200);
+  // }
 
-  printEntry() {
-    this.data = this.addPermissionForm.value;
-    setTimeout(() => {
-        const printContents = this.printEntrySection.nativeElement.innerHTML;
-        const win = window.open('', '', 'width=900,height=1000');
-        win?.document.write(`
-            <html>
-                <head>
-                    <title>طباعة القيد</title>
-                </head>
-                <body>${printContents}</body>
-            </html>
-        `);
-        win?.document.close();
-        win?.print();
-    }, 200);
+  // printEntry() {
+  //   this.data = this.addPermissionForm.value;
+  //   setTimeout(() => {
+  //       const printContents = this.printEntrySection.nativeElement.innerHTML;
+  //       const win = window.open('', '', 'width=900,height=1000');
+  //       win?.document.write(`
+  //           <html>
+  //               <head>
+  //                   <title>طباعة القيد</title>
+  //               </head>
+  //               <body>${printContents}</body>
+  //           </html>
+  //       `);
+  //       win?.document.close();
+  //       win?.print();
+  //   }, 200);
+  // }
+  
+  // printAdditionPermission(): void {
+  //   const element = document.getElementById('printSection');
+  //   const opt = {
+  //     margin: 0.5,
+  //     filename: `إذن-إضافة-${this.addPermissionForm.value.documentNumber}.pdf`,
+  //     image: { type: 'jpeg', quality: 0.98 },
+  //     html2canvas: { scale: 2 },
+  //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  //   };
+
+  //   html2pdf().from(element).set(opt).save();
+  // }
+  // printJournalEntry(): void {
+  //   const element = document.getElementById('printEntrySection');
+  //   const opt = {
+  //     margin: 0.5,
+  //     filename: `قيد-${this.addPermissionForm.value.documentNumber}.pdf`,
+  //     image: { type: 'jpeg', quality: 0.98 },
+  //     html2canvas: { scale: 2 },
+  //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  //   };
+  
+  //   html2pdf().from(element).set(opt).save();
+  // }
+  printJournal(data: any) {
+    const element = document.getElementById('journalPrintArea');
+    if (element) {
+      html2pdf().from(element).save('قيد.pdf');
+    }
+  }
+  
+  printReceipt(data: any) {
+    const element = document.getElementById('receiptPrintArea');
+    if (element) {
+      html2pdf().from(element).save('إذن_استلام.pdf');
+    }
   }
 }

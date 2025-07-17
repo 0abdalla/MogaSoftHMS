@@ -242,8 +242,8 @@
                         <button type="submit" class="btn-blue px-5 mx-2" [disabled]="addPermissionForm.invalid">
                             {{isEditMode ? 'تعديل إذن إستلام' : 'إضافة إذن إستلام'}}
                         </button>
-                        <button type="button" class="btn-red px-5 mx-2" (click)="printEntry()">طباعة القيد</button>
-                        <button type="button" class="btn btn-warning px-5 mx-2" (click)="printPermission()">طباعة إذن اللإضافة</button>
+                        <!-- <button type="button" class="btn-red px-5 mx-2" (click)="printJournalEntry()">طباعة القيد</button>
+                        <button type="button" class="btn btn-warning px-5 mx-2" (click)="printAdditionPermission()">طباعة إذن اللإضافة</button> -->
                     </div>
                 </form>
             </div>
@@ -255,24 +255,27 @@
 
 
 
-<div #printSection id="printSection" dir="rtl" class="rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+<div #printSection id="receiptPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="text-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+    </div>
     <div class="d-flex justify-content-evenly">
-        <h3 class="text-center">مخزن {{ getStoreName(data.storeId) || '---' }}</h3>
-        <h4 class="text-center">إذن الإضافة رقم {{ data.documentNumber }}</h4>
+        <h3 class="text-center">مخزن {{ savedOrderData?.storeName || '---' }}</h3>
+        <h4 class="text-center">إذن الإضافة رقم <span class="text-primary"> {{ savedOrderData?.documentNumber }}</span></h4>
     </div>
     <div class="container-fluid">
         <div class="row mt-4" style="font-size: 16px;">
             <hr>
             <div class="col-6">
-                <p><strong>التاريخ:</strong> {{ data.permissionDate }}</p>
-                <p><strong>رقم المستند:</strong> {{ data.documentNumber }}</p>
+                <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
+                <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
                 <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
-                <p><strong>ملاحظات:</strong> {{ data.notes || '-' }}</p>
+                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
             </div>
             <div class="col-6">
-                <p><strong>اسم المورد:</strong> {{ getSupplierName(data.supplierId) }}</p>
+                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
                 <p><strong>العملة:</strong> جنيه مصري</p>
-                <p><strong>رقم القيد:</strong> {{ data.entryNumber || '---' }}</p>
+                <p><strong>رقم القيد:</strong> {{ savedOrderData?.entryNumber || '---' }}</p>
             </div>
             <hr>
         </div>
@@ -281,7 +284,6 @@
             <thead class="bg-primary text-white">
             <tr>
                 <th>م</th>
-                <th>رقم الصنف</th>
                 <th>اسم الصنف</th>
                 <th>الكمية</th>
                 <th>تكلفة الصنف</th>
@@ -289,10 +291,11 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let item of data.items; let i = index">
+            <tr *ngFor="let item of savedOrderData?.items; let i = index">
                 <td>{{ i + 1 }}</td>
-                <td>{{ item.id }}</td>
-                <td>{{ getItemName(item.id) }}</td>
+                <td>
+                    {{ allItems.length ? getItemName(item.itemId) : '---' }}    
+                </td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ item.unitPrice | number:'1.2-2' }}</td>
                 <td>{{ item.totalPrice | number:'1.2-2' }}</td>
@@ -300,7 +303,7 @@
             </tbody>
             <tfoot class="fw-bold bg-light">
             <tr>
-                <td colspan="5">الإجمالي</td>
+                <td colspan="4">الإجمالي</td>
                 <td colspan="1">{{ getTotal() | number:'1.2-2' }}</td>
             </tr>
             </tfoot>
@@ -324,7 +327,7 @@
             <p><strong>اسم المستخدم:</strong> {{ username }}</p>
             </div>
             <div class="col-6">
-            <p><strong>تاريخ الطباعة:</strong> {{ printTime }}</p>
+            <p><strong>تاريخ الطباعة:</strong> {{ today }}</p>
             </div>
         </div>
     </div>
@@ -332,13 +335,13 @@
 
 
 
-<div #printEntrySection id="printEntrySection" dir="rtl" class="border border-primary rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+<div #printEntrySection id="journalPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 " style="max-width: 900px; margin: auto;">
     <h3 class="text-center">قيد رقم {{ data.documentNumber }}</h3>
     <div class="container-fluid">
         <div class="row mt-4" style="font-size: 16px;">
             <div class="col-6">
-                <p><strong>رقم القيد:</strong> {{ data.documentNumber }}</p>
                 <p><strong>التاريخ:</strong> {{ data.permissionDate }}</p>
+                <p><strong>رقم القيد:</strong> {{ data.documentNumber }}</p>
             </div>
             <div class="col-6">
                 <p><strong>التوجيه المحاسبي:</strong> {{ data.fin || '--' }}</p>
@@ -356,21 +359,15 @@
             <tbody>
                 <tr>
                     <td>1</td>
-                    <td>مدين</td>
-                    <td>{{ 100000.00 | number:'1.2-2' }} جنيه مصري</td>
+                    <td>من حساب {{ savedOrderData?.supplierName }}</td>
+                    <td>{{ savedOrderData?.totalAmount | number:'1.2-2' }} ج.م</td>
                 </tr>
                 <tr>
                     <td>2</td>
-                    <td>دائن</td>
-                    <td>{{ 100000.00 | number:'1.2-2' }} جنيه مصري</td>
+                    <td>إلى حساب {{ savedOrderData?.storeName }}</td>
+                    <td>{{ savedOrderData?.totalAmount | number:'1.2-2' }} ج.م</td>
                 </tr>
             </tbody>
-            <tfoot class="fw-bold bg-light">
-                <tr>
-                    <td colspan="2">الإجمالي</td>
-                    <td>{{ 100000.00 | number:'1.2-2' }} جنيه مصري</td>
-                </tr>
-            </tfoot>
         </table>
 
         <hr class="my-4">
@@ -385,8 +382,55 @@
             <p><strong>اسم المستخدم:</strong> {{ username }}</p>
             </div>
             <div class="col-6">
-            <p><strong>تاريخ الطباعة:</strong> {{ printTime }}</p>
+            <p><strong>تاريخ الطباعة:</strong> {{ today }}</p>
             </div>
         </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" dir="rtl">
+        <div class="modal-header">
+          <h5 class="modal-title">تم حفظ أمر الشراء بنجاح</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body" *ngIf="savedOrderData">
+            <p><strong>رقم المستند:</strong> {{ savedOrderData.documentNumber }}</p>
+            <p><strong>التاريخ:</strong> {{ savedOrderData.permissionDate | date:'yyyy-MM-dd' }}</p>
+            <p><strong>اسم المورد:</strong> {{ savedOrderData.supplierName }}</p>
+            <p><strong>اسم المخزن:</strong> {{ savedOrderData.storeName }}</p>
+            <p><strong>الإجمالي:</strong> {{ savedOrderData.totalAmount | number:'1.2-2' }} ج.م</p>            
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>الصنف</th>
+                  <th>الكمية</th>
+                  <th>سعر الوحدة</th>
+                  <th>الإجمالي</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of savedOrderData.items">
+                  <td>{{ item.itemName }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.unitPrice }}</td>
+                  <td>{{ item.quantity * item.unitPrice }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" (click)="printJournal(savedOrderData)">طباعة القيد</button>
+          <button class="btn btn-success" (click)="printReceipt(savedOrderData)">طباعة إذن الاستلام</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        </div>
+      </div>
     </div>
 </div>
