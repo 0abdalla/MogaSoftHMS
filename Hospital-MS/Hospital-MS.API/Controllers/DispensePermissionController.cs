@@ -14,23 +14,37 @@ public class DispensePermissionController(IDispensePermissionService dispensePer
     private readonly IDispensePermissionService _dispensePermissionService = dispensePermissionService;
 
     [HttpPost("")]
-    public async Task<IActionResult> Create([FromBody] DispensePermissionRequest request,CancellationToken cancellationToken)   
+    public async Task<IActionResult> Create([FromBody] DispensePermissionRequest request, CancellationToken cancellationToken)
     {
         var result = await _dispensePermissionService.CreateAsync(request, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("")]
-    public async Task<IActionResult> GetAll([FromQuery] PagingFilterModel pagingFilter,CancellationToken cancellationToken)        
+    public async Task<IActionResult> GetAll([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
     {
         var result = await _dispensePermissionService.GetAllAsync(pagingFilter, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id,CancellationToken cancellationToken)         
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
     {
         var result = await _dispensePermissionService.GetByIdAsync(id, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] DispensePermissionRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _dispensePermissionService.UpdateAsync(id, request, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+    {
+        var result = await _dispensePermissionService.DeleteAsync(id, cancellationToken);
         return Ok(result);
     }
 }

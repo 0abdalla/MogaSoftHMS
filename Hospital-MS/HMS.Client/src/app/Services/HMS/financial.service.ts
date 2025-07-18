@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { PagingFilterModel } from '../../Models/Generics/PagingFilterModel';
@@ -105,9 +105,18 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'StoreTypes/' + id);
   }
   // 
-  getPurchaseRequests(pagingFilter: PagingFilterModel){
-    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseRequests?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  getPurchaseRequests(pagingFilter: PagingFilterModel) {
+    let params = new HttpParams()
+      .set('currentPage', pagingFilter.currentPage)
+      .set('pageSize', pagingFilter.pageSize)
+      .set('filterList', JSON.stringify(pagingFilter.filterList));
+    if (pagingFilter.searchText) {
+      params = params.set('SearchText', pagingFilter.searchText);
+    }
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'PurchaseRequests', { params });
   }
+  
+  
   getPurchaseRequestsById(id:number){
     return this.http.get<any>(this.baseUrl + 'PurchaseRequests/' + id);
   }
@@ -216,6 +225,22 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'ReceiptPermissions/' + id);
   }
   // 
+  getIssueRequests(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DisbursementRequest?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getIssueRequestById(id:number){
+    return this.http.get<any>(this.baseUrl + 'DisbursementRequest/' + id);
+  }
+  addIssueRequest(IssueRequest:any){
+    return this.http.post<any>(this.baseUrl + 'DisbursementRequest', IssueRequest);
+  }
+  updateIssueRequest(id:number,IssueRequest:any){
+    return this.http.put<any>(this.baseUrl + 'DisbursementRequest/' + id, IssueRequest);
+  }
+  deleteIssueRequest(id:number){
+    return this.http.delete<any>(this.baseUrl + 'DisbursementRequest/' + id);
+  }
+  // 
   getMaterialIssuePermissions(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'MaterialIssuePermissions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
@@ -233,19 +258,19 @@ export class FinancialService {
   }
   // 
   getDispensePermissions(pagingFilter: PagingFilterModel){
-    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DispensePermissions?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DispensePermission?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
   getDispensePermissionsById(id:number){
-    return this.http.get<any>(this.baseUrl + 'DispensePermissions/' + id);
+    return this.http.get<any>(this.baseUrl + 'DispensePermission/' + id);
   }
   addDispensePermission(dispensePermission:any){
-    return this.http.post<any>(this.baseUrl + 'DispensePermissions', dispensePermission);
+    return this.http.post<any>(this.baseUrl + 'DispensePermission', dispensePermission);
   }
   updateDispensePermission(id:number,dispensePermission:any){
-    return this.http.put<any>(this.baseUrl + 'DispensePermissions/' + id, dispensePermission);
+    return this.http.put<any>(this.baseUrl + 'DispensePermission/' + id, dispensePermission);
   }
   deleteDispensePermission(id:number){
-    return this.http.delete<any>(this.baseUrl + 'DispensePermissions/' + id);
+    return this.http.delete<any>(this.baseUrl + 'DispensePermission/' + id);
   }
   // 
   getTreasuries(pagingFilter: PagingFilterModel){
@@ -255,13 +280,13 @@ export class FinancialService {
     return this.http.get<any>(this.baseUrl + 'Treasuries/Enabled');
   }
   enableTreasury(id:number){
-    return this.http.put<any>(this.baseUrl + 'Treasuries/Enable?id=' + id, {});
+    return this.http.put<any>(this.baseUrl + `Treasuries/Movement/${id}/Enable`, {});
   }
   getDisabledTreasuries(){
     return this.http.get<any>(this.baseUrl + 'Treasuries/Disabled');
   }
   disableTreasury(id:number){
-    return this.http.put<any>(this.baseUrl + 'Treasuries/Disabled?id=' + id, {});
+    return this.http.put<any>(this.baseUrl + `Treasuries/Movement/${id}/Disable`, {});
   }
   getTreasuriesById(id:number){
     return this.http.get<any>(this.baseUrl + 'Treasuries/' + id);

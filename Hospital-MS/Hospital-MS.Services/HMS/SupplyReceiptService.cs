@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.SupplyReceipts;
+using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
@@ -23,27 +24,49 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
 
     public async Task<ErrorResponseModel<string>> CreateSupplyReceiptAsync(SupplyReceiptRequest request, CancellationToken cancellationToken = default)
     {
+        var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+
             var supplyReceipt = new SupplyReceipt
             {
                 Date = request.Date,
                 ReceivedFrom = request.ReceivedFrom,
-                AccountCode = request.AccountCode,
                 Amount = request.Amount,
                 Description = request.Description,
                 CostCenterId = request.CostCenterId,
-                TreasuryId = request.TreasuryId
+                TreasuryId = request.TreasuryId,
+                AccountId = request.AccountId
             };
 
             await _unitOfWork.Repository<SupplyReceipt>().AddAsync(supplyReceipt, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
+            // handle treasury transaction
+            var treasuryOperation = new TreasuryOperation
+            {
+                Date = request.Date,
+                Amount = request.Amount,
+                Description = request.Description,
+                TreasuryId = request.TreasuryId,
+                ReceivedFrom = request.ReceivedFrom,
+                TransactionType = TransactionType.Credit,
+                DocumentNumber = supplyReceipt.Id.ToString(),
+                AccountId = request.AccountId
+            };
+
+            await _unitOfWork.Repository<TreasuryOperation>().AddAsync(treasuryOperation, cancellationToken);
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
             return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, supplyReceipt.Id.ToString());
         }
         catch (Exception)
         {
+            await transaction.RollbackAsync(cancellationToken);
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
@@ -84,6 +107,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 .GetAll(x => x.Id == id)
                 .Include(x => x.CostCenter)
                 .Include(x => x.Treasury)
+                .Include(x => x.Account)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -98,7 +122,8 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 Id = supplyReceipt.Id,
                 Date = supplyReceipt.Date,
                 ReceivedFrom = supplyReceipt.ReceivedFrom,
-                AccountCode = supplyReceipt.AccountCode,
+                AccountNumber = supplyReceipt.Account.AccountNumber,
+                AccountId = supplyReceipt.Account.AccountId,
                 Amount = supplyReceipt.Amount,
                 Description = supplyReceipt.Description,
                 CostCenterId = supplyReceipt.CostCenterId,
@@ -186,7 +211,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
 
             supplyReceipt.Date = request.Date;
             supplyReceipt.ReceivedFrom = request.ReceivedFrom;
-            supplyReceipt.AccountCode = request.AccountCode;
+            supplyReceipt.AccountId = request.AccountId;
             supplyReceipt.Amount = request.Amount;
             supplyReceipt.Description = request.Description;
             supplyReceipt.CostCenterId = request.CostCenterId;

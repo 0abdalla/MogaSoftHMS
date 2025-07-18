@@ -10,6 +10,7 @@ public class PriceQuotationResponse
     public int Id { get; set; }
     public string QuotationNumber { get; set; } = string.Empty;
     public DateTime QuotationDate { get; set; }
+    public int SupplierId { get; set; }
     public string SupplierName { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public string Status { get; set; } = string.Empty;

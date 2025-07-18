@@ -1,0 +1,154 @@
+<main id="issue-request">
+    <div class="container-fluid">
+        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+            <div class="col-md-8 mb-2">
+                <div class="d-flex align-items-center gap-2">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addIssueModal">
+                <i class="fas fa-plus-circle"></i>
+                <span>إضافة طلب صرف</span>
+            </button>
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                <i class="uil uil-filter"></i>
+                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+            </button>
+                </div>
+            </div>
+            <div class="col-md-4 mb-2" *ngIf="total > 0 && issues?.length > 0">
+                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+            </div>
+            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                <div class="d-flex align-items-center">
+                    <ng-container>
+                        <app-filters [searchPlaceholder]="'ابحث بإستخدام طلب رقم طلب الصرف'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <table class="table table-hover mt-4">
+            <thead>
+                <tr>
+                    <th>طلب الصرف</th>
+                    <th>التاريخ</th>
+                    <th>جهة الطلب</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody *ngIf="issues?.length > 0">
+                <tr *ngFor="let issue of issues | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(issue.id)" style="cursor: pointer">
+                    <td>
+                        <span class="fw-bold">{{ issue.number }}</span>
+                    </td>
+                    <td class="text-secondary">{{ issue.date | date:'yyyy-MM-dd' }}</td>
+                    <td>{{issue.jobDepartmentName}}</td>
+                    <td>
+                        <p class="text-white status-pill fw-bold" *ngIf="issue.status" [ngStyle]="{ backgroundColor: getStatusColor(issue.status) }">
+                            {{ getStatusName(issue.status) }}
+                        </p>
+                      </td>
+                    <td>
+                        <button type="button" class="btn btn-primary mx-2" (click)="editIssueRequest(issue.id)">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger mx-2" (click)="deleteIssueRequest(issue.id)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+            <tbody *ngIf="issues?.length === 0">
+                <tr>
+                    <td colspan="6" class="text-center text-muted">لا يوجد طلبات صرف حتى الآن</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="col-lg-12">
+            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
+                <div class="my-pagination">
+                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
+                        screenReaderCurrentLabel="You're on page">
+                    </pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+
+
+<div class="modal fade" id="addIssueModal" tabindex="-1" aria-labelledby="addIssueModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="addIssueModalLabel">
+                    {{isEditMode ? 'تعديل طلب صرف' : 'طلب صرف جديد'}}
+                </h5>
+            </div>
+            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+                <form [formGroup]="issuseRequestForm" (ngSubmit)="addIssueRequest()">
+                    <div class="p-3 mb-3">
+                        <div class="row gy-3">
+
+                            <div class="col-md-6">
+                                <label class="form-label">التاريخ</label>
+                                <input type="date" class="form-control shadow-none text-end" formControlName="permissionDate" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">جهة الطلب</label>
+                                <select class="form-select shadow-none" formControlName="departmentId">
+                                    <option value="" selected disabled>اختر جهة الطلب</option>
+                                    <option *ngFor="let dep of jobDeps" [value]="dep.id">{{ dep.name }}</option>
+                                </select>
+                            </div>
+
+                            <div formArrayName="items">
+                                <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                                  <div class="col-md-4">
+                                    <label class="form-label">الصنف</label>
+                                    <select class="form-select shadow-none" formControlName="id">
+                                      <option disabled selected value="">اختر الصنف</option>
+                                      <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
+                                    </select>
+                                  </div>
+
+                                  <div class="col-md-4">
+                                    <label class="form-label">الكمية</label>
+                                    <input type="number" class="form-control shadow-none" formControlName="quantity">
+                                  </div>
+                              
+                                  <div class="col-md-4 d-flex align-items-end mt-1">
+                                    <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
+                                      <i class="fa fa-trash"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              
+                                <div class="text-start mb-3">
+                                  <button type="button" class="btn btn-success" (click)="addItemRow()">
+                                    <i class="fa fa-plus"></i> إضافة صنف
+                                  </button>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">ملاحظات</label>
+                                <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn-blue px-5 mx-2" [disabled]="issuseRequestForm.invalid">
+                            {{isEditMode ? 'تعديل طلب صرف' : 'إضافة طلب صرف'}}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

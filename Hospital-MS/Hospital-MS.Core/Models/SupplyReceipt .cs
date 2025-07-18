@@ -11,12 +11,13 @@ public class SupplyReceipt : AuditableEntity // ايصال التوريد
     public int TreasuryId { get; set; }
     public DateOnly Date { get; set; }
     public string? ReceivedFrom { get; set; }
-    public string? AccountCode { get; set; }
     public decimal Amount { get; set; }
     public string? Description { get; set; }
     public int? CostCenterId { get; set; }
     public bool IsActive { get; set; } = true;
 
+    public int? AccountId { get; set; }
+    public AccountTree? Account { get; set; }
     public Treasury Treasury { get; set; } = default!;
     public CostCenterTree CostCenter { get; set; } = default!;
 }

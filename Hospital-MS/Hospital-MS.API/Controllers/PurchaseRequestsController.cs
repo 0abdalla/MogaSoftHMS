@@ -45,6 +45,7 @@ public class PurchaseRequestsController(IPurchaseRequestService service) : ApiBa
     public async Task<IActionResult> ApproveViaEmail(int id, CancellationToken cancellationToken)
     {
         await _service.ApprovePurchaseRequestAsync(id, cancellationToken);
+
         return Content("Purchase request approved successfully.");
     }
 }

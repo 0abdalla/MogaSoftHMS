@@ -40,7 +40,7 @@ namespace Hospital_MS.Services.HMS
             await _unitOfWork.Repository<PurchaseRequest>().AddAsync(purchaseRequest, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
-            //BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
+            BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
 
             //await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
 
@@ -63,8 +63,11 @@ namespace Hospital_MS.Services.HMS
             purchaseRequest.StoreId = request.StoreId;
             purchaseRequest.Notes = request.Notes;
 
-            foreach (var item in purchaseRequest.Items)
-                item.IsActive = false;
+            //foreach (var item in purchaseRequest.Items)
+            //    item.IsActive = false;
+
+            // Clear existing items and add new ones
+            purchaseRequest.Items.Clear();
 
             purchaseRequest.Items = request.Items.Select(i => new PurchaseRequestItem
             {
@@ -167,14 +170,6 @@ namespace Hospital_MS.Services.HMS
             return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, pr.Id.ToString());
         }
 
-        private async Task<string> GenerateRequestNumber(CancellationToken cancellationToken)
-        {
-            var year = DateTime.Now.Year;
-            var count = await _unitOfWork.Repository<PurchaseRequest>()
-                .CountAsync(x => x.RequestDate.Year == year, cancellationToken);
-            return $"MR-{year}-{count + 1}";
-        }
-
         public async Task<ErrorResponseModel<string>> ApprovePurchaseRequestAsync(int id, CancellationToken cancellationToken = default)
         {
             var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
@@ -223,6 +218,16 @@ namespace Hospital_MS.Services.HMS
                 .ToListAsync(cancellationToken);
 
             return PagedResponseModel<List<PurchaseRequestResponse>>.Success(GenericErrors.GetSuccess, totalCount, list);
+        }
+
+
+
+        private async Task<string> GenerateRequestNumber(CancellationToken cancellationToken)
+        {
+            var year = DateTime.Now.Year;
+            var count = await _unitOfWork.Repository<PurchaseRequest>()
+                .CountAsync(x => x.RequestDate.Year == year, cancellationToken);
+            return $"MR-{year}-{count + 1}";
         }
     }
 }

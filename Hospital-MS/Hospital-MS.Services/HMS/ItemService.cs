@@ -37,7 +37,8 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             {
                 NameAr = request.NameAr,
                 NameEn = request.NameEn,
-                UnitId = request.UnitId,
+                //UnitId = request.UnitId,
+                Unit = request.Unit,
                 GroupId = request.GroupId,
                 OrderLimit = request.OrderLimit,
                 Cost = request.Cost,
@@ -79,8 +80,9 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 Id = row.Field<int>("Id"),
                 NameAr = row.Field<string>("NameAr") ?? string.Empty,
                 NameEn = row.Field<string>("NameEn") ?? string.Empty,
-                UnitId = row.Field<int>("UnitId"),
-                UnitName = row.Field<string>("UnitName") ?? string.Empty,
+                //UnitId = row.Field<int>("UnitId"),
+                //UnitName = row.Field<string>("UnitName") ?? string.Empty,
+                Unit = row.Field<string>("Unit") ?? string.Empty,
                 GroupId = row.Field<int?>("GroupId"),
                 GroupName = row.Field<string>("GroupName"),
                 OrderLimit = row.Field<decimal>("OrderLimit"),
@@ -135,8 +137,9 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 Id = item.Id,
                 NameAr = item.NameAr,
                 NameEn = item.NameEn,
-                UnitId = item.UnitId,
-                UnitName = item.Unit.NameAr,
+                //UnitId = item.UnitId,
+                //UnitName = item.Unit.NameAr,
+                Unit = item.Unit,
                 GroupId = item.GroupId,
                 GroupName = item.Group?.Name ?? string.Empty,
                 OrderLimit = item.OrderLimit,
@@ -177,7 +180,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             item.NameAr = request.NameAr;
             item.NameEn = request.NameEn;
-            item.UnitId = request.UnitId;
+            item.Unit = request.Unit;
             item.GroupId = request.GroupId;
             item.OrderLimit = request.OrderLimit;
             item.Cost = request.Cost;

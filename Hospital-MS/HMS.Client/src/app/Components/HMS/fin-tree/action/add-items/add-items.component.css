@@ -8,7 +8,7 @@ table {
     border-top-right-radius: 16px;
     overflow: hidden;
     border: none;
-    padding-bottom: 0;
+    padding-bottom: 0;;
     margin-bottom: 0;
   }
   
@@ -88,3 +88,28 @@ table {
     text-decoration: none;
     text-align: center !important;
   }
+
+  /* #printSection , #printEntrySection {
+    display: none;
+  }
+  
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+  
+    #printSection, #printEntrySection, #printSection * {
+      visibility: visible;
+    }
+  
+    #printSection , #printEntrySection {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      margin: auto;
+      display: block;
+      background-color: white !important;
+      padding: 2rem;
+    }
+  } */

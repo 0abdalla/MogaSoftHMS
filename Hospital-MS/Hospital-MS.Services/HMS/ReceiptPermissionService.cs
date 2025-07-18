@@ -27,10 +27,10 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
             if (supplier is null)
                 return ErrorResponseModel<string>.Failure(new Error("المورد غير موجود", Status.NotFound));
 
-            var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
-                .GetByIdAsync(request.PurchaseRequestId, cancellationToken);
+            var purchaseRequest = await _unitOfWork.Repository<PurchaseOrder>()
+                .GetByIdAsync(request.PurchaseOrderId, cancellationToken);
             if (purchaseRequest is null)
-                return ErrorResponseModel<string>.Failure(new Error("طلب الشراء غير موجود", Status.NotFound));
+                return ErrorResponseModel<string>.Failure(new Error("امر الشراء غير موجود", Status.NotFound));
 
             var permission = new ReceiptPermission
             {
@@ -39,7 +39,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
                 PermissionDate = DateOnly.FromDateTime(request.PermissionDate),
                 StoreId = request.StoreId,
                 SupplierId = request.SupplierId,
-                PurchaseRequestId = request.PurchaseRequestId,
+                PurchaseOrderId = request.PurchaseOrderId,
                 Notes = request.Notes,
 
                 Items = request.Items.Select(i => new ReceiptPermissionItem

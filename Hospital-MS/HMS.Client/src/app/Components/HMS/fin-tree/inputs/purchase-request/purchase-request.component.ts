@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
-import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 export declare var bootstrap: any;
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-purchase-request',
@@ -15,7 +16,8 @@ export class PurchaseRequestComponent {
   pagingFilterModel : PagingFilterModel = {
     currentPage : 1,
     pageSize : 16,
-    filterList : []
+    filterList : [],
+    searchText: ''
   };
   total : number = 0;
   // 
@@ -23,11 +25,31 @@ export class PurchaseRequestComponent {
   isEditMode : boolean = false;
   currentPurchaseRequestId: number | null = null;
   allItems: any[] = [];
+  stores: any[] = [];
   TitleList = ['المشتريات','طلبات شراء'];
-
+  isFilter : boolean = true;
+  // 
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
   constructor(private financialService : FinancialService , private fb : FormBuilder){
     this.purchaseRequestForm=this.fb.group({
-      requestDate: [new Date().toISOString()],
+      requestDate: [,Validators.required],
       purpose:[null,Validators.required],
       storeId:[null,Validators.required],
       notes:[null],
@@ -36,6 +58,11 @@ export class PurchaseRequestComponent {
       ]),
     })
   }
+  onSearchInputChanged(value: any) {
+    this.pagingFilterModel.searchText = value;
+    this.getpurchaseRequests();
+  }
+  
   createItemGroup(): FormGroup {
     return this.fb.group({
       itemId: [null, Validators.required],
@@ -61,6 +88,7 @@ export class PurchaseRequestComponent {
   ngOnInit(): void {
     this.getpurchaseRequests();
     this.getItems();
+    this.getStores();
   }
   getItems(){
     this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
@@ -70,14 +98,28 @@ export class PurchaseRequestComponent {
     })
   }
 
+  getStores(){
+    this.financialService.getStores(this.pagingFilterModel).subscribe((res : any)=>{
+      this.stores = res.results;
+      this.total = res.totalCount;
+      console.log(this.stores);
+    },error=>{
+      console.log(error);
+    })
+  }
 
-
-  getpurchaseRequests(){
+  getpurchaseRequests() {
     this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res : any)=>{
+      console.log('Full API Response:', res);
       this.purchaseRequests = res.results;
       this.total = res.totalCount;
-      console.log(this.purchaseRequests);
-    })
+      console.log('Purchase Requests:', this.purchaseRequests);
+        if (!res.results.length) {
+          console.log('No results returned for SearchText:', this.pagingFilterModel.searchText);
+        }
+      },error=>{
+        console.log(error);
+      })
   }
 
   onPageChange(event:any){
@@ -89,7 +131,14 @@ export class PurchaseRequestComponent {
   applyFilters(){
     this.getpurchaseRequests();
   }
-
+  filterChecked(event: any) {
+    console.log('Filter Changed Event:', event);
+    this.pagingFilterModel.searchText = typeof event.searchText === 'string' ? event.searchText : '';
+    this.pagingFilterModel.filterList = event.filterList || {};
+    console.log('Updated Paging Filter Model:', this.pagingFilterModel);
+    this.getpurchaseRequests();
+  }
+  purNumber!:number;
   addPurchaseRequest() {
     if (this.purchaseRequestForm.invalid) {
       this.purchaseRequestForm.markAllAsTouched();
@@ -100,8 +149,9 @@ export class PurchaseRequestComponent {
   
     if (this.isEditMode && this.currentPurchaseRequestId) {
       this.financialService.updatePurchaseRequest(this.currentPurchaseRequestId, formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getpurchaseRequests();
+
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -109,9 +159,11 @@ export class PurchaseRequestComponent {
       });
     } else {
       this.financialService.addPurchaseRequest(formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getpurchaseRequests();
-          this.purchaseRequestForm.reset();
+          // this.purchaseRequestForm.reset();
+          this.generatePurchaseRequestPDF();
+          this.purNumber=res.results;
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -177,10 +229,35 @@ export class PurchaseRequestComponent {
   }
   getStatusColor(type: string): string {
     const map: { [key: string]: string } = {
-      Approved: '#00FF00',
+      Approved: '#198654',
       Pending: '#FFA500',
-      Rejected: '#FF0000'
+      Rejected: '#dc3545'
     };
     return map[type] || '#000000';
   }
+  // 
+  getItemName(itemId: number | string): string {
+    const item = this.allItems.find(i => i.id == itemId);
+    return item ? item.nameAr : '—';
+  }
+  
+  getStoreName(storeId: number | string): string {
+    const store = this.stores.find(s => s.id == storeId);
+    return store ? store.name : '—';
+  }
+  
+  generatePurchaseRequestPDF() {
+    const element = document.getElementById('printablePurchaseRequest');
+    if (!element) return;
+    element.classList.remove('d-none');
+    html2pdf().set({
+      margin: 10,
+      filename: `طلب-شراء-${new Date().getTime()}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { orientation: 'portrait' }
+    }).from(element).save().then(() => {
+      element.classList.add('d-none');
+    });
+  }
+  
 }

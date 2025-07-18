@@ -46,39 +46,56 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
         var result = await _treasuryService.DeleteTreasuryAsync(id, cancellationToken);
         return Ok(result);
     }
-    [HttpGet("Enabled")] 
-    public async Task<IActionResult> GetEnabledTreasuries(CancellationToken cancellationToken)
-    {
-        var result = await _treasuryService.GetEnabledTreasuriesAsync(cancellationToken);
-        return Ok(result);
-    }
 
-    [HttpGet("Disabled")]
-    public async Task<IActionResult> GetDisabledTreasuries(CancellationToken cancellationToken)
-    {
-        var result = await _treasuryService.GetDisabledTreasuriesAsync(cancellationToken);
-        return Ok(result);
-    }
-
-    [HttpPut("Enable")]
-    public async Task<IActionResult> EnableTreasury(int id, CancellationToken cancellationToken)
-    {
-        var result = await _treasuryService.EnableTreasuryAsync(id, cancellationToken);
-        return Ok(result);
-    }
-
-    [HttpPut("Disabled")]
-    public async Task<IActionResult> DisableTreasury(int id, CancellationToken cancellationToken)
-    {
-        var result = await _treasuryService.DisableTreasuryAsync(id, cancellationToken);
-        return Ok(result);
-    }
-
+    
     [HttpPost("assign-treasury-to-staff/{treasuryId}/{staffId}")]
     [Authorize(Roles = "SystemAdmin")]
     public async Task<IActionResult> AssignTreasury(int treasuryId, int staffId, CancellationToken cancellationToken)
     {
         var result = await _treasuryService.AssignTreasuryToStaffAsync(staffId, treasuryId, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("transactions/{treasuryId}")]
+    public async Task<IActionResult> GetTreasuryTransactions(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetTreasuryTransactionsAsync(treasuryId, fromDate, toDate, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPut("Movement/{id}/Enable")]
+    public async Task<IActionResult> EnableTreasuryMovement(int id, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.EnableTreasuryMovementAsync(id, cancellationToken);
+        return Ok(result);
+    }
+
+
+    [HttpPut("Movement/{treasuryId}/Disable")]
+    public async Task<IActionResult> DisableTreasuryMovement(int treasuryId, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.DisableTreasuryMovementAsync(treasuryId, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("AllMovements")]
+    public async Task<IActionResult> GetAllMovements(CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetAllMovementsAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("Movement/Enabled")]
+    public async Task<IActionResult> GetEnabledTreasuries(CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetEnabledTreasuriesMovementsAsync(cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("Movement/Disabled")]
+    public async Task<IActionResult> GetDisabledTreasuries(CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetDisabledTreasuriesMovementsAsync(cancellationToken);
         return Ok(result);
     }
 }

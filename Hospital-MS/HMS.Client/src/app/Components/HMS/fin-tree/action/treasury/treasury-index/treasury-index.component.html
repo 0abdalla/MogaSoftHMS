@@ -7,7 +7,7 @@
                 <a routerLink="supply-receipt" class="card text-decoration-none">
                     <div class="card-body">
                         <i class="fa-solid fa-receipt"></i>
-                        <h5 class="card-title">إيصال استلام نقدية</h5>
+                        <h5 class="card-title">إيصال توريد</h5>
                     </div>
                 </a>
             </div>
@@ -198,7 +198,7 @@
                 <form [formGroup]="treasuryReportForm" (ngSubmit)="showTreasuryReport()">
                     <div class="p-3 mb-3">
                       <div class="row gy-3">
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
                           <label class="form-label">الخزينة</label>
                           <select class="form-select shadow-none text-end" formControlName="treasuryId">
                             <option disabled selected value="">اختر الخزينة</option>
@@ -208,7 +208,12 @@
                           </select>
                         </div>
                   
-                        <div class="col-lg-6">
+                        <div class="col-lg-4">
+                          <label class="form-label">من تاريخ</label>
+                          <input type="date" formControlName="fromDate" class="form-control shadow-none text-end">
+                        </div>
+
+                        <div class="col-lg-4">
                           <label class="form-label">حتى تاريخ</label>
                           <input type="date" formControlName="toDate" class="form-control shadow-none text-end">
                         </div>
@@ -228,97 +233,109 @@
 
 
 <div class="modal fade" id="openTreasuryReportModal" tabindex="-1" aria-labelledby="openTreasuryReportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="openTreasuryReportModalLabel">
-                    الخزينة العامة رقم {{ treasuryReportData?.treasuryId }}
-                    من {{ treasuryReportData?.fromDate | date:'yyyy-MM-dd' }}
-                    الى {{ treasuryReportData?.toDate | date:'yyyy-MM-dd' }}
-                </h5>
-            </div>
-            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover; direction: rtl;">
-                <div class="d-flex gap-4 justify-content-between flex-wrap">
-                    <div class="flex-fill" style="min-width: 300px;">
-                    <h4 class="text-center">الوارد</h4>
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>رقم المستند</th>
-                          <th>التاريخ</th>
-                          <th>البيان</th>
-                          <th>استلم من</th>
-                          <th>القيمة</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let t of treasuryReportData?.transactions">
-                          <td>{{ t.documentId }}</td>
-                          <td>{{ t.date | date:'yyyy-MM-dd' }}</td>
-                          <td>{{ t.description || '-' }}</td>
-                          <td>{{ t.receivedFrom }}</td>
-                          <td>{{ t.credit | number:'1.2-2' }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+    <div class="modal-dialog modal-fullscreen modal-dialog-centered">
+        <div class="modal-content" >
+            <div id="treasury-report-print">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="openTreasuryReportModalLabel">
+                        الخزينة العامة رقم {{ treasuryReportData?.treasuryId }}
+                        من {{ treasuryReportData?.fromDate | date:'yyyy-MM-dd' }}
+                        الى {{ treasuryReportData?.toDate | date:'yyyy-MM-dd' }}
+                    </h5>
+                </div>
+                <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover; direction: rtl;">
+                    <div class="d-flex justify-content-between flex-wrap">
+                        <div class="flex-fill" style="min-width: 300px; width: 48%;">
+                        <h4 class="text-center">الوارد</h4>
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>الرقم</th>
+                              <th>التاريخ</th>
+                              <th>اسم الحساب</th>
+                              <th>البيان</th>
+                              <th>القيمة</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let t of creditTransactions">
+                              <td>{{ t.documentId }}</td>
+                              <td>{{ t.date | date:'yyyy-MM-dd' }}</td>
+                              <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom }})</td>
+                              <td>{{ t.description || '-' }}</td>
+                              <td>{{ t.credit | number:'1.2-2' }} ج.م</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        </div>
+                        <div class="flex-fill" style="min-width: 300px; width: 48%;">
+                        <h4 class="text-center">المنصرف</h4>
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th>الرقم</th>
+                              <th>التاريخ</th>
+                              <th>اسم الحساب</th>
+                              <th>البيان</th>
+                              <th>القيمة</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let t of debitTransactions">
+                              <td>{{ t.documentId }}</td>
+                              <td>{{ t.date | date:'yyyy-MM-dd' }}</td>
+                              <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom }})</td>
+                              <td>{{ t.description || '-' }}</td>
+                              <td>{{ t.debit | number:'1.2-2' }} ج.م</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        </div>
                     </div>
-                    <div class="flex-fill" style="min-width: 300px;">
-                    <h4 class="text-center">المنصرف</h4>
-                    <table class="table table-bordered">
-                      <thead>
-                        <tr>
-                          <th>رقم المستند</th>
-                          <th>التاريخ</th>
-                          <th>البيان</th>
-                          <th>استلمت أنا</th>
-                          <th>القيمة</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr *ngFor="let t of treasuryReportData?.transactions">
-                          <td>{{ t.documentId }}</td>
-                          <td>{{ t.date | date:'yyyy-MM-dd' }}</td>
-                          <td>{{ t.description || '-' }}</td>
-                          <td>{{ t.receivedFrom }}</td>
-                          <td>{{ t.debit | number:'1.2-2' }}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div class="mt-4">
+                        <table class="table table-bordered text-center">
+                            <tfoot>
+                                <tr>
+                                  <td>
+                                    <div class="fw-bold">الرصيد السابق</div>
+                                    <div>{{ treasuryReportData?.previousBalance | number:'1.2-2' }} ج.م</div>
+                                  </td>
+                                  <td>
+                                    <div class="fw-bold">إجمالي المقبوضات</div>
+                                    <div style="color: green;">
+                                      {{ treasuryReportData?.totalCredits | number:'1.2-2' }} ج.م
+                                    </div>
+                                  </td>                          
+                                  <td>
+                                    <div class="fw-bold">إجمالي المنصرف</div>
+                                    <div style="color: red;">
+                                      ( {{ treasuryReportData?.totalDebits | number:'1.2-2' }} ) ج.م
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div class="fw-bold">الرصيد المرحل</div>
+                                    <div [ngStyle]="{
+                                            color: treasuryReportData?.currentBalance < 0 ? 'red' : 'green',
+                                            fontWeight: 'bold'
+                                        }">
+                                      <ng-container *ngIf="treasuryReportData?.currentBalance < 0">
+                                        ( {{ getAbsolute(treasuryReportData?.currentBalance) | number:'1.2-2' }} ) ج.م
+                                      </ng-container>
+                                      <ng-container *ngIf="treasuryReportData?.currentBalance >= 0">
+                                        {{ treasuryReportData?.currentBalance | number:'1.2-2' }} ج.م
+                                      </ng-container>
+                                    </div>
+                                  </td>                          
+                                </tr>
+                              </tfoot>
+                              
+                        </table>
                     </div>
                 </div>
-                <div class="mt-4">
-                    <table class="table table-bordered text-center">
-                      <tfoot>
-                        <tr>
-                          <td>
-                            <div class="fw-bold">الرصيد السابق</div>
-                            <div>{{ treasuryReportData?.previousBalance | number:'1.2-2' }}</div>
-                          </td>
-                          <td>
-                            <div class="fw-bold">إجمالي المقبوضات</div>
-                            <div>{{ treasuryReportData?.totalCredits | number:'1.2-2' }}</div>
-                          </td>
-                          <td>
-                            <div class="fw-bold">إجمالي المنصرف</div>
-                            <div style="color: red;">( {{ treasuryReportData?.totalDebits | number:'1.2-2' }} )</div>
-                          </td>
-                          <td>
-                            <div class="fw-bold">الرصيد المرحل</div>
-                            <div [ngStyle]="{
-                              color: treasuryReportData?.currentBalance < 0 ? 'red' : 'green',
-                              fontWeight: 'bold'
-                            }">
-                              {{ treasuryReportData?.currentBalance < 0 
-                                ? '(' + (treasuryReportData?.currentBalance | number:'1.2-2') + ')' 
-                                : (treasuryReportData?.currentBalance | number:'1.2-2') }}
-                            </div>
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
-                  </div>
-                  
             </div>
+            <div class="text-center mt-4">
+                <button class="btn btn-primary" (click)="printTreasuryReport()">طباعة</button>
+            </div>              
         </div>
     </div>
 </div>

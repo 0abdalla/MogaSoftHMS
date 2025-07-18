@@ -73,6 +73,9 @@ namespace Hospital_MS.Core._Data
         public DbSet<MainGroup> MainGroups { get; set; }
         public DbSet<RadiologyBodyType> RadiologyBodyTypes { get; set; }
         
+        public DbSet<TreasuryOperation> TreasuryOperations { get; set; }
+        public DbSet<TreasuryMovement> TreasuryMovements { get; set; }
+
 
 
         public DbSet<MedicalServiceDetail> MedicalServiceDetails { get; set; }

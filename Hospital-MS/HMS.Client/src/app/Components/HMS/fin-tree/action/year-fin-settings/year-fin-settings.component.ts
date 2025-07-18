@@ -63,4 +63,40 @@ export class YearFinSettingsComponent {
       }
     });
   }  
+
+
+  
+  closeFinancialYear() {
+    Swal.fire({
+      title: 'هل تريد إغلاق السنة المالية؟',
+      html: `
+        برجاء مراعاة الآتي قبل بدء إغلاق السنة المالية الجديدة:<br>
+        1- إقفال آخر حركة خزينة بالسنة المالية المنتهية<br>
+        2- ترحيل جميع قيود اليومية لحسابات الأستاذ<br>
+        3- إقفال السنة المالية المنتهية<br>
+        <br>
+        <strong>ملاحظة:</strong> يُرجى العلم أنه بعد الضغط على زر "إنشاء سنة مالية جديدة" لا يمكن التراجع نهائيًا.
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'نعم , إنشاء',
+      cancelButtonText: 'إلغاء'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.financialService.postFiscalYear(this.financialYearForm.value).subscribe({
+          next: (res:any) => {
+            console.log(res);
+            this.financialYearForm.reset();
+            Swal.fire('تم إنشاء السنة المالية بنجاح', '', 'success');
+          },
+          error: (err) => {
+            console.error('فشل الإضافة:', err);
+            Swal.fire('فشل إنشاء السنة المالية', '', 'error');
+          }
+        });
+      }
+    });
+  }  
 }

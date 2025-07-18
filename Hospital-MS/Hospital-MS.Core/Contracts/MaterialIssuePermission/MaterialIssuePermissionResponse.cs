@@ -17,4 +17,7 @@ public class MaterialIssuePermissionResponse
     public string BranchName { get; set; }
     public string? Notes { get; set; }
     public List<MaterialIssueItemResponse> Items { get; set; } = new();
+
+    public int? DisbursementRequestId { get; set; }
+    public string? DisbursementRequestNumber { get; set; }
 }

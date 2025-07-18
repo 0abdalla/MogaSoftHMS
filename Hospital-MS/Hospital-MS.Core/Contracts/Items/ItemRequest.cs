@@ -10,7 +10,8 @@ public class ItemRequest
 {
     public string NameAr { get; set; }
     public string NameEn { get; set; }
-    public int UnitId { get; set; }
+    //public int UnitId { get; set; }
+    public string? Unit { get; set; }
     public int? GroupId { get; set; }
     public decimal OrderLimit { get; set; }
     public decimal Cost { get; set; }

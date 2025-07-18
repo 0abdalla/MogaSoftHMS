@@ -131,17 +131,17 @@
                         <div class="row gy-3">
 
                             <div class="col-md-6">
-                                <label>التاريخ</label>
+                                <label class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="permissionDate" />
                             </div>
 
                             <div class="col-md-6">
-                                <label>رقم المستند</label>
+                                <label class="form-label">رقم المستند</label>
                                 <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
                             </div>
 <!-- 
                             <div class="col-md-3">
-                                <label>مركز التكلفة</label>
+                                <label class="form-label">مركز التكلفة</label>
                                 <select class="form-select shadow-none text-end" formControlName="costCenter">
                                     <option value="بدون">بدون</option>
                                     <option value="مركز 1">مركز 1</option>
@@ -150,7 +150,15 @@
                             </div> -->
 
                             <div class="col-md-4">
-                                <label>اسم المخزن</label>
+                                <label class="form-label">رقم أمر الشراء</label>
+                                <select class="form-select shadow-none text-end" formControlName="purchaseOrderId">
+                                    <option disabled selected value="">اختر رقم أمر الشراء</option>
+                                    <option *ngFor="let order of purchaseOrders" [value]="order.id">{{ order.orderNumber }}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">اسم المخزن</label>
                                 <select class="form-select shadow-none text-end" formControlName="storeId">
                                     <option disabled selected value="">اختر اسم المخزن</option>
                                     <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
@@ -158,26 +166,20 @@
                             </div>
 
                             <div class="col-md-4">
-                                <label>اسم المورد</label>
+                                <label class="form-label">اسم المورد</label>
                                 <select class="form-select shadow-none text-end" formControlName="supplierId">
                                     <option disabled selected value="">اختر اسم المورد</option>
                                     <option *ngFor="let supplier of suppliers" [value]="supplier.id">{{ supplier.name }}</option>
                                 </select>
                             </div>
 
-                            <div class="col-md-4">
-                                <label>رقم طلب الشراء</label>
-                                <select class="form-select shadow-none text-end" formControlName="purchaseRequestId">
-                                    <option disabled selected value="">اختر رقم طلب الشراء</option>
-                                    <option *ngFor="let purchaseRequest of purchaseRequests" [value]="purchaseRequest.id">{{ purchaseRequest.requestNumber }}</option>
-                                </select>
-                            </div>
+                            
 
 
                             <div formArrayName="items">
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                                   <div class="col-md-2">
-                                    <label>الصنف</label>
+                                    <label class="form-label">الصنف</label>
                                     <select class="form-select shadow-none" formControlName="id">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
@@ -185,31 +187,36 @@
                                   </div>
                               
                                   <div class="col-md-2">
-                                    <label>الوحدة</label>
-                                    <input type="text" class="form-control shadow-none" formControlName="unit">
+                                    <label class="form-label">الوحدة</label>
+                                    <select class="form-select shadow-none" formControlName="unit">
+                                        <option value="" selected disabled>اختر الوحدة</option>
+                                        <option value="لتر">لتر</option>
+                                        <option value="كجم">كجم</option>
+                                        <option value="قطعة">قطعة</option>
+                                    </select>
                                   </div>
 
                                   <div class="col-md-2">
-                                    <label>الكمية</label>
+                                    <label class="form-label">الكمية</label>
                                     <input type="number" class="form-control shadow-none" formControlName="quantity">
                                   </div>
                                   
                                   <div class="col-md-2">
-                                    <label>السعر</label>
+                                    <label class="form-label">السعر</label>
                                     <input type="number" class="form-control shadow-none" formControlName="unitPrice">
                                   </div>
 
                                   <div class="col-md-2">
-                                    <label>الإجمالي</label>
+                                    <label class="form-label">الإجمالي</label>
                                     <input type="number" class="form-control shadow-none" formControlName="totalPrice">
                                   </div>
                               
                                   <div class="col-md-2">
-                                    <label>ملاحظات</label>
+                                    <label class="form-label">ملاحظات</label>
                                     <input type="text" class="form-control shadow-none" formControlName="notes">
                                   </div>
                               
-                                  <div class="col-md-1 d-flex align-items-end">
+                                  <div class="col-md-1 d-flex align-items-end mt-1">
                                     <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
                                       <i class="fa fa-trash"></i>
                                     </button>
@@ -224,7 +231,7 @@
                             </div>
 
                             <div class="col-md-12">
-                                <label>ملاحظات</label>
+                                <label class="form-label">ملاحظات</label>
                                 <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
                             </div>
 
@@ -232,12 +239,198 @@
                     </div>
 
                     <div class="text-center">
-                        <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">
+                        <button type="submit" class="btn-blue px-5 mx-2" [disabled]="addPermissionForm.invalid">
                             {{isEditMode ? 'تعديل إذن إستلام' : 'إضافة إذن إستلام'}}
                         </button>
+                        <!-- <button type="button" class="btn-red px-5 mx-2" (click)="printJournalEntry()">طباعة القيد</button>
+                        <button type="button" class="btn btn-warning px-5 mx-2" (click)="printAdditionPermission()">طباعة إذن اللإضافة</button> -->
                     </div>
                 </form>
             </div>
         </div>
+    </div>
+</div>
+
+
+
+
+
+<div #printSection id="receiptPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="text-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+    </div>
+    <div class="d-flex justify-content-evenly">
+        <h3 class="text-center">مخزن {{ savedOrderData?.storeName || '---' }}</h3>
+        <h4 class="text-center">إذن الإضافة رقم <span class="text-primary"> {{ savedOrderData?.documentNumber }}</span></h4>
+    </div>
+    <div class="container-fluid">
+        <div class="row mt-4" style="font-size: 16px;">
+            <hr>
+            <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
+                <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
+                <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
+                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
+            </div>
+            <div class="col-6">
+                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
+                <p><strong>العملة:</strong> جنيه مصري</p>
+                <p><strong>رقم القيد:</strong> {{ savedOrderData?.entryNumber || '---' }}</p>
+            </div>
+            <hr>
+        </div>
+        
+        <table class="table table-bordered text-center mt-4">
+            <thead class="bg-primary text-white">
+            <tr>
+                <th>م</th>
+                <th>اسم الصنف</th>
+                <th>الكمية</th>
+                <th>تكلفة الصنف</th>
+                <th>الإجمالي</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of savedOrderData?.items; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                    {{ allItems.length ? getItemName(item.itemId) : '---' }}    
+                </td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unitPrice | number:'1.2-2' }}</td>
+                <td>{{ item.totalPrice | number:'1.2-2' }}</td>
+            </tr>
+            </tbody>
+            <tfoot class="fw-bold bg-light">
+            <tr>
+                <td colspan="4">الإجمالي</td>
+                <td colspan="1">{{ getTotal() | number:'1.2-2' }}</td>
+            </tr>
+            </tfoot>
+        </table>
+        
+        <hr class="my-4">
+        <div class="row text-center">
+            <div class="col-6">
+            <p class="mt-2">أمين المخزن</p>
+            <hr style="width: 60%; margin: auto;">
+            </div>
+            <div class="col-6">
+            <p class="mt-2">المستلم</p>
+            <hr style="width: 60%; margin: auto;">
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        <div class="row text-center">
+            <div class="col-6">
+            <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>تاريخ الطباعة:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+
+<div #printEntrySection id="journalPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 " style="max-width: 900px; margin: auto;">
+    <h3 class="text-center">قيد رقم {{ data.documentNumber }}</h3>
+    <div class="container-fluid">
+        <div class="row mt-4" style="font-size: 16px;">
+            <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ data.permissionDate }}</p>
+                <p><strong>رقم القيد:</strong> {{ data.documentNumber }}</p>
+            </div>
+            <div class="col-6">
+                <p><strong>التوجيه المحاسبي:</strong> {{ data.fin || '--' }}</p>
+            </div>
+        </div>
+
+        <table class="table table-bordered mt-4">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>م</th>
+                    <th>التفاصيل</th>
+                    <th>القيمة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>من حساب {{ savedOrderData?.supplierName }}</td>
+                    <td>{{ savedOrderData?.totalAmount | number:'1.2-2' }} ج.م</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>إلى حساب {{ savedOrderData?.storeName }}</td>
+                    <td>{{ savedOrderData?.totalAmount | number:'1.2-2' }} ج.م</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-12">
+                <p><strong>ملاحظات:</strong> {{ data.notes || '-' }}</p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row text-center">
+            <div class="col-6">
+            <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>تاريخ الطباعة:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content" dir="rtl">
+        <div class="modal-header">
+          <h5 class="modal-title">تم حفظ أمر الشراء بنجاح</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+        </div>
+        <div class="modal-body" *ngIf="savedOrderData">
+            <p><strong>رقم المستند:</strong> {{ savedOrderData.documentNumber }}</p>
+            <p><strong>التاريخ:</strong> {{ savedOrderData.permissionDate | date:'yyyy-MM-dd' }}</p>
+            <p><strong>اسم المورد:</strong> {{ savedOrderData.supplierName }}</p>
+            <p><strong>اسم المخزن:</strong> {{ savedOrderData.storeName }}</p>
+            <p><strong>الإجمالي:</strong> {{ savedOrderData.totalAmount | number:'1.2-2' }} ج.م</p>            
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>الصنف</th>
+                  <th>الكمية</th>
+                  <th>سعر الوحدة</th>
+                  <th>الإجمالي</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of savedOrderData.items">
+                  <td>{{ item.itemName }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.unitPrice }}</td>
+                  <td>{{ item.quantity * item.unitPrice }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" (click)="printJournal(savedOrderData)">طباعة القيد</button>
+          <button class="btn btn-success" (click)="printReceipt(savedOrderData)">طباعة إذن الاستلام</button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        </div>
+      </div>
     </div>
 </div>

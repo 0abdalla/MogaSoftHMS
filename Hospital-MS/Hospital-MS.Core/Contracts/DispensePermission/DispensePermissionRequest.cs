@@ -8,9 +8,10 @@ namespace Hospital_MS.Core.Contracts.DispensePermission;
 public class DispensePermissionRequest
 {
     public DateOnly Date { get; set; }
-    public int FromStoreId { get; set; }
-    public int ToStoreId { get; set; }
-    public decimal Quantity { get; set ; }
-    public int ItemId { get; set; }
-    public string Notes { get; set; } 
+    public int TreasuryId { get; set; }
+    public string? DispenseTo { get; set ; }
+    public string? Notes { get; set; }
+    public int AccountId { get; set; }
+    public int CostCenterId { get; set; }
+    public decimal Amount { get; set; }
 }
