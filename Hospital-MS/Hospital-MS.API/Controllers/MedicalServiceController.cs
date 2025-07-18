@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.MedicalServices;
+using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -19,11 +20,25 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("CreateRadiologyBodyType")]
+        public async Task<IActionResult> CreateRadiologyBodyType(RadiologyBodyTypeRequest request, CancellationToken cancellationToken = default)
+        {
+            var result = await _medicalServiceService.CreateRadiologyBodyType(request, cancellationToken);
+            return Ok(result);
+        }
+
         [HttpGet("")]
         public async Task<IActionResult> GetMedicalServices([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
         {
             var result = await _medicalServiceService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
+        }
+
+        [HttpGet("GetRadiologyBodyTypes")]
+        public async Task<ErrorResponseModel<List<RadiologyBodyType>>> GetRadiologyBodyTypes()
+        {
+            var result = await _medicalServiceService.GetRadiologyBodyTypes();
+            return result;
         }
 
         [HttpPost("GetMedicalService")]

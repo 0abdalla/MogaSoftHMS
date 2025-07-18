@@ -53,6 +53,7 @@
                                 <th>الإسم</th>
                                 <th>العيادة الطبية</th>
                                 <th>الخدمة الطبية</th>
+                                <th>أشعة الجسم</th>
                                 <th>رقم الحجز</th>
                             </tr>
                         </thead>
@@ -73,6 +74,10 @@
                                             {{ getServiceName(appointment.type) }}
                                         </p>
                                     </td>
+                                    <td class="text-secondary fw-semibold">
+                                        <app-tag [tags]="appointment.radiologyBodyTypeName" [header]="'أشعة الجسم'" [showWithMore]="true"></app-tag>
+                                    </td>
+
                                     <td class="text-secondary">{{ appointment.id }}</td>
                             </ng-container>
                         </tbody>

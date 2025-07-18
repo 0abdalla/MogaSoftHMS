@@ -13,6 +13,7 @@ export interface Patients {
     clinicId: number;
     clinicName: string;
     medicalServiceName: string;
+    radiologyBodyTypeName: string;
     doctorId: number;
     doctorName: string;
     date: string;

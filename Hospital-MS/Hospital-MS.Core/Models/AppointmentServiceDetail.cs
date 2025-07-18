@@ -11,6 +11,7 @@ namespace Hospital_MS.Core.Models
         public int Id { get; set; }
         public int AppointmentId { get; set; }
         public int MedicalServiceId { get; set; }
+        public int? RadiologyBodyTypeId { get; set; }
         public DateOnly AppointmentDate { get; set; }
         public Appointment Appointment { get; set; }
         public MedicalService? MedicalService { get; set; }

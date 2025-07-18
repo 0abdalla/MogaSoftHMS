@@ -15,7 +15,9 @@ declare var bootstrap: any;
 export class DoctorsMedicalServiceComponent implements OnInit {
   TitleList = ['إدارة الأطباء', 'نوع الخدمة'];
   DaysWeekSelected: string[] = [];
+  RadiologyTypesList: any[] = []
   serviceForm!: FormGroup;
+  RadiologyTypeForm!: FormGroup;
   isFilter = true;
   total = 0;
   pagingFilterModel: PagingFilterModel = {
@@ -32,7 +34,14 @@ export class DoctorsMedicalServiceComponent implements OnInit {
       name: ['', Validators.required],
       price: [''],
       type: ['', Validators.required],
+      radiologyBodyTypeName: [''],
       weekDays: ['', Validators.required]
+    });
+
+    this.RadiologyTypeForm = this.fb.group({
+      id: 0,
+      name: ['', Validators.required],
+      medicalServiceId: ['', Validators.required],
     });
 
     this.serviceForm.get('type')?.valueChanges.subscribe(type => {
@@ -69,6 +78,12 @@ export class DoctorsMedicalServiceComponent implements OnInit {
       this.formInit(item);
   }
 
+  openRadiologyBodyTypes(item: any) {
+    this.RadiologyTypeForm.reset();
+    const modal = new bootstrap.Modal(document.getElementById('RadiologyBodyTypesModal')!);
+    modal.show();
+  }
+
   formInit(item: any) {
     const pipe = new DayToArabicPipe();
     let days = item.medicalServiceSchedules.map(schedule => schedule.weekDay);
@@ -85,9 +100,13 @@ export class DoctorsMedicalServiceComponent implements OnInit {
   getMedicalServices() {
     this.appointmentService.GetMedicalService(this.pagingFilterModel).subscribe(data => {
       this.pagedResponseModel.results = data.results;
+      this.RadiologyTypesList = this.pagedResponseModel.results.filter(item => item.type === 'Radiology').map(i => { return { name: i.name, medicalServiceId: i.id } });
       this.total = data.totalCount;
       this.pagedResponseModel.results.forEach(item => {
         item.days = item.medicalServiceSchedules.map(schedule => schedule.weekDay).join(';;;');
+      });
+       this.pagedResponseModel.results.forEach(item => {
+        item.bodyTypes = item.radiologyBodyTypes.map(i => i.name).join(';;;');
       });
     });
   }
@@ -143,5 +162,28 @@ export class DoctorsMedicalServiceComponent implements OnInit {
         }
       });
     }
+  }
+
+  AddRadiologyBodyTypes() {
+    debugger;
+    if (this.RadiologyTypeForm.invalid) {
+      this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'الرجاء ملء جميع الحقول المطلوبة' });
+      return;
+    }
+
+    let formValue = this.RadiologyTypeForm.value;
+    this.RadiologyTypeForm.patchValue({ id: 0, });
+    this.appointmentService.CreateRadiologyBodyType(formValue).subscribe({
+      next: (res) => {
+        this.messageService.add({ severity: 'success', summary: 'نجاح', detail: 'تم إضافة الخدمة بنجاح' });
+        this.getMedicalServices();
+        this.RadiologyTypeForm.reset();
+        const modal = bootstrap.Modal.getInstance(document.getElementById('RadiologyBodyTypesModal')!);
+        modal.hide();
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'خطأ', detail: err.error.message });
+      }
+    });
   }
 }

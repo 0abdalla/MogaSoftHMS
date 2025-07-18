@@ -57,10 +57,14 @@ export class AppointmentFormComponent implements OnInit {
   printInvoiceData: any = {};
   // 
   insuranceCategories!: any;
+  appointmentType = '';
   // 
   selectedServicePrice!: number | null;
   showServicePrice: boolean = false;
   filteredDoctorsByService: any[] = [];
+  radiologyTypeList: any[] = [];
+  radiologyTypesSelected: any[] = [];
+  radiologyTypesClicked: any[] = [];
   selectedDate: Date | null = null;
   SelectedService: any;
   // 
@@ -96,13 +100,16 @@ export class AppointmentFormComponent implements OnInit {
       appointmentDate: ['', Validators.required],
       appointmentType: ['', Validators.required],
       medicalServiceId: ['', Validators.required],
+      radiologyBodyTypeId: ['', Validators.required],
       medicalServiceName: null,
       doctorId: [''],
       price: null,
       doctorName: null,
+      radiologyBodyTypeNames:null
     });
 
     this.appointmentDetailsForm.get('appointmentType')?.valueChanges.subscribe((selectedType) => {
+      this.appointmentType = selectedType;
       this.onAppointmentTypeChange();
       this.filteredClinics = this.clinics.filter((clinic: any) => clinic.type === selectedType);
       const clinicControl = this.reservationForm.get('medicalServiceId');
@@ -132,6 +139,16 @@ export class AppointmentFormComponent implements OnInit {
         );
         this.appointmentDetailsForm.get('doctorId')?.enable();
         this.appointmentDetailsForm.get('doctorId')?.setValue(null);
+        this.radiologyTypesSelected = this.radiologyTypeList.filter(i => i.medicalServiceId == medicalServiceId);
+        const doctorControl = this.appointmentDetailsForm.get('radiologyBodyTypeId');
+        if (this.appointmentType == 'Radiology') {
+          doctorControl?.setValidators(Validators.required);
+        } else {
+          doctorControl?.clearValidators();
+          doctorControl?.setValue(null);
+        }
+        doctorControl?.updateValueAndValidity();
+
       } else {
         this.filteredDoctors = [];
         this.appointmentDetailsForm.get('doctorId')?.disable();
@@ -149,6 +166,17 @@ export class AppointmentFormComponent implements OnInit {
     this.reservationForm.get('insuranceCompanyId')?.valueChanges.subscribe((companyId) => {
       const selectedCompany = this.insuranceCompanies.find((company) => company.id === Number(companyId));
       this.insuranceCategories = selectedCompany?.insuranceCategories || [];
+    });
+
+    this.appointmentDetailsForm.get('radiologyBodyTypeId')?.valueChanges.subscribe((typeId) => {
+      let obj = this.radiologyTypeList.find(i => i.id == typeId);
+      if (obj) {
+        let checked = this.radiologyTypesClicked.find(i => i.id === obj.id);
+        if (!checked) {
+          this.radiologyTypesClicked.push(obj);
+        }
+      }
+
     });
   }
 
@@ -174,6 +202,7 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   AddAppointmentDetails() {
+    debugger;
     const validService = ['General', 'Consultation', 'Surgery'];
     const formData = this.appointmentDetailsForm.value;
 
@@ -210,6 +239,8 @@ export class AppointmentFormComponent implements OnInit {
     formData.price = this.SelectedService.price || 0;
     formData.medicalServiceName = this.SelectedService.name || '';
     formData.doctorName = this.getDoctorName(formData.doctorId);
+    formData.radiologyBodyTypeId = this.radiologyTypesClicked.map(i => i.id);
+    formData.radiologyBodyTypeNames = this.radiologyTypesClicked.map(i => i.name).join(';;;');
     if (formData.id) {
       const index = this.appointmentDetailsSelected.findIndex(item => item.id === formData.id);
       if (index !== -1) {
@@ -275,9 +306,17 @@ export class AppointmentFormComponent implements OnInit {
   ngOnInit(): void {
     this.getStaff();
     this.getInsuranceCompanies();
+    this.GetRadiologyBodyTypes();
     this.loadPatients();
     this.getServices();
   }
+
+  GetRadiologyBodyTypes() {
+    this.appointmentService.GetRadiologyBodyTypes().subscribe(data => {
+      this.radiologyTypeList = data.results || [];
+    });
+  }
+
   onDayChange() {
     this.selectedDate = this.reservationForm.get('appointmentDate')?.value
       ? new Date(this.reservationForm.get('appointmentDate')?.value)
@@ -300,6 +339,7 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   onSubmit() {
+    debugger;
     if (this.reservationForm.invalid) {
       this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
       return;
@@ -317,8 +357,8 @@ export class AppointmentFormComponent implements OnInit {
       patientName: formData.patientName,
       patientPhone: formData.patientPhone,
       gender: formData.gender,
-      appointmentType: service.appointmentType,
-      doctorId: service.doctorId ? Number(service.doctorId) : null,
+      appointmentType: service?.appointmentType,
+      doctorId: service?.doctorId ? Number(service?.doctorId) : null,
       insuranceCompanyId: formData.insuranceCompanyId || null,
       insuranceCategoryId: formData.insuranceCategoryId || null,
       insuranceNumber: formData.insuranceNumber || '',
@@ -327,7 +367,14 @@ export class AppointmentFormComponent implements OnInit {
       companionName: formData.companionName,
       companionNationalId: formData.companionNationalId,
       companionPhone: formData.companionPhone,
-      medicalServices: this.appointmentDetailsSelected.map(item => { return { medicalServiceId: item.medicalServiceId, appointmentDate: item.appointmentDate } }),
+      medicalServices: this.appointmentDetailsSelected.map(item => { 
+        return { 
+          medicalServiceId: item.medicalServiceId, 
+          appointmentDate: item.appointmentDate,
+          appointmentType:item.appointmentType,
+          radiologyBodyTypeIds: item.radiologyBodyTypeId ? item.radiologyBodyTypeId : [],
+        } 
+      }),
     };
 
     this.appointmentService.createAppointment(payload).subscribe({
@@ -565,6 +612,10 @@ export class AppointmentFormComponent implements OnInit {
     }
 
     this.filteredServices = services;
+  }
+
+  removeRadiologyType(index: number) {
+    this.radiologyTypesClicked.splice(index, 1);
   }
 
 }

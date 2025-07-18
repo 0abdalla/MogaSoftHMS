@@ -14,5 +14,6 @@ namespace Hospital_MS.Core.Contracts.MedicalServices
         public string Type { get; set; }
 
         public List<MedicalServiceScheduleResponse> MedicalServiceSchedules { get; set; } = [];
+        public List<RadiologyBodyTypeResponse> RadiologyBodyTypes { get; set; } = [];
     }
 }

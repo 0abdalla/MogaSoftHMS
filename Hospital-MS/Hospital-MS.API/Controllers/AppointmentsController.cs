@@ -21,9 +21,9 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpPost("GetAppointments")]
-        public async Task<IActionResult> GetAppointments(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        public IActionResult GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
-            var result = await _appointmentService.GetAllAsync(pagingFilter, cancellationToken);
+            var result = _appointmentService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
         }
 

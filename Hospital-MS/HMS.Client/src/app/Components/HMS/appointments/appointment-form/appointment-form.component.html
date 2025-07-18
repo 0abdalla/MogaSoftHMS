@@ -67,6 +67,7 @@
                                     <th>تاريخ الحجز</th>
                                     <th>نوع الحجز</th>
                                     <th>نوع الخدمة</th>
+                                    <th>أشعة الجسم</th>
                                     <th>الدكتور المختص</th>
                                     <th>التكلفة</th>
                                     <th>الإجراءات</th>
@@ -78,6 +79,9 @@
                                         <td>{{ item.appointmentDate | date: 'dd/MM/yyyy' }}</td>
                                         <td>{{ item.appointmentType | medicalTypeToArabic }}</td>
                                         <td>{{ item.medicalServiceName }}</td>
+                                        <td>
+                                            <app-tag [tags]="item.radiologyBodyTypeNames" [header]="'أشعة الجسم'" [showWithMore]="true"></app-tag>
+                                        </td>
                                         <td>{{ item.doctorName }}</td>
                                         <td>{{ item.price }} جنيه</td>
                                         <td class="d-flex gap-2">
@@ -248,6 +252,25 @@
                             {{ selectedDate ? 'لا يوجد أطباء متاحين في اليوم المحدد' : 'لا يوجد أطباء متاحين لهذه الخدمة' }}
                             </option>
                         </select>
+                    </div>
+                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value == 'Radiology'">
+                        <label for="clinic-type" class="form-label">أشعة الجسم</label>
+                        <select id="clinic-type" class="form-select shadow-none" formControlName="radiologyBodyTypeId">
+                            <option selected disabled [value]="null">اختر أشعة الجسم</option>
+                            <option [value]="item.id" *ngFor="let item of radiologyTypesSelected">{{item.name}}</option>
+                        </select>
+                        <div class="min-width-200 max-width-500 small-scroll overflow-auto p-2">
+                            <span class="badge round min-width-60 badge-muted me-1 mb-1" *ngFor="let item of radiologyTypesClicked;let i = index">
+                            {{ item.name }}
+                            <i class="fas fa-times ms-1 cursor-pointer"
+                          (click)="removeRadiologyType(i)"
+                          title="حذف"
+                          style="font-size: 0.8rem;"></i>
+                          </span>
+                        </div>
+                        <div *ngIf="appointmentDetailsForm.get('radiologyBodyTypeId')?.invalid && appointmentDetailsForm.get('radiologyBodyTypeId')?.touched" class="text-danger">
+                            أشعة الجسم مطلوبة
+                        </div>
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn-blue" [disabled]="appointmentDetailsForm.invalid">حفظ التغييرات</button>
