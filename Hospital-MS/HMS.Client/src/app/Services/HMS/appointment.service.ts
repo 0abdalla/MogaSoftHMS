@@ -49,7 +49,7 @@ export class AppointmentService {
     pageSize: number = 16,
     searchText: string = '',
     filterList: any = {
-      
+
     }
   ) {
     const params = new HttpParams()
@@ -57,22 +57,31 @@ export class AppointmentService {
       .set('PageSize', pageSize.toString())
       .set('SearchText', searchText)
       .set('FilterList', JSON.stringify(filterList));
-  
+
     return this.http.get<any>(`${this.baseUrl}MedicalService`, { params });
   }
 
-   GetMedicalService(pagingFilter: PagingFilterModel){
+  GetMedicalService(pagingFilter: PagingFilterModel) {
     return this.http.post<any>(`${this.baseUrl}MedicalService/GetMedicalService`, pagingFilter);
   }
 
-  addService(service: any){
+  GetRadiologyBodyTypes() {
+    return this.http.get<any>(`${this.baseUrl}MedicalService/GetRadiologyBodyTypes`);
+  }
+
+  addService(service: any) {
     return this.http.post<any>(`${this.baseUrl}MedicalService`, service);
   }
-  editService(id: number, service: any){
+
+  CreateRadiologyBodyType(service: any) {
+    return this.http.post<any>(`${this.baseUrl}MedicalService/CreateRadiologyBodyType`, service);
+  }
+
+  editService(id: number, service: any) {
     return this.http.put<any>(`${this.baseUrl}MedicalService/${id}`, service);
   }
   // 
-  closeShift(){
+  closeShift() {
     return this.http.post<any>(`${this.baseUrl}Shift/Close`, {});
   }
 }

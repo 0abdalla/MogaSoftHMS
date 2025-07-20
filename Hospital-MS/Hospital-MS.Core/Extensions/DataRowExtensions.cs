@@ -21,5 +21,18 @@ namespace Hospital_MS.Core.Extensions
                 }
             }
         }
+
+        public static string? TryTranslateEnum<TEnum>(this string? value) where TEnum : struct, Enum
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            if (Enum.TryParse<TEnum>(value, out var enumValue))
+            {
+                return enumValue.GetArabicValue();
+            }
+
+            return value;
+        }
     }
 }

@@ -14,6 +14,10 @@
                     <i class="uil uil-filter"></i>
                     <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
                 </button>
+                            <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openRadiologyBodyTypes(null)">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>إضافة أشعة للجسم</span>
+                </button>
                         </div>
                     </div>
                     <div class="col-md-4 mb-2" *ngIf="total > 0">
@@ -35,6 +39,7 @@
                                     <th>الإسم</th>
                                     <th>السعر</th>
                                     <th>النوع</th>
+                                    <th>نوع أشعة الجسم</th>
                                     <th>الأيام</th>
                                     <th>الإجراءات</th>
                                 </tr>
@@ -45,6 +50,9 @@
                                         <td>{{ item.name }}</td>
                                         <td>{{ item.price }}</td>
                                         <td>{{ item.type | medicalTypeToArabic }}</td>
+                                        <td>
+                                            <app-tag [tags]="item.bodyTypes" [header]="'أشعة الجسم'" [showWithMore]="true"></app-tag>
+                                        </td>
                                         <td>
                                             <app-tag [tags]="item.days" [header]="'الأيام'" [showWithMore]="true"></app-tag>
                                         </td>
@@ -80,13 +88,6 @@
             <div class="modal-body p-4">
                 <form [formGroup]="serviceForm" (ngSubmit)="AddMedicalService()">
                     <div class="mb-3">
-                        <label class="form-label">الاسم</label>
-                        <input class="form-control" formControlName="name">
-                        <div *ngIf="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched" class="text-danger">
-                            يرجى إدخال الاسم
-                        </div>
-                    </div>
-                    <div class="mb-3">
                         <label for="clinic-type" class="form-label">نوع الخدمة</label>
                         <select id="clinic-type" class="form-select shadow-none" formControlName="type">
                           <option selected disabled [value]="null">اختر نوع الخدمة</option>
@@ -100,6 +101,14 @@
                             يرجى إدخال النوع
                         </div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input class="form-control" formControlName="name">
+                        <div *ngIf="serviceForm.get('name')?.invalid && serviceForm.get('name')?.touched" class="text-danger">
+                            يرجى إدخال الاسم
+                        </div>
+                    </div>
+
                     <div class="mb-3" *ngIf="serviceForm.get('type')?.value == 'Screening' || serviceForm.get('type')?.value == 'Radiology'">
                         <label class="form-label">السعر</label>
                         <input type="number" class="form-control" formControlName="price">
@@ -107,7 +116,11 @@
                             يرجى إدخال السعر
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3" *ngIf="serviceForm.get('type')?.value == 'Radiology'">
+                        <label class="form-label">التصوير التشخيصي</label>
+                        <input class="form-control" formControlName="radiologyBodyTypeName">
+                    </div>
+                    <div class="mb-3" *ngIf="serviceForm.get('type')?.value && serviceForm.get('type')?.value != 'Consultation' && serviceForm.get('type')?.value != 'Radiology'">
                         <label class="form-label">الأيام</label>
                         <select class="form-select shadow-none" formControlName="weekDays">
                           <option selected disabled [value]="null">اختر أيام</option>
@@ -134,6 +147,41 @@
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn-blue" [disabled]="serviceForm.invalid">حفظ التغييرات</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="RadiologyBodyTypesModal" tabindex="-1" aria-labelledby="RadiologyBodyTypesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="RadiologyBodyTypesLabel">إضافة خدمة</h5>
+            </div>
+            <div class="modal-body p-4">
+                <form [formGroup]="RadiologyTypeForm" (ngSubmit)="AddRadiologyBodyTypes()">
+                    <div class="mb-3">
+                        <label for="clinic-type" class="form-label">نوع الأشعة</label>
+                        <select id="clinic-type" class="form-select shadow-none" formControlName="medicalServiceId">
+                          <option selected disabled [value]="null">اختر نوع الأشعة</option>
+                          <option [value]="item.medicalServiceId" *ngFor="let item of RadiologyTypesList">{{item.name}}</option>
+                        </select>
+                        <div *ngIf="RadiologyTypeForm.get('medicalServiceId')?.invalid && RadiologyTypeForm.get('medicalServiceId')?.touched" class="text-danger">
+                            يرجى اختيار نوع
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input class="form-control" formControlName="name">
+                        <div *ngIf="RadiologyTypeForm.get('name')?.invalid && RadiologyTypeForm.get('name')?.touched" class="text-danger">
+                            يرجى إدخال الاسم
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn-blue" [disabled]="RadiologyTypeForm.invalid">حفظ التغييرات</button>
                     </div>
                 </form>
             </div>

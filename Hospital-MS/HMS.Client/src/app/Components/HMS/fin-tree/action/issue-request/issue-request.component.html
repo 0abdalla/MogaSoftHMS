@@ -99,7 +99,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">جهة الطلب</label>
-                                <select class="form-select shadow-none" formControlName="departmentId">
+                                <select class="form-select shadow-none" formControlName="jobDepartmentId">
                                     <option value="" selected disabled>اختر جهة الطلب</option>
                                     <option *ngFor="let dep of jobDeps" [value]="dep.id">{{ dep.name }}</option>
                                 </select>
@@ -109,7 +109,7 @@
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                                   <div class="col-md-4">
                                     <label class="form-label">الصنف</label>
-                                    <select class="form-select shadow-none" formControlName="id">
+                                    <select class="form-select shadow-none" formControlName="itemId">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
                                     </select>
@@ -117,7 +117,7 @@
 
                                   <div class="col-md-4">
                                     <label class="form-label">الكمية</label>
-                                    <input type="number" class="form-control shadow-none" formControlName="quantity">
+                                    <input type="number" class="form-control shadow-none" formControlName="quantity" min="1">
                                   </div>
                               
                                   <div class="col-md-4 d-flex align-items-end mt-1">
@@ -150,5 +150,53 @@
                 </form>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div id="printableIssue" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="d-flex justify-content-evenly align-items-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <h4 style="font-weight: bold;">طلب صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4>
+    </div>
+  
+    <div class="mb-4">
+        <strong>التاريخ:</strong> {{ savedIssueData?.permissionDate | date:'yyyy-MM-dd' }}
+    </div>
+
+    <div class="mb-4">
+      <strong>جهة الطلب:</strong> {{ getDepartmentName(savedIssueData?.jobDepartmentId) }}
+    </div>
+  
+    <table class="table table-bordered" style="width: 100%; font-size: 14px;">
+      <thead class="table-light">
+        <tr>
+          <th>م</th>
+          <th>اسم الصنف</th>
+          <th>الكمية</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of savedIssueData?.items; let i = index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ item.itemNameAr || getItemName(item.itemId) }}</td>
+            <td>{{ item.quantity }}</td>
+          </tr>
+      </tbody>
+    </table>
+  
+    <div class="mt-4">
+      <strong>ملاحظات:</strong> {{ savedIssueData?.notes || '---' }}
+    </div>
+  
+    <div class="row mt-5 text-center">
+      <div class="col-md-6">
+        <p>المدير التنفيذي</p>
+        <p>---------------------</p>
+      </div>
+      <div class="col-md-6">
+        <p>رئيس القسم المتخص</p>
+        <p>---------------------</p>
+      </div>
     </div>
 </div>

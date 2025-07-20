@@ -14,9 +14,12 @@ public interface ITreasuryService
 
 
 
+
     Task<ErrorResponseModel<string>> EnableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<string>> DisableTreasuryMovementAsync(int id, CancellationToken cancellationToken = default);
     Task<PagedResponseModel<List<TreasuryMovementResponse>>> GetAllMovementsAsync(CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetEnabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default);
     Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetDisabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<TreasuryMovementResponse>> GetTreasuryMovementByIdAsyncV1(int id, CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<TreasuryMovementDetailsResponse>> GetTreasuryMovementByIdAsyncV2(int id, CancellationToken cancellationToken = default);
 }

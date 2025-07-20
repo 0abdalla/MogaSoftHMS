@@ -2,7 +2,6 @@
 using Hospital_MS.Core.Contracts.Treasuries;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_MS.API.Controllers;
@@ -47,7 +46,7 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
         return Ok(result);
     }
 
-    
+
     [HttpPost("assign-treasury-to-staff/{treasuryId}/{staffId}")]
     [Authorize(Roles = "SystemAdmin")]
     public async Task<IActionResult> AssignTreasury(int treasuryId, int staffId, CancellationToken cancellationToken)
@@ -60,6 +59,13 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
     public async Task<IActionResult> GetTreasuryTransactions(int treasuryId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken)
     {
         var result = await _treasuryService.GetTreasuryTransactionsAsync(treasuryId, fromDate, toDate, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("Movement/{id}")]
+    public async Task<IActionResult> GetTreasuryMovementById(int id, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.GetTreasuryMovementByIdAsyncV1(id, cancellationToken);
         return Ok(result);
     }
 

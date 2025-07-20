@@ -6,6 +6,8 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System.Data;
 
@@ -36,6 +38,17 @@ namespace Hospital_MS.Services.HMS
                 await _unitOfWork.Repository<MedicalService>().AddAsync(medicalService, cancellationToken);
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
+                if (request.Type == "Radiology" && !string.IsNullOrEmpty(request.RadiologyBodyTypeName))
+                {
+                    var bodyType = new RadiologyBodyType
+                    {
+                        MedicalServiceId = medicalService.Id,
+                        Name = request.Name,
+                    };
+
+                    await _unitOfWork.Repository<RadiologyBodyType>().AddAsync(bodyType, cancellationToken);
+                }
 
                 if (request.WeekDays is not null && request.WeekDays.Count > 0)
                 {
@@ -69,6 +82,35 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
+        public async Task<ErrorResponseModel<string>> CreateRadiologyBodyType(RadiologyBodyTypeRequest request, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var isExist = await _unitOfWork.Repository<RadiologyBodyType>().AnyAsync(x => x.Name == request.Name && x.MedicalServiceId == request.MedicalServiceId, cancellationToken);
+
+                if (isExist)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
+
+                var medicalService = new RadiologyBodyType
+                {
+                    Name = request.Name,
+                    MedicalServiceId = request.MedicalServiceId,
+                };
+
+                await _unitOfWork.Repository<RadiologyBodyType>().AddAsync(medicalService, cancellationToken);
+
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+
+                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, medicalService.Id.ToString());
+
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
         public async Task<PagedResponseModel<List<MedicalServiceResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
             try
@@ -87,8 +129,9 @@ namespace Hospital_MS.Services.HMS
                     Name = row.Field<string>("ServiceName") ?? string.Empty,
                     Price = row.Field<decimal?>("Price") ?? 0,
                     Type = row.Field<string>("ServiceType") ?? string.Empty,
-                    MedicalServiceSchedules = JsonConvert.DeserializeObject<List<MedicalServiceScheduleResponse>>(row.Field<string>("MedicalServiceSchedules") ?? "[]")
-                }).ToList(); 
+                    MedicalServiceSchedules = JsonConvert.DeserializeObject<List<MedicalServiceScheduleResponse>>(row.Field<string>("MedicalServiceSchedules") ?? "[]"),
+                    RadiologyBodyTypes = JsonConvert.DeserializeObject<List<RadiologyBodyTypeResponse>>(row.Field<string>("RadiologyBodyTypes") ?? "[]")
+                }).ToList();
 
                 int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int?>("TotalCount") ?? 0 : 0;
 
@@ -150,6 +193,21 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess, medicalService.Id.ToString());
 
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+
+
+        public async Task<ErrorResponseModel<List<RadiologyBodyType>>> GetRadiologyBodyTypes()
+        {
+            try
+            {
+                var response = await _unitOfWork.Repository<RadiologyBodyType>().GetAll().ToListAsync();
+
+                return ErrorResponseModel<List<RadiologyBodyType>>.Success(GenericErrors.GetSuccess, response);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<List<RadiologyBodyType>>.Failure(GenericErrors.TransFailed);
+            }
         }
     }
 }

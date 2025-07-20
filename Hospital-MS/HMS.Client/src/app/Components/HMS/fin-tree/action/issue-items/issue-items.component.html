@@ -144,28 +144,59 @@
 
                             <div class="col-md-3">
                                 <label class="form-label">صرف من</label>
-                                <select class="form-select shadow-none text-end" formControlName="storeId">
+                                <!-- <select class="form-select shadow-none text-end" formControlName="storeId">
                                     <option disabled selected value="">اختر صرف من</option>
                                     <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
-                                </select>
+                                    
+                                </select> -->
+                                <ng-select
+                                    [items]="stores"
+                                    bindLabel="name"
+                                    bindValue="id"
+                                    placeholder="اختر المخزن"
+                                    formControlName="storeId"
+                                    [searchable]="true"
+                                    class="text-end w-100">
+                                    </ng-select>                                  
                             </div>
 
                             <div class="col-md-3">
                                 <label class="form-label">صرف إلى</label>
-                                <select class="form-select shadow-none text-end" formControlName="branchId">
+                                <!-- <select class="form-select shadow-none text-end" formControlName="branchId">
                                     <option disabled selected value="">اختر صرف إلى</option>
                                     <option *ngFor="let branch of branchs" [value]="branch.id">{{ branch.name }}</option>
-                                </select>
+                                </select> -->
+                                <ng-select
+                                [items]="jobDeps"
+                                bindLabel="name"
+                                bindValue="id"
+                                placeholder="اختر صرف إلى"
+                                formControlName="jobDepartmentId"
+                                class="text-end shadow-none w-100"
+                                [searchable]="true"
+                              >
+                              </ng-select>
                             </div>
 
                             <div formArrayName="items">
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                                   <div class="col-md-2">
                                     <label class="form-label">الصنف</label>
-                                    <select class="form-select shadow-none" formControlName="itemId">
+                                    <!-- <select class="form-select shadow-none" formControlName="itemId">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
-                                    </select>
+                                       
+                                    </select> -->
+                                    <ng-select
+                                       [items]="allItems"
+                                       bindLabel="nameAr"
+                                       bindValue="id"
+                                       placeholder="اختر الصنف"
+                                       formControlName="itemId"
+                                       class="text-end shadow-none w-100"
+                                       [searchable]="true"
+                                     >
+                                     </ng-select>
                                   </div>
                               
                                   <div class="col-md-2">
@@ -221,3 +252,58 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+<div id="printablePermission" dir="rtl" class="border rounded shadow px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="d-flex justify-content-evenly align-items-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <h4 style="font-weight: bold;">إذن صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-6 mb-2"><strong>التاريخ:</strong> {{ printedPermissionData?.permissionDate }}</div>
+        <div class="col-md-6 mb-2"><strong>رقم طلب الصرف:</strong> {{ printedPermissionData?.disbursementRequestId }}</div>
+        <div class="col-md-6 mb-2"><strong>صرف من:</strong> {{ storeName }}</div>
+        <div class="col-md-6 mb-2"><strong>صرف إلى:</strong> {{ depName }}</div>
+    </div>
+  
+    <table class="table table-bordered mt-3">
+      <thead>
+        <tr>
+          <th>م</th>
+          <th>الصنف</th>
+          <th>الوحدة</th>
+          <th>الكمية</th>
+          <th>السعر</th>
+          <th>الإجمالي</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of printedPermissionData?.items; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ printedPermissionData?.itemsNames[i] }}</td>
+          <td>{{ item.unit }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.unitPrice }}</td>
+          <td>{{ item.totalPrice }}</td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <div class="mt-3"><strong>ملاحظات:</strong> {{ printedPermissionData?.notes || '---' }}</div>
+  
+    <div class="row text-center mt-5">
+      <div class="col-md-6">
+        <p>أمين المخزن</p>
+        <p>-------------------</p>
+      </div>
+      <div class="col-md-6">
+        <p>المستلم</p>
+        <p>-------------------</p>
+      </div>
+    </div>
+  </div>
+  

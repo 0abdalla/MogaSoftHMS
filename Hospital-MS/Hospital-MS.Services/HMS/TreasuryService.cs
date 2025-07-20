@@ -89,20 +89,50 @@ public class TreasuryService : ITreasuryService
 
             var dt = await _sqlHelper.ExecuteDataTableAsync("Finance.SP_GetAllTreasuries", parameters);
 
-            var treasuries = dt.AsEnumerable().Select(row => new TreasuryResponse
-            {
-                Id = row.Field<int>("Id"),
-                Code = row.Field<string>("Code"),
-                Name = row.Field<string>("Name"),
-                BranchId = row.Field<int>("BranchId"),
-                BranchName = row.Field<string>("BranchName"),
-                Currency = row.Field<string>("Currency"),
-                IsActive = row.Field<bool>("IsActive"),
-                Audit = new AuditResponse
+            // Get all treasury IDs from the result
+            var treasuryIds = dt.AsEnumerable().Select(row => row.Field<int>("Id")).ToList();
+
+            // Query movements for these treasuries
+            var movements = await _unitOfWork.Repository<TreasuryMovement>()
+                .GetAll(x => treasuryIds.Contains(x.TreasuryId) && x.IsActive)
+                .Select(x => new
                 {
-                    CreatedBy = row.Field<string>("CreatedBy"),
-                    CreatedOn = row.Field<DateTime>("CreatedOn")
-                }
+                    x.TreasuryId,
+                    x.Id,
+                    x.OpenedIn,
+                    x.ClosedIn
+                })
+                .ToListAsync(cancellationToken);
+
+            var treasuries = dt.AsEnumerable().Select(row =>
+            {
+                var id = row.Field<int>("Id");
+                var movementList = movements
+                    .Where(m => m.TreasuryId == id)
+                    .Select(m => new PartialMovementResponse
+                    {
+                        MovementId = m.Id,
+                        OpenedIn = m.OpenedIn,
+                        ClosedIn = m.ClosedIn
+                    })
+                    .ToList();
+
+                return new TreasuryResponse
+                {
+                    Id = id,
+                    Code = row.Field<string>("Code"),
+                    Name = row.Field<string>("Name"),
+                    BranchId = row.Field<int>("BranchId"),
+                    BranchName = row.Field<string>("BranchName"),
+                    Currency = row.Field<string>("Currency"),
+                    IsActive = row.Field<bool>("IsActive"),
+                    Audit = new AuditResponse
+                    {
+                        CreatedBy = row.Field<string>("CreatedBy"),
+                        CreatedOn = row.Field<DateTime>("CreatedOn")
+                    },
+                    Movements = movementList
+                };
             }).ToList();
 
             int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int>("TotalCount") : 0;
@@ -223,7 +253,7 @@ public class TreasuryService : ITreasuryService
             {
                 Id = x.Id,
                 ClosedIn = x.ClosedIn,
-                OpenedId = x.OpenedIn,
+                OpenedIn = x.OpenedIn,
                 TreasuryId = x.TreasuryId,
                 TreasuryName = x.Treasury.Name,
                 IsClosed = x.IsClosed
@@ -236,13 +266,13 @@ public class TreasuryService : ITreasuryService
     public async Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetDisabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default)
     {
         var treasuries = await _unitOfWork.Repository<TreasuryMovement>()
-            .GetAll(x => x.IsActive && !x.IsClosed)
+            .GetAll(x => x.IsActive && x.IsClosed)
             .Include(x => x.Treasury)
             .Select(x => new TreasuryMovementResponse
             {
                 Id = x.Id,
                 ClosedIn = x.ClosedIn,
-                OpenedId = x.OpenedIn,
+                OpenedIn = x.OpenedIn,
                 TreasuryId = x.TreasuryId,
                 TreasuryName = x.Treasury.Name,
                 IsClosed = x.IsClosed
@@ -364,7 +394,7 @@ public class TreasuryService : ITreasuryService
                 .ToListAsync(cancellationToken);
 
             var newBalance = treasuryMovement.OpeningBalance + operations.Sum(t =>
-                t.TransactionType == Core.Enums.TransactionType.Credit ? t.Amount : -t.Amount);
+                t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount);
 
             var balance = operations.Sum(t =>
                 t.TransactionType == Core.Enums.TransactionType.Credit ? t.Amount : -t.Amount);
@@ -413,13 +443,186 @@ public class TreasuryService : ITreasuryService
         {
             Id = mov.Id,
             ClosedIn = mov.ClosedIn,
-            OpenedId = mov.OpenedIn,
+            OpenedIn = mov.OpenedIn,
             TreasuryId = mov.TreasuryId,
             TreasuryName = mov.Treasury.Name,
             IsClosed = mov.IsClosed,
-            
+
         }).ToListAsync(cancellationToken);
 
         return PagedResponseModel<List<TreasuryMovementResponse>>.Success(GenericErrors.GetSuccess, totalCount, response);
+    }
+    public async Task<ErrorResponseModel<TreasuryMovementDetailsResponse>> GetTreasuryMovementByIdAsyncV2(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var movement = await _unitOfWork.Repository<TreasuryMovement>()
+                .GetAll()
+                .Include(x => x.Treasury)
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+
+            if (movement == null)
+                return ErrorResponseModel<TreasuryMovementDetailsResponse>.Failure(GenericErrors.NotFound);
+
+            var fromDate = movement.OpenedIn;
+            var toDate = movement.ClosedIn ?? movement.OpenedIn;
+
+            // Get all operations for this movement
+            var operations = await _unitOfWork.Repository<TreasuryOperation>()
+                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive)
+                .Where(t => t.Date >= fromDate && t.Date <= toDate)
+                .OrderBy(t => t.Date)
+                .ThenBy(t => t.DocumentNumber)
+                //.Include(t => t.Account)
+                .ToListAsync(cancellationToken);
+
+            // Previous balance before movement
+            var previousBalance = await _unitOfWork.Repository<TreasuryOperation>()
+                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive && t.Date < fromDate)
+                .SumAsync(t => t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount, cancellationToken);
+
+            // Receipts (Credits)
+            var receipts = operations
+                .Where(t => t.TransactionType == TransactionType.Credit)
+                .Select(t => new TreasuryTransactionRow
+                {
+                    DocumentNumber = t.Id,
+                    Date = t.Date,
+                    // AccountName = t.Account != null ? t.Account.Name : "",
+                    Description = t.Description ?? "",
+                    Value = t.Amount
+                }).ToList();
+
+            // Payments (Debits)
+            var payments = operations
+                .Where(t => t.TransactionType == TransactionType.Debit)
+                .Select(t => new TreasuryTransactionRow
+                {
+                    DocumentNumber = t.Id,
+                    Date = t.Date,
+                    //AccountName = t.Account != null ? t.Account.Name : "",
+                    Description = t.Description ?? "",
+                    Value = t.Amount
+                }).ToList();
+
+            var totalReceipts = receipts.Sum(x => x.Value);
+            var totalPayments = payments.Sum(x => x.Value);
+            var closingBalance = previousBalance + totalReceipts - totalPayments;
+
+            var response = new TreasuryMovementDetailsResponse
+            {
+                MovementId = movement.Id,
+                TreasuryName = movement.Treasury.Name,
+                FromDate = fromDate,
+                ToDate = toDate,
+                PreviousBalance = previousBalance,
+                TotalReceipts = totalReceipts,
+                TotalPayments = totalPayments,
+                ClosingBalance = closingBalance,
+                Receipts = receipts,
+                Payments = payments
+            };
+
+            return ErrorResponseModel<TreasuryMovementDetailsResponse>.Success(GenericErrors.GetSuccess, response);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<TreasuryMovementDetailsResponse>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
+    public async Task<ErrorResponseModel<TreasuryMovementResponse>> GetTreasuryMovementByIdAsyncV1(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var movement = await _unitOfWork.Repository<TreasuryMovement>()
+                .GetAll()
+                .Include(x => x.Treasury)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+
+            if (movement == null)
+                return ErrorResponseModel<TreasuryMovementResponse>.Failure(GenericErrors.NotFound);
+
+            // Get all operations for this treasury movement
+            var operations = await _unitOfWork.Repository<TreasuryOperation>()
+                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive)
+                .Where(t => t.Date >= movement.OpenedIn &&
+                           (!movement.ClosedIn.HasValue || t.Date <= movement.ClosedIn.Value))
+                .OrderBy(t => t.Date)
+                .ThenBy(t => t.DocumentNumber)
+                .ToListAsync(cancellationToken);
+
+            var fromDate = movement.OpenedIn;
+            var toDate = movement.ClosedIn ?? movement.OpenedIn;
+
+            // Previous balance before movement
+            var previousBalance = await _unitOfWork.Repository<TreasuryOperation>()
+                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive && t.Date < fromDate)
+                .SumAsync(t => t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount, cancellationToken);
+
+            // Receipts (Credits)
+            var receipts = operations
+                .Where(t => t.TransactionType == TransactionType.Credit)
+                .Select(t => new TreasuryTransactionRow
+                {
+                    DocumentNumber = t.Id,
+                    Date = t.Date,
+                    // AccountName = t.Account != null ? t.Account.Name : "",
+                    Description = t.Description ?? "",
+                    Value = t.Amount
+                }).ToList();
+
+            // Payments (Debits)
+            var payments = operations
+                .Where(t => t.TransactionType == TransactionType.Debit)
+                .Select(t => new TreasuryTransactionRow
+                {
+                    DocumentNumber = t.Id,
+                    Date = t.Date,
+                    //AccountName = t.Account != null ? t.Account.Name : "",
+                    Description = t.Description ?? "",
+                    Value = t.Amount
+                }).ToList();
+
+            var totalReceipts = receipts.Sum(x => x.Value);
+            var totalPayments = payments.Sum(x => x.Value);
+            var closingBalance = previousBalance + totalReceipts - totalPayments;
+
+            var response = new TreasuryMovementResponse
+            {
+                Id = movement.Id,
+                TreasuryId = movement.TreasuryId,
+                TreasuryName = movement.Treasury.Name,
+                TreasuryNumber = movement.TreasuryNumber,
+                OpeningBalance = movement.OpeningBalance,
+                OpenedIn = movement.OpenedIn,
+                ClosedIn = movement.ClosedIn,
+                IsClosed = movement.IsClosed,
+                TotalCredits = movement.TotalCredits,
+                TotalDebits = movement.TotalDebits,
+                Balance = movement.Balance,
+                ClosingBalance = closingBalance,
+                PreviousBalance = previousBalance,
+                Transactions = operations.Select(t => new TransactionDetail
+                {
+                    DocumentId = t.DocumentNumber,
+                    Date = t.Date.ToDateTime(TimeOnly.MinValue),
+                    Description = t.Description ?? string.Empty,
+                    ReceivedFrom = t.ReceivedFrom ?? string.Empty,
+                    Credit = t.TransactionType == TransactionType.Credit ? t.Amount : 0,
+                    Debit = t.TransactionType == TransactionType.Debit ? t.Amount : 0,
+                    AccountId = t.AccountId,
+
+                }).ToList()
+            };
+
+            return ErrorResponseModel<TreasuryMovementResponse>.Success(GenericErrors.GetSuccess, response);
+        }
+        catch (Exception)
+        {
+            return ErrorResponseModel<TreasuryMovementResponse>.Failure(GenericErrors.TransFailed);
+        }
     }
 }

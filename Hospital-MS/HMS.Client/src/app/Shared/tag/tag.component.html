@@ -3,11 +3,11 @@
     {{ tag | dayToArabic }}
   </span>
     <ng-container *ngIf="showWithMore && Taglist.length > 2">
-        <span class="cursor-pointer badge round badge-light border text-muted px-2" [ngbPopover]="SetMoreContent" [popoverTitle]="header" container="body" triggers="click">
+        <span class="cursor-pointer badge round badge-light border text-muted px-2" [ngbPopover]="SetMoreContent" [popoverTitle]="header" container="body" triggers="click" (click)="$event.stopPropagation(); $event.preventDefault()">
       +{{ Taglist.length - 2 }} المزيد
     </span>
         <ng-template #SetMoreContent>
-            <div class="min-width-200 max-width-500 small-scroll overflow-auto p-2">
+            <div class="min-width-200 max-width-500 small-scroll overflow-auto p-2" (click)="$event.stopPropagation(); $event.preventDefault()">
                 <span class="badge round min-width-60 badge-muted me-1 mb-1" *ngFor="let tag of showMorelist">
           {{ tag | dayToArabic }}
         </span>
