@@ -70,23 +70,22 @@
                     <div class="p-3 mb-3">
                         <div class="row gy-3">
 
-                            <div class="col-lg-6">
-                                <label class="form-label">التاريخ</label>
-                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
-                            </div>
+                            
                             <div class="col-lg-6">
                                 <label class="form-label">الخزينة</label>
                                 <select class="form-select shadow-none text-end" formControlName="treasuryId">
                                     <option disabled selected value="">اختر الخزينة</option>
                                     <ng-container *ngFor="let treasury of enabledTreasuries">
-                                        <option [value]="treasury.id">{{treasury.name}}</option>
+                                        <option [value]="treasury.id">
+                                            {{ treasury.treasuryName }}
+                                          </option>                                          
                                     </ng-container>
                                 </select>
                             </div>
 
-                            <div class="col-lg-12">
-                                <label class="form-label">ملاحظات</label>
-                                <textarea rows="3" class="form-control shadow-none text-end" formControlName="notes"></textarea>
+                            <div class="col-lg-6">
+                                <label class="form-label">حتى تاريخ</label>
+                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
                             </div>
 
                         </div>
@@ -122,7 +121,7 @@
                                 <select class="form-select shadow-none text-end" formControlName="treasuryId">
                                     <option disabled selected value="">اختر الخزينة</option>
                                     <ng-container *ngFor="let treasury of disabledTreasuries">
-                                        <option [value]="treasury.id">{{treasury.name}}</option>
+                                        <option [value]="treasury.id">{{treasury.treasuryName + ' (' + treasury.openedIn + ' | ' + (treasury.closedIn || '---------------') + ')' }}</option>
                                     </ng-container>
                                 </select>
                             </div>
@@ -165,7 +164,7 @@
                                 <select class="form-select shadow-none text-end" formControlName="treasuryId">
                                     <option disabled selected value="">اختر الخزينة</option>
                                     <ng-container *ngFor="let treasury of enabledTreasuries">
-                                        <option [value]="treasury.id">{{treasury.name}}</option>
+                                        <option [value]="treasury.id">{{treasury.treasuryName + ' (' + treasury.openedIn + ' | ' + (treasury.closedIn || '---------------') + ')' }}</option>
                                     </ng-container>
                                 </select>
                             </div>
@@ -198,24 +197,35 @@
                 <form [formGroup]="treasuryReportForm" (ngSubmit)="showTreasuryReport()">
                     <div class="p-3 mb-3">
                       <div class="row gy-3">
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                           <label class="form-label">الخزينة</label>
-                          <select class="form-select shadow-none text-end" formControlName="treasuryId">
+                          <select
+                            class="form-select shadow-none text-end"
+                            formControlName="treasuryId"
+                            (change)="onTreasuryChange($event)"
+                          >
                             <option disabled selected value="">اختر الخزينة</option>
                             <ng-container *ngFor="let treasury of treasuries">
                               <option [value]="treasury.id">{{ treasury.name }}</option>
                             </ng-container>
                           </select>
                         </div>
-                  
-                        <div class="col-lg-4">
-                          <label class="form-label">من تاريخ</label>
-                          <input type="date" formControlName="fromDate" class="form-control shadow-none text-end">
-                        </div>
-
-                        <div class="col-lg-4">
-                          <label class="form-label">حتى تاريخ</label>
-                          <input type="date" formControlName="toDate" class="form-control shadow-none text-end">
+                        <div class="col-lg-6">
+                          <label class="form-label">حركة الخزينة</label>
+                          <select
+                            class="form-select shadow-none text-end"
+                            formControlName="movementId"
+                            [disabled]="movements.length === 0"
+                          >
+                            <option disabled selected value="">اختر حركة الخزينة</option>
+                            <ng-container *ngFor="let movement of movements">
+                                <option [value]="movement.movementId">
+                                  {{ movement.movementId }} | 
+                                  {{ movement.openedIn }} - 
+                                  {{ movement.closedIn ? movement.closedIn : 'مفتوحة' }}
+                                </option>
+                              </ng-container>                              
+                          </select>
                         </div>
                       </div>
                     </div>
@@ -238,9 +248,9 @@
             <div id="treasury-report-print">
                 <div class="modal-header justify-content-center">
                     <h5 class="modal-title" id="openTreasuryReportModalLabel">
-                        الخزينة العامة رقم {{ treasuryReportData?.treasuryId }}
-                        من {{ treasuryReportData?.fromDate | date:'yyyy-MM-dd' }}
-                        الى {{ treasuryReportData?.toDate | date:'yyyy-MM-dd' }}
+                        كشف حركة خزينة رقم {{ treasuryReportData?.id }}
+                        من {{ treasuryReportData?.openedIn | date:'yyyy-MM-dd' }}
+                        الى {{ treasuryReportData?.closedIn ? treasuryReportData?.closedIn : 'مفتوحة' }}
                     </h5>
                 </div>
                 <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover; direction: rtl;">
@@ -315,14 +325,14 @@
                                   <td>
                                     <div class="fw-bold">الرصيد المرحل</div>
                                     <div [ngStyle]="{
-                                            color: treasuryReportData?.currentBalance < 0 ? 'red' : 'green',
+                                            color: treasuryReportData?.closingBalance < 0 ? 'red' : 'green',
                                             fontWeight: 'bold'
                                         }">
-                                      <ng-container *ngIf="treasuryReportData?.currentBalance < 0">
-                                        ( {{ getAbsolute(treasuryReportData?.currentBalance) | number:'1.2-2' }} ) ج.م
+                                      <ng-container *ngIf="treasuryReportData?.closingBalance < 0">
+                                        ( {{ getAbsolute(treasuryReportData?.closingBalance) | number:'1.2-2' }} ) ج.م
                                       </ng-container>
-                                      <ng-container *ngIf="treasuryReportData?.currentBalance >= 0">
-                                        {{ treasuryReportData?.currentBalance | number:'1.2-2' }} ج.م
+                                      <ng-container *ngIf="treasuryReportData?.closingBalance >= 0">
+                                        {{ treasuryReportData?.closingBalance | number:'1.2-2' }} ج.م
                                       </ng-container>
                                     </div>
                                   </td>                          

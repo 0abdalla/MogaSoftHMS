@@ -5,6 +5,7 @@ import { FinancialService } from '../../../../../Services/HMS/financial.service'
 import { StaffService } from '../../../../../Services/HMS/staff.service';
 import Swal from 'sweetalert2';
 declare var bootstrap : any
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-issue-request',
@@ -35,7 +36,7 @@ export class IssueRequestComponent implements OnInit {
   isEditMode : boolean = false;
   constructor(private fb : FormBuilder , private financialService : FinancialService , private staffService : StaffService){
     this.issuseRequestForm = this.fb.group({
-      departmentId: ['' , Validators.required],
+      jobDepartmentId: ['' , Validators.required],
       permissionDate: [new Date().toISOString().substring(0, 10)],
       notes: [''],
       items: this.fb.array([
@@ -51,8 +52,8 @@ export class IssueRequestComponent implements OnInit {
   //
   createItemGroup(): FormGroup {
     return this.fb.group({
-      id: ['', Validators.required],
-      quantity: [1, Validators.required]
+      itemId: ['', Validators.required],
+      quantity: [1, [Validators.required , Validators.min(1)]]
     });
   }
   get items(): FormArray {
@@ -79,7 +80,7 @@ export class IssueRequestComponent implements OnInit {
   getItems(){
     this.financialService.getItems(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.allItems=res.results;
-      // console.log(this.allItems);
+      console.log(this.allItems);
       this.total=res.count;
     })
   }
@@ -87,6 +88,7 @@ export class IssueRequestComponent implements OnInit {
     this.staffService.getJobDepartment(this.pagingFilterModel.searchText, this.pagingFilterModel.currentPage, this.pagingFilterModel.pageSize, this.pagingFilterModel.filterList).subscribe({
       next: (data: any) => {
         this.jobDeps = data.results;
+        console.log(this.jobDeps);
         this.total = data.totalCount;
       }, error: (err) => {
       }
@@ -110,35 +112,53 @@ export class IssueRequestComponent implements OnInit {
   }
   // 
   currentIssueId: number | null = null;
+  savedIssueData: any;
+  documentNumber: number;
   addIssueRequest() {
     if (this.issuseRequestForm.invalid) {
       this.issuseRequestForm.markAllAsTouched();
       return;
     }
-  
+
     const formData = this.issuseRequestForm.value;
-  
+    
+    // Enrich items with their names before saving
+    const enrichedItems = formData.items.map(item => {
+      const fullItem = this.allItems.find(i => i.id === item.itemId);
+      return {
+        ...item,
+        itemNameAr: fullItem?.nameAr || '---',
+        itemName: fullItem?.nameEn || '---'
+      };
+    });
+
+    const enrichedData = {
+      ...formData,
+      items: enrichedItems
+    };
+
     if (this.isEditMode && this.currentIssueId) {
       this.financialService.updateIssueRequest(this.currentIssueId, formData).subscribe({
-        next: () => {
-          this.getIssues();
-        },
-        error: (err) => {
-          console.error('فشل التعديل:', err);
-        }
+        next: () => this.getIssues(),
+        error: (err) => console.error('فشل التعديل:', err)
       });
     } else {
       this.financialService.addIssueRequest(formData).subscribe({
-        next: () => {
+        next: (res: any) => {
           this.getIssues();
+          
+          // Save the enriched data for printing
+          this.savedIssueData = enrichedData;
+          this.documentNumber = res.results.id;
+          
+          console.log('Data ready for printing:', this.savedIssueData);
+          this.printIssueForm();
           this.issuseRequestForm.reset();
         },
-        error: (err) => {
-          console.error('فشل الإضافة:', err);
-        }
+        error: (err) => console.error('فشل الإضافة:', err)
       });
     }
-  }
+}
   issueRequest!:any;
   editIssueRequest(id: number) {
     this.isEditMode = true;
@@ -190,6 +210,14 @@ export class IssueRequestComponent implements OnInit {
     });
   }
   // 
+  getDepartmentName(id: number): string {
+    const dep = this.jobDeps.find(d => d.id == id)
+    return dep?.name || '---';
+  }
+  getItemName(id: number): string {
+    const item = this.allItems.find(i => i.id == id);
+    return item?.nameAr || '---';
+  }
   getStatusName(type: string): string {
     const map: { [key: string]: string } = {
       Approved: 'تم الموافقة',
@@ -205,5 +233,26 @@ export class IssueRequestComponent implements OnInit {
       Rejected: '#FF0000'
     };
     return map[type] || '#000000';
+  }
+  printIssueForm() {
+    const element = document.getElementById('printableIssue');
+    if (!element) {
+      console.error('العنصر غير موجود');
+      return;
+    }
+    element.style.display = 'block';
+    const opt = {
+      margin: 0.5,
+      filename: 'طلب_الصرف.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.style.display = 'none';
+    }).catch(err => {
+      console.error('حدث خطأ أثناء توليد PDF:', err);
+      element.style.display = 'none';
+    });
   }
 }

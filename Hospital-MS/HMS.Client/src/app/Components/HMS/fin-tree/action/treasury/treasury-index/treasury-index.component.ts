@@ -23,6 +23,7 @@ export class TreasuryIndexComponent {
     filterList:[]
   }
   treasuries:any[]=[];
+  movements: any[] = [];
   enabledTreasuries:any;
   disabledTreasuries:any;
   // 
@@ -41,8 +42,9 @@ export class TreasuryIndexComponent {
     }); 
     this.treasuryReportForm = this.fb.group({
       treasuryId: ['', Validators.required],
-      toDate: ['', Validators.required],
-      fromDate: ['', Validators.required]
+      movementId: ['', Validators.required],
+      // toDate: ['', Validators.required],
+      // fromDate: ['', Validators.required]
     });    
   }
   ngOnInit(): void {
@@ -50,6 +52,7 @@ export class TreasuryIndexComponent {
     this.getEnabledTreasuries();
     this.getDisabledTreasuries();
     this.getAccounts();
+    
   }
   submitCloseTreasury(){
     this.financialService.disableTreasury(this.closeTreasuryForm.value.treasuryId).subscribe({
@@ -90,6 +93,12 @@ export class TreasuryIndexComponent {
       }
     })
   }
+  onTreasuryChange(event: Event) {
+    const treasuryId = +(event.target as HTMLSelectElement).value;
+    const selectedTreasury = this.treasuries.find(t => t.id === treasuryId);
+    this.movements = selectedTreasury?.movements || [];
+    this.treasuryReportForm.patchValue({ movementId: '' });
+  }
   getEnabledTreasuries(){
     this.financialService.getEnabledTreasuries().subscribe({
       next: (res) => {
@@ -113,23 +122,37 @@ export class TreasuryIndexComponent {
     })
   }
   // 
+  // showTreasuryReport() {
+  //   const treasuryId = this.treasuryReportForm.value.treasuryId;
+  //   const movementId = this.treasuryReportForm.value.movementId;
+  
+  //   if (!treasuryId) return;
+  
+  //   this.financialService.getTreasuriesMovements(treasuryId).subscribe(res => {
+  //     if (res.isSuccess) {
+  //       this.treasuryReportData = res.results;
+  //       const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal'));
+  //       modal.show();
+  //     }
+  //   });
+  // }
   showTreasuryReport() {
-    const treasuryId = this.treasuryReportForm.value.treasuryId;
-    const toDate = this.treasuryReportForm.value.toDate;
-    const fromDate = this.treasuryReportForm.value.fromDate;
+    const movementId = this.treasuryReportForm.value.movementId;
   
-    if (!treasuryId || !toDate) return;
+    if (!movementId) return;
   
-    const encodedDate = encodeURIComponent(toDate);
-    const encodedFromDate = encodeURIComponent(fromDate);
-    this.financialService.getTransactionsForTreasury(treasuryId + '?toDate=' + encodedDate + '&fromDate=' + encodedFromDate).subscribe(res => {
-      if (res.isSuccess) {
+    this.financialService.getTreasuriesMovements(movementId).subscribe({
+      next: (res) => {
         this.treasuryReportData = res.results;
-        const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal'));
+        const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal')!);
         modal.show();
+      },
+      error: (err) => {
+        console.error(err);
       }
     });
   }
+  
   get creditTransactions() {
     return this.treasuryReportData?.transactions.filter(t => t.credit > 0) || [];
   }
