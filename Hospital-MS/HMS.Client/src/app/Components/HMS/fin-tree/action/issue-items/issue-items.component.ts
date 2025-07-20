@@ -4,6 +4,8 @@ import { FinancialService } from '../../../../../Services/HMS/financial.service'
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 export declare var bootstrap:any;
+import html2pdf from 'html2pdf.js';
+import { StaffService } from '../../../../../Services/HMS/staff.service';
 
 @Component({
   selector: 'app-issue-items',
@@ -32,7 +34,8 @@ export class IssueItemsComponent implements OnInit {
   purchaseRequests:any[]=[];
   branchs:any[] = [];
   allRequests:any[]=[]
-  constructor(private fb:FormBuilder , private financialService:FinancialService){
+  jobDeps:any[]=[]
+  constructor(private fb:FormBuilder , private financialService:FinancialService , private staffService : StaffService){
 
     this.filterForm=this.fb.group({
       SearchText:[],
@@ -41,9 +44,9 @@ export class IssueItemsComponent implements OnInit {
     })
     this.addPermissionForm = this.fb.group({
       permissionDate: [new Date().toISOString().substring(0, 10)],
-      disbursementRequestId: [''],
-      storeId: [''],
-      branchId: [''],
+      disbursementRequestId: ['' , Validators.required],
+      storeId: ['' , Validators.required],
+      jobDepartmentId : ['' , Validators.required],
       items: this.fb.array([
         this.createItemGroup()
       ]),
@@ -58,14 +61,13 @@ export class IssueItemsComponent implements OnInit {
     // this.getPurchaseRequests();
     this.getBranches();
     this.getAllRequests();
-
+    this.getDeps();
     // 
     this.addPermissionForm.get('disbursementRequestId')?.valueChanges.subscribe(id => {
       if (id) {
         this.financialService.getIssueRequestById(id).subscribe(res => {
           const data = res.results;
           this.addPermissionForm.patchValue({
-            permissionDate: data.date,
             notes: data.notes
           });
           const itemsControl = this.items;
@@ -181,6 +183,11 @@ export class IssueItemsComponent implements OnInit {
   // 
   isEditMode : boolean = false;
   currentMaterialIssuePermissionId: number | null = null;
+  printedPermissionData: any;
+  documentNumber:number;
+  branchName:string;
+  storeName:string;
+  depName:string;
   addPermission() {
     if (this.addPermissionForm.invalid) {
       this.addPermissionForm.markAllAsTouched();
@@ -188,28 +195,61 @@ export class IssueItemsComponent implements OnInit {
     }
   
     const formData = this.addPermissionForm.getRawValue();
+  
     if (this.isEditMode && this.currentMaterialIssuePermissionId) {
-      
       this.financialService.updateMaterialIssuePermission(this.currentMaterialIssuePermissionId, formData).subscribe({
-        next: () => {
-          this.getMaterialIssuePermissions();
-        },
-        error: (err) => {
-          console.error('فشل التعديل:', err);
-        }
+        next: () => this.getMaterialIssuePermissions(),
+        error: err => console.error('فشل التعديل:', err)
       });
     } else {
       this.financialService.addMaterialIssuePermission(formData).subscribe({
-        next: () => {
+        next: (res: any) => {
           this.getMaterialIssuePermissions();
+          this.documentNumber = res.results.id;
+          this.branchName = res.results.branchName;
+          this.storeName = res.results.storeName;
+          this.depName = res.results.jobDepartmentName;
+          this.printedPermissionData = {
+            ...formData,
+            storeName: this.stores.find(s => s.id === formData.storeId)?.name || '',
+            branchName: this.branchs.find(b => b.id === formData.branchId)?.name || '',
+            depName: this.jobDeps.find(j => j.id === formData.jobDepartmentId)?.name || '',
+            itemsNames: formData.items.map((i:any) => {
+              const item = this.allItems.find(ai => ai.id === i.itemId);
+              return item?.nameAr || '';
+            })
+          };
+  
+          setTimeout(() => this.printPDF(), 300);
           this.addPermissionForm.reset();
         },
-        error: (err) => {
-          console.error('فشل الإضافة:', err);
-        }
+        error: err => console.error('فشل الإضافة:', err)
       });
     }
   }
+  
+  printPDF() {
+    const element = document.getElementById('printablePermission');
+    if (!element) {
+      console.error('العنصر غير موجود');
+      return;
+    }
+    element.style.display = 'block';
+    const opt = {
+      margin: 0.5,
+      filename: `إذن_الصرف_${this.documentNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.style.display = 'none';
+    }).catch(err => {
+      console.error('حدث خطأ أثناء توليد PDF:', err);
+      element.style.display = 'none';
+    });
+  }
+  
   permission!:any;
   editPermission(id: number) {
     this.isEditMode = true;
@@ -269,5 +309,22 @@ export class IssueItemsComponent implements OnInit {
         
       }
     })
+  }
+  getDeps() {
+    this.staffService.getJobDepartment(this.pagingFilterModelSelect.searchText, this.pagingFilterModelSelect.currentPage, this.pagingFilterModelSelect.pageSize, this.pagingFilterModelSelect.filterList).subscribe({
+      next: (data: any) => {
+        this.jobDeps = data.results;
+        console.log('Deps',this.jobDeps);
+        this.total = data.totalCount;
+      }, error: (err) => {
+        console.error('فشل تحميل بيانات المخازن:', err);
+      }
+    })
+  }
+  getBranchName(id:number){
+    return this.branchs.find(b => b.id === id)?.nameAr || '';
+  }
+  getStoreName(id:number){
+    return this.stores.find(s => s.id === id)?.nameAr || '';
   }
 }

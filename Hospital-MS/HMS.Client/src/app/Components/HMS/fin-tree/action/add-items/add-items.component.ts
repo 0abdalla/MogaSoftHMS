@@ -256,14 +256,17 @@ export class AddItemsComponent implements OnInit {
     } else {
       this.financialService.addReceiptPermission(formData).subscribe({
         next: (res: any) => {
+          const formData = this.addPermissionForm.value;
+          if (!this.allItems?.length || !this.stores?.length || !this.suppliers?.length) {
+            console.error('Required data not loaded');
+            return;
+          }
           this.getReceiptPermissions();
-  
-          // تجهيز بيانات العرض للمودال والطباعة
           const supplier = this.getSupplierName(formData.supplierId);
           const store = this.getStoreName(formData.storeId);
   
           const itemsWithNames = formData.items.map((item: any) => {
-            const itemName = this.getItemName(item.id); // item.id هو ID الصنف
+            const itemName = this.getItemName(item.id)
             const totalPrice = item.quantity * item.unitPrice;
             return { ...item, itemName, totalPrice };
           });

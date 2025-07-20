@@ -1,18 +1,13 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Disbursement;
-using Hospital_MS.Core.Contracts.PurchaseRequests;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Core.Models.HR;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementRequestService
@@ -45,11 +40,19 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
 
     }
 
-    public async Task<ErrorResponseModel<string>> CreateAsync(DisbursementReq request, CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<DisbursementToReturnResponse>> CreateAsync(DisbursementReq request, CancellationToken cancellationToken = default)
     {
         using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+            var department = await _unitOfWork.Repository<JobDepartment>()
+                .GetByIdAsync(request.JobDepartmentId ?? 0, cancellationToken);
+
+            if (department == null)
+            {
+                return ErrorResponseModel<DisbursementToReturnResponse>.Failure(GenericErrors.NotFound, null);
+            }
+
             var disbursementRequest = new DisbursementRequest
             {
                 Number = await GenerateDisbursementNumber(cancellationToken),
@@ -66,12 +69,24 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             await _unitOfWork.CompleteAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+            var items = await _unitOfWork.Repository<DisbursementRequest>()
+                .GetAll(x => x.Id == disbursementRequest.Id)
+                .Include(x => x.JobDepartment)
+                .Include(x => x.Items).ThenInclude(i => i.Item)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var response = new DisbursementToReturnResponse
+            {
+                Id = disbursementRequest.Id,
+                DepartmentName = department?.Name,
+                ItemsNames = items?.Items.Select(i => i.Item?.NameAr ?? i.Item?.NameEn ?? "").ToList()
+            };
+            return ErrorResponseModel<DisbursementToReturnResponse>.Success(GenericErrors.GetSuccess, response);
         }
         catch (Exception)
         {
             await transaction.RollbackAsync(cancellationToken);
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            return ErrorResponseModel<DisbursementToReturnResponse>.Failure(GenericErrors.TransFailed);
         }
 
     }
@@ -198,7 +213,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                                                 .Include(x => x.CreatedBy)
                                                 .Include(x => x.UpdatedBy)
                                                 .Include(x => x.JobDepartment)
-                                                .Include(x => x.Items).ThenInclude(i=>i.Item)
+                                                .Include(x => x.Items).ThenInclude(i => i.Item)
                                                 .FirstOrDefaultAsync(cancellationToken);
 
 

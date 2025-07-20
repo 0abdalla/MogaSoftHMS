@@ -143,14 +143,16 @@ export class StaffService {
     return this.http.put<any>(`${this.baseUrl}JobLevels/${id}`, jobLevel);
   }
   // 
-  getJobDepartment(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
+  getJobDepartment(searchText: string = '', currentPage: number = 1, pageSize: number = 10, filterList: any[] = []) {
     let params = new HttpParams()
-      .set('SearchText', searchText.toString())
+      .set('SearchText', (searchText ?? '').toString())
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
+  
     return this.http.get<any>(`${this.baseUrl}JobDepartment`, { params });
   }
+  
   getJobDepartmentById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobDepartment/${id}`);
   }

@@ -277,16 +277,19 @@ export class FinancialService {
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'Treasuries?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
   getEnabledTreasuries(){
-    return this.http.get<any>(this.baseUrl + 'Treasuries/Enabled');
+    return this.http.get<any>(this.baseUrl + 'Treasuries/Movement/Enabled');
   }
   enableTreasury(id:number){
     return this.http.put<any>(this.baseUrl + `Treasuries/Movement/${id}/Enable`, {});
   }
   getDisabledTreasuries(){
-    return this.http.get<any>(this.baseUrl + 'Treasuries/Disabled');
+    return this.http.get<any>(this.baseUrl + 'Treasuries/Movement/Disabled');
   }
   disableTreasury(id:number){
     return this.http.put<any>(this.baseUrl + `Treasuries/Movement/${id}/Disable`, {});
+  }
+  getTreasuriesMovements(id:number){
+    return this.http.get<any>(this.baseUrl + 'Treasuries/Movement/' + id);
   }
   getTreasuriesById(id:number){
     return this.http.get<any>(this.baseUrl + 'Treasuries/' + id);

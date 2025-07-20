@@ -1,33 +1,30 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.MaterialIssuePermission;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Core.Models.HR;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialIssuePermissionService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<ErrorResponseModel<string>> CreateAsync(MaterialIssuePermissionRequest request, CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<MaterialIssuePermissionToReturnResponse>> CreateAsync(MaterialIssuePermissionRequest request, CancellationToken cancellationToken = default)
     {
         using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
             var store = await _unitOfWork.Repository<Store>().GetByIdAsync(request.StoreId, cancellationToken);
             if (store is null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "المخزن غير موجود");
+                return ErrorResponseModel<MaterialIssuePermissionToReturnResponse>.Failure(GenericErrors.NotFound);
 
-            var branch = await _unitOfWork.Repository<Branch>().GetByIdAsync(request.BranchId, cancellationToken);
-            if (branch is null)
-                return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "الفرع غير موجود");
+            //var branch = await _unitOfWork.Repository<Branch>().GetByIdAsync(request.BranchId, cancellationToken);
+            var department = await _unitOfWork.Repository<JobDepartment>().GetByIdAsync(request.JobDepartmentId ?? 0, cancellationToken);
+            if (department is null)
+                return ErrorResponseModel<MaterialIssuePermissionToReturnResponse>.Failure(GenericErrors.NotFound);
 
             var permission = new MaterialIssuePermission
             {
@@ -35,7 +32,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 //DocumentNumber = request.DocumentNumber,
                 PermissionDate = DateOnly.FromDateTime(request.PermissionDate),
                 StoreId = request.StoreId,
-                BranchId = request.BranchId,
+                JobDepartmentId = request.JobDepartmentId,
                 Notes = request.Notes,
                 IsActive = true,
                 Items = request.Items.Select(i => new MaterialIssueItem
@@ -55,12 +52,20 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             await _unitOfWork.CompleteAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, permission.Id.ToString());
+
+            var response = new MaterialIssuePermissionToReturnResponse
+            {
+                Id = permission.Id,
+                StoreName = store.Name,
+                JobDepartmentName = department.Name
+            };
+
+            return ErrorResponseModel<MaterialIssuePermissionToReturnResponse>.Success(GenericErrors.AddSuccess, response);
         }
         catch
         {
             await transaction.RollbackAsync(cancellationToken);
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            return ErrorResponseModel<MaterialIssuePermissionToReturnResponse>.Failure(GenericErrors.TransFailed);
         }
     }
 
@@ -80,7 +85,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             //permission.DocumentNumber = request.DocumentNumber;
             permission.PermissionDate = DateOnly.FromDateTime(request.PermissionDate);
             permission.StoreId = request.StoreId;
-            permission.BranchId = request.BranchId;
+            permission.JobDepartmentId = request.JobDepartmentId;
             permission.Notes = request.Notes;
             permission.DisbursementRequestId = request.DisbursementRequestId;
 
@@ -146,7 +151,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             var permission = await _unitOfWork.Repository<MaterialIssuePermission>()
                 .GetAll()
                 .Include(x => x.Store)
-                .Include(x => x.Branch)
+                .Include(x => x.JobDepartment)
                 .Include(x => x.DisbursementRequest)
                 .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
@@ -163,8 +168,10 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 PermissionDate = permission.PermissionDate,
                 StoreId = permission.StoreId,
                 StoreName = permission.Store.Name,
-                BranchId = permission.BranchId,
-                BranchName = permission.Branch.Name,
+                //BranchId = permission.BranchId,
+                //BranchName = permission.Branch.Name,
+                JobDepartmentId = permission.JobDepartmentId,
+                JobDepartmentName = permission.JobDepartment?.Name,
                 Notes = permission.Notes,
                 Items = permission.Items.Where(i => i.IsActive).Select(i => new MaterialIssueItemResponse
                 {
@@ -195,7 +202,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             var query = _unitOfWork.Repository<MaterialIssuePermission>()
                 .GetAll()
                 .Include(x => x.Store)
-                .Include(x => x.Branch)
+                .Include(x => x.JobDepartment)
                 .Include(x => x.DisbursementRequest)
                 .Include(x => x.Items)
                 .Where(x => x.IsActive);
@@ -221,8 +228,10 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                     PermissionDate = x.PermissionDate,
                     StoreId = x.StoreId,
                     StoreName = x.Store.Name,
-                    BranchId = x.BranchId,
-                    BranchName = x.Branch.Name,
+                    //BranchId = x.BranchId,
+                    //BranchName = x.Branch.Name,
+                    JobDepartmentId = x.JobDepartmentId,
+                    JobDepartmentName = x.JobDepartment.Name,
                     Notes = x.Notes,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new MaterialIssueItemResponse
                     {
