@@ -20,8 +20,8 @@ public class BranchesController(IBranchService branchService) : ApiBaseControlle
         return Ok(result);
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] PagingFilterModel filter, CancellationToken cancellationToken)
+    [HttpPost("GetAllBranches")]
+    public async Task<IActionResult> GetAll(PagingFilterModel filter, CancellationToken cancellationToken)
     {
         var result = await _branchService.GetAllAsync(filter, cancellationToken);
         return Ok(result);

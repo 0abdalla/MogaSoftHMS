@@ -18,6 +18,10 @@ export class AttendanceFormComponent implements OnInit {
   data: any[] = [];
   headers: string[] = [];
   AttendanceList: any[] = [];
+  BranchData: any[] = [];
+  selectedBranch: string = 'اختر فرع';
+  roleName: string = '';
+  branchId: any;
   total = 0;
   isFilter = true;
   pagingFilterModel: PagingFilterModel = {
@@ -27,10 +31,24 @@ export class AttendanceFormComponent implements OnInit {
     searchText: ''
   }
 
+  branchPagingFilterModel: PagingFilterModel = {
+    filterList: [],
+    currentPage: 1,
+    pageSize: 100,
+    searchText: ''
+  }
+
   constructor(private offcanvasService: NgbOffcanvas, private staffService: StaffService) { }
 
   ngOnInit(): void {
+    this.roleName = sessionStorage.getItem('role') || '';
     this.GetAllAttendanceSalaries();
+    if (this.roleName === 'SystemAdmin')
+      this.GetAllBranches();
+    else {
+      this.branchId = sessionStorage.getItem('branchId');
+      this.selectedBranch = sessionStorage.getItem('branchName');
+    }
   }
 
   openNewSidePanel() {
@@ -49,6 +67,12 @@ export class AttendanceFormComponent implements OnInit {
     });
   }
 
+  GetAllBranches() {
+    this.staffService.GetAllBranches(this.branchPagingFilterModel).subscribe(data => {
+      this.BranchData = data?.results ?? [];
+    });
+  }
+
   filterChecked(filters: FilterModel[]) {
     this.pagingFilterModel.filterList = filters;
     this.pagingFilterModel.currentPage = 1;
@@ -58,6 +82,11 @@ export class AttendanceFormComponent implements OnInit {
   onPageChange(obj: any) {
     this.pagingFilterModel.currentPage = obj.page;
     this.GetAllAttendanceSalaries();
+  }
+
+  selectorBranchChange(item: any) {
+    this.branchId = item.id;
+    this.selectedBranch = item.name;
   }
 
   generateTemplateExcel() {
@@ -109,11 +138,17 @@ export class AttendanceFormComponent implements OnInit {
     const file: File = event.target.files[0];
     if (!file) return;
 
+    if (!this.branchId && this.roleName === 'SystemAdmin') {
+      alert('برجاء اختيار فرع');
+      return;
+    }
+
     const reader = new FileReader();
     const extension = file.name.split('.').pop()?.toLowerCase();
 
     if (extension === 'csv') {
       reader.onload = (e: any) => {
+        debugger;
         const csv = e.target.result;
         const lines = csv.split('\n').map(line => line.trim()).filter(line => line);
         const allRows = lines.map(line => line.split(','));
@@ -145,11 +180,14 @@ export class AttendanceFormComponent implements OnInit {
           seen.add(header);
           return true;
         });
-
+        this.headers.push('الفرع');
         this.data = allRows.slice(headerRowIndex + 1).map(row => {
           const obj: any = {};
           this.headers.forEach((header, index) => {
-            obj[header] = row[index]?.trim() ?? '';
+            if (header === 'الفرع')
+              obj[header] = this.selectedBranch;
+            else
+              obj[header] = row[index]?.trim() ?? '';
           });
           return obj;
         });
@@ -160,6 +198,7 @@ export class AttendanceFormComponent implements OnInit {
 
     else if (extension === 'xlsx' || extension === 'xls') {
       reader.onload = (e: any) => {
+        debugger;
         const binary = new Uint8Array(e.target.result);
         const workbook = XLSX.read(binary, { type: 'array' });
 
@@ -200,10 +239,15 @@ export class AttendanceFormComponent implements OnInit {
           return true;
         });
 
+        this.headers.push('الفرع');
+
         this.data = rows.slice(headerRowIndex + 1).map(row => {
           const obj: any = {};
           this.headers.forEach((header: string, index: number) => {
-            obj[header] = row[index] ?? '';
+            if (header === 'الفرع')
+              obj[header] = this.selectedBranch;
+            else
+              obj[header] = row[index] ?? '';
           });
           return obj;
         });
@@ -224,8 +268,17 @@ export class AttendanceFormComponent implements OnInit {
       return;
     }
 
+    if (!this.branchId && this.roleName === 'SystemAdmin') {
+      alert('برجاء اختيار فرع');
+      return;
+    }
+
     this.staffService.AddAttendaceSalaries(mappedData).subscribe(data => {
       this.GetAllAttendanceSalaries();
+      if (this.roleName === 'SystemAdmin') {
+        this.selectedBranch = 'اختر فرع';
+        this.branchId = null;
+      }
       this.offcanvasService.dismiss();
     });
   }
@@ -243,7 +296,8 @@ export class AttendanceFormComponent implements OnInit {
       otherDays: row["اخرى"],
       fridays: row["ايام الجمع"],
       totalDays: row["إجمالي الأيام"],
-      overtime: row["الاضافي"]
+      overtime: row["الاضافي"],
+      branchId: this.branchId || 0
     };
   }
 }

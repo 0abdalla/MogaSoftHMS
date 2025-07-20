@@ -38,11 +38,11 @@ namespace Hospital_MS.Core._Data
         public DbSet<JobLevel> JobLevels { get; set; }
         public DbSet<Page> Pages { get; set; }
         public DbSet<RolePermission> RolePermissions { get; set; }
-        public DbSet<Supplier> Suppliers  { get; set; }
-        public DbSet<Item> Items  { get; set; }
-        public DbSet<ItemGroup> ItemGroups  { get; set; }
-        public DbSet<ItemUnit> ItemUnits  { get; set; }
-        public DbSet<ItemType> ItemTypes  { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<ItemGroup> ItemGroups { get; set; }
+        public DbSet<ItemUnit> ItemUnits { get; set; }
+        public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<Treasury> Treasuries { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Store> Stores { get; set; }
@@ -72,7 +72,7 @@ namespace Hospital_MS.Core._Data
         public DbSet<DebitNotice> DebitNotices { get; set; }
         public DbSet<MainGroup> MainGroups { get; set; }
         public DbSet<RadiologyBodyType> RadiologyBodyTypes { get; set; }
-        
+
         public DbSet<TreasuryOperation> TreasuryOperations { get; set; }
         public DbSet<TreasuryMovement> TreasuryMovements { get; set; }
 
@@ -93,6 +93,19 @@ namespace Hospital_MS.Core._Data
                 fk.DeleteBehavior = DeleteBehavior.Restrict;
 
             base.OnModelCreating(modelBuilder);
+
+
+            modelBuilder.Entity<Staff>()
+                 .HasOne(s => s.CreatedBy)
+                 .WithMany()
+                 .HasForeignKey(s => s.CreatedById)
+                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Staff>()
+                .HasOne(s => s.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(s => s.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

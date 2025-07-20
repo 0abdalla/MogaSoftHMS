@@ -255,4 +255,10 @@ export class StaffService {
     return this.http.post<any>(this.baseUrl + 'Attendance/GetAllAttendanceSalaries', filter);
   }
 
+  // ================================= Branches ==========================================
+
+  GetAllBranches(filter: PagingFilterModel) {
+    return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
+  }
+
 }

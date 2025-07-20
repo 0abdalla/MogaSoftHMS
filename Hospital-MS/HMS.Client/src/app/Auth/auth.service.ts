@@ -25,6 +25,8 @@ export class AuthService {
         sessionStorage.setItem('lastName', response.results.lastName);
         sessionStorage.setItem('role', response.results.role);
         sessionStorage.setItem('pages', response.results.pages);
+        sessionStorage.setItem('branchId', response.results.branchId);
+        sessionStorage.setItem('branchName', response.results.branchName);
       })
     );
   }
