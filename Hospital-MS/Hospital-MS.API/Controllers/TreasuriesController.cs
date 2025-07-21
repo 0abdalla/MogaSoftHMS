@@ -69,18 +69,24 @@ public class TreasuriesController(ITreasuryService treasuryService) : ApiBaseCon
         return Ok(result);
     }
 
-    [HttpPut("Movement/{id}/Enable")]
+    [HttpPut("Movement/{id}/Re-Enable")]
     public async Task<IActionResult> EnableTreasuryMovement(int id, CancellationToken cancellationToken)
     {
         var result = await _treasuryService.EnableTreasuryMovementAsync(id, cancellationToken);
         return Ok(result);
     }
 
+    [HttpPut("Movement/{id}/Re-Disable")]
+    public async Task<IActionResult> TreasuryMovement(int id, CancellationToken cancellationToken)
+    {
+        var result = await _treasuryService.ReDisableTreasuryMovementAsync(id, cancellationToken);
+        return Ok(result);
+    }
 
     [HttpPut("Movement/{treasuryId}/Disable")]
-    public async Task<IActionResult> DisableTreasuryMovement(int treasuryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> DisableTreasuryMovement(int treasuryId, [FromQuery] DateOnly closeInDate, CancellationToken cancellationToken)
     {
-        var result = await _treasuryService.DisableTreasuryMovementAsync(treasuryId, cancellationToken);
+        var result = await _treasuryService.DisableTreasuryMovementAsync(treasuryId, closeInDate, cancellationToken);
         return Ok(result);
     }
 

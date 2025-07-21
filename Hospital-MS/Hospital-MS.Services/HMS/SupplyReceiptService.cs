@@ -8,13 +8,7 @@ using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : ISupplyReceiptService
@@ -43,7 +37,12 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
-            // handle treasury transaction
+
+            var lastMovement = await _unitOfWork.Repository<TreasuryMovement>()
+                .GetAll(x => x.TreasuryId == request.TreasuryId && x.IsClosed == false)
+                .OrderByDescending(x => x.Id)
+                .FirstOrDefaultAsync(cancellationToken);
+
             var treasuryOperation = new TreasuryOperation
             {
                 Date = request.Date,
@@ -53,8 +52,14 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) 
                 ReceivedFrom = request.ReceivedFrom,
                 TransactionType = TransactionType.Credit,
                 DocumentNumber = supplyReceipt.Id.ToString(),
-                AccountId = request.AccountId
+                AccountId = request.AccountId,
+                TreasuryMovementId = lastMovement?.Id,
             };
+
+            lastMovement!.TotalCredits += request.Amount;
+            lastMovement.Balance += request.Amount;
+
+            _unitOfWork.Repository<TreasuryMovement>().Update(lastMovement);
 
             await _unitOfWork.Repository<TreasuryOperation>().AddAsync(treasuryOperation, cancellationToken);
 

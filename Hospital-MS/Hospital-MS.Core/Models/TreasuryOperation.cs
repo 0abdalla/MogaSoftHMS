@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
-using Hospital_MS.Core.Enums;
+﻿using Hospital_MS.Core.Enums;
 
 namespace Hospital_MS.Core.Models;
 
@@ -22,4 +16,7 @@ public class TreasuryOperation
     public TransactionType TransactionType { get; set; }
     public int TreasuryId { get; set; }
     public Treasury Treasury { get; set; } = default!;
+
+    public int? TreasuryMovementId { get; set; }
+    public TreasuryMovement? TreasuryMovement { get; set; } = default!;
 }
