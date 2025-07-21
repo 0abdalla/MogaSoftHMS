@@ -32,6 +32,7 @@
         "jspdf-autotable": "^5.0.2",
         "lottie-web": "^5.12.2",
         "ng-select": "^1.0.2",
+        "ngx-daterangepicker-material": "^6.0.4",
         "ngx-lottie": "^11.0.2",
         "ngx-pagination": "^6.0.3",
         "primeicons": "^7.0.0",

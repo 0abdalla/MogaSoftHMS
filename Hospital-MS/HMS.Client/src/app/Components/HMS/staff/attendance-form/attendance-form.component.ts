@@ -74,6 +74,7 @@ export class AttendanceFormComponent implements OnInit {
   }
 
   filterChecked(filters: FilterModel[]) {
+    debugger;
     this.pagingFilterModel.filterList = filters;
     this.pagingFilterModel.currentPage = 1;
     this.GetAllAttendanceSalaries();
@@ -181,6 +182,7 @@ export class AttendanceFormComponent implements OnInit {
           return true;
         });
         this.headers.push('الفرع');
+        this.headers.push('التاريخ');
         this.data = allRows.slice(headerRowIndex + 1).map(row => {
           const obj: any = {};
           this.headers.forEach((header, index) => {
@@ -240,6 +242,7 @@ export class AttendanceFormComponent implements OnInit {
         });
 
         this.headers.push('الفرع');
+        this.headers.push('التاريخ');
 
         this.data = rows.slice(headerRowIndex + 1).map(row => {
           const obj: any = {};
@@ -273,6 +276,16 @@ export class AttendanceFormComponent implements OnInit {
       return;
     }
 
+    if (mappedData.some(item => !item.code || !item.name || !item.workHours || !item.workDays || !item.requiredHours || !item.totalFingerprintHours || !item.sickDays || !item.otherDays || !item.fridays || !item.totalDays || !item.overtime)) {
+      alert('برجاء إدخال ملف صالح ,قم بتحميل القالب وملئه ببيانات صالحة');
+      return;
+    }
+
+    if (mappedData.some(item => item.date == '')) {
+      alert('برجاء إدخال التاريخ لكل صف');
+      return;
+    }
+
     this.staffService.AddAttendaceSalaries(mappedData).subscribe(data => {
       this.GetAllAttendanceSalaries();
       if (this.roleName === 'SystemAdmin') {
@@ -297,6 +310,7 @@ export class AttendanceFormComponent implements OnInit {
       fridays: row["ايام الجمع"],
       totalDays: row["إجمالي الأيام"],
       overtime: row["الاضافي"],
+      date: row["التاريخ"],
       branchId: this.branchId || 0
     };
   }
