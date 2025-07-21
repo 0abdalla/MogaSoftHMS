@@ -25,6 +25,22 @@
                     <i class="uil uil-filter"></i>
                     <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
                 </button>
+                        <div class="selector-width" *ngIf="roleName == 'SystemAdmin'">
+                            <div ngbDropdown class="dropdown-as-input">
+                                <button type="button" style="padding-left: 80px;" id="dropdownBasic1" ngbDropdownToggle>
+                                    <span>{{selectedBranch}} <sup>*</sup></span>
+                                </button>
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic1" class="w-100">
+                                    <div class="dropdown-h large-scroll">
+                                        <ng-container *ngFor="let item of BranchData">
+                                            <div class="d-flex dropdown-item cursor-pointer" [class]="item.name==selectedBranch?'active DropDownSelected':''" (click)="selectorBranchChange(item)">
+                                                <a style="width:270px; min-width: 270px">{{item.name}}</a>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-4 mb-2" *ngIf="total > 0">
@@ -33,7 +49,7 @@
                 <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
                     <div class="d-flex align-items-center">
                         <ng-container>
-                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الموظف او رقم البصمة ...'" (filterChanged)="filterChecked($event)"></app-filters>
+                            <app-filters [showSelector]="false" [showDateInput]="true" [searchPlaceholder]="'أدخل إسم الموظف او رقم البصمة ...'" (filterChanged)="filterChecked($event)"></app-filters>
                         </ng-container>
                     </div>
                 </div>
@@ -45,6 +61,7 @@
                             <tr>
                                 <th>رقم البصمة</th>
                                 <th>الاسم</th>
+                                <th>الفرع</th>
                                 <th>عدد الساعات</th>
                                 <th>ايام العمل</th>
                                 <th>الساعات المطلوبة</th>
@@ -54,6 +71,7 @@
                                 <th>ايام الجمع</th>
                                 <th>إجمالي الأيام</th>
                                 <th>الاضافي</th>
+                                <th>التاريخ</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -66,6 +84,7 @@
                                             <span class="fw-bold">{{ item.name }}</span>
                                         </div>
                                     </td>
+                                    <td>{{item.branchName}}</td>
                                     <td>{{item.workHours}}</td>
                                     <td>{{item.workDays}}</td>
                                     <td>{{item.requiredHours}}</td>
@@ -75,6 +94,7 @@
                                     <td>{{item.fridays}}</td>
                                     <td>{{item.totalDays}}</td>
                                     <td>{{item.overtime}}</td>
+                                    <td>{{item?.date | date:'YYYY-MM'}}</td>
                             </ng-container>
                         </tbody>
                     </table>
@@ -111,8 +131,13 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let row of data; let rowIndex = index">
-                                <td *ngFor="let col of headers" class="px-2 py-1">
-                                    <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control form-control-sm shadow-none text-center border-light" style="min-width: 120px;" />
+                                <ng-container *ngFor="let col of headers">
+                                    <td class="px-2 py-1" *ngIf="col != 'التاريخ'">
+                                        <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control form-control-sm shadow-none text-center border-light" style="min-width: 120px;" />
+                                    </td>
+                                </ng-container>
+                                <td>
+                                    <input type="month" class="form-control form-control-sm shadow-none text-center border-light" [(ngModel)]="data[rowIndex]['التاريخ']" />
                                 </td>
                             </tr>
                         </tbody>

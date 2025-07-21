@@ -18,6 +18,8 @@ namespace Hospital_MS.Core.Contracts.Auth
         string Token,
         int ExpiresIn,
         string? Role,
+        int BranchId,
+        string BranchName,
         List<string> Pages
     );
 

@@ -52,6 +52,7 @@ namespace Hospital_MS.Services.Auth
                 }
 
                 var Pages = GetPagesByRoleId(roleId);
+                var Branch = await GetUserBranchByStaffId(user.StaffId.Value);
 
                 var response = new AuthResponse(
                     user.Id,
@@ -65,6 +66,8 @@ namespace Hospital_MS.Services.Auth
                     token,
                     expiresIn,
                     roles.FirstOrDefault(),
+                    Branch.Id,
+                    Branch.Name,
                     Pages.Select(i => i.PageName).ToList()
                 );
 
@@ -167,6 +170,12 @@ namespace Hospital_MS.Services.Auth
             Params[0] = new SqlParameter("@RoleId", RoleId);
             var dt = _sQLHelper.SQLQuery<RolePages>("[dbo].[SP_GetPagesByRoleId]", Params);
             return dt;
+        }
+
+        public async Task<Branch> GetUserBranchByStaffId(int StaffId)
+        {
+            var Staff = await unitOfWork.Repository<Staff>().GetAll(i => i.Id == StaffId).Include(i => i.Branches).FirstOrDefaultAsync();
+            return Staff.Branches;
         }
     }
 }

@@ -5,6 +5,8 @@ import { MessageService } from 'primeng/api';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { forkJoin } from 'rxjs';
 import { Router } from '@angular/router';
+import { FinancialService } from '../../../../Services/HMS/financial.service';
+import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 
 @Component({
   selector: 'app-staff-form',
@@ -27,10 +29,18 @@ export class StaffFormComponent implements OnInit {
   jobTitles: any;
   jobTypes: any;
   jobLevels: any;
+  branches:any;
   filteredJobTitles: any;
+  pagingFilterModel:PagingFilterModel={
+    pageSize:100,
+    currentPage:1,
+    filterList:[]
+  }
+  netSalary: number;
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
+    private financialService : FinancialService,
     private messageService: MessageService,
     private router : Router
   ) {
@@ -43,6 +53,12 @@ export class StaffFormComponent implements OnInit {
       address: ['', Validators.required],
       type: [''],
       hireDate: ['', Validators.required],
+      // 
+      branchId: ['', Validators.required],
+      basicSalary: [null, Validators.required],
+      tax: [null, [Validators.required , Validators.min(0) , Validators.max(100)]],
+      insurance: [null, [Validators.required , Validators.min(0) , Validators.max(100)]],
+      // 
       status: ['Active', Validators.required],
       maritalStatus: ['', Validators.required],
       notes: [''],
@@ -55,6 +71,28 @@ export class StaffFormComponent implements OnInit {
       password: [''],
       isAuthorized: [null, Validators.required]
     });
+    this.employeeForm.get('basicSalary')!.valueChanges.subscribe(() => this.calculateNetSalary());
+    this.employeeForm.get('tax')!.valueChanges.subscribe(() => this.calculateNetSalary());
+    this.employeeForm.get('insurance')!.valueChanges.subscribe(() => this.calculateNetSalary());
+  }
+  calculateNetSalary() {
+    const salary = Number(this.employeeForm.get('basicSalary')?.value);
+    const taxPercent = Number(this.employeeForm.get('tax')?.value);
+    const insurancePercent = Number(this.employeeForm.get('insurance')?.value);
+    if (!salary || isNaN(taxPercent) || isNaN(insurancePercent)) {
+      this.netSalary = null;
+      return;
+    }
+    const taxAmount = salary * (taxPercent / 100);
+    const insuranceAmount = salary * (insurancePercent / 100);
+    this.netSalary = salary - taxAmount - insuranceAmount;
+    const shouldDisable = this.netSalary <= 0;
+    const isDisabled = this.employeeForm.disabled;
+    if(shouldDisable){
+      this.employeeForm.get('basicSalary')?.setErrors({ 'invalid': true });
+    }else{
+      this.employeeForm.get('basicSalary')?.setErrors(null);
+    }
   }
 
   ngOnInit() {
@@ -177,7 +215,8 @@ export class StaffFormComponent implements OnInit {
       jobDepartments: this.staffService.getJobDepartment('',1,100),
       jobTitles: this.staffService.getJobTitles('',1,100),
       jobTypes: this.staffService.getJobTypes('',1,100),
-      jobLevels: this.staffService.getJobLevels('',1,100)
+      jobLevels: this.staffService.getJobLevels('',1,100),
+      branches: this.staffService.GetBranches(this.pagingFilterModel)
     }).subscribe({
       next: (data) => {
         this.jobDepartments = data.jobDepartments.results;
@@ -185,6 +224,8 @@ export class StaffFormComponent implements OnInit {
         this.jobTitles = data.jobTitles.results;
         this.filteredJobTitles = [];
         this.jobLevels = data.jobLevels.results;
+        this.branches = data.branches.results;
+        console.log(this.branches);
       },
       error: (error) => {
         console.error(error);

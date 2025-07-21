@@ -1,6 +1,7 @@
 <main id="treasury-index">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <!-- <h2 class="text-center fw-bold">حركة الخزينة</h2> -->
         <div class="row">
             <div class="col-lg-4 mt-3">
@@ -75,17 +76,15 @@
                                 <label class="form-label">الخزينة</label>
                                 <select class="form-select shadow-none text-end" formControlName="treasuryId">
                                     <option disabled selected value="">اختر الخزينة</option>
-                                    <ng-container *ngFor="let treasury of enabledTreasuries">
-                                        <option [value]="treasury.id">
-                                            {{ treasury.treasuryName }}
-                                          </option>                                          
+                                    <ng-container *ngFor="let treasury of treasuries">
+                                        <option [value]="treasury.id">{{treasury.name }}</option>                                       
                                     </ng-container>
                                 </select>
                             </div>
 
                             <div class="col-lg-6">
                                 <label class="form-label">حتى تاريخ</label>
-                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                                <input type="date" class="form-control shadow-none text-end" formControlName="closeInDate" />
                             </div>
 
                         </div>
@@ -112,17 +111,34 @@
                     <div class="p-3 mb-3">
                         <div class="row gy-3">
 
-                            <div class="col-lg-6">
+                            <!-- <div class="col-lg-6">
                                 <label class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="date" />
-                            </div>
+                            </div> -->
                             <div class="col-lg-6">
                                 <label class="form-label">الخزينة</label>
-                                <select class="form-select shadow-none text-end" formControlName="treasuryId">
+                                <select class="form-select shadow-none text-end" formControlName="treasuryId" 
+                                (change)="onTreasuryChange($event)">
                                     <option disabled selected value="">اختر الخزينة</option>
-                                    <ng-container *ngFor="let treasury of disabledTreasuries">
-                                        <option [value]="treasury.id">{{treasury.treasuryName + ' (' + treasury.openedIn + ' | ' + (treasury.closedIn || '---------------') + ')' }}</option>
+                                    <ng-container *ngFor="let treasury of treasuries">
+                                        <option [value]="treasury.id">{{treasury.name}}</option>
                                     </ng-container>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label class="form-label">حركة الخزينة</label>
+                                <select
+                                  class="form-select shadow-none text-end"
+                                  formControlName="movementId"
+                                  [disabled]="movements.length === 0"
+                                >
+                                  <option disabled selected value="">اختر حركة الخزينة</option>
+                                  <ng-container *ngFor="let movement of movements">
+                                        <option [value]="movement.movementId" *ngIf="movement.isClosed === true">
+                                            حركة خزينة رقم {{ movement.treasuryNumber }} | {{ movement.openedIn }} - {{ movement.closedIn  }}
+                                        </option>
+                                    </ng-container>                              
                                 </select>
                             </div>
 
@@ -148,24 +164,37 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="reCloseTreasuryModalLabel">إغلاق حركة الخزينة</h5>
+                <h5 class="modal-title" id="reCloseTreasuryModalLabel">إعادة إغلاق حركة الخزينة</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="closeTreasuryForm" (ngSubmit)="submitCloseTreasury()">
+                <form [formGroup]="recloseTreasuryForm" (ngSubmit)="reCloseTreasury()">
                     <div class="p-3 mb-3">
                         <div class="row gy-3">
 
                             <div class="col-lg-6">
-                                <label class="form-label">التاريخ</label>
-                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
-                            </div>
-                            <div class="col-lg-6">
                                 <label class="form-label">الخزينة</label>
-                                <select class="form-select shadow-none text-end" formControlName="treasuryId">
+                                <select class="form-select shadow-none text-end" formControlName="treasuryId" 
+                                (change)="onTreasuryChange($event)">
                                     <option disabled selected value="">اختر الخزينة</option>
-                                    <ng-container *ngFor="let treasury of enabledTreasuries">
-                                        <option [value]="treasury.id">{{treasury.treasuryName + ' (' + treasury.openedIn + ' | ' + (treasury.closedIn || '---------------') + ')' }}</option>
+                                    <ng-container *ngFor="let treasury of treasuries">
+                                        <option [value]="treasury.id">{{treasury.name}}</option>
                                     </ng-container>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label class="form-label">حركة الخزينة</label>
+                                <select
+                                  class="form-select shadow-none text-end"
+                                  formControlName="movementId"
+                                  [disabled]="movements.length === 0"
+                                >
+                                  <option disabled selected value="">اختر حركة الخزينة</option>
+                                  <ng-container *ngFor="let movement of movements">
+                                        <option [value]="movement.movementId" *ngIf="movement.isReEnabled === true && movement.isClosed === false">
+                                            حركة خزينة رقم {{ movement.treasuryNumber }} | {{ movement.openedIn }} - {{ movement.closedIn  }}
+                                        </option>
+                                    </ng-container>                              
                                 </select>
                             </div>
 
@@ -220,7 +249,7 @@
                             <option disabled selected value="">اختر حركة الخزينة</option>
                             <ng-container *ngFor="let movement of movements">
                                 <option [value]="movement.movementId">
-                                  {{ movement.movementId }} | 
+                                  حركة خزينة رقم {{ movement.treasuryNumber }} | 
                                   {{ movement.openedIn }} - 
                                   {{ movement.closedIn ? movement.closedIn : 'مفتوحة' }}
                                 </option>
@@ -248,9 +277,9 @@
             <div id="treasury-report-print">
                 <div class="modal-header justify-content-center">
                     <h5 class="modal-title" id="openTreasuryReportModalLabel">
-                        كشف حركة خزينة رقم {{ treasuryReportData?.id }}
+                        كشف حركة {{treasuryReportData?.treasuryName}} رقم {{ treasuryReportData?.treasuryNumber }}
                         من {{ treasuryReportData?.openedIn | date:'yyyy-MM-dd' }}
-                        الى {{ treasuryReportData?.closedIn ? treasuryReportData?.closedIn : 'مفتوحة' }}
+                        الى {{ treasuryReportData?.closedIn ? treasuryReportData?.closedIn : '----' }}
                     </h5>
                 </div>
                 <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover; direction: rtl;">
@@ -267,13 +296,18 @@
                               <th>القيمة</th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody *ngIf="creditTransactions.length > 0">
                             <tr *ngFor="let t of creditTransactions">
-                              <td>{{ t.documentId }}</td>
-                              <td>{{ t.date | date:'yyyy-MM-dd' }}</td>
-                              <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom }})</td>
+                              <td>{{ t.documentId  }}</td>
+                              <td style="font-size: 14px;">{{ t.date | date:'yyyy-MM-dd'  }}</td>
+                              <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom  }})</td>
                               <td>{{ t.description || '-' }}</td>
                               <td>{{ t.credit | number:'1.2-2' }} ج.م</td>
+                            </tr>
+                          </tbody>
+                          <tbody *ngIf="creditTransactions.length === 0">
+                            <tr>
+                              <td colspan="5" class="text-center">لا يوجد حركات</td>
                             </tr>
                           </tbody>
                         </table>
@@ -290,13 +324,18 @@
                               <th>القيمة</th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody *ngIf="debitTransactions.length > 0">
                             <tr *ngFor="let t of debitTransactions">
                               <td>{{ t.documentId }}</td>
-                              <td>{{ t.date | date:'yyyy-MM-dd' }}</td>
+                              <td style="font-size: 14px;">{{ t.date | date:'yyyy-MM-dd' }}</td>
                               <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom }})</td>
                               <td>{{ t.description || '-' }}</td>
                               <td>{{ t.debit | number:'1.2-2' }} ج.م</td>
+                            </tr>
+                          </tbody>
+                          <tbody *ngIf="debitTransactions.length === 0">
+                            <tr>
+                              <td colspan="5" class="text-center">لا يوجد حركات</td>
                             </tr>
                           </tbody>
                         </table>

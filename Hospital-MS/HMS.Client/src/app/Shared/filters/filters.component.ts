@@ -12,10 +12,12 @@ export class FiltersComponent {
   @Input() filterPlaceholder: string;
   @Input() showSearchText: boolean = true;
   @Input() showSelector: boolean = true;
+  @Input() showDateInput: boolean = false;
   @Input() searchPlaceholder: string = '';
   @Input() categoryName: string = '';
   @Output() filterChanged = new EventEmitter<FilterModel[]>();
   SelectedFilter: FilterModel[] = [];
+  selectedDate: any;
   SearchText: string = '';
   selectedName = '';
   filterSearch: string = '';
@@ -58,7 +60,21 @@ export class FiltersComponent {
   RemoveAllFilters() {
     this.SelectedFilter = [];
     this.SearchText = '';
+    this.selectedDate = null;
     this.selectedName = this.filterPlaceholder;
     this.filterChanged.emit(this.SelectedFilter);
+  }
+
+  changeDate(range: any) {
+    this.SelectedFilter = [];
+    if (range && range.endDate) {
+      const dateFilter: FilterModel = {
+        categoryName: 'Date',
+        fromDate: range.startDate.format('YYYY-MM-DD'),
+        toDate: range.endDate.format('YYYY-MM-DD'),
+      }
+      this.SelectedFilter.push(dateFilter);
+      this.filterChanged.emit(this.SelectedFilter);
+    }
   }
 }

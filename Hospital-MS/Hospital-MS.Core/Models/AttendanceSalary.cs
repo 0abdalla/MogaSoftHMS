@@ -21,5 +21,7 @@ namespace Hospital_MS.Core.Models
         public int? Fridays { get; set; }           // أيام الجمع
         public int? TotalDays { get; set; }         // إجمالي الأيام
         public int? Overtime { get; set; }          // الإضافي
+        public int? BranchId { get; set; }          // الفرع
+        public DateTime? Date { get; set; }          // التاريخ
     }
 }

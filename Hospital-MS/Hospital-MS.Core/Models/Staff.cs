@@ -26,6 +26,7 @@ namespace Hospital_MS.Core.Models
         public int? JobTypeId { get; set; }
         public int? JobLevelId { get; set; }
         public int? JobDepartmentId { get; set; }
+        public int? BranchId { get; set; }
 
         // Navigation Property
         //public Clinic? Clinic { get; set; }
@@ -34,6 +35,7 @@ namespace Hospital_MS.Core.Models
         public JobType? JobType { get; set; } = default!;
         public JobLevel? JobLevel { get; set; } = default!;
         public JobDepartment? JobDepartment { get; set; }
+        public Branch? Branches { get; set; }
         public ICollection<StaffAttachments> StaffAttachments { get; set; } = new HashSet<StaffAttachments>();
     }
 }

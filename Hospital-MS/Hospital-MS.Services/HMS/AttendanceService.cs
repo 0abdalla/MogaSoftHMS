@@ -186,12 +186,16 @@ public class AttendanceService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : I
         try
         {
             var searchText = filter.FilterList?.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
+            var fromDate = filter.FilterList?.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
+            var toDate = filter.FilterList?.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
 
             var parameters = new[]
             {
                 new SqlParameter("@SearchText", searchText ?? (object)DBNull.Value),
                 new SqlParameter("@CurrentPage", filter.CurrentPage),
-                new SqlParameter("@PageSize", filter.PageSize)
+                new SqlParameter("@PageSize", filter.PageSize),
+                new SqlParameter("@FromDate", fromDate),
+                new SqlParameter("@ToDate", toDate)
             };
 
             var dt = await _sQLHelper.ExecuteDataTableAsync("[finance].[SP_GetAllAttendanceSalaries]", parameters);

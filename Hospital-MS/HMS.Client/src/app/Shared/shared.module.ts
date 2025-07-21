@@ -21,6 +21,7 @@ import { NgbModule, NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
 import { TagComponent } from './tag/tag.component';
 import { DayToArabicPipe } from '../Pipes/day-to-arabic.pipe';
 import { MedicalTypeToArabicPipe } from '../Pipes/medical-type-to-arabic.pipe';
+import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
 
 
 @NgModule({
@@ -49,7 +50,8 @@ import { MedicalTypeToArabicPipe } from '../Pipes/medical-type-to-arabic.pipe';
     CommonModule,
     FormsModule,
     NgbModule,
-    NgbPopoverModule
+    NgbPopoverModule,
+    NgxDaterangepickerMd.forRoot()
   ],
   exports: [
     AgePipe,
