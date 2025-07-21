@@ -125,6 +125,53 @@
                     <ng-container *ngIf="employeeForm.get('hireDate')?.errors?.['required']">تاريخ التعيين مطلوب</ng-container>
                 </div>
             </div>
+            <div class="col-lg-4 mb-3">
+                <label class="form-label">الفرع</label>
+                <select class="form-select shadow-none" formControlName="branchId">
+                    <option selected disabled value="">اختر الفرع</option>
+                    <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }}</option>
+                    <option disabled *ngIf="branches?.length === 0">لا يوجد فروع متاحة</option>
+                </select>
+                <div *ngIf="employeeForm.get('branchId')?.invalid && employeeForm.get('branchId')?.touched" class="text-danger">
+                    <ng-container *ngIf="employeeForm.get('branchId')?.errors?.['required']">الفرع مطلوب</ng-container>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-3">
+                <label class="form-label">الراتب الأساسي</label>
+                <input type="number" class="form-control shadow-none" formControlName="basicSalary" placeholder="أدخل الراتب الأساسي">
+                <div *ngIf="employeeForm.get('basicSalary')?.invalid && employeeForm.get('basicSalary')?.touched" class="text-danger">
+                    <ng-container *ngIf="employeeForm.get('basicSalary')?.errors?.['required']">الراتب الأساسي مطلوب</ng-container>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-3">
+                <label class="form-label">الضرائب (%)</label>
+                <input type="number" class="form-control shadow-none" formControlName="tax" placeholder="أدخل نسبة الضرائب" min="0" max="100">
+                <div *ngIf="employeeForm.get('tax')?.invalid && employeeForm.get('tax')?.touched" class="text-danger">
+                  <ng-container *ngIf="employeeForm.get('tax')?.errors?.['required']">قيمة الضرائب مطلوبة</ng-container>
+                  <ng-container *ngIf="employeeForm.get('tax')?.errors?.['min']">قيمة الضرائب يجب أن تكون أكبر من 0</ng-container>
+                  <ng-container *ngIf="employeeForm.get('tax')?.errors?.['max']">قيمة الضرائب يجب أن تكون أقل من 100</ng-container>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-3">
+                <label class="form-label">التأمينات (%)</label>
+                <input type="number" class="form-control shadow-none" formControlName="insurance" placeholder="أدخل نسبة التأمينات" min="0" max="100">
+                <div *ngIf="employeeForm.get('insurance')?.invalid && employeeForm.get('insurance')?.touched" class="text-danger">
+                  <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['required']">قيمة التأمينات مطلوبة</ng-container>
+                  <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['min']">قيمة التأمينات يجب أن تكون أكبر من 0</ng-container>
+                  <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['max']">قيمة التأمينات يجب أن تكون أقل من 100</ng-container>
+                </div>
+            </div>
+
+            <div class="col-lg-12 text-center mt-2" *ngIf="employeeForm.get('insurance')?.value !== null">
+                <div [ngClass]="{ 'text-success': netSalary > 0, 'text-danger': netSalary <= 0 }" class="fw-bold">
+                  صافي الراتب: {{ netSalary | number:'1.2-2' }} جنيه
+                  <span *ngIf="netSalary <= 0" class="ms-2">⚠️ لا يمكن أن يكون صافي الراتب صفرًا أو سالبًا</span>
+                </div>
+              </div>              
+
         </div>
         <h4 class="mb-3">🔐 بيانات تسجيل الدخول</h4>
         <div class="row mb-3">

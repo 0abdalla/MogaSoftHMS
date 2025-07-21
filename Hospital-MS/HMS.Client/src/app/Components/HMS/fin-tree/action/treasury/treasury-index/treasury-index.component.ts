@@ -5,6 +5,8 @@ import { PagingFilterModel } from '../../../../../../Models/Generics/PagingFilte
 declare var bootstrap : any;
 import html2pdf from 'html2pdf.js';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
+import { Toast } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-treasury-index',
@@ -14,6 +16,7 @@ import { SettingService } from '../../../../../../Services/HMS/setting.service';
 export class TreasuryIndexComponent {
   TitleList = ['الإدارة المالية','حركة الخزينة'];
   closeTreasuryForm!:FormGroup;
+  recloseTreasuryForm!:FormGroup;
   openTreasuryForm!:FormGroup;
   treasuryReportForm!:FormGroup;
   // 
@@ -29,22 +32,24 @@ export class TreasuryIndexComponent {
   // 
   accounts:any[]=[];
   treasuryReportData: any = null;
-  constructor(private fb:FormBuilder,private financialService:FinancialService , private settingService:SettingService){
+  constructor(private fb:FormBuilder,private financialService:FinancialService , private settingService:SettingService , private toastrService : MessageService){
     this.closeTreasuryForm=this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
+      closeInDate: [new Date().toISOString().substring(0, 10)],
+      treasuryId:['' , Validators.required],
+    });   
+    this.recloseTreasuryForm=this.fb.group({
+      movementId : ['' , Validators.required],
       treasuryId:['' , Validators.required],
       notes:['']
     });   
     this.openTreasuryForm=this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
+      movementId : ['' , Validators.required],
       treasuryId:['' , Validators.required],
       notes:['']
     }); 
     this.treasuryReportForm = this.fb.group({
       treasuryId: ['', Validators.required],
       movementId: ['', Validators.required],
-      // toDate: ['', Validators.required],
-      // fromDate: ['', Validators.required]
     });    
   }
   ngOnInit(): void {
@@ -55,11 +60,17 @@ export class TreasuryIndexComponent {
     
   }
   submitCloseTreasury(){
-    this.financialService.disableTreasury(this.closeTreasuryForm.value.treasuryId).subscribe({
-      next: () => {
+    this.financialService.disableTreasury(this.closeTreasuryForm.value.treasuryId , this.closeTreasuryForm.value.closeInDate).subscribe({
+      next: (res:any) => {
+        console.log(res);
         this.getTreasuries();
         console.log(this.closeTreasuryForm.value.treasuryId);
         console.log('تم الإغلاق بنجاح');
+        this.toastrService.add({
+          severity: 'success',
+          summary: 'تمت العملية',
+          detail: 'تم الإغلاق بنجاح'
+        });
       },
       error: (err) => {
         console.log(this.closeTreasuryForm.value.treasuryId);
@@ -67,16 +78,51 @@ export class TreasuryIndexComponent {
       }
     });
   }
-  submitOpenTreasury(){
-    this.financialService.enableTreasury(this.openTreasuryForm.value.treasuryId).subscribe({
-      next: () => {
+  reCloseTreasury(){
+    this.financialService.reDesaibleTreasury(this.recloseTreasuryForm.value.movementId).subscribe({
+      next: (res:any) => {
+        console.log(res);
         this.getTreasuries();
-        console.log(this.openTreasuryForm.value.treasuryId);
-        console.log('تم فتح الخزينة بنجاح');
+        console.log(this.recloseTreasuryForm.value.movementId);
+        console.log('تم إعادة الإغلاق بنجاح');
+        this.toastrService.add({
+          severity: 'success',
+          summary: 'تمت العملية',
+          detail: 'تم إعادة الإغلاق بنجاح'
+        });
       },
       error: (err) => {
-        console.log(this.openTreasuryForm.value.treasuryId);
+        console.log(this.closeTreasuryForm.value.movementId);
+        console.error('فشل الإغلاق:', err);
+        this.toastrService.add({
+          severity: 'error',
+          summary: 'حدث خطأ',
+          detail: 'فشل الإغلاق'
+        });
+      }
+    });
+  }
+  submitOpenTreasury(){
+    this.financialService.enableTreasury(this.openTreasuryForm.value.movementId).subscribe({
+      next: (res:any) => {
+        console.log(res);
+        this.getTreasuries();
+        console.log(this.openTreasuryForm.value.movementId);
+        console.log('تم فتح الخزينة بنجاح');
+        this.toastrService.add({
+          severity: 'success',
+          summary: 'تمت العملية',
+          detail: 'تم فتح الخزينة بنجاح'
+        });
+      },
+      error: (err) => {
+        console.log(this.openTreasuryForm.value.movementId);
         console.error('فشل فتح الخزينة:', err);
+        this.toastrService.add({
+          severity: 'error',
+          summary: 'حدث خطأ',
+          detail: 'فشل فتح الخزينة'
+        });
       }
     });
     this.openTreasuryForm.reset();
@@ -144,14 +190,27 @@ export class TreasuryIndexComponent {
     this.financialService.getTreasuriesMovements(movementId).subscribe({
       next: (res) => {
         this.treasuryReportData = res.results;
-        const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal')!);
-        modal.show();
+        const transactions = this.treasuryReportData.transactions;
+  
+        if (transactions && transactions.length > 0) {
+          const modal = new bootstrap.Modal(document.getElementById('openTreasuryReportModal')!);
+          modal.show();
+        } else {
+          console.error('لا يوجد حركات هنا')
+          this.toastrService.add({
+            severity: 'error',
+            summary: 'حدث خطأ',
+            detail: 'لا يوجد عمليات في هذه الحركة.'
+          });
+          return;
+        }
       },
       error: (err) => {
         console.error(err);
       }
     });
   }
+  
   
   get creditTransactions() {
     return this.treasuryReportData?.transactions.filter(t => t.credit > 0) || [];
@@ -165,11 +224,11 @@ export class TreasuryIndexComponent {
   }  
   printTreasuryReport() {
     const element = document.getElementById('treasury-report-print');
-    const treasuryId = this.treasuryReportData?.treasuryId || 'بدون_رقم';
+    const treasury = this.treasuryReportData.treasuryName + this.treasuryReportData.id;
   
     const opt = {
       margin:       0.5,
-      filename:     `كشف حركة خزينة ${treasuryId}.pdf`,
+      filename:     `كشف حركة  ${treasury}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2 },
       jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
