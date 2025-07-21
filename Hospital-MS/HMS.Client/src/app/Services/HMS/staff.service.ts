@@ -256,18 +256,8 @@ export class StaffService {
   GetAllAttendanceSalaries(filter: PagingFilterModel) {
     return this.http.post<any>(this.baseUrl + 'Attendance/GetAllAttendanceSalaries', filter);
   }
-<<<<<<< Updated upstream
-
-  // ================================= Branches ==========================================
-
-  GetAllBranches(filter: PagingFilterModel) {
-    return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
-  }
-
-=======
   // ================================= Branches ============================================
   GetBranches(filter: PagingFilterModel) {
     return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
   }
->>>>>>> Stashed changes
 }
