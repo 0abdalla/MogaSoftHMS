@@ -68,7 +68,7 @@ export class AttendanceFormComponent implements OnInit {
   }
 
   GetAllBranches() {
-    this.staffService.GetAllBranches(this.branchPagingFilterModel).subscribe(data => {
+    this.staffService.GetBranches(this.branchPagingFilterModel).subscribe(data => {
       this.BranchData = data?.results ?? [];
     });
   }

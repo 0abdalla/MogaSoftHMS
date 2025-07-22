@@ -95,6 +95,7 @@ namespace Hospital_MS.Services.HMS
                         PatientId = patient.Id,
                         DoctorId = request.DoctorId,
                         AppointmentDate = service.AppointmentDate,
+                        Type = Enum.Parse<AppointmentType>(service.AppointmentType),
                         PaymentMethod = request.PaymentMethod,
                         AppointmentNumber = appointmentNumber,
                         EmergencyLevel = request.EmergencyLevel,

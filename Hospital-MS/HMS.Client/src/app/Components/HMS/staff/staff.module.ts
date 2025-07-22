@@ -21,6 +21,7 @@ import { HrVacationComponent } from './hr-vacation/hr-vacation.component';
 import { HrAdvancesComponent } from './hr-advances/hr-advances.component';
 import { HrEmployeesSalariesComponent } from './hr-employees-salaries/hr-employees-salaries.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HrSalariesComponent } from './hr-salaries/hr-salaries.component';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     HrPenaltyComponent,
     HrVacationComponent,
     HrAdvancesComponent,
-    HrEmployeesSalariesComponent
+    HrEmployeesSalariesComponent,
+    HrSalariesComponent
   ],
   imports: [
     CommonModule,
