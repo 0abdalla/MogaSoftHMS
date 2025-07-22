@@ -49,7 +49,7 @@ export class PurchaseRequestComponent {
   }  
   constructor(private financialService : FinancialService , private fb : FormBuilder){
     this.purchaseRequestForm=this.fb.group({
-      requestDate: [,Validators.required],
+      requestDate: [new Date().toISOString().substring(0, 10)],
       purpose:[null,Validators.required],
       storeId:[null,Validators.required],
       notes:[null],
@@ -161,9 +161,9 @@ export class PurchaseRequestComponent {
       this.financialService.addPurchaseRequest(formData).subscribe({
         next: (res:any) => {
           this.getpurchaseRequests();
+          this.purNumber=res.results;
           // this.purchaseRequestForm.reset();
           this.generatePurchaseRequestPDF();
-          this.purNumber=res.results;
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -252,7 +252,7 @@ export class PurchaseRequestComponent {
     element.classList.remove('d-none');
     html2pdf().set({
       margin: 10,
-      filename: `طلب-شراء-${new Date().getTime()}.pdf`,
+      filename: `طلب-شراء-${this.purNumber}.pdf`,
       html2canvas: { scale: 2 },
       jsPDF: { orientation: 'portrait' }
     }).from(element).save().then(() => {

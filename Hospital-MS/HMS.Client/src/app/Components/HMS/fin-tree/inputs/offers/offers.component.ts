@@ -235,24 +235,26 @@ export class OffersComponent {
   quotationDate!:string;
   loadQuotationsByRequestId(purchaseRequestId: number) {
     this.selectedPurchaseRequestId = purchaseRequestId;
-    this.purNumber = purchaseRequestId;
   
     this.financialService.getPriceQuotationById(purchaseRequestId).subscribe((res: any) => {
       this.quotationDate = res.results[0].quotationDate;
       this.quotationData = res?.results || [];
+      this.purNumber = res.results[0].purchaseRequestNumber;
+      console.log(this.quotationData);
+      
       if (!this.quotationData.length) {
         alert('لا توجد عروض أسعار لهذا الطلب');
         return;
       }
   
       this.supplierNames = this.quotationData.map(q => q.supplierName);
-      const allItemNames = this.quotationData.flatMap(q => q.items.map((i: any) => i.itemName));
-      this.uniqueItems = Array.from(new Set(allItemNames));
+      const allnameArs = this.quotationData.flatMap(q => q.items.map((i: any) => i.nameAr));
+      this.uniqueItems = Array.from(new Set(allnameArs));
         
-      this.structuredTable = this.uniqueItems.map(itemName => {
-        const row: any = { itemName };
+      this.structuredTable = this.uniqueItems.map(nameAr => {
+        const row: any = { nameAr };
         this.quotationData.forEach(quotation => {
-          const item = quotation.items.find((i: any) => i.itemName === itemName);
+          const item = quotation.items.find((i: any) => i.nameAr === nameAr);
           row[quotation.supplierName] = {
             quantity: item?.quantity || 0,
             unitPrice: item?.unitPrice || 0,
@@ -339,7 +341,7 @@ export class OffersComponent {
     element.style.display = 'block';
     const opt = {
       margin: 0.5,
-      filename: 'تفريغ_العروض.pdf',
+      filename: 'تفريغ_العروض_طلب_شراء_رقم_ ' + this.purNumber + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }

@@ -31,7 +31,6 @@
                     <table class="table table-hover">
                         <thead>
                           <tr>
-                            <th>#</th>
                             <th>رقم الطلب</th>
                             <th>تاريخ الطلب</th>
                             <th>اسم المخزن</th>
@@ -40,11 +39,10 @@
                             <th>الإجراءات</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr *ngFor="let order of purchaseRequests; let i = index">
-                            <td>{{ order.id }}</td>
+                        <tbody *ngIf="purchaseRequests">
+                          <tr *ngFor="let order of purchaseRequests | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }">
                             <td class="fw-bold">{{ order.requestNumber }}</td>
-                            <td>{{ order.requestDate | date: 'yyyy-MM-dd – HH:mm' }}</td>
+                            <td>{{ order.requestDate | date: 'yyyy-MM-dd' }}</td>
                             <!-- <td>{{ order.expiryDate | date: 'yyyy-MM-dd – HH:mm' }}</td> -->
                             <td>{{ order.storeName }}</td>
                             <td>{{ order.purpose || '-' }}</td>
@@ -64,6 +62,11 @@
                                 </button>
                           </td>
                           </tr>
+                        </tbody>
+                        <tbody *ngIf="purchaseRequests.length === 0">
+                          <td class="text-center" colspan="6">
+                            لا يوجد طلبات شراء حتى الان
+                          </td>
                         </tbody>
                     </table>
                 </div>
@@ -89,21 +92,21 @@
                   <div class="row p-3 mb-3">
                       <div class="col-md-4">
                           <div class="form-group">
-                              <label>الغرض</label>
+                              <label class="form-label">الغرض</label>
                               <input type="text" formControlName="purpose" class="form-control shadow-none text-end">
                           </div>
                       </div>
 
                       <div class="col-md-4">
                           <div class="form-group">
-                              <label>تاريخ الطلب</label>
+                              <label class="form-label">تاريخ الطلب</label>
                               <input type="date" formControlName="requestDate" class="form-control shadow-none text-end">
                           </div>
                       </div>
 
                       <div class="col-md-4">
                           <div class="form-group">
-                              <label>اسم المخزن</label>
+                              <label class="form-label">اسم المخزن</label>
                               <select class="form-select shadow-none" formControlName="storeId">
                                 <option disabled selected value="">اختر المخزن</option>
                                 <option *ngFor="let i of stores" [value]="i.id">{{ i.name }}</option>
@@ -113,46 +116,44 @@
 
                       <div class="col-md-12 mt-3">
                           <div class="form-group">
-                              <label>ملاحظات</label>
+                              <label class="form-label">ملاحظات</label>
                               <input type="text" formControlName="notes" class="form-control shadow-none text-end">
                           </div>
                       </div>
-                  </div>
-                  <div class="row">
-                    <div formArrayName="items">
-                      <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-                        <div class="col-md-4">
-                          <label>الصنف</label>
-                          <select class="form-select shadow-none" formControlName="itemId">
-                            <option disabled selected value="">اختر الصنف</option>
-                            <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
-                          </select>
+
+                      <div formArrayName="items" class="mt-3">
+                        <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+                          <div class="col-md-4">
+                            <label class="form-label">الصنف</label>
+                            <select class="form-select shadow-none" formControlName="itemId">
+                              <option disabled selected value="">اختر الصنف</option>
+                              <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
+                            </select>
+                          </div>
+                      
+                          <div class="col-md-3">
+                            <label class="form-label">الكمية</label>
+                            <input type="number" class="form-control shadow-none" formControlName="quantity">
+                          </div>
+                      
+                          <div class="col-md-4">
+                            <label class="form-label">ملاحظات</label>
+                            <input type="text" class="form-control shadow-none" formControlName="notes">
+                          </div>
+                      
+                          <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </div>
                         </div>
-                    
-                        <div class="col-md-3">
-                          <label>الكمية</label>
-                          <input type="number" class="form-control shadow-none" formControlName="quantity">
-                        </div>
-                    
-                        <div class="col-md-4">
-                          <label>ملاحظات</label>
-                          <input type="text" class="form-control shadow-none" formControlName="notes">
-                        </div>
-                    
-                        <div class="col-md-1 d-flex align-items-end">
-                          <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
-                            <i class="fa fa-trash"></i>
+                      
+                        <div class="text-start mb-3">
+                          <button type="button" class="btn btn-success" (click)="addItemRow()">
+                            <i class="fa fa-plus"></i> إضافة صنف
                           </button>
                         </div>
                       </div>
-                    
-                      <div class="text-start mb-3">
-                        <button type="button" class="btn btn-success" (click)="addItemRow()">
-                          <i class="fa fa-plus"></i> إضافة صنف
-                        </button>
-                      </div>
-                    </div>
-                    
                   </div>
 
                   <div class="text-center">
@@ -168,27 +169,27 @@
 
 
 
-<div id="printablePurchaseRequest" dir="rtl" class="container p-4">
-  <div class="p-3" style="border: 1px solid #5A607F; border-radius: 10px;">
+<div id="printablePurchaseRequest" dir="rtl" class="container border rounded p-4">
     <div class="d-flex justify-content-around align-items-center mb-2">
       <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-      <div>
-        <span>طلب شراء رقم</span>
-        <span>{{ purNumber }}</span>
+      <div class="text-center">
+        <h5 class="fw-bold mb-1"> طلب شراء  <span class="text-primary"> {{ purNumber }}</span></h5>
       </div>
     </div>
 
-    <div class="mb-2">
-      <strong>تاريخ الطلب:</strong> {{ purchaseRequestForm.value.requestDate | date: 'yyyy-MM-dd' }}
-    </div>
-    <div class="mb-2">
-      <strong>المخزن:</strong> {{ getStoreName(purchaseRequestForm.value.storeId) }}
-    </div>
-    <div class="mb-2">
-      <strong>الغرض:</strong> {{ purchaseRequestForm.value.purpose }}
-    </div>
-    <div class="mb-2">
-      <strong>الملاحظات:</strong> {{ purchaseRequestForm.value.notes || '----' }} 
+    <div class="row">
+      <div class="col-md-6 mb-2">
+        <strong>تاريخ الطلب:</strong> {{ purchaseRequestForm.value.requestDate | date: 'yyyy-MM-dd' }}
+      </div>
+      <div class="col-md-6 mb-2">
+        <strong>المخزن:</strong> {{ getStoreName(purchaseRequestForm.value.storeId) }}
+      </div>
+      <div class="col-md-6 mb-2">
+        <strong>الغرض:</strong> {{ purchaseRequestForm.value.purpose }}
+      </div>
+      <div class="col-md-6 mb-2">
+        <strong>الملاحظات:</strong> {{ purchaseRequestForm.value.notes || '----' }} 
+      </div>
     </div>
 
     <table class="table table-bordered mt-4">
@@ -229,5 +230,4 @@
         <strong>التاريخ:</strong> {{ today }}
       </div>
     </div>
-  </div>
 </div>
