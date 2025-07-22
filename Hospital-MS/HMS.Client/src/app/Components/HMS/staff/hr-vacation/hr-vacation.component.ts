@@ -21,6 +21,7 @@ export class HrVacationComponent implements OnInit {
   vacationTypeSelectorData: GeneralSelectorModel[] = [];
   selectedVacationId: number;
   CategorySearch: any;
+  VacationDays: number;
   CategoryName = 'قائمة الموظفين';
   PagingFilterModel: PagingFilterModel = {
     currentPage: 1,
@@ -56,6 +57,14 @@ export class HrVacationComponent implements OnInit {
     this.staffService.GetVacationsByEmployeeId(this.selectedEmployeeId, this.PagingFilterModel).subscribe(data => {
       this.employeeVacationResponse.results = data.results;
       this.employeeVacationResponse.totalCount = data.totalCount;
+      let obj = this.employeeSelectorData.find(x => x.value == this.selectedEmployeeId);
+      if (obj) {
+        let period = 0;
+        this.employeeVacationResponse.results.forEach(item => {
+          period += item.period;
+        });
+        this.VacationDays = obj.vacationDays - period;
+      }
 
       this.showLoader = false;
     }, err => {
@@ -166,7 +175,6 @@ export class HrVacationComponent implements OnInit {
 
 
   fillEditForm(vacationModel: EmployeeVacationModel) {
-    debugger;
     this.isUpdate = true;
     this.formGroup.patchValue({
       vacationId: vacationModel.vacationId,
@@ -200,7 +208,6 @@ export class HrVacationComponent implements OnInit {
     this.PagingFilterModel.currentPage = obj.page;
     this.getVacationsByEmployeeId();
   }
-
 
   deleteVacation() {
     this.showAddLoader = true;

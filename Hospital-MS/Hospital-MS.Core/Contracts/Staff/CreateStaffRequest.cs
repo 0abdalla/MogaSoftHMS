@@ -34,8 +34,9 @@ namespace Hospital_MS.Core.Contracts.Staff
         public int? JobDepartmentId { get; set; }
 
         public int? BranchId { get; set; }
-        public decimal BasicSalary { get; set; }
-        public decimal Tax { get; set; }
-        public decimal Insurance { get; set; }
+        public double? BasicSalary { get; set; }
+        public int? Tax { get; set; }
+        public int? Insurance { get; set; }
+        public int? VacationDays { get; set; }
     }
 }

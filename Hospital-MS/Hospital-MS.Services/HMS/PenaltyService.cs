@@ -193,11 +193,14 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<List<SelectorDataModel>> GetActiveEmployeesSelector()
         {
-            var result = await _unitOfWork.Repository<Staff>().GetAll(i => i.Status == StaffStatus.Active).ToListAsync();
+            var result = await _unitOfWork.Repository<Staff>().GetAll(i => i.Status == StaffStatus.Active).Include(i => i.Branches).ToListAsync();
             var data = result.Select(i => new SelectorDataModel
             {
                 Id = i.Id,
                 Name = i.FullName,
+                BranchId = i.BranchId,
+                BranchName = i.Branches.Name,
+                VacationDays = i.VacationDays,
             }).ToList();
 
             return data;

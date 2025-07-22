@@ -149,10 +149,10 @@ export class StaffService {
       .set('CurrentPage', currentPage.toString())
       .set('PageSize', pageSize.toString())
       .set('FilterList', JSON.stringify(filterList));
-  
+
     return this.http.get<any>(`${this.baseUrl}JobDepartment`, { params });
   }
-  
+
   getJobDepartmentById(id: number) {
     return this.http.get<any>(`${this.baseUrl}JobDepartment/${id}`);
   }
@@ -257,7 +257,14 @@ export class StaffService {
     return this.http.post<any>(this.baseUrl + 'Attendance/GetAllAttendanceSalaries', filter);
   }
   // ================================= Branches ============================================
+  
   GetBranches(filter: PagingFilterModel) {
     return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
+  }
+
+  // ================================= StaffSalaries ============================================
+
+  CalculateStaffSalaries(Model: any) {
+    return this.http.post<any>(this.baseUrl + 'StaffSalaries/CalculateStaffSalaries', Model);
   }
 }

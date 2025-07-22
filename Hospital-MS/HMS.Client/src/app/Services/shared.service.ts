@@ -48,15 +48,15 @@ export class SharedService {
     return `${arabicDay} من ${startTime} إلى ${endTime}`;
   }
 
-  generatePdf(data: HTMLElement) {
+  generatePdf(data: HTMLElement, fileName = 'Appointment', orientation = 'portrait') {
     const date = new Date();
     const formattedDate = this.datePipe.transform(date, 'yyyy-MM-dd HH:mm:ss');
     const options = {
       margin: 0.5,
-      filename: 'Appointment' + '_' + formattedDate + '.pdf',
+      filename: fileName + '_' + formattedDate + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: { unit: 'mm', format: 'a4', orientation: orientation }
     };
     // -------------Download PDF File------------------
     //html2pdf().from(data).set(options).save();

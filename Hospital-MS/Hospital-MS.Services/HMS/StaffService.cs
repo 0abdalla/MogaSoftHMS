@@ -53,7 +53,11 @@ namespace Hospital_MS.Services.HMS
                     JobTitleId = request.JobTitleId,
                     JobTypeId = request.JobTypeId,
                     Code = request.Code,
-                    BranchId = request.BranchId
+                    BranchId = request.BranchId,
+                    BasicSalary = request.BasicSalary,
+                    Tax = request.Tax,
+                    Insurance = request.Insurance,
+                    VacationDays = request.VacationDays,
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);

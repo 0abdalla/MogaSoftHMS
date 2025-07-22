@@ -29,20 +29,20 @@ export class StaffFormComponent implements OnInit {
   jobTitles: any;
   jobTypes: any;
   jobLevels: any;
-  branches:any;
+  branches: any;
   filteredJobTitles: any;
-  pagingFilterModel:PagingFilterModel={
-    pageSize:100,
-    currentPage:1,
-    filterList:[]
+  pagingFilterModel: PagingFilterModel = {
+    pageSize: 100,
+    currentPage: 1,
+    filterList: []
   }
   netSalary: number;
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
-    private financialService : FinancialService,
+    private financialService: FinancialService,
     private messageService: MessageService,
-    private router : Router
+    private router: Router
   ) {
     this.employeeForm = this.fb.group({
       fullName: ['', Validators.required],
@@ -56,8 +56,9 @@ export class StaffFormComponent implements OnInit {
       // 
       branchId: ['', Validators.required],
       basicSalary: [null, Validators.required],
-      tax: [null, [Validators.required , Validators.min(0) , Validators.max(100)]],
-      insurance: [null, [Validators.required , Validators.min(0) , Validators.max(100)]],
+      tax: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+      insurance: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+      vacationDays: [null, [Validators.required, Validators.min(0), Validators.max(30)]],
       // 
       status: ['Active', Validators.required],
       maritalStatus: ['', Validators.required],
@@ -65,7 +66,7 @@ export class StaffFormComponent implements OnInit {
       Files: [null],
       JobDepartmentId: ['', Validators.required],
       JobLevelId: ['', Validators.required],
-      JobTitleId: [{value : '' , disabled : true}, Validators.required],
+      JobTitleId: [{ value: '', disabled: true }, Validators.required],
       JobTypeId: ['', Validators.required],
       userName: [''],
       password: [''],
@@ -88,9 +89,9 @@ export class StaffFormComponent implements OnInit {
     this.netSalary = salary - taxAmount - insuranceAmount;
     const shouldDisable = this.netSalary <= 0;
     const isDisabled = this.employeeForm.disabled;
-    if(shouldDisable){
+    if (shouldDisable) {
       this.employeeForm.get('basicSalary')?.setErrors({ 'invalid': true });
-    }else{
+    } else {
       this.employeeForm.get('basicSalary')?.setErrors(null);
     }
   }
@@ -115,7 +116,7 @@ export class StaffFormComponent implements OnInit {
       const jobTitleControl = this.employeeForm.get('JobTitleId');
       jobTitleControl?.setValue('');
       if (value) {
-        this.filteredJobTitles = this.jobTitles.filter((title : any) => title.jobDepartmentId === parseInt(value));
+        this.filteredJobTitles = this.jobTitles.filter((title: any) => title.jobDepartmentId === parseInt(value));
         jobTitleControl?.enable();
       } else {
         this.filteredJobTitles = [];
@@ -148,7 +149,7 @@ export class StaffFormComponent implements OnInit {
   }
   onSubmit() {
     if (this.employeeForm.invalid) {
-      
+
       this.messageService.add({
         severity: 'error',
         summary: 'فشل',
@@ -171,7 +172,7 @@ export class StaffFormComponent implements OnInit {
       formData.append(`Files[${index}]`, file, file.name);
     });
     formData.append('fullName', this.employeeForm.get('fullName')?.value || '');
-    formData.append('nationalId' , this.employeeForm.get('nationalId')?.value || '')
+    formData.append('nationalId', this.employeeForm.get('nationalId')?.value || '')
     formData.append('gender', this.employeeForm.get('gender')?.value || '');
     formData.append('phoneNumber', this.employeeForm.get('phoneNumber')?.value || '');
     formData.append('email', this.employeeForm.get('email')?.value || '');
@@ -188,6 +189,13 @@ export class StaffFormComponent implements OnInit {
     formData.append('isAuthorized', this.employeeForm.get('isAuthorized')?.value?.toString() || 'false');
     formData.append('userName', this.employeeForm.get('userName')?.value || '');
     formData.append('password', this.employeeForm.get('password')?.value || '');
+
+    formData.append('basicSalary', this.employeeForm.get('basicSalary')?.value || '');
+    formData.append('tax', this.employeeForm.get('tax')?.value || '');
+    formData.append('insurance', this.employeeForm.get('insurance')?.value || '');
+    formData.append('vacationDays', this.employeeForm.get('vacationDays')?.value || '');
+    formData.append('branchId', this.employeeForm.get('branchId')?.value || '');
+
     this.staffService.addStaff(formData).subscribe({
       next: (data) => {
         // this.selectedFiles = [];
@@ -210,12 +218,12 @@ export class StaffFormComponent implements OnInit {
       },
     });
   }
-  loadStaffData(){
+  loadStaffData() {
     forkJoin({
-      jobDepartments: this.staffService.getJobDepartment('',1,100),
-      jobTitles: this.staffService.getJobTitles('',1,100),
-      jobTypes: this.staffService.getJobTypes('',1,100),
-      jobLevels: this.staffService.getJobLevels('',1,100),
+      jobDepartments: this.staffService.getJobDepartment('', 1, 100),
+      jobTitles: this.staffService.getJobTitles('', 1, 100),
+      jobTypes: this.staffService.getJobTypes('', 1, 100),
+      jobLevels: this.staffService.getJobLevels('', 1, 100),
       branches: this.staffService.GetBranches(this.pagingFilterModel)
     }).subscribe({
       next: (data) => {
