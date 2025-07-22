@@ -56,7 +56,6 @@ export class PurchaseOrderComponent {
       orderDate:[new Date().toISOString()],
       priceQuotationId:[null , Validators.required],
       supplierId:[null,Validators.required],
-      referenceNumber:[null,Validators.required],
       description:[''],
       items: this.fb.array([
         this.createItemGroup()
@@ -92,29 +91,29 @@ export class PurchaseOrderComponent {
     this.getpurchaseOrders();
     this.getSuppliers();
     this.getPriceQutations();
-    this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
-      if (id) {
-        this.financialService.getOffersById(id).subscribe((res: any) => {
-          const price = res.results;
-          console.log(price);
-          this.purchaseOrderForm.patchValue({
-            supplierId: price.supplierId,
-            description: price.notes
-          });
+    // this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
+    //   if (id) {
+    //     this.financialService.getOffersById(id).subscribe((res: any) => {
+    //       const price = res.results;
+    //       console.log(price);
+    //       this.purchaseOrderForm.patchValue({
+    //         supplierId: price.supplierId,
+    //         description: price.notes
+    //       });
         
-          this.items.clear();
-          price.items.forEach((item: any) => {
-            this.items.push(this.fb.group({
-              itemId: [item.id],
-              requestedQuantity: [item.quantity],
-              unitPrice: [item.unitPrice],
-              totalPrice : [item.total]
-            }));
-          });
-        });
+    //       this.items.clear();
+    //       price.items.forEach((item: any) => {
+    //         this.items.push(this.fb.group({
+    //           itemId: [item.id],
+    //           requestedQuantity: [item.quantity],
+    //           unitPrice: [item.unitPrice],
+    //           totalPrice : [item.total]
+    //         }));
+    //       });
+    //     });
         
-      }
-    });
+    //   }
+    // });
   }
   getItems(){
     this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
@@ -125,11 +124,11 @@ export class PurchaseOrderComponent {
     })
   }
   setupQuotationSelectionListener() {
-    this.purchaseOrderForm.get('priceQutationId')?.valueChanges.subscribe((id: number) => {
+    this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
       if (id) {
         this.financialService.getOffersById(id).subscribe((res: any) => {
           const price = res.results;
-  
+          console.log(price);
           this.purchaseOrderForm.patchValue({
             supplierId: price.supplierId,
             description: price.notes
@@ -148,6 +147,7 @@ export class PurchaseOrderComponent {
       }
     });
   }
+  
 
   getSuppliers(){
     this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res : any)=>{
@@ -185,6 +185,7 @@ export class PurchaseOrderComponent {
     this.getpurchaseOrders();
   }
   savedOrderData: any;
+  purNumber:number;
   addPurchaseorder() {
     if (this.purchaseOrderForm.invalid) {
       this.purchaseOrderForm.markAllAsTouched();
@@ -204,7 +205,8 @@ export class PurchaseOrderComponent {
       });
     } else {
       this.financialService.addPurchaseOrder(formData).subscribe({
-        next: async() => {
+        next: async(res:any) => {
+          this.purNumber = res.results
           this.getpurchaseOrders();
           // this.savedOrderData = res;
           // const modal = new bootstrap.Modal(document.getElementById('confirmationModal')!);
@@ -272,7 +274,7 @@ export class PurchaseOrderComponent {
     if (!selected || !selected.items) return;
   
     this.structuredTable = selected.items.map((item: any) => ({
-      itemName: item.itemName,
+      nameAr: item.nameAr,
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       totalPrice: item.unitPrice * item.quantity
@@ -293,7 +295,7 @@ export class PurchaseOrderComponent {
   }
   
   getItemNameById(id: number) {
-    return this.allItems.find(x => x.id === id)?.itemName || '';
+    return this.allItems.find(x => x.id === id)?.nameAr || '';
   }
 
   getTotalOrderPrice(): number {
@@ -310,7 +312,7 @@ export class PurchaseOrderComponent {
     element.style.display = 'block';
     const opt = {
       margin: 0.5,
-      filename: 'أمر_شراء.pdf',
+      filename: 'أمر_شراء_رقم_ ' + this.purNumber + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }

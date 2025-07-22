@@ -14,7 +14,6 @@
                     <table class="table table-hover">
                         <thead>
                           <tr>
-                            <th>#</th>
                             <th>رقم الأمر</th>
                             <th>تاريخ الأمر</th>
                             <th>اسم المورد</th>
@@ -24,8 +23,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                          <tr *ngFor="let order of purchaseOrders; let i = index">
-                            <td>{{ order.id }}</td>
+                          <tr *ngFor="let order of purchaseOrders;">
                             <td>{{ order.orderNumber }}</td>
                             <td>{{ order.orderDate | date: 'yyyy-MM-dd' }}</td>
                             <td>{{ order.supplierName }}</td>
@@ -78,20 +76,13 @@
                       </ng-select>
                     </div>
 
-                      <div class="col-md-6">
+                      <div class="col-md-12">
                           <div class="form-group">
                               <label>اسم المورد</label>
                               <select class="form-select shadow-none" formControlName="supplierId">
                                 <option disabled selected value="">اختر المورد</option>
                                 <option *ngFor="let i of allSuppliers" [value]="i.id">{{ i.name }}</option>
                               </select>
-                          </div>
-                      </div>
-
-                      <div class="col-md-6">
-                          <div class="form-group">
-                              <label>الرقم الدفتري</label>
-                              <input type="text" formControlName="referenceNumber" class="form-control shadow-none text-end">
                           </div>
                       </div>
 
@@ -112,9 +103,7 @@
                             <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
                           </select>
                         </div>
-                    
                         
-
                         <div class="col-md-3">
                           <label>الكمية</label>
                           <input type="number" class="form-control shadow-none" formControlName="requestedQuantity">
@@ -165,23 +154,23 @@
   <div class="d-flex justify-content-around align-items-center mb-4">
     <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
     <div class="text-center">
-      <h5 class="fw-bold mb-1">أمر شراء رقم <span class="text-primary"> {{ selectedQuotation?.quotationNumber }}</span></h5>
+      <h5 class="fw-bold mb-1"> أمر شراء  <span class="text-primary"> {{ purNumber }}</span></h5>
     </div>
   </div>
 
   <div class="mb-4">
     <div class="row mb-2">
       <div class="mt-1 col-md-6">
-        <strong>التاريخ : </strong> {{ purchaseOrderForm.value.orderDate | date: 'yyyy-MM-dd' }}
+        <strong>التاريخ: </strong> {{ purchaseOrderForm.value.orderDate | date: 'yyyy-MM-dd' }}
       </div>
       <div class="mt-1 col-md-6">
-        <strong>اسم المورد :</strong> {{ selectedSupplier?.name }}
+        <strong>اسم المورد:</strong> {{ selectedSupplier?.name }}
       </div>
       <div class="mt-1 col-md-12">
-        <strong>طلب الشراء :</strong> {{ selectedQuotation?.purchaseRequestNumber }}
+        <strong>طلب الشراء:</strong> {{ selectedQuotation?.purchaseRequestNumber }}
       </div>
       <div class="mt-1 col-md-12">
-        <strong>ملاحظات :</strong> {{ purchaseOrderForm.value.description || '---' }}
+        <strong>ملاحظات:</strong> {{ purchaseOrderForm.value.description || '---' }}
       </div>
     </div>
   </div>
@@ -200,10 +189,10 @@
       <tbody>
         <tr *ngFor="let row of structuredTable; let i = index">
           <td>{{ i + 1 }}</td>
-          <td>{{ row.itemName }}</td>
+          <td>{{ row.nameAr }}</td>
           <td>{{ row.quantity }}</td>
-          <td>{{ row.unitPrice }}</td>
-          <td>{{ row.totalPrice }}</td>
+          <td>{{ row.unitPrice + ' ج.م' }}</td>
+          <td>{{ row.totalPrice + ' ج.م' }}</td>
         </tr>
       </tbody>
       <tfoot>

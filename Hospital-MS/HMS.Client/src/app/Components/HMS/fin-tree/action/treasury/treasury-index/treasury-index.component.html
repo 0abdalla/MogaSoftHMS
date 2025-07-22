@@ -274,9 +274,10 @@
 <div class="modal fade" id="openTreasuryReportModal" tabindex="-1" aria-labelledby="openTreasuryReportModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen modal-dialog-centered">
         <div class="modal-content" >
-            <div id="treasury-report-print">
+            <div id="treasury-report-print" class="border rounded">
                 <div class="modal-header justify-content-center">
-                    <h5 class="modal-title" id="openTreasuryReportModalLabel">
+                    <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+                    <h5 class="modal-title mb-3" id="openTreasuryReportModalLabel">
                         كشف حركة {{treasuryReportData?.treasuryName}} رقم {{ treasuryReportData?.treasuryNumber }}
                         من {{ treasuryReportData?.openedIn | date:'yyyy-MM-dd' }}
                         الى {{ treasuryReportData?.closedIn ? treasuryReportData?.closedIn : '----' }}
@@ -299,7 +300,7 @@
                           <tbody *ngIf="creditTransactions.length > 0">
                             <tr *ngFor="let t of creditTransactions">
                               <td>{{ t.documentId  }}</td>
-                              <td style="font-size: 14px;">{{ t.date | date:'yyyy-MM-dd'  }}</td>
+                              <td style="font-size: 14px; white-space: nowrap;">{{ t.date | date:'yyyy-MM-dd'  }}</td>
                               <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom  }})</td>
                               <td>{{ t.description || '-' }}</td>
                               <td>{{ t.credit | number:'1.2-2' }} ج.م</td>
@@ -327,7 +328,7 @@
                           <tbody *ngIf="debitTransactions.length > 0">
                             <tr *ngFor="let t of debitTransactions">
                               <td>{{ t.documentId }}</td>
-                              <td style="font-size: 14px;">{{ t.date | date:'yyyy-MM-dd' }}</td>
+                              <td style="font-size: 14px;  white-space: nowrap;">{{ t.date | date:'yyyy-MM-dd' }}</td>
                               <td>{{ getAccountName(t.accountId) }} ({{ t.receivedFrom }})</td>
                               <td>{{ t.description || '-' }}</td>
                               <td>{{ t.debit | number:'1.2-2' }} ج.م</td>
@@ -380,6 +381,14 @@
                               
                         </table>
                     </div>
+                    <div class="row mt-4 pb-1">
+                        <div class="col-md-6">
+                          <strong>إسم المستخدم:</strong> {{ userName }}
+                        </div>
+                        <div class="col-md-6 text-end">
+                          <strong>التاريخ:</strong> {{ today }}
+                        </div>
+                      </div>
                 </div>
             </div>
             <div class="text-center mt-4">

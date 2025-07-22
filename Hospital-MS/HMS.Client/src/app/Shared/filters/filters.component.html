@@ -24,7 +24,7 @@
             </div>
         </div>
     </div>
-    <div class="position-relative" style="max-width: 600px; width: 500px;">
+    <div class="position-relative" style="max-width: 600px; width: 500px;" *ngIf="showDateInput">
         <input type="text" class="form-control input-date-46 ps-5" ngxDaterangepickerMd [(ngModel)]="selectedDate" [locale]="{applyLabel: 'تطبيق',format: 'YYYY-MM-DD'}" placeholder="اختر التاريخ" autocomplete="off" (datesUpdated)="changeDate($event)" />
 
         <!-- الأيقونة فقط للعرض وليس للتفاعل -->

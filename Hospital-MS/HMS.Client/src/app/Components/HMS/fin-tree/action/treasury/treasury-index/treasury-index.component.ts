@@ -32,6 +32,25 @@ export class TreasuryIndexComponent {
   // 
   accounts:any[]=[];
   treasuryReportData: any = null;
+  // 
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  } 
   constructor(private fb:FormBuilder,private financialService:FinancialService , private settingService:SettingService , private toastrService : MessageService){
     this.closeTreasuryForm=this.fb.group({
       closeInDate: [new Date().toISOString().substring(0, 10)],
@@ -224,7 +243,7 @@ export class TreasuryIndexComponent {
   }  
   printTreasuryReport() {
     const element = document.getElementById('treasury-report-print');
-    const treasury = this.treasuryReportData.treasuryName + this.treasuryReportData.id;
+    const treasury = this.treasuryReportData.treasuryName + ' رقم ' +  this.treasuryReportData.treasuryNumber;
   
     const opt = {
       margin:       0.5,
