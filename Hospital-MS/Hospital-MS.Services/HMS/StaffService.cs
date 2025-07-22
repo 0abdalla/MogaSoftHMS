@@ -1,12 +1,9 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Auth;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Models.HR;
-using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
@@ -56,6 +53,7 @@ namespace Hospital_MS.Services.HMS
                     JobTitleId = request.JobTitleId,
                     JobTypeId = request.JobTypeId,
                     Code = request.Code,
+                    BranchId = request.BranchId
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
@@ -102,7 +100,7 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var Params = new SqlParameter[6];   
+                var Params = new SqlParameter[6];
 
                 var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
 

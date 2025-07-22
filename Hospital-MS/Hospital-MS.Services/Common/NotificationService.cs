@@ -1,5 +1,4 @@
-﻿using Hospital_MS.Core._Data;
-using Hospital_MS.Core.Common.Consts;
+﻿using Hospital_MS.Core.Common.Consts;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.Repository;
@@ -7,11 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.Common;
 public class NotificationService(IUnitOfWork unitOfWork,
@@ -57,7 +51,7 @@ public class NotificationService(IUnitOfWork unitOfWork,
         };
         var body = EmailBodyBuilder.GenerateEmailBody("NewPurchaseRequest", templateModel);
 
-        await _emailService.SendEmailAsync("eslam.eltayarr@gmail.com", subject, body);
+        await _emailService.SendEmailAsync("magdeleslams@gmail.com", subject, body);
 
         // TODO: Uncomment the following lines to send emails to all admin users
 

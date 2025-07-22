@@ -44,7 +44,7 @@ namespace Hospital_MS.Services.HMS
 
             //await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.Id.ToString());
+            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.RequestNumber);
         }
 
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PurchaseRequestRequest request, CancellationToken cancellationToken = default)
@@ -227,7 +227,7 @@ namespace Hospital_MS.Services.HMS
             var year = DateTime.Now.Year;
             var count = await _unitOfWork.Repository<PurchaseRequest>()
                 .CountAsync(x => x.RequestDate.Year == year, cancellationToken);
-            return $"MR-{year}-{count + 1}";
+            return $"PR-{year}-{(count + 1):D5}";
         }
     }
 }

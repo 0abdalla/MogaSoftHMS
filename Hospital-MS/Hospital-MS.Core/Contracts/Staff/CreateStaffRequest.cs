@@ -1,10 +1,4 @@
-﻿using Hospital_MS.Core.Enums;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Hospital_MS.Core.Contracts.Staff
 {
@@ -39,5 +33,9 @@ namespace Hospital_MS.Core.Contracts.Staff
         public int? JobLevelId { get; set; }
         public int? JobDepartmentId { get; set; }
 
+        public int? BranchId { get; set; }
+        public decimal BasicSalary { get; set; }
+        public decimal Tax { get; set; }
+        public decimal Insurance { get; set; }
     }
 }
