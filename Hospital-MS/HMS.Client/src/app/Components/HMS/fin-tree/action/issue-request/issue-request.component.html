@@ -95,6 +95,9 @@
                             <div class="col-md-6">
                                 <label class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="permissionDate" />
+                                <div class="text-danger" *ngIf="issuseRequestForm.get('permissionDate')?.errors?.['notToday'] && issuseRequestForm.get('permissionDate')?.touched">
+                                    لا يمكن اختيار تاريخ سابق
+                                  </div>
                             </div>
 
                             <div class="col-md-6">

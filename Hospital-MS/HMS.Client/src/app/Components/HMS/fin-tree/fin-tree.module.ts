@@ -34,6 +34,7 @@ import { StoresComponent } from './inputs/stores/stores.component';
 import { StoresTypesComponent } from './inputs/stores-types/stores-types.component';
 import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
 import { IssueRequestComponent } from './action/issue-request/issue-request.component';
+import { IsTodayPipe } from '../../../Pipes/is-today.pipe';
 
 
 @NgModule({
@@ -64,6 +65,7 @@ import { IssueRequestComponent } from './action/issue-request/issue-request.comp
     StoresTypesComponent,
     YearFinSettingsComponent,
     IssueRequestComponent,
+    IsTodayPipe
   ],
   imports: [
     CommonModule,

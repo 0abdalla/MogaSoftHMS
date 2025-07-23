@@ -114,6 +114,9 @@
                             <div class="col-md-4">
                                 <label>التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                                <div class="text-danger" *ngIf="addNoticeGroup.get('date')?.errors?.['notToday'] && addNoticeGroup.get('date')?.touched">
+                                    لا يمكن اختيار تاريخ سابق
+                                </div>
                             </div>
 
                             <div class="col-md-4">

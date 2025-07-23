@@ -85,6 +85,9 @@
                             <div class="col-lg-6">
                                 <label class="form-label">حتى تاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="closeInDate" />
+                                <div class="text-danger" *ngIf="closeTreasuryForm.get('closeInDate')?.errors?.['notToday'] && closeTreasuryForm.get('closeInDate')?.touched">
+                                  لا يمكن اختيار تاريخ سابق
+                              </div>
                             </div>
 
                         </div>

@@ -1,6 +1,7 @@
 <main id="list-offers">
     <div class="container-fluid">
       <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+      <p-toast position="top-left"></p-toast>
         <div class="row">
             <div class="col-md-6">
                 <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addOfferModal">إضافة عرض سعر</button>
@@ -33,13 +34,14 @@
                               <p class="text-white status-pill fw-bold" *ngIf="order.status" [ngStyle]="{ backgroundColor: getStatusColor(order.status) }">
                                   {{ getStatusName(order.status) }}
                               </p>
-                            </td>                            <td>
-                              <button class="btn btn-primary mx-1" (click)="editOffer(order.id)">
+                            </td>
+                            <td>
+                              <button class="btn btn-warning mx-1" (click)="editOffer(order.id)">
                                   <i class="fa fa-edit"></i>
-                                </button>                          
+                              </button>                          
                               <button class="btn btn-danger mx-1" (click)="deleteOffer(order.id)">
                                   <i class="fa fa-trash"></i>
-                                </button>
+                              </button>
                           </td>
                           </tr>
                         </tbody>
@@ -187,8 +189,8 @@
           </div>
         </form>
       </div>
-      <div class="text-center p-3">
-        <button type="button" class="btn btn-primary" [disabled]="requestForm.invalid" (click)="loadQuotationsByRequestId(requestForm.value.purchaseRequestId)">
+      <div class="text-center pb-3">
+        <button type="button" class="btn-blue" [disabled]="requestForm.invalid" (click)="loadQuotationsByRequestId(requestForm.value.purchaseRequestId)">
           التالي
         </button>
       </div>

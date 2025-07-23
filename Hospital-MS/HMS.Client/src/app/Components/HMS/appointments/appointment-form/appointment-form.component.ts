@@ -9,6 +9,7 @@ import { SharedService } from '../../../../Services/shared.service';
 import { PrintInvoiceComponent } from '../print-invoice/print-invoice.component';
 import { MessageService } from 'primeng/api';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { todayDateValidator } from '../../../../validators/today-date.validator';
 declare var bootstrap: any;
 
 @Component({
@@ -93,11 +94,10 @@ export class AppointmentFormComponent implements OnInit {
       companionName: [''],
       companionNationalId: [''],
       companionPhone: [''],
-    });
-
+    }); 
     this.appointmentDetailsForm = this.fb.group({
       id: null,
-      appointmentDate: ['', Validators.required],
+      appointmentDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       appointmentType: ['', Validators.required],
       medicalServiceId: ['', Validators.required],
       radiologyBodyTypeId: ['', Validators.required],

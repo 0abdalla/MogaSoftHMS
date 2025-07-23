@@ -1,6 +1,7 @@
 <main id="list-purchase-request">
     <div class="container-fluid">
       <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+      <p-toast position="top-left"></p-toast>
         <div class="row">
             <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
               <div class="col-md-8 mb-2">
@@ -54,13 +55,16 @@
                             </td>
                             <!-- <td>{{ order.items }}</td> -->
                             <td>
-                              <button class="btn btn-primary mx-1" (click)="editPurchaseRequest(order.id)">
+                              <button class="btn btn-primary mx-1" (click)="generatePurchaseRequestPDFById(order.id)">
+                                <i class="fa fa-print"></i>
+                              </button>                              
+                              <button class="btn btn-warning mx-1" (click)="editPurchaseRequest(order.id)">
                                   <i class="fa fa-edit"></i>
-                                </button>                          
+                              </button>                          
                               <button class="btn btn-danger mx-1" (click)="deletePurchaseRequest(order.id)">
                                   <i class="fa fa-trash"></i>
-                                </button>
-                          </td>
+                              </button>  
+                            </td>
                           </tr>
                         </tbody>
                         <tbody *ngIf="purchaseRequests.length === 0">
@@ -101,6 +105,10 @@
                           <div class="form-group">
                               <label class="form-label">تاريخ الطلب</label>
                               <input type="date" formControlName="requestDate" class="form-control shadow-none text-end">
+                              
+                              <div class="text-danger" *ngIf="purchaseRequestForm.get('requestDate')?.errors?.['notToday'] && purchaseRequestForm.get('requestDate')?.touched">
+                                لا يمكن اختيار تاريخ سابق
+                            </div>
                           </div>
                       </div>
 

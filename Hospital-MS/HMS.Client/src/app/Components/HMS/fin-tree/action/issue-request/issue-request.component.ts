@@ -6,6 +6,7 @@ import { StaffService } from '../../../../../Services/HMS/staff.service';
 import Swal from 'sweetalert2';
 declare var bootstrap : any
 import html2pdf from 'html2pdf.js';
+import { todayDateValidator } from '../../../../../validators/today-date.validator';
 
 @Component({
   selector: 'app-issue-request',
@@ -37,7 +38,7 @@ export class IssueRequestComponent implements OnInit {
   constructor(private fb : FormBuilder , private financialService : FinancialService , private staffService : StaffService){
     this.issuseRequestForm = this.fb.group({
       jobDepartmentId: ['' , Validators.required],
-      permissionDate: [new Date().toISOString().substring(0, 10)],
+      permissionDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       notes: [''],
       items: this.fb.array([
         this.createItemGroup()

@@ -6,6 +6,7 @@ import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 export declare var bootstrap:any;
 import html2pdf from 'html2pdf.js';
 import { StaffService } from '../../../../../Services/HMS/staff.service';
+import { todayDateValidator } from '../../../../../validators/today-date.validator';
 
 @Component({
   selector: 'app-issue-items',
@@ -43,7 +44,7 @@ export class IssueItemsComponent implements OnInit {
       responsible:[''],
     })
     this.addPermissionForm = this.fb.group({
-      permissionDate: [new Date().toISOString().substring(0, 10)],
+      permissionDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       disbursementRequestId: ['' , Validators.required],
       storeId: ['' , Validators.required],
       jobDepartmentId : ['' , Validators.required],

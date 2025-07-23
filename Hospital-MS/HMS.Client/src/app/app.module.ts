@@ -11,13 +11,14 @@ import { RegisterComponent } from './Auth/register/register.component';
 import { LoginComponent } from './Auth/login/login.component';
 import { SharedModule } from './Shared/shared.module';
 import { NotAuthorizedComponent } from './Auth/not-authorized/not-authorized.component';
+import { IsTodayPipe } from './Pipes/is-today.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    NotAuthorizedComponent
+    NotAuthorizedComponent,
   ],
   imports: [
     BrowserModule,

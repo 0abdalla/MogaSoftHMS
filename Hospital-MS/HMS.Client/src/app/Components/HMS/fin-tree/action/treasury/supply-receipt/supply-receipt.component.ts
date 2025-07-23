@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
 declare var bootstrap:any;
 import html2pdf from 'html2pdf.js';
+import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 
 @Component({
   selector: 'app-supply-receipt',
@@ -58,7 +59,7 @@ export class SupplyReceiptComponent implements OnInit {
       responsible:[''],
     })
     this.addPermissionForm = this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
+      date: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       treasuryId: ['' , Validators.required],
       receivedFrom: ['' , Validators.required],
       accountId: ['' , Validators.required],

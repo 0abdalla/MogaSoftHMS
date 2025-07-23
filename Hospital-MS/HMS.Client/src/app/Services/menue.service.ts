@@ -25,23 +25,6 @@ export class MenueService {
       isGroup: false
     },
     {
-      displayName: 'الأطباء',
-      icon: 'fa-solid fa-boxes-stacked',
-      isGroup: true,
-      subMenus: [
-        {
-          displayName: 'الأطباء',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/settings/doctors-list'
-        },
-        {
-          displayName: 'نوع الخدمة',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/settings/medical-service'
-        }
-      ]
-    },
-    {
       displayName: 'المخازن',
       icon: 'fa-solid fa-boxes-stacked',
       isGroup: true,
@@ -224,6 +207,23 @@ export class MenueService {
           displayName: 'إعدادات المواعيد والحجز',
           icon: 'fa-solid fa-circle',
           route: '/hms/settings/medical-services-list'
+        },
+        {
+          displayName: 'الأطباء',
+          icon: 'fa-solid fa-boxes-stacked',
+          isGroup: true,
+          subMenus: [
+            {
+              displayName: 'الأطباء',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/settings/doctors-list'
+            },
+            {
+              displayName: 'نوع الخدمة',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/settings/medical-service'
+            }
+          ]
         },
         {
           displayName: 'إعدادات وكلاء التامين',
