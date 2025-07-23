@@ -38,5 +38,10 @@ namespace Hospital_MS.Core.Contracts.Staff
         public int? Tax { get; set; }
         public int? Insurance { get; set; }
         public int? VacationDays { get; set; }
+
+        public decimal VariableSalary { get; set; }
+        public string? VisaCode { get; set; }
+        public decimal Allowances { get; set; } // البدلات
+        public decimal Rewards { get; set; } // المكافأت
     }
 }

@@ -6,17 +6,11 @@ using Hospital_MS.Core.Models.HR;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class PenaltyService: IPenaltyService
+    public class PenaltyService : IPenaltyService
     {
         private readonly IUnitOfWork _unitOfWork;
         public PenaltyService(IUnitOfWork unitOfWork)
@@ -193,13 +187,13 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<List<SelectorDataModel>> GetActiveEmployeesSelector()
         {
-            var result = await _unitOfWork.Repository<Staff>().GetAll(i => i.Status == StaffStatus.Active).Include(i => i.Branches).ToListAsync();
+            var result = await _unitOfWork.Repository<Staff>().GetAll(i => i.Status == StaffStatus.Active).Include(i => i.Branch).ToListAsync();
             var data = result.Select(i => new SelectorDataModel
             {
                 Id = i.Id,
                 Name = i.FullName,
                 BranchId = i.BranchId,
-                BranchName = i.Branches.Name,
+                BranchName = i.Branch.Name,
                 VacationDays = i.VacationDays,
             }).ToList();
 

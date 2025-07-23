@@ -2,7 +2,6 @@
 using Hospital_MS.Core.Contracts.PriceQuotation;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -22,6 +21,7 @@ public class PriceQuotationsController : ApiBaseController
     public async Task<IActionResult> Create([FromBody] PriceQuotationRequest request, CancellationToken cancellationToken)
     {
         var result = await _service.CreateAsync(request, cancellationToken);
+
         return Ok(result);
     }
 

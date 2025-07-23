@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Text;
 
 namespace Hospital_MS.Services.Auth
 {
@@ -174,8 +173,8 @@ namespace Hospital_MS.Services.Auth
 
         public async Task<Branch> GetUserBranchByStaffId(int StaffId)
         {
-            var Staff = await unitOfWork.Repository<Staff>().GetAll(i => i.Id == StaffId).Include(i => i.Branches).FirstOrDefaultAsync();
-            return Staff.Branches;
+            var Staff = await unitOfWork.Repository<Staff>().GetAll(i => i.Id == StaffId).Include(i => i.Branch).FirstOrDefaultAsync();
+            return Staff.Branch;
         }
     }
 }

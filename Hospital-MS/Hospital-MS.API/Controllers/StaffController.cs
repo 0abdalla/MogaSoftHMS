@@ -1,8 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Staff;
-using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.HMS;
-using Hospital_MS.Services.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,6 +61,6 @@ namespace Hospital_MS.API.Controllers
             return Ok(count);
         }
 
-        
+
     }
 }

@@ -58,6 +58,10 @@ namespace Hospital_MS.Services.HMS
                     Tax = request.Tax,
                     Insurance = request.Insurance,
                     VacationDays = request.VacationDays,
+                    Allowances = request.Allowances,
+                    Rewards = request.Rewards,
+                    VariableSalary = request.VariableSalary,
+                    VisaCode = request.VisaCode
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
@@ -188,6 +192,7 @@ namespace Hospital_MS.Services.HMS
             var staff = await _unitOfWork.Repository<Staff>()
                 .GetAll(i => i.Id == id)
                 .Include(x => x.JobDepartment)
+                .Include(x => x.Branch)
                 .Include(x => x.JobLevel)
                 .Include(x => x.JobTitle)
                 .Include(x => x.JobType)
@@ -219,6 +224,12 @@ namespace Hospital_MS.Services.HMS
                 MaritalStatus = staff.MaritalStatus.ToString(),
                 Code = staff.Code,
                 AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
+                BranchId = staff.BranchId,
+                BranchName = staff.Branch?.Name,
+                Allowances = staff.Allowances,
+                Rewards = staff.Rewards,
+                VisaCode = staff.VisaCode,
+                VariableSalary = staff.VariableSalary,
 
                 Audit = new AuditResponse
                 {
