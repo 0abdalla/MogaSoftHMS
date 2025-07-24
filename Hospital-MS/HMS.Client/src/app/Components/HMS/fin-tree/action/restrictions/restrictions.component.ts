@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { BanksService } from '../../../../../Services/HMS/banks.service';
 import { SettingService } from '../../../../../Services/HMS/setting.service';
+import { todayDateValidator } from '../../../../../validators/today-date.validator';
 export declare var bootstrap : any;
 
 @Component({
@@ -35,7 +36,7 @@ export class RestrictionsComponent {
       SearchText:[],
     })
     this.restrictionForm = this.fb.group({
-      restrictionDate: ['', Validators.required],
+      restrictionDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       restrictionTypeId: ['', Validators.required],
       accountingGuidanceId: ['', Validators.required],
       description: ['', Validators.required],

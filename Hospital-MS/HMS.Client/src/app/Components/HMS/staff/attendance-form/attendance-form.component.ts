@@ -276,7 +276,9 @@ export class AttendanceFormComponent implements OnInit {
       return;
     }
 
-    if (mappedData.some(item => !item.code || !item.name || !item.workHours || !item.workDays || !item.requiredHours || !item.totalFingerprintHours || !item.sickDays || !item.otherDays || !item.fridays || !item.totalDays || !item.overtime)) {
+    if (mappedData.some(item => item.code == null || item.name == null || item.workHours == null ||
+      item.workDays == null || item.requiredHours == null || item.totalFingerprintHours == null || item.sickDays == null || item.otherDays == null
+      || item.fridays == null || item.totalDays == null || item.overtime == null)) {
       alert('برجاء إدخال ملف صالح ,قم بتحميل القالب وملئه ببيانات صالحة');
       return;
     }

@@ -1,38 +1,43 @@
-import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { StaffService } from '../../../../Services/HMS/staff.service';
-import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { SharedService } from '../../../../Services/shared.service';
 
 @Component({
   selector: 'app-hr-salaries',
   templateUrl: './hr-salaries.component.html',
   styleUrl: './hr-salaries.component.css'
 })
-export class HrSalariesComponent implements OnInit {
+export class HrSalariesComponent {
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('SalarySidePanel', { static: true }) SalarySidePanel!: TemplateRef<any>;
+  @ViewChild('PrintSalaries', { static: false }) PrintSalaries: ElementRef;
   TitleList = ['الإدارة المالية', 'رواتب الموظفين'];
   data: any[] = [];
   headers: string[] = [];
-  isFilter = true;
-  total = 0;
-  pagingFilterModel: PagingFilterModel = {
-    filterList: [],
-    currentPage: 1,
-    pageSize: 16,
-    searchText: ''
-  }
+  SalariesData: any[] = [];
+  TotalSalaries = {
+    basicSalary: 0,
+    secondShift: 0,
+    overtime: 0,
+    total: 0,
+    insurance: 0,
+    differenceBasicDays: 0,
+    absence: 0,
+    totalDeductions: 0,
+    net: 0,
+    taxes: 0,
+    penalties: 0,
+    loans: 0,
+    vacation: 0,
+    totalDays: 0,
+    due: 0
+  };
 
-  constructor(private offcanvasService: NgbOffcanvas, private staffService: StaffService) {
-
-  }
-
-  ngOnInit(): void {
-
-  }
+  constructor(private offcanvasService: NgbOffcanvas, private staffService: StaffService, private sharedService: SharedService) { }
 
   openNewSidePanel() {
     this.offcanvasService.open(this.SalarySidePanel, { panelClass: 'add-new-panel', position: 'end' });
@@ -121,7 +126,7 @@ export class HrSalariesComponent implements OnInit {
           seen.add(header);
           return true;
         });
-
+        this.headers.push('التاريخ');
         this.data = allRows.slice(headerRowIndex + 1).map(row => {
           const obj: any = {};
           this.headers.forEach((header, index) => {
@@ -168,7 +173,7 @@ export class HrSalariesComponent implements OnInit {
           seen.add(header);
           return true;
         });
-
+        this.headers.push('التاريخ');
         this.data = rows.slice(headerRowIndex + 1).map(row => {
           const obj: any = {};
           this.headers.forEach((header: string, index: number) => {
@@ -186,12 +191,64 @@ export class HrSalariesComponent implements OnInit {
     }
   }
 
-  onPageChange(obj: any) {
-    this.pagingFilterModel.currentPage = obj.page;
+  SaveStaffSalaryFile() {
+    const mappedData = this.data.map(row => this.mapArabicToEnglish(row));
+    if (mappedData.length == 0) {
+      alert('برجاء إدخال ملف يحتوي على بيانات');
+      return;
+    }
+
+    if (mappedData.some(item => item.staffId == null || item.staffName == null || item.overtime == null || item.totalDays == null)) {
+      alert('برجاء إدخال ملف صالح ,قم بتحميل القالب وملئه ببيانات صالحة');
+      return;
+    }
+
+    if (mappedData.some(item => item.date == '')) {
+      alert('برجاء إدخال التاريخ لكل صف');
+      return;
+    }
+
+    this.staffService.CalculateStaffSalaries(mappedData).subscribe(data => {
+      this.SalariesData = data;
+      this.SalariesData.forEach(item => {
+        this.TotalSalaries.basicSalary += item.basicSalary;
+        this.TotalSalaries.secondShift += item.secondShift;
+        this.TotalSalaries.overtime += item.overtime;
+        this.TotalSalaries.total += item.total;
+        this.TotalSalaries.insurance += item.insurance;
+        this.TotalSalaries.differenceBasicDays += item.differenceBasicDays;
+        this.TotalSalaries.absence += item.absence;
+        this.TotalSalaries.totalDeductions += item.totalDeductions;
+        this.TotalSalaries.net += item.net;
+        this.TotalSalaries.taxes += item.taxes;
+        this.TotalSalaries.penalties += item.penalties;
+        this.TotalSalaries.loans += item.loans;
+        this.TotalSalaries.vacation += item.vacation;
+        this.TotalSalaries.totalDays += item.totalDays;
+        this.TotalSalaries.due += item.due;
+      });
+
+      this.offcanvasService.dismiss();
+    });
   }
 
-  filterChecked(filters: FilterModel[]) {
-    this.pagingFilterModel.filterList = filters;
-    this.pagingFilterModel.currentPage = 1;
+  PrintSalariesClick() {
+    if (this.SalariesData.length === 0) {
+      alert('لا توجد بيانات للطباعة');
+      return;
+    }
+    
+    this.sharedService.generatePdf(this.PrintSalaries.nativeElement, 'رواتب_الموظفين', 'landscape');
+  }
+
+  mapArabicToEnglish(row: any): any {
+    return {
+      id: 0,
+      staffId: row["كود الموظف"],
+      staffName: row["الاسم"],
+      overtime: row["الاضافي"],
+      totalDays: row["إجمالي الأيام"],
+      date: row["التاريخ"]
+    };
   }
 }

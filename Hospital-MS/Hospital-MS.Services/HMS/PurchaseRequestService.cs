@@ -1,5 +1,6 @@
 using Hangfire;
 using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Common.Consts;
 using Hospital_MS.Core.Contracts.PurchaseRequests;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
@@ -7,44 +8,71 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class PurchaseRequestService(IUnitOfWork unitOfWork, INotificationService notificationService) : IPurchaseRequestService
+    public class PurchaseRequestService(IUnitOfWork unitOfWork,
+        INotificationService notificationService,
+        UserManager<ApplicationUser> userManager,
+        IHttpContextAccessor httpContextAccessor) : IPurchaseRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly INotificationService _notificationService = notificationService;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(PurchaseRequestRequest request, CancellationToken cancellationToken = default)
         {
-            var purchaseRequest = new PurchaseRequest
+            using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
             {
-                RequestNumber = await GenerateRequestNumber(cancellationToken),
-                RequestDate = request.RequestDate,
-                DueDate = request.DueDate,
-                Purpose = request.Purpose,
-                StoreId = request.StoreId,
-                Notes = request.Notes,
-                Status = PurchaseStatus.Pending,
-                IsActive = true,
-                Items = request.Items.Select(i => new PurchaseRequestItem
+                var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                var user = await _userManager.FindByIdAsync(userId);
+
+                var isAdmin = await _userManager.IsInRoleAsync(user, DefaultRoles.SystemAdmin.Name);
+
+                var purchaseRequest = new PurchaseRequest
                 {
-                    ItemId = i.ItemId,
-                    Quantity = i.Quantity,
-                    Notes = i.Notes,
-                    IsActive = true
-                }).ToList()
-            };
+                    RequestNumber = await GenerateRequestNumber(cancellationToken),
+                    RequestDate = request.RequestDate,
+                    DueDate = request.DueDate,
+                    Purpose = request.Purpose,
+                    StoreId = request.StoreId,
+                    Notes = request.Notes,
+                    Status = isAdmin ? PurchaseStatus.Approved : PurchaseStatus.Pending,
+                    IsActive = true,
+                    Items = request.Items.Select(i => new PurchaseRequestItem
+                    {
+                        ItemId = i.ItemId,
+                        Quantity = i.Quantity,
+                        Notes = i.Notes,
+                        IsActive = true
+                    }).ToList()
+                };
 
-            await _unitOfWork.Repository<PurchaseRequest>().AddAsync(purchaseRequest, cancellationToken);
-            await _unitOfWork.CompleteAsync(cancellationToken);
+                await _unitOfWork.Repository<PurchaseRequest>().AddAsync(purchaseRequest, cancellationToken);
+                await _unitOfWork.CompleteAsync(cancellationToken);
 
-            BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
+                if (!isAdmin)
+                {
+                    BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
+                }
 
-            //await _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id);
+                await transaction.CommitAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.Id.ToString());
+                return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, purchaseRequest.RequestNumber);
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+
         }
 
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PurchaseRequestRequest request, CancellationToken cancellationToken = default)
@@ -102,6 +130,7 @@ namespace Hospital_MS.Services.HMS
                 RequestDate = pr.RequestDate,
                 DueDate = pr.DueDate,
                 Purpose = pr.Purpose,
+                StoreId = pr.StoreId,
                 StoreName = pr.Store.Name,
                 Status = pr.Status.ToString(),
                 Notes = pr.Notes,
@@ -227,7 +256,7 @@ namespace Hospital_MS.Services.HMS
             var year = DateTime.Now.Year;
             var count = await _unitOfWork.Repository<PurchaseRequest>()
                 .CountAsync(x => x.RequestDate.Year == year, cancellationToken);
-            return $"MR-{year}-{count + 1}";
+            return $"PR-{year}-{(count + 1):D5}";
         }
     }
 }

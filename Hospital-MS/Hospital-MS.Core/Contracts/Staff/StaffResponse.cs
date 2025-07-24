@@ -1,10 +1,4 @@
 ﻿using Hospital_MS.Core.Contracts.Common;
-using Hospital_MS.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Contracts.Staff
 {
@@ -12,7 +6,7 @@ namespace Hospital_MS.Core.Contracts.Staff
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;
-        public string? Code { get; set; } 
+        public string? Code { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Specialization { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
@@ -39,6 +33,13 @@ namespace Hospital_MS.Core.Contracts.Staff
         public string? JobLevelName { get; set; }
         public int? JobDepartmentId { get; set; }
         public string? JobDepartmentName { get; set; }
+
+        public int? BranchId { get; set; }
+        public string? BranchName { get; set; }
+        public decimal VariableSalary { get; set; }
+        public string? VisaCode { get; set; }
+        public decimal Allowances { get; set; } // البدلات
+        public decimal Rewards { get; set; } // المكافأت
 
         public AuditResponse Audit { get; set; }
 

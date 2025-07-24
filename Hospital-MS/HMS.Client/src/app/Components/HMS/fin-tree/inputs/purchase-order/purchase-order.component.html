@@ -1,6 +1,7 @@
 <main id="list-purchase-order">
     <div class="container-fluid">
       <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+      <p-toast position="top-left"></p-toast>
         <div class="row">
             <div class="col-md-6">
                 <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addPurchaseorderModal">إضافة أمر شراء</button>
@@ -30,16 +31,19 @@
                             <!-- <td>{{ order.status || '-' }}</td> -->
                             <td>{{ order.priceQuotationNumber || '-' }}</td>
                             <td>
-                              <button class="btn btn-primary mx-1" (click)="editPurchaseorder(order.id)">
+                              <button class="btn btn-primary mx-1" (click)="generatePurchaseOrderPDFById(order.id)">
+                                <i class="fa fa-print"></i>
+                              </button>                              
+                              <button class="btn btn-warning mx-1" (click)="editPurchaseorder(order.id)">
                                   <i class="fa fa-edit"></i>
                                 </button>                          
                               <button class="btn btn-danger mx-1" (click)="deletePurchaseorder(order.id)">
                                   <i class="fa fa-trash"></i>
                                 </button>
-                          </td>
+                            </td>
                           </tr>
                         </tbody>
-                      </table>
+                    </table>
                 </div>
             </div>
         </div>
@@ -226,4 +230,3 @@
     </div>
   </div>
 </div>
-

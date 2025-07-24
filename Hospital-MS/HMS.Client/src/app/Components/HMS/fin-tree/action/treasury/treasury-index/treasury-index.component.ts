@@ -7,6 +7,7 @@ import html2pdf from 'html2pdf.js';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 
 @Component({
   selector: 'app-treasury-index',
@@ -53,7 +54,7 @@ export class TreasuryIndexComponent {
   } 
   constructor(private fb:FormBuilder,private financialService:FinancialService , private settingService:SettingService , private toastrService : MessageService){
     this.closeTreasuryForm=this.fb.group({
-      closeInDate: [new Date().toISOString().substring(0, 10)],
+      closeInDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       treasuryId:['' , Validators.required],
     });   
     this.recloseTreasuryForm=this.fb.group({

@@ -109,14 +109,12 @@ namespace Hospital_MS.API
             services.AddScoped<IAccountingGuidanceService, AccountingGuidanceService>();
             services.AddScoped<IDisbursementRequestService, DisbursementRequestService>();
             services.AddScoped<IPenaltyService, PenaltyService>();
-
+            services.AddScoped<IStaffSalariesService, StaffSalariesService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IEmailSender, EmailService>();
 
 
             services.AddHttpContextAccessor();
-
-
             services.AddOptions<MailSettings>()
                     .BindConfiguration(nameof(MailSettings))
                     .ValidateDataAnnotations()

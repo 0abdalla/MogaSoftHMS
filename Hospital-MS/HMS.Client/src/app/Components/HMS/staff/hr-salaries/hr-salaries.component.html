@@ -21,24 +21,14 @@
                                 <input #fileInput id="fileInput" type='file' (change)="onFileUpload($event)" accept=".xlsx,.xls,.csv" hidden />
                             </div>
                         </div>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
-                    <i class="uil uil-filter"></i>
-                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
-                </button>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-2" *ngIf="total > 0">
-                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-                </div>
-                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
-                    <div class="d-flex align-items-center">
-                        <ng-container>
-                            <app-filters [showSelector]="false" [showDateInput]="true" [searchPlaceholder]="'أدخل إسم الموظف او رقم البصمة ...'" (filterChanged)="filterChecked($event)"></app-filters>
-                        </ng-container>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="PrintSalariesClick()">
+                            <i class="uil uil-print"></i>
+                            <span class="navbar-brand m-0">طباعة</span>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="p-3 bg-white">
+            <div class="p-3 bg-white" #PrintSalaries>
                 <div class="table-responsive shadow-sm radius-10">
                     <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
                         <thead>
@@ -54,6 +44,7 @@
                                 <th rowspan="2">الضرائب</th>
                                 <th rowspan="2">الجزاءات</th>
                                 <th rowspan="2">السلف</th>
+                                <th rowspan="2">الأجازات الغير مدفوعة</th>
                                 <th rowspan="2">إجمالي الأيام</th>
                                 <th rowspan="2">المستحق</th>
                                 <th rowspan="2">التوقيع بالاستلام</th>
@@ -66,130 +57,50 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>هويدا احمد ذكر الله</td>
-                                <td>1-8-2025</td>
-                                <td>2300</td>
-                                <td>0</td>
-                                <td class="green">1066.67</td>
-                                <td>3366.67</td>
-                                <td>253.00</td>
-                                <td>0.00</td>
-                                <td>660.00</td>
-                                <td>913.00</td>
-                                <td>2453.67</td>
-                                <td>2453.67</td>
-                                <td>2454.00</td>
-                                <td>2454.00</td>
-                                <td>2454.00</td>
-                                <td>2454.00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>سيده سيد نصر</td>
-                                <td>1-8-2025</td>
-                                <td>2300</td>
-                                <td>1035</td>
-                                <td class="green">830.00</td>
-                                <td>4165.00</td>
-                                <td>253.00</td>
-                                <td>0.00</td>
-                                <td>805.00</td>
-                                <td>1058.00</td>
-                                <td>3107.00</td>
-                                <td>3107.00</td>
-                                <td>3107.00</td>
-                                <td>3107.00</td>
-                                <td>3107.00</td>
-                                <td>3107.00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>هند فاروق حسن</td>
-                                <td>1-8-2025</td>
-                                <td>2300</td>
-                                <td>0</td>
-                                <td class="green">266.67</td>
-                                <td>2566.67</td>
-                                <td>253.00</td>
-                                <td>0.00</td>
-                                <td>660.00</td>
-                                <td>913.00</td>
-                                <td>1653.67</td>
-                                <td>1653.67</td>
-                                <td>1654.00</td>
-                                <td>1654.00</td>
-                                <td>1654.00</td>
-                                <td>1654.00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>رباب شفيق شبل</td>
-                                <td>1-8-2025</td>
-                                <td>2300</td>
-                                <td>0</td>
-                                <td class="green">394.67</td>
-                                <td>2694.67</td>
-                                <td>253.00</td>
-                                <td>0.00</td>
-                                <td>780.00</td>
-                                <td>1033.00</td>
-                                <td>1661.67</td>
-                                <td>1661.67</td>
-                                <td>1662.00</td>
-                                <td>1662.00</td>
-                                <td>1662.00</td>
-                                <td>1662.00</td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>نجوى سلطان محمد</td>
-                                <td>1-8-2025</td>
-                                <td>2300</td>
-                                <td>1035</td>
-                                <td class="green">583.33</td>
-                                <td>3918.33</td>
-                                <td>253.00</td>
-                                <td>0.00</td>
-                                <td>795.00</td>
-                                <td>1048.00</td>
-                                <td>2870.33</td>
-                                <td>2870.33</td>
-                                <td>2871.00</td>
-                                <td>2871.00</td>
-                                <td>2871.00</td>
-                                <td>2871.00</td>
-                                <td></td>
+                            <tr *ngFor="let item of SalariesData">
+                                <td>{{item.name}}</td>
+                                <td>{{item.date | date:'yyyy-MM'}}</td>
+                                <td>{{item.basicSalary}}</td>
+                                <td>{{item.secondShift}}</td>
+                                <td class="green">{{item.overtime}}</td>
+                                <td>{{item.total}}</td>
+                                <td>{{item.insurance}}</td>
+                                <td>{{item.differenceBasicDays}}</td>
+                                <td>{{item.absence}}</td>
+                                <td>{{item.totalDeductions}}</td>
+                                <td>{{item.net}}</td>
+                                <td>{{item.taxes}}</td>
+                                <td>{{item.penalties}}</td>
+                                <td>{{item.loans}}</td>
+                                <td>{{item.vacation}}</td>
+                                <td>{{item.totalDays}}</td>
+                                <td>{{item.due}}</td>
+                                <td>----------------------</td>
                             </tr>
                         </tbody>
-                        <tfoot>
+                        <tfoot *ngIf="SalariesData.length > 0">
                             <tr>
                                 <td>الإجمالي</td>
                                 <td></td>
-                                <td>11500</td>
-                                <td>2070</td>
-                                <td class="green">3141.33</td>
-                                <td>16711.33</td>
-                                <td>1265.00</td>
-                                <td>0.00</td>
-                                <td>3700.00</td>
-                                <td>4965.00</td>
-                                <td>11746.33</td>
-                                <td>0.00</td>
-                                <td>11748.00</td>
-                                <td>11748.00</td>
-                                <td>11748.00</td>
-                                <td>11748.00</td>
-                                <td>----------------------</td>
+                                <td>{{TotalSalaries.basicSalary}}</td>
+                                <td>{{TotalSalaries.secondShift}}</td>
+                                <td>{{TotalSalaries.overtime}}</td>
+                                <td>{{TotalSalaries.total}}</td>
+                                <td>{{TotalSalaries.insurance}}</td>
+                                <td>{{TotalSalaries.differenceBasicDays}}</td>
+                                <td>{{TotalSalaries.absence}}</td>
+                                <td>{{TotalSalaries.totalDeductions}}</td>
+                                <td>{{TotalSalaries.net}}</td>
+                                <td>{{TotalSalaries.taxes}}</td>
+                                <td>{{TotalSalaries.penalties}}</td>
+                                <td>{{TotalSalaries.loans}}</td>
+                                <td>{{TotalSalaries.vacation}}</td>
+                                <td>{{TotalSalaries.totalDays}}</td>
+                                <td>{{TotalSalaries.due}}</td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
-                </div>
-                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
-                    <div class="col-md-8 mb-2"></div>
-                    <div class="col-md-4 mb-2" *ngIf="total > 0">
-                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-                    </div>
                 </div>
             </div>
         </div>
@@ -217,10 +128,13 @@
                         <tbody>
                             <tr *ngFor="let row of data; let rowIndex = index">
                                 <ng-container *ngFor="let col of headers">
-                                    <td class="px-2 py-1">
+                                    <td class="px-2 py-1" *ngIf="col != 'التاريخ'">
                                         <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control form-control-sm shadow-none text-center border-light" style="min-width: 120px;" />
                                     </td>
                                 </ng-container>
+                                <td>
+                                    <input type="month" class="form-control form-control-sm shadow-none text-center border-light" [(ngModel)]="data[rowIndex]['التاريخ']" />
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -230,7 +144,7 @@
     </div>
     <div class="offcanvas-footer p-4 border-top bg-white shadow-sm">
         <div class="d-flex justify-content-center">
-            <button class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow-sm">
+            <button class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow-sm" (click)="SaveStaffSalaryFile()">
                 <i class="fas fa-save me-2"></i>
                 <span>معاينة</span>
             </button>

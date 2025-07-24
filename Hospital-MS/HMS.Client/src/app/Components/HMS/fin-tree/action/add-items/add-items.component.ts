@@ -4,6 +4,8 @@ import { FinancialService } from '../../../../../Services/HMS/financial.service'
 import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
 import html2pdf from 'html2pdf.js';
+import { todayDateValidator } from '../../../../../validators/today-date.validator';
+import { MessageService } from 'primeng/api';
 export declare var bootstrap:any;
 
 @Component({
@@ -60,7 +62,7 @@ export class AddItemsComponent implements OnInit {
   purchaseOrders:any[]=[];
   // 
   isFilter:boolean=true;
-  constructor(private fb:FormBuilder , private financialService : FinancialService , private cdr : ChangeDetectorRef){
+  constructor(private fb:FormBuilder , private financialService : FinancialService , private cdr : ChangeDetectorRef , private toastrService : MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -68,7 +70,7 @@ export class AddItemsComponent implements OnInit {
     })
     this.addPermissionForm = this.fb.group({
       documentNumber: ['' , Validators.required],
-      permissionDate: [new Date().toISOString().substring(0, 10)],
+      permissionDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       notes: [''],
       items: this.fb.array([
         this.createItemGroup()
@@ -89,7 +91,7 @@ export class AddItemsComponent implements OnInit {
   }
   createItemGroup(): FormGroup {
     return this.fb.group({
-      id: [null, Validators.required],
+      id: ['', Validators.required],
       unit: ['', Validators.required],
       quantity: [1, Validators.required],
       unitPrice: [1, Validators.required],
@@ -283,7 +285,20 @@ export class AddItemsComponent implements OnInit {
   
           const modal = new bootstrap.Modal(document.getElementById('confirmationModal')!);
           modal.show();
-          this.addPermissionForm.reset();
+          // this.addPermissionForm.reset();
+          if(res.isSuccess === true){
+            this.toastrService.add({
+              severity: 'success',
+              summary: 'تم الإضافة',
+              detail: `${res.message}`
+            });
+          }else{
+            this.toastrService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: `${res.message}`
+            });
+          }
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);

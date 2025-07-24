@@ -40,7 +40,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         await _unitOfWork.Repository<PurchaseOrder>().AddAsync(order, cancellationToken);
         await _unitOfWork.CompleteAsync(cancellationToken);
 
-        return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, order.Id.ToString());
+        return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, order.OrderNumber);
     }
 
     public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PurchaseOrderRequest request, CancellationToken cancellationToken = default)

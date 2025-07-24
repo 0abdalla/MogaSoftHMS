@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
+import { MessageService } from 'primeng/api';
 export declare var bootstrap: any;
 declare var html2pdf: any;
 
@@ -51,7 +52,7 @@ export class PurchaseOrderComponent {
   TitleList = ['المشتريات','أمور شراء'];
   // 
   approvedPrices!:any;
-  constructor(private financialService : FinancialService , private fb : FormBuilder){
+  constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService){
     this.purchaseOrderForm=this.fb.group({
       orderDate:[new Date().toISOString()],
       priceQuotationId:[null , Validators.required],
@@ -213,7 +214,19 @@ export class PurchaseOrderComponent {
           // modal.show();
           await this.onQuotationChange();
           this.printOffers();
-
+          if(res.isSuccess === true){
+            this.toastrService.add({
+              severity: 'success',
+              summary: 'تم التعديل',
+              detail: `${res.message}`
+            });
+          }else{
+            this.toastrService.add({
+              severity: 'error',
+              summary: 'فشل التعديل',
+              detail: `${res.message}`
+            });
+          }
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -324,7 +337,56 @@ export class PurchaseOrderComponent {
       element.style.display = 'none';
     });
   }
+  quotationRequestNumberForPrint: string = '';
+  supplierNameForPrint: string = '';
+  generatePurchaseOrderPDFById(orderId: number) {
+    this.financialService.getPurchaseOrdersById(orderId).subscribe((res: any) => {
+      const data = res?.results;
+      if (!data) {
+        alert('لا يوجد بيانات لأمر الشراء');
+        return;
+      }
+      this.purchaseOrderForm.patchValue({
+        orderDate: data.orderDate,
+        description: data.description
+      });
   
+      this.purNumber = data.orderNumber;
+      this.supplierNameForPrint = data.supplierName;
+      this.quotationRequestNumberForPrint = data.priceQuotationNumber;
+      this.structuredTable = data.items.map((item: any) => ({
+        nameAr: item.nameAr,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.total
+      }));
+      setTimeout(() => {
+        const element = document.getElementById('printablePurchaseOrder');
+        if (!element) {
+          console.error('عنصر أمر الشراء غير موجود');
+          return;
+        }
+  
+        element.classList.remove('d-none');
+  
+        html2pdf().set({
+          margin: 0.5,
+          filename: `أمر_شراء_رقم_${this.purNumber}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        }).from(element).save().then(() => {
+          element.classList.add('d-none');
+        }).catch(err => {
+          console.error('حدث خطأ أثناء الطباعة:', err);
+          element.classList.add('d-none');
+        });
+      }, 100);
+    }, err => {
+      console.error('فشل تحميل أمر الشراء للطباعة:', err);
+      alert('حدث خطأ أثناء تحميل أمر الشراء.');
+    });
+  }
   
 }
 

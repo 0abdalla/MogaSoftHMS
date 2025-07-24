@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
+import { MessageService } from 'primeng/api';
 export declare var bootstrap: any;
 declare var html2pdf: any;
 
@@ -41,7 +42,7 @@ export class OffersComponent {
   selectedPurchaseRequestId: number | null = null;
 
   TitleList = ['المشتريات','عروض أسعار'];
-  constructor(private financialService : FinancialService , private fb : FormBuilder){
+  constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService){
     this.offerForm=this.fb.group({
       quotationDate:[new Date().toISOString()],
       supplierId:[null,Validators.required],
@@ -142,8 +143,21 @@ export class OffersComponent {
   
     if (this.isEditMode && this.currentOfferId) {
       this.financialService.updateOffer(this.currentOfferId, formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getOffers();
+          if(res.isSuccess === true){
+            this.toastrService.add({
+              severity: 'success',
+              summary: 'تم التعديل',
+              detail: `${res.message}`
+            });
+          }else{
+            this.toastrService.add({
+              severity: 'error',
+              summary: 'فشل التعديل',
+              detail: `${res.message}`
+            });
+          }
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -151,9 +165,22 @@ export class OffersComponent {
       });
     } else {
       this.financialService.addOffer(formData).subscribe({
-        next: (res) => {
+        next: (res : any) => {
           console.log(res);
           this.getOffers();
+          if(res.isSuccess === true){
+            this.toastrService.add({
+              severity: 'success',
+              summary: 'تمت الإضافة',
+              detail: `${res.message}`
+            });
+          }else{
+            this.toastrService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: `${res.message}`
+            });
+          }
           // this.offerForm.reset();
         },
         error: (err) => {

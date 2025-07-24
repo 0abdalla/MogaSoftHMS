@@ -1,12 +1,9 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Auth;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Models.HR;
-using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
@@ -56,6 +53,15 @@ namespace Hospital_MS.Services.HMS
                     JobTitleId = request.JobTitleId,
                     JobTypeId = request.JobTypeId,
                     Code = request.Code,
+                    BranchId = request.BranchId,
+                    BasicSalary = request.BasicSalary,
+                    Tax = request.Tax,
+                    Insurance = request.Insurance,
+                    VacationDays = request.VacationDays,
+                    Allowances = request.Allowances,
+                    Rewards = request.Rewards,
+                    VariableSalary = request.VariableSalary,
+                    VisaCode = request.VisaCode
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
@@ -102,7 +108,7 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var Params = new SqlParameter[6];   
+                var Params = new SqlParameter[6];
 
                 var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
 
@@ -186,6 +192,7 @@ namespace Hospital_MS.Services.HMS
             var staff = await _unitOfWork.Repository<Staff>()
                 .GetAll(i => i.Id == id)
                 .Include(x => x.JobDepartment)
+                .Include(x => x.Branch)
                 .Include(x => x.JobLevel)
                 .Include(x => x.JobTitle)
                 .Include(x => x.JobType)
@@ -217,6 +224,12 @@ namespace Hospital_MS.Services.HMS
                 MaritalStatus = staff.MaritalStatus.ToString(),
                 Code = staff.Code,
                 AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
+                BranchId = staff.BranchId,
+                BranchName = staff.Branch?.Name,
+                Allowances = staff.Allowances,
+                Rewards = staff.Rewards,
+                VisaCode = staff.VisaCode,
+                VariableSalary = staff.VariableSalary,
 
                 Audit = new AuditResponse
                 {

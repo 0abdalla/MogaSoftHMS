@@ -116,6 +116,10 @@
                             <div class="col-md-4">
                                 <label class="form-label" class="form-label">التاريخ</label>
                                 <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                                <div class="text-danger" *ngIf="exPermissionForm.get('date')?.errors?.['notToday'] && exPermissionForm.get('date')?.touched">
+                                    لا يمكن اختيار تاريخ سابق
+                                </div>
+                        
                             </div>
 
                             <div class="col-md-4">

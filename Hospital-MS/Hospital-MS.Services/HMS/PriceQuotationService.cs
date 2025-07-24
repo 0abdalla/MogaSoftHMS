@@ -6,11 +6,6 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class PriceQuotationService : IPriceQuotationService
@@ -114,7 +109,7 @@ public class PriceQuotationService : IPriceQuotationService
                       Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                       {
                           Id = i.Id,
-                          ItemName = i.Item.NameAr,
+                          NameAr = i.Item.NameAr,
                           Quantity = i.Quantity,
                           UnitPrice = i.UnitPrice,
                           Total = i.Quantity * i.UnitPrice,
@@ -173,7 +168,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
-                        ItemName = i.Item.NameAr,
+                        NameAr = i.Item.NameAr,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,
@@ -224,7 +219,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
-                        ItemName = i.Item.NameAr,
+                        NameAr = i.Item.NameAr,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,
@@ -268,7 +263,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
-                        ItemName = i.Item.NameAr,
+                        NameAr = i.Item.NameAr,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,

@@ -1,225 +1,235 @@
 <main id="staff-form" @fadeIn>
     <div class="container-fluid">
-      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="form p-2">
-        <p-toast position="top-left"></p-toast>
-        <h4 class="mb-3">🧑‍🏭 بيانات الموظف</h4>
-        <div class="row mb-3">
-            <div class="col-lg-3">
-                <label class="form-label">الاسم بالكامل</label>
-                <input type="text" class="form-control shadow-none" formControlName="fullName" placeholder="أدخل الاسم بالكامل">
-                <div *ngIf="employeeForm.get('fullName')?.invalid && employeeForm.get('fullName')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('fullName')?.errors?.['required']">الاسم بالكامل مطلوب</ng-container>
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" class="form p-2">
+            <p-toast position="top-left"></p-toast>
+            <h4 class="mb-3">🧑‍🏭 بيانات الموظف</h4>
+            <div class="row mb-3">
+                <div class="col-lg-3">
+                    <label class="form-label">الاسم بالكامل</label>
+                    <input type="text" class="form-control shadow-none" formControlName="fullName" placeholder="أدخل الاسم بالكامل">
+                    <div *ngIf="employeeForm.get('fullName')?.invalid && employeeForm.get('fullName')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('fullName')?.errors?.['required']">الاسم بالكامل مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-3">
-                <label class="form-label">الرقم القومي</label>
-                <input type="text" class="form-control shadow-none" formControlName="nationalId" placeholder="أدخل الرقم القومي">
-                <div *ngIf="employeeForm.get('nationalId')?.invalid && employeeForm.get('nationalId')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('nationalId')?.errors?.['required']">الرقم القومي مطلوب</ng-container>
-                    <ng-container *ngIf="employeeForm.get('nationalId')?.errors?.['pattern']">الرقم القومي غير صالح</ng-container>
+                <div class="col-lg-3">
+                    <label class="form-label">الرقم القومي</label>
+                    <input type="text" class="form-control shadow-none" formControlName="nationalId" placeholder="أدخل الرقم القومي">
+                    <div *ngIf="employeeForm.get('nationalId')?.invalid && employeeForm.get('nationalId')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('nationalId')?.errors?.['required']">الرقم القومي مطلوب</ng-container>
+                        <ng-container *ngIf="employeeForm.get('nationalId')?.errors?.['pattern']">الرقم القومي غير صالح</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-3">
-                <label class="form-label">النوع</label>
-                <select class="form-select shadow-none" formControlName="gender">
+                <div class="col-lg-3">
+                    <label class="form-label">النوع</label>
+                    <select class="form-select shadow-none" formControlName="gender">
                     <option selected disabled value="">اختر النوع</option>
                     <option value="Male">ذكر</option>
                     <option value="Female">أنثى</option>
                 </select>
-                <div *ngIf="employeeForm.get('gender')?.invalid && employeeForm.get('gender')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('gender')?.errors?.['required']">النوع مطلوب</ng-container>
+                    <div *ngIf="employeeForm.get('gender')?.invalid && employeeForm.get('gender')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('gender')?.errors?.['required']">النوع مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-3">
-                <label class="form-label">الحالة الاجتماعية</label>
-                <select class="form-select shadow-none" formControlName="maritalStatus">
+                <div class="col-lg-3">
+                    <label class="form-label">الحالة الاجتماعية</label>
+                    <select class="form-select shadow-none" formControlName="maritalStatus">
                     <option selected disabled value="">اختر الحالة</option>
                     <option value="Single">أعزب</option>
                     <option value="Married">متزوج</option>
                     <option value="Divorced">مطلق</option>
                     <option value="Widowed">أرمل</option>
                 </select>
-                <div *ngIf="employeeForm.get('maritalStatus')?.invalid && employeeForm.get('maritalStatus')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('maritalStatus')?.errors?.['required']">الحالة الاجتماعية مطلوبة</ng-container>
+                    <div *ngIf="employeeForm.get('maritalStatus')?.invalid && employeeForm.get('maritalStatus')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('maritalStatus')?.errors?.['required']">الحالة الاجتماعية مطلوبة</ng-container>
+                    </div>
                 </div>
             </div>
-        </div>
-    
-        <h4 class="mb-3">📞 طرق الاتصال</h4>
-        <div class="row mb-3">
-            <div class="col-lg-4">
-                <label class="form-label">رقم الهاتف</label>
-                <input type="text" class="form-control shadow-none" formControlName="phoneNumber" placeholder="أدخل رقم الهاتف">
-                <div *ngIf="employeeForm.get('phoneNumber')?.invalid && employeeForm.get('phoneNumber')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('phoneNumber')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
-                    <ng-container *ngIf="employeeForm.get('phoneNumber')?.errors?.['pattern']">رقم الهاتف غير صالح</ng-container>
+
+            <h4 class="mb-3">📞 طرق الاتصال</h4>
+            <div class="row mb-3">
+                <div class="col-lg-4">
+                    <label class="form-label">رقم الهاتف</label>
+                    <input type="text" class="form-control shadow-none" formControlName="phoneNumber" placeholder="أدخل رقم الهاتف">
+                    <div *ngIf="employeeForm.get('phoneNumber')?.invalid && employeeForm.get('phoneNumber')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('phoneNumber')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
+                        <ng-container *ngIf="employeeForm.get('phoneNumber')?.errors?.['pattern']">رقم الهاتف غير صالح</ng-container>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-control shadow-none" formControlName="email" placeholder="أدخل البريد الإلكتروني">
+                    <div *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('email')?.errors?.['required']">البريد الإلكتروني مطلوب</ng-container>
+                        <ng-container *ngIf="employeeForm.get('email')?.errors?.['email']">بريد إلكتروني غير صالح</ng-container>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <label class="form-label">العنوان</label>
+                    <input type="text" class="form-control shadow-none" formControlName="address" placeholder="أدخل العنوان">
+                    <div *ngIf="employeeForm.get('address')?.invalid && employeeForm.get('address')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('address')?.errors?.['required']">العنوان مطلوب</ng-container>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-4">
-                <label class="form-label">البريد الإلكتروني</label>
-                <input type="email" class="form-control shadow-none" formControlName="email" placeholder="أدخل البريد الإلكتروني">
-                <div *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('email')?.errors?.['required']">البريد الإلكتروني مطلوب</ng-container>
-                    <ng-container *ngIf="employeeForm.get('email')?.errors?.['email']">بريد إلكتروني غير صالح</ng-container>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <label class="form-label">العنوان</label>
-                <input type="text" class="form-control shadow-none" formControlName="address" placeholder="أدخل العنوان">
-                <div *ngIf="employeeForm.get('address')?.invalid && employeeForm.get('address')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('address')?.errors?.['required']">العنوان مطلوب</ng-container>
-                </div>
-            </div>
-        </div>
-    
-        <h4 class="mb-3">💼 بيانات التوظيف</h4>
-        <div class="row mb-3">
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">القسم</label>
-                <select class="form-select shadow-none" formControlName="JobDepartmentId">
+
+            <h4 class="mb-3">💼 بيانات التوظيف</h4>
+            <div class="row mb-3">
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">القسم</label>
+                    <select class="form-select shadow-none" formControlName="JobDepartmentId">
                     <option selected disabled value="">اختر القسم</option>
                     <option *ngFor="let dept of jobDepartments" [value]="dept.id">{{ dept.name }}</option>
                     <option disabled *ngIf="jobDepartments?.length === 0">لا يوجد أقسام متاحة</option>
                 </select>
-                <div *ngIf="employeeForm.get('JobDepartmentId')?.invalid && employeeForm.get('JobDepartmentId')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('JobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
+                    <div *ngIf="employeeForm.get('JobDepartmentId')?.invalid && employeeForm.get('JobDepartmentId')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('JobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">المستوى الوظيفي</label>
-                <select class="form-select shadow-none" formControlName="JobLevelId">
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">المستوى الوظيفي</label>
+                    <select class="form-select shadow-none" formControlName="JobLevelId">
                     <option selected disabled value="">اختر المستوى</option>
                     <option *ngFor="let level of jobLevels" [value]="level.id">{{ level.name }}</option>
                     <option disabled *ngIf="jobLevels?.length === 0">لا يوجد مستويات متاحة</option>
                 </select>
-                <div *ngIf="employeeForm.get('JobLevelId')?.invalid && employeeForm.get('JobLevelId')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('JobLevelId')?.errors?.['required']">المستوى الوظيفي مطلوب</ng-container>
+                    <div *ngIf="employeeForm.get('JobLevelId')?.invalid && employeeForm.get('JobLevelId')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('JobLevelId')?.errors?.['required']">المستوى الوظيفي مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">المسمى الوظيفي</label>
-                <select class="form-select shadow-none" formControlName="JobTitleId">
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">المسمى الوظيفي</label>
+                    <select class="form-select shadow-none" formControlName="JobTitleId">
                     <option selected disabled value="">اختر المسمى</option>
                     <option *ngFor="let title of filteredJobTitles" [value]="title.id">{{ title.name }}</option>
                     <option disabled *ngIf="filteredJobTitles?.length === 0">لا يوجد وظائف متاحة</option>
                 </select>
-                <div *ngIf="employeeForm.get('JobTitleId')?.invalid && employeeForm.get('JobTitleId')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('JobTitleId')?.errors?.['required']">المسمى الوظيفي مطلوب</ng-container>
+                    <div *ngIf="employeeForm.get('JobTitleId')?.invalid && employeeForm.get('JobTitleId')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('JobTitleId')?.errors?.['required']">المسمى الوظيفي مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">تصنيف الوظيفة</label>
-                <select class="form-select shadow-none" formControlName="JobTypeId">
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">تصنيف الوظيفة</label>
+                    <select class="form-select shadow-none" formControlName="JobTypeId">
                     <option selected disabled value="">اختر تصنيف الوظيفة</option>
                     <option *ngFor="let type of jobTypes" [value]="type.id">{{ type.name }}</option>
                     <option disabled *ngIf="jobTypes?.length === 0">لا يوجد تصنيفات متاحة</option>
                 </select>
-                <div *ngIf="employeeForm.get('JobTypeId')?.invalid && employeeForm.get('JobTypeId')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('JobTypeId')?.errors?.['required']">تصنيف الوظيفة مطلوب</ng-container>
+                    <div *ngIf="employeeForm.get('JobTypeId')?.invalid && employeeForm.get('JobTypeId')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('JobTypeId')?.errors?.['required']">تصنيف الوظيفة مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">تاريخ التعيين</label>
-                <input type="date" class="form-control shadow-none" formControlName="hireDate">
-                <div *ngIf="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('hireDate')?.errors?.['required']">تاريخ التعيين مطلوب</ng-container>
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">تاريخ التعيين</label>
+                    <input type="date" class="form-control shadow-none" formControlName="hireDate">
+                    <div *ngIf="employeeForm.get('hireDate')?.invalid && employeeForm.get('hireDate')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('hireDate')?.errors?.['required']">تاريخ التعيين مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">الفرع</label>
-                <select class="form-select shadow-none" formControlName="branchId">
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">الفرع</label>
+                    <select class="form-select shadow-none" formControlName="branchId">
                     <option selected disabled value="">اختر الفرع</option>
                     <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }}</option>
                     <option disabled *ngIf="branches?.length === 0">لا يوجد فروع متاحة</option>
                 </select>
-                <div *ngIf="employeeForm.get('branchId')?.invalid && employeeForm.get('branchId')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('branchId')?.errors?.['required']">الفرع مطلوب</ng-container>
+                    <div *ngIf="employeeForm.get('branchId')?.invalid && employeeForm.get('branchId')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('branchId')?.errors?.['required']">الفرع مطلوب</ng-container>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">الراتب الأساسي</label>
-                <input type="number" class="form-control shadow-none" formControlName="basicSalary" placeholder="أدخل الراتب الأساسي">
-                <div *ngIf="employeeForm.get('basicSalary')?.invalid && employeeForm.get('basicSalary')?.touched" class="text-danger">
-                    <ng-container *ngIf="employeeForm.get('basicSalary')?.errors?.['required']">الراتب الأساسي مطلوب</ng-container>
-                </div>
-            </div>
 
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">الضرائب (%)</label>
-                <input type="number" class="form-control shadow-none" formControlName="tax" placeholder="أدخل نسبة الضرائب" min="0" max="100">
-                <div *ngIf="employeeForm.get('tax')?.invalid && employeeForm.get('tax')?.touched" class="text-danger">
-                  <ng-container *ngIf="employeeForm.get('tax')?.errors?.['required']">قيمة الضرائب مطلوبة</ng-container>
-                  <ng-container *ngIf="employeeForm.get('tax')?.errors?.['min']">قيمة الضرائب يجب أن تكون أكبر من 0</ng-container>
-                  <ng-container *ngIf="employeeForm.get('tax')?.errors?.['max']">قيمة الضرائب يجب أن تكون أقل من 100</ng-container>
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">الراتب الأساسي</label>
+                    <input type="number" class="form-control shadow-none" formControlName="basicSalary" placeholder="أدخل الراتب الأساسي">
+                    <div *ngIf="employeeForm.get('basicSalary')?.invalid && employeeForm.get('basicSalary')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('basicSalary')?.errors?.['required']">الراتب الأساسي مطلوب</ng-container>
+                    </div>
                 </div>
+
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">الضرائب (%)</label>
+                    <input type="number" class="form-control shadow-none" formControlName="tax" placeholder="أدخل نسبة الضرائب" min="0" max="100">
+                    <div *ngIf="employeeForm.get('tax')?.invalid && employeeForm.get('tax')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('tax')?.errors?.['required']">قيمة الضرائب مطلوبة</ng-container>
+                        <ng-container *ngIf="employeeForm.get('tax')?.errors?.['min']">قيمة الضرائب يجب أن تكون أكبر من 0</ng-container>
+                        <ng-container *ngIf="employeeForm.get('tax')?.errors?.['max']">قيمة الضرائب يجب أن تكون أقل من 100</ng-container>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">التأمينات (%)</label>
+                    <input type="number" class="form-control shadow-none" formControlName="insurance" placeholder="أدخل نسبة التأمينات" min="0" max="100">
+                    <div *ngIf="employeeForm.get('insurance')?.invalid && employeeForm.get('insurance')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['required']">قيمة التأمينات مطلوبة</ng-container>
+                        <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['min']">قيمة التأمينات يجب أن تكون أكبر من 0</ng-container>
+                        <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['max']">قيمة التأمينات يجب أن تكون أقل من 100</ng-container>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 mb-3">
+                    <label class="form-label">أيام الأجازات السنوية المدفوعة</label>
+                    <input type="number" class="form-control shadow-none" formControlName="vacationDays" placeholder="أيام الأجازات السنوية المدفوعة" min="0" max="30">
+                    <div *ngIf="employeeForm.get('vacationDays')?.invalid && employeeForm.get('vacationDays')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('vacationDays')?.errors?.['required']">الأجازات السنوية مطلوبة</ng-container>
+                        <ng-container *ngIf="employeeForm.get('vacationDays')?.errors?.['min']">الأجازات السنوية يجب أن تكون أكبر من 0</ng-container>
+                        <ng-container *ngIf="employeeForm.get('vacationDays')?.errors?.['max']">الأجازات السنوية يجب أن تكون أقل من 30</ng-container>
+                    </div>
+                </div>
+
+                <div class="col-lg-12 text-center mt-2" *ngIf="employeeForm.get('insurance')?.value !== null">
+                    <div [ngClass]="{ 'text-success': netSalary > 0, 'text-danger': netSalary <= 0 }" class="fw-bold">
+                        صافي الراتب: {{ netSalary | number:'1.2-2' }} جنيه
+                        <span *ngIf="netSalary <= 0" class="ms-2">لا يمكن أن يكون صافي الراتب صفرًا أو سالبًا</span>
+                    </div>
+                </div>
+
             </div>
-
-            <div class="col-lg-4 mb-3">
-                <label class="form-label">التأمينات (%)</label>
-                <input type="number" class="form-control shadow-none" formControlName="insurance" placeholder="أدخل نسبة التأمينات" min="0" max="100">
-                <div *ngIf="employeeForm.get('insurance')?.invalid && employeeForm.get('insurance')?.touched" class="text-danger">
-                  <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['required']">قيمة التأمينات مطلوبة</ng-container>
-                  <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['min']">قيمة التأمينات يجب أن تكون أكبر من 0</ng-container>
-                  <ng-container *ngIf="employeeForm.get('insurance')?.errors?.['max']">قيمة التأمينات يجب أن تكون أقل من 100</ng-container>
-                </div>
-            </div>
-
-            <div class="col-lg-12 text-center mt-2" *ngIf="employeeForm.get('insurance')?.value !== null">
-                <div [ngClass]="{ 'text-success': netSalary > 0, 'text-danger': netSalary <= 0 }" class="fw-bold">
-                  صافي الراتب: {{ netSalary | number:'1.2-2' }} جنيه
-                  <span *ngIf="netSalary <= 0" class="ms-2">لا يمكن أن يكون صافي الراتب صفرًا أو سالبًا</span>
-                </div>
-              </div>              
-
-        </div>
-        <h4 class="mb-3">🔐 بيانات تسجيل الدخول</h4>
-        <div class="row mb-3">
-          <div class="col-lg-4">
-            <label class="form-label">التفويض</label>
-            <select class="form-select shadow-none" formControlName="isAuthorized">
+            <h4 class="mb-3">🔐 بيانات تسجيل الدخول</h4>
+            <div class="row mb-3">
+                <div class="col-lg-4">
+                    <label class="form-label">التفويض</label>
+                    <select class="form-select shadow-none" formControlName="isAuthorized">
               <option selected disabled [ngValue]="null">اختر حالة التفويض</option>
               <option [ngValue]="true">مسموح</option>
               <option [ngValue]="false">غير مسموح</option>
             </select>
-            <div *ngIf="employeeForm.get('isAuthorized')?.invalid && employeeForm.get('isAuthorized')?.touched" class="text-danger">
-              <ng-container *ngIf="employeeForm.get('isAuthorized')?.errors?.['required']">حالة التفويض مطلوبة</ng-container>
+                    <div *ngIf="employeeForm.get('isAuthorized')?.invalid && employeeForm.get('isAuthorized')?.touched" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('isAuthorized')?.errors?.['required']">حالة التفويض مطلوبة</ng-container>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" *ngIf="employeeForm.get('isAuthorized')?.value === true">
+                    <label class="form-label">اسم المستخدم</label>
+                    <input type="text" class="form-control shadow-none" formControlName="userName" placeholder="أدخل اسم المستخدم">
+                    <div *ngIf="employeeForm.get('userName')?.invalid && (employeeForm.get('userName')?.touched)" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('userName')?.errors?.['required']">اسم المستخدم مطلوب</ng-container>
+                    </div>
+                </div>
+
+                <div class="col-lg-4" *ngIf="employeeForm.get('isAuthorized')?.value === true">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-control shadow-none" formControlName="password" placeholder="أدخل كلمة المرور">
+                    <div *ngIf="employeeForm.get('password')?.invalid && (employeeForm.get('password')?.touched)" class="text-danger">
+                        <ng-container *ngIf="employeeForm.get('password')?.errors?.['required']">كلمة المرور مطلوبة</ng-container>
+                    </div>
+                </div>
             </div>
-          </div>
-          
-          <div class="col-lg-4" *ngIf="employeeForm.get('isAuthorized')?.value === true">
-            <label class="form-label">اسم المستخدم</label>
-            <input type="text" class="form-control shadow-none" formControlName="userName" placeholder="أدخل اسم المستخدم">
-            <div *ngIf="employeeForm.get('userName')?.invalid && (employeeForm.get('userName')?.touched)" class="text-danger">
-              <ng-container *ngIf="employeeForm.get('userName')?.errors?.['required']">اسم المستخدم مطلوب</ng-container>
+
+            <h4 class="mb-3">📋 المرفقات</h4>
+            <div class="row mb-3">
+                <div class="col-lg-12">
+                    <label class="form-label" for="Files">مرفقات</label>
+                    <input type="file" class="form-control shadow-none" id="Files" (change)="onFileSelected($event)" multiple accept=".png,.jpg,.jpeg,.pdf">
+                </div>
+                <div class="col-lg-12 mt-3">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea rows="2" class="form-control shadow-none" formControlName="notes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
+                </div>
             </div>
-          </div>
-          
-          <div class="col-lg-4" *ngIf="employeeForm.get('isAuthorized')?.value === true">
-            <label class="form-label">كلمة المرور</label>
-            <input type="password" class="form-control shadow-none" formControlName="password" placeholder="أدخل كلمة المرور">
-            <div *ngIf="employeeForm.get('password')?.invalid && (employeeForm.get('password')?.touched)" class="text-danger">
-              <ng-container *ngIf="employeeForm.get('password')?.errors?.['required']">كلمة المرور مطلوبة</ng-container>
+
+            <div class="row justify-content-center gap-2 px-3">
+                <button type="submit" [disabled]="employeeForm.invalid" class="btn-blue col-2">حفظ البيانات</button>
+                <button type="reset" class="btn-outline-blue col-2">الغاء</button>
             </div>
-          </div>
-        </div>
-    
-        <h4 class="mb-3">📋 المرفقات</h4>
-        <div class="row mb-3">
-            <div class="col-lg-12">
-                <label class="form-label" for="Files">مرفقات</label>
-                <input type="file" class="form-control shadow-none" id="Files" (change)="onFileSelected($event)" multiple accept=".png,.jpg,.jpeg,.pdf">
-            </div>
-            <div class="col-lg-12 mt-3">
-                <label class="form-label">ملاحظات</label>
-                <textarea rows="2" class="form-control shadow-none" formControlName="notes" placeholder="أدخل أي ملاحظات إضافية"></textarea>
-            </div>
-        </div>
-    
-        <div class="row justify-content-center gap-2 px-3">
-            <button type="submit" [disabled]="employeeForm.invalid" class="btn-blue col-2">حفظ البيانات</button>
-            <button type="reset" class="btn-outline-blue col-2">الغاء</button>
-        </div>
-      </form>
+        </form>
     </div>
 </main>

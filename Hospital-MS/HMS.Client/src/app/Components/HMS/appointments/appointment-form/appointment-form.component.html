@@ -206,8 +206,9 @@
                     <div class="mb-3">
                         <label for="app-date" class="form-label">تاريخ الحجز</label>
                         <input id="app-date" type="date" formControlName="appointmentDate" class="form-control shadow-none" (change)="onDayChange()">
-                        <div *ngIf="appointmentDetailsForm.get('appointmentDate')?.invalid && appointmentDetailsForm.get('appointmentDate')?.touched" class="text-danger">
-                            تاريخ الحجز مطلوب
+                        
+                        <div *ngIf="appointmentDetailsForm.get('appointmentDate')?.invalid && appointmentDetailsForm.get('appointmentDate')?.touched && appointmentDetailsForm.get('appointmentDate')?.errors?.['notToday']" class="text-danger">
+                            تاريخ الحجز يجب أن يكون اليوم أو لاحقًا
                         </div>
                     </div>
                     <div class="mb-3">

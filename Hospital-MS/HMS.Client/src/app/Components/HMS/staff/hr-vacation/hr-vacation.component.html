@@ -26,10 +26,11 @@
                 <app-drop-down-form-control [(ngModel)]="selectedEmployeeId" [data]="employeeSelectorData" [showSearch]="true" [placeholder]="'قائمة الموظفين'"></app-drop-down-form-control>
             </div>
             <div class="col-lg-2">
-                <button class="btn btn-secondary radius-50" (click)="getVacationsByEmployeeId()">
+                <button class="btn btn-secondary radius-50 me-3" (click)="getVacationsByEmployeeId()">
                     <i class="fas fa-search"></i>
                     <span class="ms-4">بحث</span>
                 </button>
+                <span *ngIf="VacationDays && VacationDays > 0">عدد أيام الأجازات المتبقية : {{VacationDays}}</span>
             </div>
         </div>
     </div>

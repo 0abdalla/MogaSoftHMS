@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
 import html2pdf from 'html2pdf.js';
+import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 declare var bootstrap:any;
 
 @Component({
@@ -61,7 +62,7 @@ export class ExchangePremssionComponent implements OnInit {
       responsible:[''],
     })
     this.exPermissionForm = this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
+      date: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       treasuryId: ['' , Validators.required],
       dispenseTo: ['' , Validators.required],
       accountId:['' , Validators.required],

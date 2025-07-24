@@ -5,7 +5,8 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 export declare var bootstrap: any;
 import html2pdf from 'html2pdf.js';
-
+import { todayDateValidator } from '../../../../../validators/today-date.validator';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-purchase-request',
   templateUrl: './purchase-request.component.html',
@@ -47,9 +48,9 @@ export class PurchaseRequestComponent {
   
     return `${dateStr} - الساعة ${timeStr}`;
   }  
-  constructor(private financialService : FinancialService , private fb : FormBuilder){
+  constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService){
     this.purchaseRequestForm=this.fb.group({
-      requestDate: [new Date().toISOString().substring(0, 10)],
+      requestDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       purpose:[null,Validators.required],
       storeId:[null,Validators.required],
       notes:[null],
@@ -151,7 +152,19 @@ export class PurchaseRequestComponent {
       this.financialService.updatePurchaseRequest(this.currentPurchaseRequestId, formData).subscribe({
         next: (res:any) => {
           this.getpurchaseRequests();
-
+          if(res.isSuccess === true){
+            this.toastrService.add({
+              severity: 'success',
+              summary: 'تم التعديل',
+              detail: `${res.message}`
+            });
+          }else{
+            this.toastrService.add({
+              severity: 'error',
+              summary: 'فشل التعديل',
+              detail: `${res.message}`
+            });
+          }
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -163,6 +176,19 @@ export class PurchaseRequestComponent {
           this.getpurchaseRequests();
           this.purNumber=res.results;
           // this.purchaseRequestForm.reset();
+          if(res.isSuccess === true){
+            this.toastrService.add({
+              severity: 'success',
+              summary: 'تم الإضافة',
+              detail: `${res.message}`
+            });
+          }else{
+            this.toastrService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: `${res.message}`
+            });
+          }
           this.generatePurchaseRequestPDF();
         },
         error: (err) => {
@@ -257,6 +283,43 @@ export class PurchaseRequestComponent {
       jsPDF: { orientation: 'portrait' }
     }).from(element).save().then(() => {
       element.classList.add('d-none');
+    });
+  }
+  generatePurchaseRequestPDFById(id: number) {
+    this.financialService.getPurchaseRequestsById(id).subscribe({
+      next: (res: any) => {
+        const request = res.results;
+  
+        if (!request) return;
+  
+        this.purchaseRequestForm.patchValue({
+          requestDate: request.requestDate,
+          storeId: request.storeId,
+          purpose: request.purpose,
+          notes: request.notes,
+          items: request.items,
+        });
+  
+        this.purNumber = request.requestNumber;
+  
+        setTimeout(() => {
+          const element = document.getElementById('printablePurchaseRequest');
+          if (!element) return;
+  
+          element.classList.remove('d-none');
+          html2pdf().set({
+            margin: 10,
+            filename: `طلب-شراء-${this.purNumber}.pdf`,
+            html2canvas: { scale: 2 },
+            jsPDF: { orientation: 'portrait' }
+          }).from(element).save().then(() => {
+            element.classList.add('d-none');
+          });
+        }, 100);
+      },
+      error: (err) => {
+        console.error('فشل تحميل الطلب للطباعة:', err);
+      }
     });
   }
   

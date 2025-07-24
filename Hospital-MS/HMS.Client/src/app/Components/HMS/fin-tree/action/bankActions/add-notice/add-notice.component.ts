@@ -5,6 +5,7 @@ import { BanksService } from '../../../../../../Services/HMS/banks.service';
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
+import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 export declare var bootstrap:any;
 
 @Component({
@@ -37,7 +38,7 @@ export class AddNoticeComponent {
       responsible:[''],
     })
     this.addNoticeGroup = this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
+      date: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       bankId: ['' , Validators.required],
       accountId: ['' , Validators.required],
       checkNumber: ['' , Validators.required],

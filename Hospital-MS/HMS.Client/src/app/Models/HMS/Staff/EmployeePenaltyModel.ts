@@ -10,6 +10,7 @@ export interface EmployeePenaltyModel extends CreatorModel {
     executionDate: string;
     deductionByDays: number;
     moneyAmount: number;
+    totalDeduction: number;
     deductionAmount: number;
     reason: string;
     isActive: boolean;

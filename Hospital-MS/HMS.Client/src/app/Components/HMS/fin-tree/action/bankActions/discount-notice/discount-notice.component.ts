@@ -5,6 +5,7 @@ import { BanksService } from '../../../../../../Services/HMS/banks.service';
 import { FinancialService } from '../../../../../../Services/HMS/financial.service';
 import Swal from 'sweetalert2';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
+import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 declare var bootstrap:any;
 
 @Component({
@@ -34,7 +35,7 @@ export class DiscountNoticeComponent implements OnInit {
       responsible:[''],
     })
     this.discountNoticeGroup = this.fb.group({
-      date: [new Date().toISOString().substring(0, 10)],
+      date: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       bankId: ['' , Validators.required],
       accountId: ['' , Validators.required],
       checkNumber: ['' , Validators.required],
