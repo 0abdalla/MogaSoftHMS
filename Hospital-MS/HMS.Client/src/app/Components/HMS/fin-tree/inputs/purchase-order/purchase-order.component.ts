@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
@@ -52,7 +52,7 @@ export class PurchaseOrderComponent {
   TitleList = ['المشتريات','أمور شراء'];
   // 
   approvedPrices!:any;
-  constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService){
+  constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService , private cdr : ChangeDetectorRef){
     this.purchaseOrderForm=this.fb.group({
       orderDate:[new Date().toISOString()],
       priceQuotationId:[null , Validators.required],
@@ -340,53 +340,58 @@ export class PurchaseOrderComponent {
   quotationRequestNumberForPrint: string = '';
   supplierNameForPrint: string = '';
   generatePurchaseOrderPDFById(orderId: number) {
-    this.financialService.getPurchaseOrdersById(orderId).subscribe((res: any) => {
-      const data = res?.results;
-      if (!data) {
-        alert('لا يوجد بيانات لأمر الشراء');
+  this.financialService.getPurchaseOrdersById(orderId).subscribe((res: any) => {
+    const data = res?.results;
+    if (!data) {
+      alert('لا يوجد بيانات لأمر الشراء');
+      return;
+    }
+
+    this.purchaseOrderForm.patchValue({
+      orderDate: data.orderDate,
+      description: data.description
+    });
+
+    this.purNumber = data.orderNumber;
+    this.supplierNameForPrint = data.supplierName;
+    this.quotationRequestNumberForPrint = data.priceQuotationNumber;
+    this.structuredTable = data.items.map((item: any) => ({
+      nameAr: item.itemName,
+      quantity: item.requestedQuantity,
+      unitPrice: item.unitPrice,
+      totalPrice: item.totalPrice
+    }));
+
+
+    this.cdr.detectChanges();
+
+    setTimeout(() => {
+      const element = document.getElementById('rePrintablePurchaseOrder');
+      if (!element) {
+        console.error('عنصر أمر الشراء غير موجود');
         return;
       }
-      this.purchaseOrderForm.patchValue({
-        orderDate: data.orderDate,
-        description: data.description
+
+      element.classList.remove('d-none');
+
+      html2pdf().set({
+        margin: 0.5,
+        filename: `أمر_شراء_رقم_${this.purNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      }).from(element).save().then(() => {
+        element.classList.add('d-none');
+      }).catch(err => {
+        console.error('حدث خطأ أثناء الطباعة:', err);
+        element.classList.add('d-none');
       });
-  
-      this.purNumber = data.orderNumber;
-      this.supplierNameForPrint = data.supplierName;
-      this.quotationRequestNumberForPrint = data.priceQuotationNumber;
-      this.structuredTable = data.items.map((item: any) => ({
-        nameAr: item.nameAr,
-        quantity: item.quantity,
-        unitPrice: item.unitPrice,
-        totalPrice: item.total
-      }));
-      setTimeout(() => {
-        const element = document.getElementById('printablePurchaseOrder');
-        if (!element) {
-          console.error('عنصر أمر الشراء غير موجود');
-          return;
-        }
-  
-        element.classList.remove('d-none');
-  
-        html2pdf().set({
-          margin: 0.5,
-          filename: `أمر_شراء_رقم_${this.purNumber}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-        }).from(element).save().then(() => {
-          element.classList.add('d-none');
-        }).catch(err => {
-          console.error('حدث خطأ أثناء الطباعة:', err);
-          element.classList.add('d-none');
-        });
-      }, 100);
-    }, err => {
-      console.error('فشل تحميل أمر الشراء للطباعة:', err);
-      alert('حدث خطأ أثناء تحميل أمر الشراء.');
-    });
-  }
-  
+
+    }, 200); // slight delay to let DOM render fully
+  }, err => {
+    console.error('فشل تحميل أمر الشراء للطباعة:', err);
+    alert('حدث خطأ أثناء تحميل أمر الشراء.');
+  });
+}
 }
 
