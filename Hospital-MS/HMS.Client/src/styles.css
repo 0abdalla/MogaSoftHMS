@@ -137,9 +137,15 @@ body {
     }
 }
 
+select.form-select {
+    direction: rtl !important;
+    text-align: right !important;
+}
+
 .form-select,
 .form-control {
     direction: rtl !important;
+    text-align: right !important;
     border: 1px solid #D9E1EC !important;
 }
 

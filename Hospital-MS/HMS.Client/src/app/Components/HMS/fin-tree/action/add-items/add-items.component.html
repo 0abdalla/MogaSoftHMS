@@ -66,7 +66,7 @@
                 <tr>
                     <th>إذن الإستلام</th>
                     <th>التاريخ</th>
-                    <th>نوع الإستلام</th>
+                    <!-- <th>نوع الإستلام</th> -->
                     <th>اسم المورد</th>
                     <th>رقم المستند</th>
                     <!-- <th>مستخدم الإنشاء</th>
@@ -80,13 +80,16 @@
                         <span class="fw-bold">{{ add.permissionNumber }}</span>
                     </td>
                     <td class="text-secondary">{{ add.permissionDate | date:'yyyy-MM-dd' }}</td>
-                    <td>{{ add.typeName }}</td>
+                    <!-- <td>{{ add.typeName }}</td> -->
                     <td>{{ add.supplierName }}</td>
                     <td>{{ add.documentNumber }}</td>
                     <!-- <td>{{ add.audit?.createdBy || '-' }}</td>
                     <td>{{ add.audit?.updatedBy || '-' }}</td> -->
                     <td>
-                        <button type="button" class="btn btn-primary mx-2" (click)="editPermission(add.id)">
+                        <button class="btn btn-primary mx-1" (click)="generateReceiptPermissionPDFById(add.id)">
+                          <i class="fa fa-print"></i>
+                        </button> 
+                        <button type="button" class="btn btn-warning mx-2" (click)="editPermission(add.id)">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button type="button" class="btn btn-danger mx-2" (click)="deletePermission(add.id)">
@@ -141,7 +144,7 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">رقم المستند</label>
-                                <input type="text" class="form-control shadow-none text-end" formControlName="documentNumber" />
+                                <input type="text" class="form-control shadow-none text-end" placeholder="أدخل رقم المستند" formControlName="documentNumber" />
                             </div>
 <!-- 
                             <div class="col-md-3">
@@ -155,26 +158,52 @@
 
                             <div class="col-md-4">
                                 <label class="form-label">رقم أمر الشراء</label>
-                                <select class="form-select shadow-none text-end" formControlName="purchaseOrderId">
+                                <!-- <select dir="rtl" class="form-select shadow-none text-end" formControlName="purchaseOrderId">
                                     <option disabled selected value="">اختر رقم أمر الشراء</option>
                                     <option *ngFor="let order of purchaseOrders" [value]="order.id">{{ order.orderNumber }}</option>
-                                </select>
+                                </select> -->
+                                <ng-select
+                                   [items]="purchaseOrders"
+                                   bindLabel="orderNumber"
+                                   bindValue="id"
+                                   placeholder="اختر رقم أمر الشراء"
+                                   formControlName="purchaseOrderId"
+                                   class="text-end shadow-none w-100"
+                                   [searchable]="true"
+                                 >
+                                 </ng-select>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">اسم المخزن</label>
-                                <select class="form-select shadow-none text-end" formControlName="storeId">
+                                <!-- <select class="form-select shadow-none text-end" formControlName="storeId">
                                     <option disabled selected value="">اختر اسم المخزن</option>
                                     <option *ngFor="let store of stores" [value]="store.id">{{ store.name }}</option>
-                                </select>
+                                </select> -->
+                                <ng-select
+                                   [items]="stores"
+                                   bindLabel="name"
+                                   bindValue="id"
+                                   placeholder="اختر اسم المخزن"
+                                   formControlName="storeId"
+                                   class="text-end shadow-none w-100"
+                                   [searchable]="true"
+                                 >
+                                 </ng-select>
                             </div>
 
                             <div class="col-md-4">
                                 <label class="form-label">اسم المورد</label>
-                                <select class="form-select shadow-none text-end" formControlName="supplierId">
-                                    <option disabled selected value="">اختر اسم المورد</option>
-                                    <option *ngFor="let supplier of suppliers" [value]="supplier.id">{{ supplier.name }}</option>
-                                </select>
+                                <ng-select
+                                   [items]="suppliers"
+                                   bindLabel="name"
+                                   bindValue="id"
+                                   placeholder="اختر اسم المورد"
+                                   formControlName="supplierId"
+                                   class="text-end shadow-none w-100"
+                                   [searchable]="true"
+                                 >
+                                 </ng-select>
                             </div>
 
                             
@@ -184,10 +213,20 @@
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                                   <div class="col-md-2">
                                     <label class="form-label">الصنف</label>
-                                    <select class="form-select shadow-none" formControlName="id">
+                                    <!-- <select class="form-select shadow-none" formControlName="id">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
-                                    </select>
+                                    </select> -->
+                                    <ng-select
+                                       [items]="allItems"
+                                       bindLabel="nameAr"
+                                       bindValue="id"
+                                       placeholder="اختر الصنف"
+                                       formControlName="id"
+                                       class="text-end shadow-none w-100"
+                                       [searchable]="true"
+                                     >
+                                     </ng-select>
                                   </div>
                               
                                   <div class="col-md-2">
@@ -213,11 +252,6 @@
                                   <div class="col-md-2">
                                     <label class="form-label">الإجمالي</label>
                                     <input type="number" class="form-control shadow-none" formControlName="totalPrice">
-                                  </div>
-                              
-                                  <div class="col-md-2">
-                                    <label class="form-label">ملاحظات</label>
-                                    <input type="text" class="form-control shadow-none" formControlName="notes">
                                   </div>
                               
                                   <div class="col-md-1 d-flex align-items-end mt-1">
@@ -260,58 +294,56 @@
 
 
 <div #printSection id="receiptPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
-    <div class="text-center">
+    <div class="d-flex justify-content-evenly align-items-center">
         <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-    </div>
-    <div class="d-flex justify-content-evenly">
-        <h3 class="text-center">مخزن {{ savedOrderData?.storeName || '---' }}</h3>
-        <h4 class="text-center">إذن الإضافة رقم <span class="text-primary"> {{ savedOrderData?.documentNumber }}</span></h4>
+        <h5 class="fw-bold mb-1"> إذن الإستلام  <span class="text-primary"> {{ addNumber }}</span></h5> 
     </div>
     <div class="container-fluid">
         <div class="row mt-4" style="font-size: 16px;">
             <hr>
             <div class="col-6">
                 <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
+                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
                 <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
                 <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
-                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
             </div>
             <div class="col-6">
-                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
+                <p><strong>المخزن:</strong> {{ savedOrderData?.storeName || '---' }}</p>
                 <p><strong>العملة:</strong> جنيه مصري</p>
                 <p><strong>رقم القيد:</strong> {{ savedOrderData?.entryNumber || '---' }}</p>
+                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
             </div>
             <hr>
         </div>
         
-        <table class="table table-bordered text-center mt-4">
-            <thead class="bg-primary text-white">
-            <tr>
-                <th>م</th>
-                <th>اسم الصنف</th>
-                <th>الكمية</th>
-                <th>تكلفة الصنف</th>
-                <th>الإجمالي</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let item of savedOrderData?.items; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>
-                    {{ getItemName(item.itemId) || '----' }}    
-                </td>
-                <td>{{ item.quantity }}</td>
-                <td>{{ item.unitPrice | number:'1.2-2' }}</td>
-                <td>{{ item.totalPrice | number:'1.2-2' }}</td>
-            </tr>
-            </tbody>
-            <tfoot class="fw-bold bg-light">
-            <tr>
-                <td colspan="4">الإجمالي</td>
-                <td colspan="1">{{ getTotal() | number:'1.2-2' }}</td>
-            </tr>
-            </tfoot>
-        </table>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>م</th>
+                    <th>اسم الصنف</th>
+                    <th>الكمية</th>
+                    <th>تكلفة الصنف</th>
+                    <th>الإجمالي</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of savedOrderData?.items; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.itemName }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
+                    <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
+                </tr>
+                </tbody>
+                <tfoot class="fw-bold bg-light">
+                <tr>
+                    <td colspan="4">الإجمالي</td>
+                    <td colspan="1">{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
         
         <hr class="my-4">
         <div class="row text-center">
@@ -326,18 +358,93 @@
         </div>
         
         <hr class="my-4">
-        <div class="row text-center">
+        <div class="row">
             <div class="col-6">
             <p><strong>اسم المستخدم:</strong> {{ username }}</p>
             </div>
             <div class="col-6">
-            <p><strong>تاريخ الطباعة:</strong> {{ today }}</p>
+            <p><strong>التاريخ:</strong> {{ today }}</p>
             </div>
         </div>
     </div>
 </div> 
 
-
+<div #printSection id="reReceiptPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="d-flex justify-content-evenly align-items-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <!-- <h4 class="text-center">  <span class="text-primary"> {{ savedOrderData?.permissionNumber }}</span></h4> -->
+        <h5 class="fw-bold mb-1"> إذن الإستلام  <span class="text-primary"> {{ savedOrderData?.permissionNumber }}</span></h5> 
+    </div>
+    <div class="container-fluid">
+        <div class="row mt-4" style="font-size: 16px;">
+            <hr>
+            <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
+                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
+                <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
+                <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
+            </div>
+            <div class="col-6">
+                <p><strong>المخزن:</strong> {{ savedOrderData?.storeName || '---' }}</p>
+                <p><strong>العملة:</strong> جنيه مصري</p>
+                <p><strong>رقم القيد:</strong> {{ savedOrderData?.entryNumber || '---' }}</p>
+                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
+            </div>
+            <hr>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>م</th>
+                    <th>اسم الصنف</th>
+                    <th>الكمية</th>
+                    <th>تكلفة الصنف</th>
+                    <th>الإجمالي</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let item of savedOrderData?.items; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.itemName }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
+                    <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
+                </tr>
+                </tbody>
+                <tfoot class="fw-bold bg-light">
+                <tr>
+                    <td colspan="4">الإجمالي</td>
+                    <td colspan="1">{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <hr class="my-4">
+        <div class="row text-center">
+            <div class="col-6">
+            <p class="mt-2">أمين المخزن</p>
+            <hr style="width: 60%; margin: auto;">
+            </div>
+            <div class="col-6">
+            <p class="mt-2">المستلم</p>
+            <hr style="width: 60%; margin: auto;">
+            </div>
+        </div>
+        
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-6">
+            <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div #printEntrySection id="journalPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 " style="max-width: 900px; margin: auto;">
     <h3 class="text-center">قيد رقم {{ data.documentNumber }}</h3>
@@ -381,7 +488,7 @@
             </div>
         </div>
         <hr class="my-4">
-        <div class="row text-center">
+        <div class="row">
             <div class="col-6">
             <p><strong>اسم المستخدم:</strong> {{ username }}</p>
             </div>

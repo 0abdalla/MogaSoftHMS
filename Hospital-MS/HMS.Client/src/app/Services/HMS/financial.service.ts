@@ -228,6 +228,9 @@ export class FinancialService {
   getIssueRequests(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'DisbursementRequest?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
+  getApprovedIssueRequests(){
+    return this.http.get<any>(this.baseUrl + 'DisbursementRequest/approved');
+  }
   getIssueRequestById(id:number){
     return this.http.get<any>(this.baseUrl + 'DisbursementRequest/' + id);
   }
