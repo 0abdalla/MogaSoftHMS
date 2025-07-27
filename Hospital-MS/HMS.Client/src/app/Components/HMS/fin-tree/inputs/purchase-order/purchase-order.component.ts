@@ -387,7 +387,7 @@ export class PurchaseOrderComponent {
         element.classList.add('d-none');
       });
 
-    }, 200); // slight delay to let DOM render fully
+    }, 200);
   }, err => {
     console.error('فشل تحميل أمر الشراء للطباعة:', err);
     alert('حدث خطأ أثناء تحميل أمر الشراء.');

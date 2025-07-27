@@ -35,10 +35,29 @@ export class IssueRequestComponent implements OnInit {
   };
   isFilter : boolean = true;
   isEditMode : boolean = false;
+  // 
+  username = sessionStorage.getItem('firstName') + '' + sessionStorage.getItem('lastName') ; 
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  } 
   constructor(private fb : FormBuilder , private financialService : FinancialService , private staffService : StaffService){
     this.issuseRequestForm = this.fb.group({
       jobDepartmentId: ['' , Validators.required],
-      permissionDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
+      date: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
       notes: [''],
       items: this.fb.array([
         this.createItemGroup()
@@ -120,10 +139,7 @@ export class IssueRequestComponent implements OnInit {
       this.issuseRequestForm.markAllAsTouched();
       return;
     }
-
     const formData = this.issuseRequestForm.value;
-    
-    // Enrich items with their names before saving
     const enrichedItems = formData.items.map(item => {
       const fullItem = this.allItems.find(i => i.id === item.itemId);
       return {
@@ -148,9 +164,8 @@ export class IssueRequestComponent implements OnInit {
         next: (res: any) => {
           this.getIssues();
           
-          // Save the enriched data for printing
           this.savedIssueData = enrichedData;
-          this.documentNumber = res.results.id;
+          this.documentNumber = res.results.number;
           
           console.log('Data ready for printing:', this.savedIssueData);
           this.printIssueForm();
@@ -159,7 +174,7 @@ export class IssueRequestComponent implements OnInit {
         error: (err) => console.error('فشل الإضافة:', err)
       });
     }
-}
+  }
   issueRequest!:any;
   editIssueRequest(id: number) {
     this.isEditMode = true;
@@ -172,7 +187,7 @@ export class IssueRequestComponent implements OnInit {
         this.issuseRequestForm.patchValue({
           supplierId: this.issueRequest.supplierId,
           documentNumber: this.issueRequest.documentNumber,
-          permissionDate: this.issueRequest.permissionDate,
+          date: this.issueRequest.date,
           notes: this.issueRequest.notes,
           items: this.issueRequest.items,
           storeId: this.issueRequest.storeId,
@@ -229,9 +244,9 @@ export class IssueRequestComponent implements OnInit {
   }
   getStatusColor(type: string): string {
     const map: { [key: string]: string } = {
-      Approved: '#00FF00',
+      Approved: '#198654',
       Pending: '#FFA500',
-      Rejected: '#FF0000'
+      Rejected: '#dc3545'
     };
     return map[type] || '#000000';
   }
@@ -244,7 +259,60 @@ export class IssueRequestComponent implements OnInit {
     element.style.display = 'block';
     const opt = {
       margin: 0.5,
-      filename: 'طلب_الصرف.pdf',
+      filename: `طلب_الصرف_${this.documentNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save().then(() => {
+      element.style.display = 'none';
+    }).catch(err => {
+      console.error('حدث خطأ أثناء توليد PDF:', err);
+      element.style.display = 'none';
+    });
+  }
+  reSavedIssueData:any;
+  rePrintIssue(issueId: number) {
+    this.financialService.getIssueRequestById(issueId).subscribe({
+      next: (res:any) => {
+        if (!res.isSuccess) {
+          return console.error('حدث خطأ أثناء جلب البيانات');
+        }
+  
+        const issue = res.results;
+  
+        this.reSavedIssueData = {
+          number: issue.number,
+          date: issue.date,
+          jobDepartmentName: issue.jobDepartmentName,
+          notes: issue.notes,
+          createdBy: issue.audit?.createdBy,
+          createdOn: issue.audit?.createdOn,
+          items: issue.items.map((item: any) => ({
+            itemId: item.itemId,
+            itemNameAr: item.itemName,
+            quantity: item.quantity,
+            unit: item.unit,
+          }))
+        };
+        this.documentNumber = issue.number;
+        this.rePrintIssueForm();
+      },
+      error: (err) => {
+        console.error('فشل في استدعاء الطلب:', err);
+      }
+    });
+  }
+  rePrintIssueForm() {
+    const element = document.getElementById('rePrintableIssue');
+    if (!element) {
+      console.error('العنصر غير موجود');
+      return;
+    }
+    element.style.display = 'block';
+    const opt = {
+      margin: 0.5,
+      filename: `طلب_الصرف_${this.documentNumber}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }

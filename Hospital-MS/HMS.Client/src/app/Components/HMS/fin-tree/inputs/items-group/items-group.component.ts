@@ -16,6 +16,7 @@ export class ItemsGroupComponent {
   itemGroup!:FormGroup
   // 
   itemGroups:any[]=[];
+  mainGroups:any[]=[];
   total:number=0;
   pagingFilterModel:any={
     pageSize:16,
@@ -35,6 +36,7 @@ export class ItemsGroupComponent {
   }
   ngOnInit():void{
     this.getItemGroups();
+    this.getMainGroups();
     this.filterForm.get('Search').valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
@@ -68,6 +70,23 @@ export class ItemsGroupComponent {
         this.itemGroups = res.results;
         this.total = res.totalCount;
         console.log('Item Groups:' , this.itemGroups);
+      }
+    })
+  }
+  getMainGroups(){
+    const requestModel = {
+      searchText: this.pagingFilterModel.searchText,
+      currentPage: this.pagingFilterModel.currentPage,
+      pageSize: this.pagingFilterModel.pageSize,
+      filterList: this.pagingFilterModel.filterList,
+      filterType: this.pagingFilterModel.filterType,
+      filterItems: this.pagingFilterModel.filterItems
+    };
+    this.financialService.getMainGroups(requestModel).subscribe({
+      next:(res)=>{
+        this.mainGroups = res.results;
+        this.total = res.totalCount;
+        console.log('Main Groups:' , this.mainGroups);
       }
     })
   }

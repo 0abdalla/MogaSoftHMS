@@ -80,6 +80,7 @@ export class AppointmentFormComponent implements OnInit {
     private admissionService: AdmissionService,
     private sharedService: SharedService
   ) {
+    
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
@@ -178,6 +179,7 @@ export class AppointmentFormComponent implements OnInit {
       }
 
     });
+    console.log(this.appointmentDetailsForm.value.appointmentDate);
   }
 
   openAppointmentDetailsModal(item: any) {

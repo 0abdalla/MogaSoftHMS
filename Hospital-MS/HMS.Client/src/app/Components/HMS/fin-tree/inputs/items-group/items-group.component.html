@@ -31,7 +31,7 @@
         <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
             <div class="col-md-8 mb-2">
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemGropModal">
                 <i class="fas fa-plus-circle"></i>
                 <span>إضافة مجموعة أصناف</span>
             </button>
@@ -114,13 +114,32 @@
                 <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
                 <form [formGroup]="itemGroup" (ngSubmit)="addItemGroup()">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-6">
                             <div class="form-group">
-                                <label class="form-label" for="name">إسم المجموعة</label>
-                                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم المجموعة">
+                                <label class="form-label" for="name">المجموعة الرئيسية</label>
+                                <ng-select
+                                [items]="mainGroups"
+                                bindLabel="name"
+                                bindValue="id"
+                                placeholder="اختر المجموعة الرئيسية"
+                                formControlName="mainGroupId"
+                                class="text-end shadow-none w-100"
+                                [searchable]="true"
+                              >
+                              </ng-select>
                                 <div *ngIf="itemGroup.get('name')?.invalid && itemGroup.get('name')?.touched" class="text-danger">
                                     <ng-container *ngIf="itemGroup.get('name')?.errors?.['required']">إسم المجموعة مطلوب</ng-container>
                                     <ng-container *ngIf="itemGroup.get('name')?.errors?.['minlength']">إسم المجموعة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label class="form-label" for="name">إسم مجموعة الأصناف</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم مجموعة الأصناف">
+                                <div *ngIf="itemGroup.get('name')?.invalid && itemGroup.get('name')?.touched" class="text-danger">
+                                    <ng-container *ngIf="itemGroup.get('name')?.errors?.['required']">إسم مجموعة الأصناف مطلوب</ng-container>
+                                    <ng-container *ngIf="itemGroup.get('name')?.errors?.['minlength']">إسم مجموعة الأصناف يجب أن يكون أكثر من 3 حروف</ng-container>
                                 </div>
                             </div>
                         </div>

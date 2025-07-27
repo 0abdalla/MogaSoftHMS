@@ -223,6 +223,7 @@ export class AddItemsComponent implements OnInit {
   isEditMode : boolean = false;
   currentpurchaseOrderId: number | null = null;
   savedOrderData!:any;
+  addNumber!:any;
   addPermission() {
     if (this.addPermissionForm.invalid) {
       this.addPermissionForm.markAllAsTouched();
@@ -258,6 +259,8 @@ export class AddItemsComponent implements OnInit {
     } else {
       this.financialService.addReceiptPermission(formData).subscribe({
         next: (res: any) => {
+          this.addNumber = res.results;
+          console.log(this.addNumber);
           const formData = this.addPermissionForm.value;
           if (!this.allItems?.length || !this.stores?.length || !this.suppliers?.length) {
             console.error('Required data not loaded');
@@ -330,14 +333,14 @@ export class AddItemsComponent implements OnInit {
         modal.show();
       },
       error: (err) => {
-        console.error('فشل تحميل بيانات طلب الشراء:', err);
+        console.error('فشل تحميل بيانات إذن الإستلام:', err);
       }
     });
   }
   deletePermission(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
-      text: 'هل أنت متأكد من حذف طلب الشراء؟',
+      text: 'هل أنت متأكد من حذف إذن الإستلام؟',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -351,7 +354,7 @@ export class AddItemsComponent implements OnInit {
             this.getReceiptPermissions();
           },
           error: (err) => {
-            console.error('فشل حذف طلب الشراء:', err);
+            console.error('فشل حذف إذن الإستلام:', err);
           }
         });
       }
@@ -365,16 +368,19 @@ export class AddItemsComponent implements OnInit {
   }
   
   getItemName(id: number): string {
-    return this.allItems.find(i => i.id === id)?.nameAr || '---';
-  }
+    const item = this.allItems?.find(i => +i.id === +id);
+    return item?.nameAr || '---';
+  }  
   
   getSupplierName(id: number): string {
-    return this.suppliers.find(s => s.id === id)?.name || '---';
+    const supplier = this.suppliers?.find(s => +s.id === +id);
+    return supplier?.name || '---';
   }
   
   getStoreName(id: number): string {
-    return this.stores.find(s => s.id === id)?.name || '---';
-  }
+    const store = this.stores?.find(s => +s.id === +id);
+    return store?.name || '---';
+  }  
 
   // printPermission() {
   //   this.data = this.addPermissionForm.value;
@@ -438,15 +444,83 @@ export class AddItemsComponent implements OnInit {
   // }
   printJournal(data: any) {
     const element = document.getElementById('journalPrintArea');
-    if (element) {
-      html2pdf().from(element).save('قيد.pdf');
-    }
+    html2pdf().set({
+      margin: 0.5,
+      filename: `قيد_رقم_${data.documentNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    }).from(element).save().then(() => {
+      element.classList.add('d-none');
+    }).catch(err => {
+      console.error('حدث خطأ أثناء الطباعة:', err);
+      element.classList.add('d-none');
+    });
   }
   
   printReceipt(data: any) {
     const element = document.getElementById('receiptPrintArea');
-    if (element) {
-      html2pdf().from(element).save('إذن_استلام.pdf');
-    }
+    html2pdf().set({
+      margin: 0.5,
+      filename: `إذن_استلام_رقم_${this.addNumber || 'MC-2025-00004'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+    }).from(element).save().then(() => {
+      element.classList.add('d-none');
+    }).catch(err => {
+      console.error('حدث خطأ أثناء الطباعة:', err);
+      element.classList.add('d-none');
+    });
   }
+  // 
+  generateReceiptPermissionPDFById(orderId: number) {
+    this.financialService.getReceiptPermissionsById(orderId).subscribe((res: any) => {
+      const data = res?.results;
+      if (!data) {
+        alert('لا يوجد بيانات لإذن الإستلام');
+        return;
+      }
+      this.savedOrderData = data;
+      this.addPermissionForm.patchValue({
+        orderDate: data.permissionDate,
+        documentNumber: data.documentNumber,
+        supplierId: data.supplierId,
+      });
+      const itemFormArray = this.fb.array(data.items.map((item: any) => this.fb.group({
+        id: item.itemId,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        totalPrice: item.totalPrice,
+        unit: item.unit,
+        notes: '',
+      })));
+      this.addPermissionForm.setControl('items', itemFormArray);
+      this.cdr.detectChanges();
+      setTimeout(() => {
+        const element = document.getElementById('reReceiptPrintArea');
+        if (!element) {
+          console.error('عنصر إذن الإستلام غير موجود');
+          return;
+        }
+        element.classList.remove('d-none');
+        html2pdf().set({
+          margin: 0.5,
+          filename: `إذن_استلام_رقم_${data.permissionNumber}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        }).from(element).save().then(() => {
+          element.classList.add('d-none');
+        }).catch(err => {
+          console.error('حدث خطأ أثناء الطباعة:', err);
+          element.classList.add('d-none');
+        });
+      }, 300);
+    }, err => {
+      console.error('فشل تحميل إذن الإستلام للطباعة:', err);
+      alert('حدث خطأ أثناء تحميل إذن الإستلام.');
+    });
+  }
+  
 }

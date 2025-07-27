@@ -48,7 +48,10 @@
                         </p>
                       </td>
                     <td>
-                        <button type="button" class="btn btn-primary mx-2" (click)="editIssueRequest(issue.id)">
+                        <button type="button" class="btn btn-primary mx-1" (click)="rePrintIssue(issue.id)">
+                            <i class="fa fa-print"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning mx-2" (click)="editIssueRequest(issue.id)">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button type="button" class="btn btn-danger mx-2" (click)="deleteIssueRequest(issue.id)">
@@ -94,28 +97,48 @@
 
                             <div class="col-md-6">
                                 <label class="form-label">التاريخ</label>
-                                <input type="date" class="form-control shadow-none text-end" formControlName="permissionDate" />
-                                <div class="text-danger" *ngIf="issuseRequestForm.get('permissionDate')?.errors?.['notToday'] && issuseRequestForm.get('permissionDate')?.touched">
+                                <input type="date" class="form-control shadow-none text-end" formControlName="date" />
+                                <div class="text-danger" *ngIf="issuseRequestForm.get('date')?.errors?.['notToday'] && issuseRequestForm.get('date')?.touched">
                                     لا يمكن اختيار تاريخ سابق
                                   </div>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">جهة الطلب</label>
-                                <select class="form-select shadow-none" formControlName="jobDepartmentId">
+                                <!-- <select class="form-select shadow-none" formControlName="jobDepartmentId">
                                     <option value="" selected disabled>اختر جهة الطلب</option>
                                     <option *ngFor="let dep of jobDeps" [value]="dep.id">{{ dep.name }}</option>
-                                </select>
+                                </select> -->
+                                <ng-select
+                                   [items]="jobDeps"
+                                   bindLabel="name"
+                                   bindValue="id"
+                                   placeholder="اختر جهة الطلب"
+                                   formControlName="jobDepartmentId"
+                                   class="text-end shadow-none w-100"
+                                   [searchable]="true"
+                                 >
+                                 </ng-select>
                             </div>
 
                             <div formArrayName="items">
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
                                   <div class="col-md-4">
                                     <label class="form-label">الصنف</label>
-                                    <select class="form-select shadow-none" formControlName="itemId">
+                                    <!-- <select class="form-select shadow-none" formControlName="itemId">
                                       <option disabled selected value="">اختر الصنف</option>
                                       <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
-                                    </select>
+                                    </select> -->
+                                    <ng-select
+                                       [items]="allItems"
+                                       bindLabel="nameAr"
+                                       bindValue="id"
+                                       placeholder="اختر الصنف"
+                                       formControlName="itemId"
+                                       class="text-end shadow-none w-100"
+                                       [searchable]="true"
+                                     >
+                                     </ng-select>
                                   </div>
 
                                   <div class="col-md-4">
@@ -160,46 +183,115 @@
 <div id="printableIssue" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
     <div class="d-flex justify-content-evenly align-items-center">
         <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <h4 style="font-weight: bold;">طلب صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4>
+        <h5 class="fw-bold mb-1"> طلب صرف <span class="text-primary"> {{ documentNumber }}</span></h5> 
     </div>
   
     <div class="mb-4">
-        <strong>التاريخ:</strong> {{ savedIssueData?.permissionDate | date:'yyyy-MM-dd' }}
+        <strong>التاريخ:</strong> {{ savedIssueData?.date | date:'yyyy-MM-dd' }}
     </div>
 
     <div class="mb-4">
       <strong>جهة الطلب:</strong> {{ getDepartmentName(savedIssueData?.jobDepartmentId) }}
     </div>
-  
-    <table class="table table-bordered" style="width: 100%; font-size: 14px;">
-      <thead class="table-light">
-        <tr>
-          <th>م</th>
-          <th>اسم الصنف</th>
-          <th>الكمية</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of savedIssueData?.items; let i = index">
-            <td>{{ i + 1 }}</td>
-            <td>{{ item.itemNameAr || getItemName(item.itemId) }}</td>
-            <td>{{ item.quantity }}</td>
-          </tr>
-      </tbody>
-    </table>
-  
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>م</th>
+                <th>اسم الصنف</th>
+                <th>الكمية</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of savedIssueData?.items; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ item.itemNameAr || getItemName(item.itemId) }}</td>
+                <td>{{ item.quantity }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
     <div class="mt-4">
       <strong>ملاحظات:</strong> {{ savedIssueData?.notes || '---' }}
     </div>
   
-    <div class="row mt-5 text-center">
-      <div class="col-md-6">
-        <p>المدير التنفيذي</p>
-        <p>---------------------</p>
-      </div>
-      <div class="col-md-6">
-        <p>رئيس القسم المتخص</p>
-        <p>---------------------</p>
-      </div>
+    <div class="row text-center">
+        <div class="col-6">
+        <p class="mt-2">المدير التنفيذي</p>
+        <hr style="width: 60%; margin: auto;">
+        </div>
+        <div class="col-6">
+        <p class="mt-2">رئيس القسم المختص</p>
+        <hr style="width: 60%; margin: auto;">
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="row text-center">
+        <div class="col-6">
+        <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+        </div>
+        <div class="col-6">
+        <p><strong>التاريخ:</strong> {{ today }}</p>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="rePrintableIssue" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="d-flex justify-content-evenly align-items-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <h5 class="fw-bold mb-1"> طلب صرف <span class="text-primary"> {{ documentNumber }}</span></h5> 
+    </div>
+  
+    <div class="mb-4">
+        <strong>التاريخ:</strong> {{ reSavedIssueData?.date | date:'yyyy-MM-dd' }}
+    </div>
+
+    <div class="mb-4">
+      <strong>جهة الطلب:</strong> {{ reSavedIssueData?.jobDepartmentName }}
+    </div>
+  
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>اسم الصنف</th>
+                <th>الكمية</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of reSavedIssueData?.items; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ item.itemNameAr || getItemName(item.itemId) }}</td>
+                  <td>{{ item.quantity }}</td>
+                </tr>
+            </tbody>
+          </table>
+    </div>
+
+    <div class="mt-4">
+      <strong>ملاحظات:</strong> {{ reSavedIssueData?.notes || '---' }}
+    </div>
+  
+    <div class="row text-center">
+        <div class="col-6">
+        <p class="mt-2">المدير التنفيذي</p>
+        <hr style="width: 60%; margin: auto;">
+        </div>
+        <div class="col-6">
+        <p class="mt-2">رئيس القسم المختص</p>
+        <hr style="width: 60%; margin: auto;">
+        </div>
+    </div>
+    <hr class="my-4">
+    <div class="row text-center">
+        <div class="col-6">
+        <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+        </div>
+        <div class="col-6">
+        <p><strong>التاريخ:</strong> {{ today }}</p>
+        </div>
     </div>
 </div>
