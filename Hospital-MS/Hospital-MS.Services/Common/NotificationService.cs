@@ -1,23 +1,48 @@
 ﻿using Hospital_MS.Core.Common.Consts;
+using Hospital_MS.Core.Hubs;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace Hospital_MS.Services.Common;
 public class NotificationService(IUnitOfWork unitOfWork,
      UserManager<ApplicationUser> userManager,
      IHttpContextAccessor httpContextAccessor,
-     IEmailSender emailService) : INotificationService
+     IEmailSender emailService,
+     IHubContext<NotificationHub> hubContext) : INotificationService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
     private readonly IEmailSender _emailService = emailService;
+    private readonly IHubContext<NotificationHub> _hubContext = hubContext;
 
+    public async Task CreateAndNotifyAsync(Notification notification, CancellationToken cancellationToken = default)
+    {
+        notification.CreatedAt = DateTime.UtcNow;
+        notification.IsRead = false;
+        await _unitOfWork.Repository<Notification>().AddAsync(notification, cancellationToken);
+
+        await _unitOfWork.CompleteAsync(cancellationToken);
+
+        // Send Notifications To System Admins Group 
+        await _hubContext.Clients.Group("SystemAdmins").SendAsync("ReceiveNotification", new
+        {
+            id = notification.Id,
+            targetId = notification.TargetId,
+            type = notification.Type.ToString(),
+            additionalInfo = notification.AdditionalInfo,
+            status = notification.Status,
+            createdAt = notification.CreatedAt,
+            isRead = notification.IsRead
+        }, cancellationToken);
+    }
 
     public async Task SendNewPurchaseRequestNotification(int purchaseId)
     {

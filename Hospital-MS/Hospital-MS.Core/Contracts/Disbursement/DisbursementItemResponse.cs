@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Contracts.Disbursement;
+﻿namespace Hospital_MS.Core.Contracts.Disbursement;
 public class DisbursementItemResponse
 {
     public int ItemId { get; set; }

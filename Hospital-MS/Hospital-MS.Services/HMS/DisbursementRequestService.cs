@@ -128,7 +128,9 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             .Include(x => x.CreatedBy)
             .Include(x => x.UpdatedBy)
             .Include(x => x.JobDepartment)
-            .Include(x => x.Items).ThenInclude(i => i.Item)
+            .Include(x => x.Items)
+                .ThenInclude(i => i.Item)
+                .ThenInclude(x => x.Unit)
             .Where(x => x.IsActive && x.Status == PurchaseStatus.Approved);
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -150,7 +152,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
                 ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
-                Unit = item.Item?.Unit,
+                Unit = item.Item?.Unit.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax
             }).ToList()
@@ -166,7 +168,9 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             .Include(x => x.CreatedBy)
             .Include(x => x.UpdatedBy)
             .Include(x => x.JobDepartment)
-            .Include(x => x.Items).ThenInclude(i => i.Item)
+            .Include(x => x.Items)
+                .ThenInclude(i => i.Item)
+                .ThenInclude(x => x.Unit)
             .Where(x => x.IsActive);
 
         if (!string.IsNullOrEmpty(filter.SearchText))
@@ -197,7 +201,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
                 ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
-                Unit = item.Item?.Unit,
+                Unit = item.Item?.Unit?.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax
             }).ToList()
@@ -214,7 +218,9 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                                                 .Include(x => x.CreatedBy)
                                                 .Include(x => x.UpdatedBy)
                                                 .Include(x => x.JobDepartment)
-                                                .Include(x => x.Items).ThenInclude(i => i.Item)
+                                                .Include(x => x.Items)
+                                                    .ThenInclude(i => i.Item)
+                                                    .ThenInclude(x => x.Unit)
                                                 .FirstOrDefaultAsync(cancellationToken);
 
 
@@ -238,7 +244,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
                 ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
-                Unit = item.Item?.Unit,
+                Unit = item.Item?.Unit?.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax
             }).ToList(),

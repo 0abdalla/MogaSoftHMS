@@ -196,7 +196,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .GetAll()
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
-                .ThenInclude(i => i.Item)
+                .ThenInclude(i => i.Item).ThenInclude(i => i.Unit)
                 .Include(x => x.PurchaseRequest)
                 .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId);
 
@@ -224,7 +224,7 @@ public class PriceQuotationService : IPriceQuotationService
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,
                         Notes = i.Notes,
-                        Unit = i.Item.Unit
+                        Unit = i.Item.Unit.Name
                     }).ToList()
 
                 }).ToListAsync(cancellationToken);

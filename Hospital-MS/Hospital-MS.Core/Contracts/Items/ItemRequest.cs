@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Contracts.Items;
+﻿namespace Hospital_MS.Core.Contracts.Items;
 public class ItemRequest
 {
     public string NameAr { get; set; }
     public string NameEn { get; set; }
-    //public int UnitId { get; set; }
-    public string? Unit { get; set; }
+    public int UnitId { get; set; }
+    //public string? Unit { get; set; }
     public int? GroupId { get; set; }
     public decimal OrderLimit { get; set; }
     public decimal Cost { get; set; }

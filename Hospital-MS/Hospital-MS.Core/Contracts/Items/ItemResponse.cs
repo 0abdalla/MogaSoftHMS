@@ -1,9 +1,4 @@
 ﻿using Hospital_MS.Core.Contracts.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Contracts.Items;
 public class ItemResponse
@@ -11,9 +6,9 @@ public class ItemResponse
     public int Id { get; set; }
     public string NameAr { get; set; }
     public string NameEn { get; set; }
-    //public int? UnitId { get; set; }
-    //public string UnitName { get; set; }
-    public string? Unit { get; set; }
+    public int? UnitId { get; set; }
+    public string UnitName { get; set; }
+    // public string? Unit { get; set; }
     public int? GroupId { get; set; }
     public string GroupName { get; set; }
     public decimal OrderLimit { get; set; }

@@ -18,7 +18,6 @@ using Hospital_MS.Services.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -112,6 +111,7 @@ namespace Hospital_MS.API
             services.AddScoped<IStaffSalariesService, StaffSalariesService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IEmailSender, EmailService>();
+            services.AddScoped<IItemUnitService, ItemUnitService>();
 
 
             services.AddHttpContextAccessor();

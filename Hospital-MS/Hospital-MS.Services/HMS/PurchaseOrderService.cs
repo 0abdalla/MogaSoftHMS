@@ -87,7 +87,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             .Include(x => x.Supplier)
             .Include(x => x.PriceQuotation)
             .Include(x => x.Items)
-            .ThenInclude(i => i.Item)
+            .ThenInclude(i => i.Item).ThenInclude(i => i.Unit)
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
         if (order == null)
@@ -109,7 +109,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             {
                 Id = i.Id,
                 ItemName = i.Item.NameAr,
-                Unit = i.Item.Unit,
+                Unit = i.Item.Unit.Name,
                 RequestedQuantity = i.RequestedQuantity,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
