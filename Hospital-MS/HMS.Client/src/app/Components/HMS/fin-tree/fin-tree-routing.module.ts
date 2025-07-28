@@ -26,11 +26,13 @@ import { StoresComponent } from './inputs/stores/stores.component';
 import { StoresTypesComponent } from './inputs/stores-types/stores-types.component';
 import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
 import { IssueRequestComponent } from './action/issue-request/issue-request.component';
+import { UnitsComponent } from './inputs/units/units.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent},
   {path:"items-group" , component : ItemsGroupComponent},
   {path:"main-groups" , component : MainGroupComponent},
+  {path:"units" , component:UnitsComponent},
   {path:"providers" , component : ProvidersComponent},
   {path:"purchase-request" , component : PurchaseRequestComponent},
   {path:"purchase-order" , component : PurchaseOrderComponent},

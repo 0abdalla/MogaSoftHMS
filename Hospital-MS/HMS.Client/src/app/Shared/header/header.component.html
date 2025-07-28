@@ -4,8 +4,30 @@
   </div>
   <div class="header-right">
     <div class="header-icons">
-      <i class="fa-regular fa-gear"></i>
-      <i class="fa-regular fa-bell"></i>
+      <!-- <i class="fa-regular fa-gear"></i> -->
+      <div class="position-relative d-inline-block p-2 rounded-circle" [ngClass]="{ 'bg-light': showNotifications }">
+      <i
+        class="fa-regular fa-bell"
+        (click)="toggleNotifications()"
+        [ngClass]="{ 'text-primary': showNotifications }"
+        style="cursor: pointer; font-size: 20px;"
+      ></i>
+
+      <div
+        class="notification-box shadow p-3"
+        *ngIf="showNotifications"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="fw-bold mb-2">الإشعارات</div>
+        <div
+          *ngFor="let notification of notifications"
+          class="notification-item border-bottom py-2"
+        >
+          {{ notification }}
+        </div>
+      </div>
+    </div>
+
       <div class="user-profile">
         <img [src]="userProfileImage" alt="User Profile" />
       </div>

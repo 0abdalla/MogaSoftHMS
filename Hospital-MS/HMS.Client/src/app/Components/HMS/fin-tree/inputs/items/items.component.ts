@@ -34,6 +34,12 @@ export class ItemsComponent {
         pageSize:16,
         currentPage:1,
       }
+      pagingFilterModelSelect:any={
+        pageSize:100,
+        currentPage:1,
+      }
+      groups:any[];
+      units!:any[];
       constructor(private fb:FormBuilder , private financialService:FinancialService){
         this.filterForm=this.fb.group({
           SearchText:[],
@@ -53,12 +59,26 @@ export class ItemsComponent {
         });
         
         this.getItems();
+        this.getGroups();
+        this.getUnits();
       }
       getItems(){
         this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
           this.items = res.results;
           this.total = res.totalCount;
           console.log(this.items);
+        })
+      }
+      getGroups(){
+        this.financialService.getItemsGroups(this.pagingFilterModelSelect).subscribe((res : any)=>{
+          this.groups = res.results;
+          console.log(this.groups);
+        })
+      }
+      getUnits(){
+        this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res : any)=>{
+          this.units = res.results;
+          console.log(this.units);
         })
       }
       applyFilters(){

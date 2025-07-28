@@ -250,6 +250,11 @@ export class MenueService {
               route: '/hms/fin-tree/items'
             },
             {
+              displayName: 'الوحدات',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/fin-tree/units'
+            },
+            {
               displayName: 'المخازن',
               icon: 'fa-solid fa-circle',
               route: '/hms/fin-tree/stores'

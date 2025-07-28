@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
@@ -16,16 +16,16 @@ export class HeaderComponent {
   @Output() sidebarToggled = new EventEmitter<boolean>();
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
+  // 
+  showNotifications = false;
+  notifications = ['إشعار 1', 'إشعار 2', 'إشعار 3'];
+
 
   constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.setCurrentDate();
-
-    // Set the initial route immediately on component initialization
     this.routeNow = this.getArabicRouteName(this.router.url);
-
-    // Subscribe to future navigation events
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         this.routeNow = this.getArabicRouteName(event.url);
@@ -100,6 +100,8 @@ export class HeaderComponent {
         return 'مجموعة الأصناف';
       case '/hms/fin-tree/items':
         return 'الأصناف';
+      case '/hms/fin-tree/units':
+        return 'وحدات الأصناف';
       case '/hms/fin-tree/providers':
         return 'الموردين';
       case '/hms/fin-tree/clients':
@@ -152,5 +154,19 @@ export class HeaderComponent {
   toggleSubMenu(menu: string) {
     this.activeMenu = menu;
     this.activeSubmenuRoute = this.router.url;
+  }
+  // 
+  toggleNotifications() {
+    this.showNotifications = !this.showNotifications;
+  }
+
+  @HostListener('document:click', ['$event'])
+  handleClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+    const bellClicked = target.closest('.fa-bell');
+    const boxClicked = target.closest('.notification-box');
+    if (!bellClicked && !boxClicked) {
+      this.showNotifications = false;
+    }
   }
 }

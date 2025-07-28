@@ -57,6 +57,22 @@ export class FinancialService {
     return this.http.delete<any>(this.baseUrl + 'Items/' + id);
   }
   // 
+  getUnits(pagingFilter: PagingFilterModel){
+    return this.http.get<any>(this.baseUrl + 'ItemUnits?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getUnitsById(id:number){
+    return this.http.get<any>(this.baseUrl + 'ItemUnits/' + id);
+  }
+  addUnit(unit:any){
+    return this.http.post<any>(this.baseUrl + 'ItemUnits', unit);
+  }
+  updateUnit(id:number,unit:any){
+    return this.http.put<any>(this.baseUrl + 'ItemUnits/' + id, unit);
+  }
+  deleteUnit(id:number){
+    return this.http.delete<any>(this.baseUrl + 'ItemUnits/' + id);
+  }
+  // 
   getSuppliers(pagingFilter: PagingFilterModel){
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'Suppliers?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
