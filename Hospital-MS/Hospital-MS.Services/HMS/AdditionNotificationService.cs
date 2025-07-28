@@ -5,15 +5,8 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IAdditionNotificationService
@@ -165,6 +158,8 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 .GetAll(x => x.Id == id && x.IsActive)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
+                .Include(x => x.CreatedBy)
+                .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
             if (notification == null)
             {

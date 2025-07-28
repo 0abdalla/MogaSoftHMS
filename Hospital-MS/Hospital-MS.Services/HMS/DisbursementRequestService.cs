@@ -78,6 +78,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             var response = new DisbursementToReturnResponse
             {
                 Id = disbursementRequest.Id,
+                Number = disbursementRequest.Number,
                 DepartmentName = department?.Name,
                 ItemsNames = items?.Items.Select(i => i.Item?.NameAr ?? i.Item?.NameEn ?? "").ToList()
             };

@@ -57,7 +57,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
             await _unitOfWork.CompleteAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, permission.Id.ToString());
+            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, permission.PermissionNumber);
         }
         catch (Exception)
         {
