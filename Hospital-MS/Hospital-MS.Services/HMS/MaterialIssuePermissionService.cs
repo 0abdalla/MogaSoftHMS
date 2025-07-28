@@ -56,6 +56,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             var response = new MaterialIssuePermissionToReturnResponse
             {
                 Id = permission.Id,
+                Number = permission.PermissionNumber,
                 StoreName = store.Name,
                 JobDepartmentName = department.Name
             };

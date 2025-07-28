@@ -56,7 +56,6 @@
             <thead>
                 <tr>
                     <th>الرقم</th>
-                    <th>وصف المجموعة</th>
                     <th>المجموعات الرئيسية</th>
                     <th>إجراءات</th>
                 </tr>
@@ -69,8 +68,7 @@
                             <span class="fw-bold">{{ mainGroup.mainGroupName }}</span>
                         </div>
                     </td>
-                    <td class="text-secondary">{{ mainGroup.mainGroupDescription }}</td>
-                    <td>{{ mainGroup.mainGroups }}</td>
+                    <td>{{ mainGroup.mainGroupName }}</td>
                     <td>
                         <button type="button" class="btn btn-primary mx-2" (click)="editItemGroup(mainGroup.id)">
                             <i class="fa fa-edit"></i>
@@ -108,7 +106,9 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addItemGropModalLabel">إضافة مجموعة أصناف</h5>
+                <h5 class="modal-title" id="addItemGropModalLabel">
+                   {{ isEditMode ? 'تعديل مجموعة أصناف' : 'إضافة مجموعة أصناف' }}
+                </h5>
             </div>
             <div class="modal-body">
                 <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
@@ -127,9 +127,8 @@
                                 [searchable]="true"
                               >
                               </ng-select>
-                                <div *ngIf="itemGroup.get('name')?.invalid && itemGroup.get('name')?.touched" class="text-danger">
-                                    <ng-container *ngIf="itemGroup.get('name')?.errors?.['required']">إسم المجموعة مطلوب</ng-container>
-                                    <ng-container *ngIf="itemGroup.get('name')?.errors?.['minlength']">إسم المجموعة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                <div *ngIf="itemGroup.get('mainGroupId')?.invalid && itemGroup.get('mainGroupId')?.touched" class="text-danger">
+                                    <ng-container *ngIf="itemGroup.get('mainGroupId')?.errors?.['required']">المجموعة الرئيسية مطلوبة</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -155,7 +154,7 @@
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="itemGroup.invalid">إضافة المجموعة </button>
+                        <button type="submit" class="btn-blue" [disabled]="itemGroup.invalid">{{ isEditMode ? 'تعديل المجموعة' : 'إضافة المجموعة' }}</button>
                     </div>
                 </form>
             </div>

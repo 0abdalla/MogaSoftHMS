@@ -62,7 +62,6 @@
                     <th>رقم الصنف</th>
                     <th>إسم الصنف</th>
                     <th>حد الطلب</th>
-                    <th>المجموعة</th>
                     <th>رأس مجموعة</th>
                     <th>إجراءات</th>
                 </tr>
@@ -72,7 +71,6 @@
                     <td>{{ item.id }}</td>
                     <td>{{ item.nameAr }}</td>
                     <td>{{ item.orderLimit }}</td>
-                    <td>{{ item.unitName }}</td>
                     <td>{{ item.groupName }}</td>
                     <td>
                         <button type="button" class="btn btn-primary mx-1" (click)="editItem(item.id)">
@@ -135,12 +133,20 @@
     
                 <div class="col-md-6 mb-2">
                   <label for="groupId" class="form-label">المجموعة</label>
-                  <select class="form-select shadow-none" formControlName="groupId" id="groupId">
+                  <!-- <select class="form-select shadow-none" formControlName="groupId" id="groupId">
                     <option selected disabled value="">اختر المجموعة</option>
                     <option [value]="1">خامات</option>
                     <option [value]="2">مواد</option>
                     <option [value]="3">خدمات</option>
-                  </select>
+                  </select> -->
+                  <ng-select [items]="groups" 
+                  formControlName="groupId"
+                  placeholder="اختر المجموعة"
+                  bindLabel="name"
+                  bindValue="id" 
+                  class="text-end shadow-none w-100"
+                  [searchable]="true">
+                  </ng-select>
                   <div *ngIf="itemForm.get('groupId')?.invalid && itemForm.get('groupId')?.touched" class="text-danger">
                     <ng-container *ngIf="itemForm.get('groupId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                   </div>
@@ -148,12 +154,21 @@
     
                 <div class="col-md-6 mb-2">
                   <label for="unit" class="form-label">الوحدة</label>
-                  <select class="form-select shadow-none" formControlName="unit" id="unit">
+                  <!-- <select class="form-select shadow-none" formControlName="unit" id="unit">
                     <option selected disabled value="">اختر الوحدة</option>
                     <option value="كجم">كجم</option>
                     <option value="قطعة">قطعة</option>
                     <option value="لتر">لتر</option>
-                  </select>
+                    
+                  </select> -->
+                  <ng-select [items]="units" 
+                    formControlName="unit"
+                    placeholder="اختر الوحدة"
+                    bindLabel="name"
+                    bindValue="id" 
+                    class="text-end shadow-none w-100"
+                    [searchable]="true">
+                    </ng-select>
                   <div *ngIf="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched" class="text-danger">
                     <ng-container *ngIf="itemForm.get('unit')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                   </div>

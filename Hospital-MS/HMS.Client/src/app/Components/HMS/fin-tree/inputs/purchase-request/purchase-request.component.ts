@@ -263,12 +263,12 @@ export class PurchaseRequestComponent {
   }
   // 
   getItemName(itemId: number | string): string {
-    const item = this.allItems.find(i => i.id == itemId);
+    const item = this.allItems?.find(i => i.id == itemId);
     return item ? item.nameAr : '—';
   }
   
   getStoreName(storeId: number | string): string {
-    const store = this.stores.find(s => s.id == storeId);
+    const store = this.stores?.find(s => s.id == storeId);
     return store ? store.name : '—';
   }
   

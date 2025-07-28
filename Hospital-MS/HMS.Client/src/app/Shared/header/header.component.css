@@ -72,3 +72,19 @@
     }
   }
 }
+
+
+.notification-box {
+  position: absolute;
+  top: 13px;
+  left: 62px;
+  width: 300px;
+  background-color: white;
+  border-radius: 10px;
+  z-index: 1000;
+}
+
+.notification-item:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}

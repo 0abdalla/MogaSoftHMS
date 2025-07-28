@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 declare var bootstrap :any;
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
@@ -30,7 +30,8 @@ export class ItemsGroupComponent {
       SearchText:[],
     })
     this.itemGroup=this.fb.group({
-      name:[],
+      mainGroupId:['' , Validators.required],
+      name:[''  , Validators.required],
       description:[],
     })
   }
@@ -138,6 +139,7 @@ export class ItemsGroupComponent {
           this.itemGroupRow=data.results;
           this.itemGroup.patchValue({
             name: this.itemGroupRow.name,
+            mainGroupId: this.itemGroupRow.mainGroupId,
             description: this.itemGroupRow.description,
           });
     
