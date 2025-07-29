@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel, PagingFilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
@@ -12,7 +12,7 @@ import { MessageService } from 'primeng/api';
   templateUrl: './purchase-request.component.html',
   styleUrl: './purchase-request.component.css'
 })
-export class PurchaseRequestComponent {
+export class PurchaseRequestComponent implements OnInit , AfterViewInit {
   purchaseRequests : any[] = [];
   pagingFilterModel : PagingFilterModel = {
     currentPage : 1,
@@ -20,13 +20,22 @@ export class PurchaseRequestComponent {
     filterList : [],
     searchText: ''
   };
+  pagingFilterModelSelect : PagingFilterModel = {
+    currentPage : 1,
+    pageSize : 100,
+    filterList : [],
+    searchText: ''
+  };
   total : number = 0;
   // 
   purchaseRequestForm!:FormGroup;
+  itemForm!:FormGroup;
   isEditMode : boolean = false;
   currentPurchaseRequestId: number | null = null;
   allItems: any[] = [];
   stores: any[] = [];
+  groups:any[] = [];
+  units:any[]=[]
   TitleList = ['المشتريات','طلبات شراء'];
   isFilter : boolean = true;
   // 
@@ -58,6 +67,23 @@ export class PurchaseRequestComponent {
         this.createItemGroup()
       ]),
     })
+    
+    this.itemForm = this.fb.group({
+      nameAr: ['', Validators.required],
+      nameEn: ['', Validators.required],
+      unitId: [null, Validators.required],
+      groupId: [null, Validators.required],
+      orderLimit: [0],
+      cost: [0],
+      openingBalance: [0],
+      salesTax: [0],
+      price: [0],
+      hasBarcode: [true],
+      typeId: ['1']
+    });
+    
+    this.getGroups();
+    this.getUnits();
   }
   onSearchInputChanged(value: any) {
     this.pagingFilterModel.searchText = value;
@@ -91,6 +117,15 @@ export class PurchaseRequestComponent {
     this.getItems();
     this.getStores();
   }
+  ngAfterViewInit() {
+    const addItemModalEl = document.getElementById('addItemModal');
+  
+    addItemModalEl?.addEventListener('hidden.bs.modal', () => {
+      const addPurchaseRequestModal = new bootstrap.Modal(document.getElementById('addPurchaseRequestModal'));
+      addPurchaseRequestModal.show();
+    });
+  }
+  
   getItems(){
     this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
       this.allItems = res.results;
@@ -121,6 +156,19 @@ export class PurchaseRequestComponent {
       },error=>{
         console.log(error);
       })
+  }
+  
+  getGroups(){
+    this.financialService.getItemsGroups(this.pagingFilterModelSelect).subscribe((res : any)=>{
+      this.groups = res.results;
+      console.log(this.groups);
+    })
+  }
+  getUnits(){
+    this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res : any)=>{
+      this.units = res.results;
+      console.log(this.units);
+    })
   }
 
   onPageChange(event:any){
@@ -322,5 +370,87 @@ export class PurchaseRequestComponent {
       }
     });
   }
-  
+  currentItemId!:number;
+  addItem() {
+    if (this.itemForm.invalid) {
+      this.itemForm.markAllAsTouched();
+      return;
+    }
+    const rawForm = this.itemForm.value;
+    const formData = {
+      nameAr: rawForm.nameAr,
+      nameEn: rawForm.nameEn,
+      unitId: rawForm.unitId,
+      groupId: Number(rawForm.groupId),
+      orderLimit: Number(rawForm.orderLimit),
+      cost: Number(rawForm.cost),
+      openingBalance: Number(rawForm.openingBalance),
+      salesTax: Number(rawForm.salesTax),
+      price: Number(rawForm.price),
+      hasBarcode: rawForm.hasBarcode === true || rawForm.hasBarcode === 'true',
+      typeId: Number(rawForm.typeId)
+    };
+    if (this.isEditMode && this.currentItemId) {
+      this.financialService.updateItem(this.currentItemId, formData).subscribe({
+        next: (res) => {
+          console.log('تم تعديل الصنف:', res);
+          this.getItems();
+          this.itemForm.reset();
+          this.isEditMode = false;
+          this.currentItemId = null;
+        },
+        error: (err) => {
+          console.error('خطأ أثناء التعديل:', err);
+        }
+      });
+    } else {
+      this.financialService.addItem(formData).subscribe({
+        next: (res) => {
+          console.log('تم إضافة الصنف:', res);
+          this.getItems();
+          const addItemModal = document.getElementById('addItemModal');
+          const bootstrapModal = bootstrap.Modal.getInstance(addItemModal);
+          bootstrapModal.hide();
+          this.itemForm.reset();
+          addItemModal?.addEventListener('hidden.bs.modal', () => {
+          const purchaseModalEl = document.getElementById('addPurchaseRequestModal');
+          const purchaseModal = new bootstrap.Modal(purchaseModalEl)
+          purchaseModal.show();
+        }, { once: true });
+        },
+        error: (err) => {
+          console.error('خطأ أثناء الإضافة:', err);
+        }
+      });
+    }
+  }
+  itemRes:any;
+  editItem(id: number) {
+    this.isEditMode = true;
+    this.currentItemId = id;
+    this.financialService.getItemsById(id).subscribe({
+      next: (itemData:any) => {
+        console.log(itemData);
+        this.itemRes = itemData.results;
+        this.itemForm.patchValue({
+          nameAr: this.itemRes.nameAr,
+          nameEn: this.itemRes.nameEn,
+          unitId: this.itemRes.unitId,
+          groupId: this.itemRes.groupId,
+          orderLimit: this.itemRes.orderLimit,
+          cost: this.itemRes.cost,
+          openingBalance: this.itemRes.openingBalance,
+          salesTax: this.itemRes.salesTax,
+          price: this.itemRes.price,
+          hasBarcode: this.itemRes.hasBarcode,
+          typeId: this.itemRes.typeId
+        });
+        const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
+        modal.show();
+      },
+      error: (err) => {
+        console.error('فشل تحميل بيانات الصنف:', err);
+      }
+    });
+  }
 }

@@ -12,18 +12,11 @@ public class ItemUnitsConfiguration : IEntityTypeConfiguration<ItemUnit>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.NameAr)
+        builder.Property(x => x.Name)
             .IsRequired()
-            .HasMaxLength(50);
-
-        builder.Property(x => x.NameEn)
-            .HasMaxLength(50);
+            .HasMaxLength(150);
 
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
-
-        // Indexes
-        builder.HasIndex(x => x.NameAr).IsUnique();
-        builder.HasIndex(x => x.NameEn);
     }
 }

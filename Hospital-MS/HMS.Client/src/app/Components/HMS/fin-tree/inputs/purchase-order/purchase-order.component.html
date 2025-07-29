@@ -4,7 +4,7 @@
       <p-toast position="top-left"></p-toast>
         <div class="row">
             <div class="col-md-6">
-                <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addPurchaseorderModal">إضافة أمر شراء</button>
+                <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addPurchaseorderModal">إضافة أمر توريد </button>
             </div>
             <div class="col-md-6 " *ngIf="total > 0 && purchaseOrders.length > 16">
                 <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
@@ -59,7 +59,7 @@
       <div class="modal-content">
           <div class="modal-header justify-content-center">
               <h5 class="modal-title" id="addPurchaseorderModalLabel">
-                  {{ isEditMode ? 'تعديل أمر شراء' : 'إضافة أمر شراء' }}
+                  {{ isEditMode ? 'تعديل أمر توريد ' : 'إضافة أمر توريد ' }}
               </h5>                  
           </div>
           <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
@@ -141,7 +141,7 @@
 
                   <div class="text-center">
                       <button type="submit" class="btn-blue px-4" [disabled]="purchaseOrderForm.invalid">
-                          {{ isEditMode ? 'حفظ التعديلات' : 'إضافة أمر شراء' }}
+                          {{ isEditMode ? 'حفظ التعديلات' : 'إضافة أمر توريد ' }}
                         </button>                          
                   </div>
               </form>
@@ -158,7 +158,7 @@
   <div class="d-flex justify-content-around align-items-center mb-4">
     <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
     <div class="text-center">
-      <h5 class="fw-bold mb-1"> أمر شراء  <span class="text-primary"> {{ purNumber }}</span></h5>
+      <h5 class="fw-bold mb-1"> أمر توريد   <span class="text-primary"> {{ purNumber }}</span></h5>
     </div>
   </div>
 
@@ -237,7 +237,7 @@
   <div class="d-flex justify-content-around align-items-center mb-4">
     <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
     <div class="text-center">
-      <h5 class="fw-bold mb-1"> أمر شراء  <span class="text-primary"> {{ purNumber }}</span></h5>
+      <h5 class="fw-bold mb-1"> أمر توريد   <span class="text-primary"> {{ purNumber }}</span></h5>
     </div>
   </div>
 

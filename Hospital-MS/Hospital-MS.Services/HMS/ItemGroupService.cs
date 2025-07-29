@@ -78,10 +78,10 @@ public class ItemGroupService(IUnitOfWork unitOfWork) : IItemGroupService
         try
         {
             var entity = await _unitOfWork.Repository<ItemGroup>()
-                .GetAll(x=>x.IsActive && x.Id == id)
+                .GetAll(x => x.IsActive && x.Id == id)
                 .Include(x => x.MainGroup)
                 .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy) 
+                .Include(x => x.UpdatedBy)
                 .Select(x => new ItemGroupResponse
                 {
                     Id = x.Id,
@@ -116,7 +116,7 @@ public class ItemGroupService(IUnitOfWork unitOfWork) : IItemGroupService
             var query = _unitOfWork.Repository<ItemGroup>()
                 .GetAll(x => x.IsActive)
                 .Include(x => x.MainGroup).AsQueryable();
-                
+
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.Name.Contains(filter.SearchText));

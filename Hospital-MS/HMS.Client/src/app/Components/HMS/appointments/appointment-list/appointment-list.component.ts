@@ -55,6 +55,24 @@ export class AppointmentListComponent implements OnInit {
     { name: 'اشعه', value: 'Radiology' },
     { name: 'طوارئ', value: 'Emergency' },
   ]
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  } 
   constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService,
     private sharedService: SharedService, private cdr: ChangeDetectorRef) { }
   ngOnInit() {
@@ -104,20 +122,42 @@ export class AppointmentListComponent implements OnInit {
     printWindow.print();
   }
 
-  exportToPDF() {
-    const element = document.getElementById('pdfContent');
+  // exportToPDF() {
+  //   const element = document.getElementById('pdfContent');
 
+  //   const opt = {
+  //     margin: 0.5,
+  //     filename: 'booking-details.pdf',
+  //     image: { type: 'jpeg', quality: 1 },
+  //     html2canvas: { scale: 2 },
+  //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  //   };
+
+  //   html2pdf().set(opt).from(element).save();
+  // }
+  // ==================================================================
+  exportToPDF() {
+    const pdfDiv = document.getElementById('printablePDFContent');
+  
+    if (!pdfDiv) return;
+  
     const opt = {
       margin: 0.5,
-      filename: 'booking-details.pdf',
+      filename: 'تفاصيل حجز رقم ' + this.selectedAppointment.id + '.pdf',
       image: { type: 'jpeg', quality: 1 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-
-    html2pdf().set(opt).from(element).save();
+  
+    const clonedDiv = pdfDiv.cloneNode(true) as HTMLElement;
+    clonedDiv.style.display = 'block';
+    document.body.appendChild(clonedDiv);
+  
+    html2pdf().set(opt).from(clonedDiv).save().then(() => {
+      document.body.removeChild(clonedDiv);
+    });
   }
-  // ==================================================================
+  
   getPatients() {
     this.appointmentService.getAllAppointments(this.pagingFilterModel).subscribe({
       next: (data) => {

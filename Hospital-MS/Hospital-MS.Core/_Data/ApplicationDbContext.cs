@@ -75,7 +75,7 @@ namespace Hospital_MS.Core._Data
 
         public DbSet<TreasuryOperation> TreasuryOperations { get; set; }
         public DbSet<TreasuryMovement> TreasuryMovements { get; set; }
-
+        public DbSet<Notification> Notifications { get; set; }
 
 
         public DbSet<MedicalServiceDetail> MedicalServiceDetails { get; set; }

@@ -49,7 +49,7 @@ export class PurchaseOrderComponent {
   currentPurchaseRequestId: number | null = null;
   allItems: any[] = [];
   allSuppliers: any[] = [];
-  TitleList = ['المشتريات','أمور شراء'];
+  TitleList = ['المشتريات','أوامر توريد '];
   // 
   approvedPrices!:any;
   constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService , private cdr : ChangeDetectorRef){

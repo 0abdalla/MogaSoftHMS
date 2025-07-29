@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Disbursement;
-using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -60,7 +56,7 @@ namespace Hospital_MS.API.Controllers
         }
 
         [HttpGet("approved")]
-        public async Task<IActionResult> GetAllApprovedAsync( CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllApprovedAsync(CancellationToken cancellationToken)
         {
             var result = await _disbursementRequestService.GetAllApprovedAsync(cancellationToken);
             return result.IsSuccess ? Ok(result) : BadRequest(result);

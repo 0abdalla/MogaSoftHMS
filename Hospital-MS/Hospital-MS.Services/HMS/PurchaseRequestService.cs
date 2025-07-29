@@ -1,4 +1,4 @@
-using Hangfire;
+﻿using Hangfire;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Common.Consts;
 using Hospital_MS.Core.Contracts.PurchaseRequests;
@@ -62,6 +62,16 @@ namespace Hospital_MS.Services.HMS
                 {
                     BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
                 }
+
+                var notification = new Notification
+                {
+                    TargetId = purchaseRequest.Id,
+                    Type = NotificationType.PurchaseRequest,
+                    Status = purchaseRequest.Status.ToString(),
+                    AdditionalInfo = "طلب شراء جديد تمت إضافته"
+                };
+
+                await _notificationService.CreateAndNotifyAsync(notification, cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
 

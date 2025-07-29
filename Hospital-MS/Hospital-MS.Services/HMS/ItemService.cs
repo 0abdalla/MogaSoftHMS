@@ -6,15 +6,9 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
 public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemService
@@ -37,8 +31,8 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             {
                 NameAr = request.NameAr,
                 NameEn = request.NameEn,
-                //UnitId = request.UnitId,
-                Unit = request.Unit,
+                UnitId = request.UnitId,
+                // Unit = request.Unit,
                 GroupId = request.GroupId,
                 OrderLimit = request.OrderLimit,
                 Cost = request.Cost,
@@ -80,9 +74,9 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 Id = row.Field<int>("Id"),
                 NameAr = row.Field<string>("NameAr") ?? string.Empty,
                 NameEn = row.Field<string>("NameEn") ?? string.Empty,
-                //UnitId = row.Field<int>("UnitId"),
-                //UnitName = row.Field<string>("UnitName") ?? string.Empty,
-                Unit = row.Field<string>("Unit") ?? string.Empty,
+                UnitId = row.Field<int>("UnitId"),
+                UnitName = row.Field<string>("UnitName") ?? string.Empty,
+                //Unit = row.Field<string>("Unit") ?? string.Empty,
                 GroupId = row.Field<int?>("GroupId"),
                 GroupName = row.Field<string>("GroupName"),
                 OrderLimit = row.Field<decimal>("OrderLimit"),
@@ -125,8 +119,9 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 .Include(x => x.Unit)
                 .Include(x => x.Group)
                 .Include(x => x.Type)
+                .Include(x => x.Unit)
                 .Include(x => x.CreatedBy)
-                .Include(x=>x.UpdatedBy)
+                .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (item == null)
@@ -137,9 +132,9 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 Id = item.Id,
                 NameAr = item.NameAr,
                 NameEn = item.NameEn,
-                //UnitId = item.UnitId,
-                //UnitName = item.Unit.NameAr,
-                Unit = item.Unit,
+                UnitId = item.UnitId,
+                UnitName = item?.Unit?.Name,
+                //Unit = item.Unit,
                 GroupId = item.GroupId,
                 GroupName = item.Group?.Name ?? string.Empty,
                 OrderLimit = item.OrderLimit,
@@ -180,7 +175,8 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             item.NameAr = request.NameAr;
             item.NameEn = request.NameEn;
-            item.Unit = request.Unit;
+            //item.Unit = request.Unit;
+            item.UnitId = request.UnitId;
             item.GroupId = request.GroupId;
             item.OrderLimit = request.OrderLimit;
             item.Cost = request.Cost;

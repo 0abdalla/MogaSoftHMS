@@ -25,6 +25,34 @@ export class MenueService {
       isGroup: false
     },
     {
+      displayName: 'المشتريات',
+      icon: 'fa-solid fa-boxes-stacked',
+      isGroup: true,
+      subMenus: [
+        {
+          displayName: 'طلب شراء',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/fin-tree/purchase-request'
+        },
+        {
+          displayName: 'عروض الأسعار',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/fin-tree/offers'
+        },
+        {
+          displayName: 'أمر توريد ',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/fin-tree/purchase-order'
+        },
+        // {
+        //   displayName: 'الموردين',
+        //   icon: 'fa-solid fa-circle',
+        //   route: '/hms/fin-tree/providers'
+        // },
+        
+      ]
+    },
+    {
       displayName: 'المخازن',
       icon: 'fa-solid fa-boxes-stacked',
       isGroup: true,
@@ -44,34 +72,6 @@ export class MenueService {
           icon: 'fa-solid fa-circle',
           route: '/hms/fin-tree/issue-items'
         }
-      ]
-    },
-    {
-      displayName: 'المشتريات',
-      icon: 'fa-solid fa-boxes-stacked',
-      isGroup: true,
-      subMenus: [
-        {
-          displayName: 'طلب شراء',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/purchase-request'
-        },
-        {
-          displayName: 'عروض الأسعار',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/offers'
-        },
-        {
-          displayName: 'أمر شراء',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/purchase-order'
-        },
-        // {
-        //   displayName: 'الموردين',
-        //   icon: 'fa-solid fa-circle',
-        //   route: '/hms/fin-tree/providers'
-        // },
-        
       ]
     },
     {

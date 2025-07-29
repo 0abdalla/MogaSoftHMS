@@ -174,7 +174,7 @@
                 </div>
             </div>
 
-            <div class="inputs-wrapper border rounded bg-white mb-3">
+            <!-- <div class="inputs-wrapper border rounded bg-white mb-3">
                 <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50">
                     <h5 class="mb-0 fw-bold">
                         <span>🛡️بيانات التأمين</span>
@@ -218,7 +218,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <div class="inputs-wrapper border rounded bg-white mb-3">
                 <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50 px-3">
@@ -230,6 +230,42 @@
                     </button>
                 </div>
                 <div class="inputs-sec-content px-3 py-2" *ngIf="showAdditionalInfo">
+                    <div class="row gy-3">
+                        <div class="col-lg-4">
+                            <div class="mb-2">
+                                <label class="form-label d-flex align-items-center gap-2">شركة التأمين
+                                      <span class="text-danger">*</span>
+                                    </label>
+                                <app-general-selector [data]="insuranceCompanies" formControlName="insuranceCompanyId"></app-general-selector>
+                                <div *ngIf="patientForm.get('insuranceCompanyId')?.invalid && patientForm.get('insuranceCompanyId')?.touched" class="text-danger">
+                                    شركة التأمين مطلوبة
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-2">
+                                <label class="form-label d-flex align-items-center gap-2">فئة التأمين
+                                      <span class="text-danger">*</span>
+                                    </label>
+                                <app-general-selector [data]="insuranceCategories" formControlName="insuranceCategoryId"></app-general-selector>
+                                <div *ngIf="patientForm.get('insuranceCategoryId')?.invalid && patientForm.get('insuranceCategoryId')?.touched" class="text-danger">
+                                    فئة التأمين مطلوبة
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="mb-2">
+                                <label class="form-label d-flex align-items-center gap-2">رقم التأمين
+                                      <span class="text-danger">*</span>
+                                    </label>
+                                <input type="text" class="form-control nw-form-input" formControlName="insuranceNumber" placeholder="أدخل رقم التأمين" autocomplete="off" />
+                                <div *ngIf="patientForm.get('insuranceNumber')?.invalid && patientForm.get('insuranceNumber')?.touched" class="text-danger">
+                                    <ng-container *ngIf="patientForm.get('insuranceNumber')?.errors?.['required']">رقم التأمين مطلوب</ng-container>
+                                    <ng-container *ngIf="patientForm.get('insuranceNumber')?.errors?.['pattern']">رقم التأمين يجب أن يكون أرقامًا فقط</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row gy-3">
                         <div class="col-lg-4">
                             <div class="mb-2">

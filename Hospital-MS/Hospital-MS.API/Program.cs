@@ -1,6 +1,7 @@
 using Hangfire;
 using HealthChecks.UI.Client;
 using Hospital_MS.API;
+using Hospital_MS.Core.Hubs;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDependencies(builder.Configuration);
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -34,14 +37,14 @@ var appointmentService = scope.ServiceProvider.GetRequiredService<IAppointmentSe
 var doctorService = scope.ServiceProvider.GetRequiredService<IDoctorService>();
 
 jobManager.AddOrUpdate(
-    "UpdateAppointmentStatus", 
+    "UpdateAppointmentStatus",
     () => appointmentService.UpdateAppointmentsToCompletedAsync(), Cron.Daily
 );
 
 
 jobManager.AddOrUpdate(
     "ResetDoctorScheduleAppointments",
-    () => doctorService.ResetCurrentAppointmentsAsync(),Cron.Daily  
+    () => doctorService.ResetCurrentAppointmentsAsync(), Cron.Daily
 );
 
 #endregion
@@ -51,6 +54,8 @@ app.UseCors();
 
 app.UseStaticFiles();
 
+app.UseRouting();
+
 app.UseAuthorization();
 
 app.MapControllers();
@@ -59,5 +64,7 @@ app.MapHealthChecks("_health", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+app.MapHub<NotificationHub>("/hub/notifications");
 
 app.Run();
