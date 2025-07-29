@@ -74,7 +74,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 Id = row.Field<int>("Id"),
                 NameAr = row.Field<string>("NameAr") ?? string.Empty,
                 NameEn = row.Field<string>("NameEn") ?? string.Empty,
-                UnitId = row.Field<int>("UnitId"),
+                UnitId = row.Field<int?>("UnitId"),
                 UnitName = row.Field<string>("UnitName") ?? string.Empty,
                 //Unit = row.Field<string>("Unit") ?? string.Empty,
                 GroupId = row.Field<int?>("GroupId"),
