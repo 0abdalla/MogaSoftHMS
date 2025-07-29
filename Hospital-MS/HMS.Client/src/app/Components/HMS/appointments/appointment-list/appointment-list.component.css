@@ -169,3 +169,17 @@ td {
     letter-spacing: 0px;
     text-align: center;
 }
+
+
+#printablePDFContent p {
+    margin-bottom: 0.5rem;
+    font-size: 14px;
+  }
+  #printablePDFContent table {
+    font-size: 13px;
+    text-align: center;
+  }
+  #printablePDFContent th, #printablePDFContent td {
+    padding: 8px;
+  }
+  

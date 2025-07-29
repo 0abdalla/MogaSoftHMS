@@ -507,11 +507,12 @@
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content" dir="rtl">
         <div class="modal-header">
-          <h5 class="modal-title">تم حفظ أمر الشراء بنجاح</h5>
+          <h5 class="modal-title">تم حفظ إذن الإستلام بنجاح</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
         </div>
         <div class="modal-body" *ngIf="savedOrderData">
             <p><strong>رقم المستند:</strong> {{ savedOrderData.documentNumber }}</p>
+            <p><strong>رقم القيد:</strong> {{ savedOrderData?.restrictionNumber || '---' }}</p>
             <p><strong>التاريخ:</strong> {{ savedOrderData.permissionDate | date:'yyyy-MM-dd' }}</p>
             <p><strong>اسم المورد:</strong> {{ savedOrderData.supplierName }}</p>
             <p><strong>اسم المخزن:</strong> {{ savedOrderData.storeName }}</p>
@@ -537,10 +538,9 @@
             </table>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" (click)="printJournal(savedOrderData)">طباعة القيد</button>
-          <button class="btn btn-success" (click)="printReceipt(savedOrderData)">طباعة إذن الاستلام</button>
-          <button class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+        <div class="modal-footer text-center">
+          <button class="btn-blue" (click)="printJournal(savedOrderData)">طباعة القيد</button>
+          <button class="btn-red" (click)="printReceipt(savedOrderData)">طباعة إذن الاستلام</button>
         </div>
       </div>
     </div>

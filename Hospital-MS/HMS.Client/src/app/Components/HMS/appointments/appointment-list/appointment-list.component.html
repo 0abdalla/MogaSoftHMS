@@ -329,3 +329,97 @@
         </div>
     </div>
 </div>
+
+
+
+<div id="printablePDFContent" style=" display: none;" dir="rtl" class="container border rounded p-5">
+    <div class="d-flex justify-content-around align-items-center mb-2">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <div class="text-center">
+            <h5 class="fw-bold mb-1">  حجز رقم    <span class="text-primary">  {{ selectedAppointment?.id }}</span></h5>
+        </div>
+    </div>
+  
+    <h5 class="fw-bold mb-2">بيانات المريض</h5>
+    <div class="row">
+        <div class="col-lg-6">
+            <p><strong>الاسم:</strong> {{ selectedAppointment?.patientName || '---' }}</p>
+            <p><strong>الرقم الطبي:</strong> {{ selectedAppointment?.patientId || '---' }}</p>
+            <p><strong>رقم الهاتف:</strong> {{ selectedAppointment?.patientPhone || '---' }}</p>
+        </div>
+        <div class="col-lg-6">
+            <p><strong>التاريخ:</strong> {{ selectedAppointment?.createdOn | date:'yyyy-MM-dd' }}</p>
+            <p><strong>الوقت:</strong> {{ selectedAppointment?.createdOn | date:'hh:mm a' }}</p>
+            <p><strong>الحالة:</strong> {{ selectedAppointment?.status || '---' }}</p>
+        </div>
+    </div>
+  
+    <hr>
+  
+    <h5 class="fw-bold mb-2">تفاصيل الحجز</h5>
+    <div class="row">
+        <div class="col-lg-6">
+            <p><strong>نوع الحجز:</strong> {{ selectedAppointment?.type || '---' }}</p>
+            <p><strong>الطبيب:</strong> {{ selectedAppointment?.doctorName || '---' }}</p>
+        </div>
+        <div class="col-lg-6">
+            <p><strong>طريقة الحجز:</strong> عبر التطبيق</p>
+        </div>
+    </div>
+  
+    <div *ngIf="selectedAppointment?.medicalServices?.length">
+      <table class="border rounded">
+        <thead>
+          <tr>
+            <th>تاريخ الخدمة</th>
+            <th>نوع الخدمة</th>
+            <th>الدكتور</th>
+            <th>السعر</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of selectedAppointment?.medicalServices">
+            <td>{{ item.medicalServiceDate | date:'dd/MM/yyyy' }}</td>
+            <td>{{ item.medicalServiceName }}</td>
+            <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
+            <td *ngIf="item.medicalServiceType == 'Screening' || item.medicalServiceType == 'Radiology'">---</td>
+            <td>{{ item.medicalServicePrice }} جنيه</td>
+          </tr>
+          <tr>
+            <td colspan="3" class="fw-bold text-center">الإجمالي</td>
+            <td class="fw-bold">{{ totalPrice }} جنيه</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+  
+    <div *ngIf="selectedAppointment?.type === 'Emergency'">
+      <h5 class="fw-bold mb-2">بيانات المرافق</h5>
+      <div class="row">
+        <div class="col-lg-6">
+            <p><strong>الاسم:</strong> {{ selectedAppointment?.companionName || '---' }}</p>
+            <p><strong>الهوية:</strong> {{ selectedAppointment?.companionNationalId || '---' }}</p>
+        </div>
+        <div class="col-lg-6">
+            <p><strong>رقم الهاتف:</strong> {{ selectedAppointment?.companionPhone || '---' }}</p>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="selectedAppointment?.notes">
+        <hr>
+        <h5 class="fw-bold mb-2">📝 ملاحظات إضافية</h5>
+        <p>{{ selectedAppointment?.notes || '---' }}</p>
+    </div>
+    
+    <div class="row mt-4">
+        <hr>
+        <div class="col-md-6">
+          <strong>إسم المستخدم:</strong> {{ userName }}
+        </div>
+        <div class="col-md-6 text-end">
+          <strong>التاريخ:</strong> {{ today }}
+        </div>
+      </div>
+  </div>
+  

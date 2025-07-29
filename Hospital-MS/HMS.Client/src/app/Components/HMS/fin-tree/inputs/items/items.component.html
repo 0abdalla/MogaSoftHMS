@@ -162,15 +162,15 @@
                     
                   </select> -->
                   <ng-select [items]="units" 
-                    formControlName="unit"
+                    formControlName="unitId"
                     placeholder="اختر الوحدة"
                     bindLabel="name"
                     bindValue="id" 
                     class="text-end shadow-none w-100"
                     [searchable]="true">
                     </ng-select>
-                  <div *ngIf="itemForm.get('unit')?.invalid && itemForm.get('unit')?.touched" class="text-danger">
-                    <ng-container *ngIf="itemForm.get('unit')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                  <div *ngIf="itemForm.get('unitId')?.invalid && itemForm.get('unitId')?.touched" class="text-danger">
+                    <ng-container *ngIf="itemForm.get('unitId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                   </div>
                 </div>
     

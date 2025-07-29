@@ -350,7 +350,7 @@ export class HomeComponent {
         }
       },
       xAxis: {
-        categories: serviceCategories, // Use dynamic categories from API
+        categories: serviceCategories,
         labels: {
           style: {
             fontFamily: 'Tajawal, sans-serif',

@@ -286,8 +286,18 @@ export class AddItemsComponent implements OnInit {
             totalAmount
           };
   
-          const modal = new bootstrap.Modal(document.getElementById('confirmationModal')!);
-          modal.show();
+          const addModalEl = document.getElementById('addPermissionModal');
+          const confirmModalEl = document.getElementById('confirmationModal');
+
+          if (addModalEl && confirmModalEl) {
+            const addModal = bootstrap.Modal.getInstance(addModalEl) || new bootstrap.Modal(addModalEl);
+            addModal.hide();
+
+            const confirmationModal = new bootstrap.Modal(confirmModalEl);
+            confirmationModal.show();
+          }
+          this.cleanUpBackdrop()
+
           // this.addPermissionForm.reset();
           if(res.isSuccess === true){
             this.toastrService.add({
@@ -521,6 +531,11 @@ export class AddItemsComponent implements OnInit {
       console.error('فشل تحميل إذن الإستلام للطباعة:', err);
       alert('حدث خطأ أثناء تحميل إذن الإستلام.');
     });
+  }
+  cleanUpBackdrop() {
+    document.body.classList.remove('modal-open');
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(b => b.remove());
   }
   
 }

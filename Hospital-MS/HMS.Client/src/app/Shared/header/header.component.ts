@@ -135,7 +135,7 @@ export class HeaderComponent {
       case '/hms/fin-tree/restrictions':
         return 'قيود اليومية';
       case '/hms/fin-tree/purchase-order':
-        return 'أوامر شراء';
+        return 'أوامر توريد';
       case '/hms/fin-tree/purchase-request':
         return 'طلبات شراء';
       case '/hms/fin-tree/offers':

@@ -16,13 +16,11 @@
       <div
         class="notification-box shadow p-3"
         *ngIf="showNotifications"
-        (click)="$event.stopPropagation()"
-      >
+        (click)="$event.stopPropagation()">
         <div class="fw-bold mb-2">الإشعارات</div>
         <div
           *ngFor="let notification of notifications"
-          class="notification-item border-bottom py-2"
-        >
+          class="notification-item border-bottom py-2">
           {{ notification }}
         </div>
       </div>

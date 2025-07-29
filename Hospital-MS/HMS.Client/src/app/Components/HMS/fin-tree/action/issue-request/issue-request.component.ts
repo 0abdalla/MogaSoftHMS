@@ -191,10 +191,11 @@ export class IssueRequestComponent implements OnInit {
           notes: this.issueRequest.notes,
           items: this.issueRequest.items,
           storeId: this.issueRequest.storeId,
+          jobDepartmentId: this.issueRequest.jobDepartmentId,
           purchaseOrderId: this.issueRequest.purchaseOrderId
         });
   
-        const modal = new bootstrap.Modal(document.getElementById('addPermissionModal')!);
+        const modal = new bootstrap.Modal(document.getElementById('addIssueModal')!);
         modal.show();
       },
       error: (err) => {
