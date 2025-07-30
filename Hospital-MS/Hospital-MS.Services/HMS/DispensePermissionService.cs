@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Common;
+using Hospital_MS.Core.Contracts.DailyRestrictions;
 using Hospital_MS.Core.Contracts.DispensePermission;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
@@ -11,12 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Hospital_MS.Services.HMS;
-public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IDispensePermissionService
+public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, IDailyRestrictionService dailyRestrictionService) : IDispensePermissionService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISQLHelper _sQLHelper = sQLHelper;
+    private readonly IDailyRestrictionService _dailyRestrictionService = dailyRestrictionService;
 
-    public async Task<ErrorResponseModel<string>> CreateAsync(DispensePermissionRequest request, CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<PartialDailyRestrictionResponse>> CreateAsync(DispensePermissionRequest request, CancellationToken cancellationToken = default)
     {
         using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
@@ -25,18 +27,18 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 .GetByIdAsync(request.TreasuryId, cancellationToken);
 
             if (treasury is null)
-                return ErrorResponseModel<string>.Failure(new Error("الخزينه غير موجوده", Status.NotFound));
+                return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(new Error("الخزينه غير موجوده", Status.NotFound));
 
             var account = await _unitOfWork.Repository<AccountTree>()
                 .GetByIdAsync(request.AccountId, cancellationToken);
 
             if (account is null)
-                return ErrorResponseModel<string>.Failure(new Error("الحساب غير موجود", Status.NotFound));
+                return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(new Error("الحساب غير موجود", Status.NotFound));
 
             var costCenter = await _unitOfWork.Repository<CostCenterTree>().GetByIdAsync(request.CostCenterId, cancellationToken);
 
             if (costCenter is null)
-                return ErrorResponseModel<string>.Failure(new Error("مركز التكلفة غير موجود", Status.NotFound));
+                return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(new Error("مركز التكلفة غير موجود", Status.NotFound));
 
 
             var permission = new DispensePermission
@@ -81,14 +83,50 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
+            var dailyRestriction = new DailyRestriction
+            {
+                RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
+                DocumentNumber = treasuryOperation.Id.ToString(),
+                RestrictionTypeId = null,
+                IsActive = true,
+                AccountingGuidanceId = 1,
+                RestrictionDate = request.Date,
+                Description = request.Notes,
+                Details =
+                [
+                    new DailyRestrictionDetail
+                    {
+                        AccountId = request.AccountId,
+                        CostCenterId = request.CostCenterId,
+                        Credit = 0,
+                        Note = null,
+                        Debit = request.Amount,
+                    }
+                ]
+            };
+
+            await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess, permission.Id.ToString());
+            var response = new PartialDailyRestrictionResponse
+            {
+                Id = permission.Id,
+                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                Amount = request.Amount,
+                From = account.NameAR,
+                To = treasury.Name,
+                RestrictionDate = dailyRestriction.RestrictionDate,
+                RestrictionNumber = dailyRestriction.RestrictionNumber
+            };
+
+            return ErrorResponseModel<PartialDailyRestrictionResponse>.Success(GenericErrors.GetSuccess, response);
         }
         catch (Exception)
         {
             await transaction.RollbackAsync(cancellationToken);
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.TransFailed);
         }
     }
 

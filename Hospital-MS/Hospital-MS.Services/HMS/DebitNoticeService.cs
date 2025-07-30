@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.DailyRestrictions;
 using Hospital_MS.Core.Contracts.DebitNotices;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Common;
@@ -7,24 +8,34 @@ using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS;
-public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IDebitNoticeService
+public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, IDailyRestrictionService dailyRestrictionService) : IDebitNoticeService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly ISQLHelper _sQLHelper = sQLHelper;
+    private readonly IDailyRestrictionService _dailyRestrictionService = dailyRestrictionService;
 
-    public async Task<ErrorResponseModel<string>> CreateAsync(DebitNoticeRequest request, CancellationToken cancellationToken = default)
+    public async Task<ErrorResponseModel<PartialDailyRestrictionResponse>> CreateAsync(DebitNoticeRequest request, CancellationToken cancellationToken = default)
     {
+        var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
+            var account = await _unitOfWork.Repository<AccountTree>()
+               .GetAll(x => x.AccountId == request.AccountId)
+               .FirstOrDefaultAsync(cancellationToken);
+
+            if (account == null)
+                return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.NotFound);
+
+            var bank = await _unitOfWork.Repository<Bank>()
+                .GetAll(x => x.Id == request.BankId && x.IsActive)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (bank == null)
+                return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.NotFound);
+
             var debitNotice = new DebitNotice
             {
                 AccountId = request.AccountId,
@@ -33,18 +44,57 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : 
                 CheckNumber = request.CheckNumber,
                 Date = request.Date,
                 Notes = request.Notes,
-
             };
 
             await _unitOfWork.Repository<DebitNotice>().AddAsync(debitNotice, cancellationToken);
 
             await _unitOfWork.CompleteAsync(cancellationToken);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, debitNotice.Id.ToString());
+            var dailyRestriction = new DailyRestriction
+            {
+                RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
+                DocumentNumber = debitNotice.Id.ToString(),
+                RestrictionTypeId = null,
+                IsActive = true,
+                AccountingGuidanceId = 2,
+                RestrictionDate = request.Date,
+                Description = request.Notes,
+                Details =
+                [
+                    new DailyRestrictionDetail
+                    {
+                          AccountId = request.AccountId,
+                          CostCenterId = null,
+                          Credit = 0,
+                          Note = null,
+                          Debit = request.Amount,
+                    }
+                ]
+            };
+
+            await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
+            var response = new PartialDailyRestrictionResponse
+            {
+                Id = debitNotice.Id,
+                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                Amount = request.Amount,
+                From = account.NameAR,
+                To = bank.Name,
+                RestrictionDate = dailyRestriction.RestrictionDate,
+                RestrictionNumber = dailyRestriction.RestrictionNumber
+            };
+
+
+            return ErrorResponseModel<PartialDailyRestrictionResponse>.Success(GenericErrors.AddSuccess, response);
         }
         catch (Exception)
         {
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            await transaction.RollbackAsync(cancellationToken);
+            return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.TransFailed);
         }
     }
 
@@ -155,7 +205,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : 
                 CheckNumber = debitNotice.CheckNumber,
                 Date = debitNotice.Date,
                 Notes = debitNotice.Notes,
-                AccountName = debitNotice.Account.NameAR ,
+                AccountName = debitNotice.Account.NameAR,
                 BankName = debitNotice.Bank.Name,
                 Audit = new Core.Contracts.Common.AuditResponse
                 {
