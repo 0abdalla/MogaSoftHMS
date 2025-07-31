@@ -7,6 +7,8 @@ import { FilterModel } from '../../../../../../Models/Generics/PagingFilterModel
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
 import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 export declare var bootstrap:any;
+import html2pdf from 'html2pdf.js';
+
 
 @Component({
   selector: 'app-add-notice',
@@ -31,6 +33,24 @@ export class AddNoticeComponent {
   currentAdditionNotificationId:number|null=null;
   // 
   isFilter:boolean=true;
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
   constructor(private fb:FormBuilder , private financialService:FinancialService , private banksService:BanksService , private settingsService : SettingService){
     this.filterForm=this.fb.group({
       SearchText:[],
@@ -67,6 +87,7 @@ export class AddNoticeComponent {
     
   }
   // 
+  restrictionData!:any;
   addAdditionNotification() {
     if (this.addNoticeGroup.invalid) {
       this.addNoticeGroup.markAllAsTouched();
@@ -90,7 +111,7 @@ export class AddNoticeComponent {
           this.getAdditionNotifications();
           console.log(this.addNoticeGroup.value);
           console.log(res);
-          
+          this.restrictionData = res.results
           // this.addNoticeGroup.reset();
         },
         error: (err) => {
@@ -202,4 +223,26 @@ export class AddNoticeComponent {
     }
     return result;
   }
+  // 
+  printedAddition!:any;
+  printAdditionNotification(id: number) {
+    this.financialService.getAdditionNotificationsById(id).subscribe(res => {
+      if (res?.isSuccess) {
+        this.printedAddition = res.results;
+  
+        setTimeout(() => {
+          const element = document.getElementById('printableAddition');
+          const options = {
+            margin:       0.5,
+            filename:     `إشعار-إضافة-رقم-${this.printedAddition.id}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+          };
+          html2pdf().from(element).set(options).save();
+        }, 300);
+      }
+    });
+  }
+  
 }

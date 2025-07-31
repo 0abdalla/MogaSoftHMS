@@ -98,15 +98,15 @@ export class AppointmentFormComponent implements OnInit {
     }); 
     this.appointmentDetailsForm = this.fb.group({
       id: null,
-      appointmentDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
+      appointmentDate: [new Date().toISOString().substring(0, 10) , []],
       appointmentType: ['', Validators.required],
       medicalServiceId: ['', Validators.required],
-      radiologyBodyTypeId: ['', Validators.required],
+      // radiologyBodyTypeId: ['', Validators.required],
       medicalServiceName: null,
       doctorId: [''],
       price: null,
       doctorName: null,
-      radiologyBodyTypeNames:null
+      // radiologyBodyTypeNames:null
     });
 
     this.appointmentDetailsForm.get('appointmentType')?.valueChanges.subscribe((selectedType) => {
@@ -141,14 +141,14 @@ export class AppointmentFormComponent implements OnInit {
         this.appointmentDetailsForm.get('doctorId')?.enable();
         this.appointmentDetailsForm.get('doctorId')?.setValue(null);
         this.radiologyTypesSelected = this.radiologyTypeList.filter(i => i.medicalServiceId == medicalServiceId);
-        const doctorControl = this.appointmentDetailsForm.get('radiologyBodyTypeId');
-        if (this.appointmentType == 'Radiology') {
-          doctorControl?.setValidators(Validators.required);
-        } else {
-          doctorControl?.clearValidators();
-          doctorControl?.setValue(null);
-        }
-        doctorControl?.updateValueAndValidity();
+        // const doctorControl = this.appointmentDetailsForm.get('radiologyBodyTypeId');
+        // if (this.appointmentType == 'Radiology') {
+        //   doctorControl?.setValidators(Validators.required);
+        // } else {
+        //   doctorControl?.clearValidators();
+        //   doctorControl?.setValue(null);
+        // }
+        // doctorControl?.updateValueAndValidity();
 
       } else {
         this.filteredDoctors = [];
@@ -169,16 +169,16 @@ export class AppointmentFormComponent implements OnInit {
       this.insuranceCategories = selectedCompany?.insuranceCategories || [];
     });
 
-    this.appointmentDetailsForm.get('radiologyBodyTypeId')?.valueChanges.subscribe((typeId) => {
-      let obj = this.radiologyTypeList.find(i => i.id == typeId);
-      if (obj) {
-        let checked = this.radiologyTypesClicked.find(i => i.id === obj.id);
-        if (!checked) {
-          this.radiologyTypesClicked.push(obj);
-        }
-      }
+    // this.appointmentDetailsForm.get('radiologyBodyTypeId')?.valueChanges.subscribe((typeId) => {
+    //   let obj = this.radiologyTypeList.find(i => i.id == typeId);
+    //   if (obj) {
+    //     let checked = this.radiologyTypesClicked.find(i => i.id === obj.id);
+    //     if (!checked) {
+    //       this.radiologyTypesClicked.push(obj);
+    //     }
+    //   }
 
-    });
+    // });
     console.log(this.appointmentDetailsForm.value.appointmentDate);
   }
 
@@ -241,8 +241,8 @@ export class AppointmentFormComponent implements OnInit {
     formData.price = this.SelectedService.price || 0;
     formData.medicalServiceName = this.SelectedService.name || '';
     formData.doctorName = this.getDoctorName(formData.doctorId);
-    formData.radiologyBodyTypeId = this.radiologyTypesClicked.map(i => i.id);
-    formData.radiologyBodyTypeNames = this.radiologyTypesClicked.map(i => i.name).join(';;;');
+    // formData.radiologyBodyTypeId = this.radiologyTypesClicked.map(i => i.id);
+    // formData.radiologyBodyTypeNames = this.radiologyTypesClicked.map(i => i.name).join(';;;');
     if (formData.id) {
       const index = this.appointmentDetailsSelected.findIndex(item => item.id === formData.id);
       if (index !== -1) {
@@ -374,13 +374,15 @@ export class AppointmentFormComponent implements OnInit {
           medicalServiceId: item.medicalServiceId, 
           appointmentDate: item.appointmentDate,
           appointmentType:item.appointmentType,
-          radiologyBodyTypeIds: item.radiologyBodyTypeId ? item.radiologyBodyTypeId : [],
+          // radiologyBodyTypeIds: item.radiologyBodyTypeId ? item.radiologyBodyTypeId : [],
         } 
       }),
     };
 
     this.appointmentService.createAppointment(payload).subscribe({
       next: (response) => {
+        console.log(response);
+        
         if (response.isSuccess) {
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
           this.submittedData = { ...formData };

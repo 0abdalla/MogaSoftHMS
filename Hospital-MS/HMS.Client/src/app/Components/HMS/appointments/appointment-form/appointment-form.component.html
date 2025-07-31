@@ -219,15 +219,20 @@
                             <option value="Consultation">استشارة</option>
                             <option value="Surgery">عمليات</option>
                             <option value="Screening">تحاليل</option>
-                            <option value="Radiology">أشعة</option>
-                        </select>
+                            <option value="MRI">أشعة رنين</option>
+                            <option value="Panorama">أشعة بانوراما</option>
+                            <option value="XRay">أشعة عادية</option>
+                            <option value="CTScan">أشعة مقطعية</option>
+                            <option value="Ultrasound">أشعة سونار</option>
+                            <option value="Echo">أشعة إيكو</option>
+                            <option value="Mammogram">أشعة ماموجرام</option>                        </select>
                         <div *ngIf="appointmentDetailsForm.get('appointmentType')?.invalid && appointmentDetailsForm.get('appointmentType')?.touched" class="text-danger">
                             نوع الحجز مطلوب
                         </div>
                     </div>
                     <div class="mb-3">
                         <label for="clinic" class="form-label">
-                            {{appointmentDetailsForm.get('appointmentType')?.value === 'Screening'? 'نوع التحليل': appointmentDetailsForm.get('appointmentType')?.value === 'Radiology'? 'نوع الأشعة': 'الخدمة الطبية'}}
+                            {{appointmentDetailsForm.get('appointmentType')?.value === 'Screening'? 'نوع التحليل': appointmentDetailsForm.get('appointmentType')?.value === 'MRI' || appointmentDetailsForm.get('appointmentType')?.value === 'Panorama' || appointmentDetailsForm.get('appointmentType')?.value === 'XRay' || appointmentDetailsForm.get('appointmentType')?.value === 'CTScan' || appointmentDetailsForm.get('appointmentType')?.value === 'Ultrasound' || appointmentDetailsForm.get('appointmentType')?.value === 'Echo' || appointmentDetailsForm.get('appointmentType')?.value === 'Mammogram'? 'نوع الأشعة': 'الخدمة الطبية'}}
                         </label>
                         <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" (change)="onServiceSelected()">
                         <option selected disabled [value]="null">اختر الخدمة</option>
@@ -239,10 +244,10 @@
                         </option>
                     </select>
                         <div *ngIf="appointmentDetailsForm.get('medicalServiceId')?.invalid && appointmentDetailsForm.get('medicalServiceId')?.touched" class="text-danger">
-                            {{ appointmentDetailsForm.get('appointmentType')?.value === 'Screening' ? 'نوع التحليل مطلوب' : appointmentDetailsForm.get('appointmentType')?.value === 'Radiology' ? 'نوع الأشعة مطلوبة' : 'الخدمة الطبية مطلوبة' }}
+                            {{ appointmentDetailsForm.get('appointmentType')?.value === 'Screening' ? 'نوع التحليل مطلوب' : appointmentDetailsForm.get('appointmentType')?.value === 'MRI' || appointmentDetailsForm.get('appointmentType')?.value === 'Panorama' || appointmentDetailsForm.get('appointmentType')?.value === 'XRay' || appointmentDetailsForm.get('appointmentType')?.value === 'CTScan' || appointmentDetailsForm.get('appointmentType')?.value === 'Ultrasound' || appointmentDetailsForm.get('appointmentType')?.value === 'Echo' || appointmentDetailsForm.get('appointmentType')?.value === 'Mammogram' ? 'نوع الأشعة مطلوبة' : 'الخدمة الطبية مطلوبة' }}
                         </div>
                     </div>
-                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value && appointmentDetailsForm.get('appointmentType')?.value != 'Screening' && appointmentDetailsForm.get('appointmentType')?.value != 'Radiology'">
+                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value && appointmentDetailsForm.get('appointmentType')?.value != 'Screening' && appointmentDetailsForm.get('appointmentType')?.value != 'MRI' && appointmentDetailsForm.get('appointmentType')?.value != 'Panorama' && appointmentDetailsForm.get('appointmentType')?.value != 'XRay' && appointmentDetailsForm.get('appointmentType')?.value != 'CTScan' && appointmentDetailsForm.get('appointmentType')?.value != 'Ultrasound' && appointmentDetailsForm.get('appointmentType')?.value != 'Echo' && appointmentDetailsForm.get('appointmentType')?.value != 'Mammogram'">
                         <label for="clinic-doctor" class="form-label">الدكتور المختص</label>
                         <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId" (change)="onDoctorSelected()">
                             <option selected disabled [value]="null">اختر الدكتور المختص</option>
@@ -254,7 +259,7 @@
                             </option>
                         </select>
                     </div>
-                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value == 'Radiology'">
+                    <!-- <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value == 'Radiology'">
                         <label for="clinic-type" class="form-label">أشعة الجسم</label>
                         <select id="clinic-type" class="form-select shadow-none" formControlName="radiologyBodyTypeId">
                             <option selected disabled [value]="null">اختر أشعة الجسم</option>
@@ -272,9 +277,9 @@
                         <div *ngIf="appointmentDetailsForm.get('radiologyBodyTypeId')?.invalid && appointmentDetailsForm.get('radiologyBodyTypeId')?.touched" class="text-danger">
                             أشعة الجسم مطلوبة
                         </div>
-                    </div>
+                    </div> -->
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn-blue" [disabled]="appointmentDetailsForm.invalid">حفظ التغييرات</button>
+                        <button type="submit" class="btn-blue">حفظ التغييرات</button>
                     </div>
                 </form>
             </div>

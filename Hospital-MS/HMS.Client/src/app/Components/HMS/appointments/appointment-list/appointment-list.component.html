@@ -24,10 +24,10 @@
                     <i class="fas fa-plus-circle"></i>
                     <span>إضافة حجز</span>
                 </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3">
+                <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="confirmShiftClose()">
                     <i class="fas fa-close"></i>
                     <span>إغلاق حركة الشيفت</span>
-                </button>
+                  </button>                  
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
                     <i class="uil uil-filter"></i>
                     <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
@@ -423,3 +423,115 @@
       </div>
   </div>
   
+
+<div class="modal fade" id="shiftReportModal" tabindex="-1" aria-labelledby="shiftReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content p-3">
+        <div class="modal-body"  >
+          <div dir="rtl" class="px-4 bg-white">
+            <div class="d-flex justify-content-evenly align-items-center">
+              <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+              <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+            </div>
+  
+            <div class="row mt-3">
+              <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
+              <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
+              <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
+            </div>
+  
+            <table class="table table-bordered mt-3">
+              <thead>
+                <tr>
+                  <th>م</th>
+                  <th>نوع الخدمة</th>
+                  <th>العدد</th>
+                  <th>السعر</th>
+                  <th>السعر الإجمالي</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let service of medicalServices; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ service.medicalServiceName }}</td>
+                  <td>{{ service.count }}</td>
+                  <td>{{ service.price | number:'1.2-2' }} ج.م</td>
+                  <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
+                  <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            <hr class="my-4" />
+            <div class="row text-center">
+              <div class="col-6">
+                <p><strong>اسم المستخدم:</strong> {{ userName }}</p>
+              </div>
+              <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ today }}</p>
+              </div>
+            </div>
+          </div>
+  
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+          <button type="button" class="btn btn-primary" (click)="printShiftReport()">طباعة PDF</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<div class="border rounded p-5" id="printableShiftModal">
+          <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
+            <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
+            <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
+          </div>
+
+          <table class="table table-bordered mt-3">
+            <thead>
+              <tr>
+                <th>م</th>
+                <th>نوع الخدمة</th>
+                <th>العدد</th>
+                <th>السعر</th>
+                <th>السعر الإجمالي</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let service of medicalServices; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ service.medicalServiceName }}</td>
+                <td>{{ service.count }}</td>
+                <td>{{ service.price | number:'1.2-2' }} ج.م</td>
+                <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
+                <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
+              </tr>
+            </tfoot>
+          </table>
+          <hr class="my-4" />
+          <div class="row text-center">
+            <div class="col-6">
+              <p><strong>اسم المستخدم:</strong> {{ userName }}</p>
+            </div>
+            <div class="col-6">
+              <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+          </div>
+</div>

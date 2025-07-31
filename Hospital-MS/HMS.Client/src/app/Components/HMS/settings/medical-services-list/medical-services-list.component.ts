@@ -51,7 +51,7 @@ export class MedicalServicesListComponent implements OnInit {
 
     this.serviceForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1), Validators.max(1000)]],
+      price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1)]],
       type: ['', Validators.required],
       medicalServiceSchedules: this.fb.array([this.createSchedule()]),
     })
@@ -98,8 +98,26 @@ export class MedicalServicesListComponent implements OnInit {
             case 'Screening':
               service.serviceType = 'تحاليل';
               break;
-            case 'Radiology':
-              service.serviceType = 'أشعة';
+            case 'MRI':
+              service.serviceType = 'أشعة رنين';
+              break;
+            case 'Panorama':
+              service.serviceType = 'أشعة بانوراما';
+              break;
+            case 'XRay':
+              service.serviceType = 'أشعة عادية';
+              break;
+            case 'CTScan':
+              service.serviceType = 'أشعة مقطعية';
+              break;
+            case 'Ultrasound':
+              service.serviceType = 'أشعة سونار';
+              break;
+            case 'Echo':
+              service.serviceType = 'أشعة إيكو';
+              break;
+            case 'Mammogram':
+              service.serviceType = 'أشعة ماموجرام';
               break;
             case 'Surgery':
               service.serviceType = 'عمليات';
