@@ -100,7 +100,7 @@ export class SupplyReceiptComponent implements OnInit {
   // 
   isEditMode: boolean = false;
   currentSupplyReceiptId: number | null = null;
-  
+  restrictionData!:any;
   addSupplyReceipt() {
     if (this.addPermissionForm.invalid) {
       this.addPermissionForm.markAllAsTouched();
@@ -121,7 +121,8 @@ export class SupplyReceiptComponent implements OnInit {
     } else {
       this.financialService.addSupplyReceipt(this.addPermissionForm.value).subscribe({
         next: (res:any) => {
-          this.receiptNumber = res.results;
+          this.receiptNumber = res.results.restrictionNumber;
+          this.restrictionData = res.results;
           this.amountInWords = this.convertToArabicWords(this.addPermissionForm.value.amount);
           console.log(res);
           console.log(this.addPermissionForm.value);
@@ -254,7 +255,7 @@ export class SupplyReceiptComponent implements OnInit {
   generateCombinedPDF() {
       const opt = {
         margin: 0.5,
-        filename: `supply-receipt-${this.receiptNumber}.pdf`,
+        filename: `إيصال-توريد-رقم-${this.receiptNumber}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -350,4 +351,25 @@ export class SupplyReceiptComponent implements OnInit {
       if (!this.treasuries || !Array.isArray(this.treasuries)) return '---';
       return this.treasuries.find(s => s.id === id)?.name || '---';
     }
+    // 
+    printedRecipt!:any;
+      printSupplyReceipt(id: number) {
+        this.financialService.getSupplyReceiptsById(id).subscribe(res => {
+          if (res?.isSuccess) {
+            this.printedRecipt = res.results;
+            this.amountInWords = this.convertToArabicWords(this.printedRecipt.amount)
+            setTimeout(() => {
+              const element = document.getElementById('printableSupplyReceipt');
+              const options = {
+                margin:       0.5,
+                filename:     `إيصال-توريد-رقم-${this.receiptNumber}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+              };
+              html2pdf().from(element).set(options).save();
+            }, 300);
+          }
+        });
+      }
 }

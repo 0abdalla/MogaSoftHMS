@@ -54,7 +54,13 @@
               <option value="Consultation">استشارة</option>
               <option value="Surgery">عمليات</option>
               <option value="Screening">تحاليل</option>
-              <option value="Radiology">أشعة</option>
+              <option value="MRI">أشعة رنين</option>
+                    <option value="Panorama">أشعة بانوراما</option>
+                    <option value="XRay">أشعة عادية</option>
+                    <option value="CTScan">أشعة مقطعية</option>
+                    <option value="Ultrasound">أشعة سونار</option>
+                    <option value="Echo">أشعة إيكو</option>
+                    <option value="Mammogram">أشعة ماموجرام</option>
             </select>
             <div *ngIf="reservationForm.get('appointmentType')?.invalid && reservationForm.get('appointmentType')?.touched" class="text-danger">
               نوع الحجز مطلوب

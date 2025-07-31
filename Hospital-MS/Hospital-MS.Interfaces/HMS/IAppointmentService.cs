@@ -1,12 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
-using Hospital_MS.Core.Models;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Interfaces.HMS
 {
@@ -22,6 +16,8 @@ namespace Hospital_MS.Interfaces.HMS
 
         Task<PagedResponseModel<DataTable>> GetStaffAppointmentsAsync(int staffId, PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
 
-        Task UpdateAppointmentsToCompletedAsync(); 
+        Task UpdateAppointmentsToCompletedAsync();
+
+        Task<ErrorResponseModel<ClosedShiftResponse>> CloseShiftAsync(CancellationToken cancellationToken = default);
     }
 }

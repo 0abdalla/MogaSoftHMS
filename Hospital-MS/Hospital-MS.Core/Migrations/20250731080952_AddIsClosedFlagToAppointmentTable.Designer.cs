@@ -4,16 +4,19 @@ using Hospital_MS.Core._Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Hospital_MS.Reposatories.Migrations
+namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250731080952_AddIsClosedFlagToAppointmentTable")]
+    partial class AddIsClosedFlagToAppointmentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,9 +205,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DailyRestrictionId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
@@ -227,8 +227,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("BankId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("DailyRestrictionId");
 
                     b.HasIndex("UpdatedById");
 
@@ -1214,9 +1212,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DailyRestrictionId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
@@ -1242,8 +1237,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("BankId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("DailyRestrictionId");
 
                     b.HasIndex("UpdatedById");
 
@@ -1389,9 +1382,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DailyRestrictionId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
@@ -1422,8 +1412,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("CostCenterId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("DailyRestrictionId");
 
                     b.HasIndex("TreasuryId");
 
@@ -4145,9 +4133,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("DailyRestrictionId")
-                        .HasColumnType("int");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
@@ -4180,8 +4165,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.HasIndex("CostCenterId");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("DailyRestrictionId");
 
                     b.HasIndex("TreasuryId");
 
@@ -4683,10 +4666,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("Hospital_MS.Core.Models.DailyRestriction", "DailyRestriction")
-                        .WithMany()
-                        .HasForeignKey("DailyRestrictionId");
-
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -4696,8 +4675,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("Bank");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("DailyRestriction");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -5043,10 +5020,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("Hospital_MS.Core.Models.DailyRestriction", "DailyRestriction")
-                        .WithMany()
-                        .HasForeignKey("DailyRestrictionId");
-
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById");
@@ -5056,8 +5029,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("Bank");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("DailyRestriction");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -5131,10 +5102,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("Hospital_MS.Core.Models.DailyRestriction", "DailyRestriction")
-                        .WithMany()
-                        .HasForeignKey("DailyRestrictionId");
-
                     b.HasOne("Hospital_MS.Core.Models.Treasury", "Treasury")
                         .WithMany()
                         .HasForeignKey("TreasuryId");
@@ -5148,8 +5115,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("CostCenter");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("DailyRestriction");
 
                     b.Navigation("Treasury");
 
@@ -6174,10 +6139,6 @@ namespace Hospital_MS.Reposatories.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("Hospital_MS.Core.Models.DailyRestriction", "DailyRestriction")
-                        .WithMany()
-                        .HasForeignKey("DailyRestrictionId");
-
                     b.HasOne("Hospital_MS.Core.Models.Treasury", "Treasury")
                         .WithMany()
                         .HasForeignKey("TreasuryId")
@@ -6193,8 +6154,6 @@ namespace Hospital_MS.Reposatories.Migrations
                     b.Navigation("CostCenter");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("DailyRestriction");
 
                     b.Navigation("Treasury");
 

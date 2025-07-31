@@ -32,6 +32,9 @@ export class AppointmentService {
   deleteAppointment(id: number): Observable<ErrorResponseModel<string>> {
     return this.http.delete<ErrorResponseModel<string>>(`${this.baseUrl}Appointments?id=${id}`);
   }
+  closeShift(){
+    return this.http.post<any>(`${this.baseUrl}Appointments/close-shift`, {});
+  }
   updateEmergency(id: number, updateEmergencyForm: FormGroup): Observable<ErrorResponseModel<string>> {
     return this.http.put<ErrorResponseModel<string>>(`${this.baseUrl}Appointments/emergency/${id}`, updateEmergencyForm.value);
   }
@@ -79,9 +82,5 @@ export class AppointmentService {
 
   editService(id: number, service: any) {
     return this.http.put<any>(`${this.baseUrl}MedicalService/${id}`, service);
-  }
-  // 
-  closeShift() {
-    return this.http.post<any>(`${this.baseUrl}Shift/Close`, {});
   }
 }

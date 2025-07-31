@@ -136,7 +136,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     .ThenInclude(d => d.CostCenter)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
-                .Include(x=> x.AccountingGuidance)
+                .Include(x => x.AccountingGuidance)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (entity == null)
@@ -190,6 +190,10 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             var query = _unitOfWork.Repository<DailyRestriction>()
                 .GetAll()
                 .Include(x => x.RestrictionType)
+                .Include(x => x.Details)
+                    .ThenInclude(x => x.CostCenter)
+                .Include(x => x.Details)
+                    .ThenInclude(x => x.Account)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .Where(x => x.IsActive);
@@ -218,6 +222,18 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     Description = x.Description,
                     AccountingGuidanceId = x.AccountingGuidanceId,
                     AccountingGuidanceName = x.AccountingGuidance != null ? x.AccountingGuidance.Name : null,
+
+                    Details = x.Details.Select(d => new DailyRestrictionDetailResponse
+                    {
+                        Id = d.Id,
+                        AccountId = d.AccountId,
+                        AccountName = d.Account.NameAR ?? d.Account.NameEN ?? "",
+                        Debit = d.Debit,
+                        Credit = d.Credit,
+                        CostCenterId = d.CostCenterId,
+                        CostCenterName = d.CostCenter.NameAR,
+                        Note = d.Note
+                    }).ToList(),
                 })
                 .ToListAsync(cancellationToken);
 
@@ -229,7 +245,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
         }
     }
 
-    private async Task<string> GenerateRestrictionNumberAsync(CancellationToken cancellationToken = default)
+    public async Task<string> GenerateRestrictionNumberAsync(CancellationToken cancellationToken = default)
     {
         var lastRestriction = await _unitOfWork.Repository<DailyRestriction>()
             .GetAll()
@@ -245,6 +261,6 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 nextNumber = lastNumber + 1;
             }
         }
-        return nextNumber.ToString("D3");
+        return nextNumber.ToString("D5");
     }
 }

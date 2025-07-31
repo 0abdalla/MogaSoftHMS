@@ -31,7 +31,7 @@ public class NotificationService(IUnitOfWork unitOfWork,
 
         await _unitOfWork.CompleteAsync(cancellationToken);
 
-        // Send Notifications To System Admins Group 
+        // Send Notifications To System Admins Group
         await _hubContext.Clients.Group("SystemAdmins").SendAsync("ReceiveNotification", new
         {
             id = notification.Id,

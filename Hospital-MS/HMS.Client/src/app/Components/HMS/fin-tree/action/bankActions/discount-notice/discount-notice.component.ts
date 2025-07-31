@@ -6,6 +6,7 @@ import { FinancialService } from '../../../../../../Services/HMS/financial.servi
 import Swal from 'sweetalert2';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
 import { todayDateValidator } from '../../../../../../validators/today-date.validator';
+import html2pdf from 'html2pdf.js';
 declare var bootstrap:any;
 
 @Component({
@@ -28,6 +29,25 @@ export class DiscountNoticeComponent implements OnInit {
   isFilter:boolean=true;
   banks!:any[]
   accounts!:any[]
+  // 
+  userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
+  get today(): string {
+    const date = new Date();
+    const dateStr = date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  
+    const timeStr = date.toLocaleTimeString('ar-EG', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  
+    return `${dateStr} - الساعة ${timeStr}`;
+  }  
   constructor(private fb:FormBuilder , private banksService:BanksService , private financialService:FinancialService , private settingsService : SettingService){
     this.filterForm=this.fb.group({
       SearchText:[],
@@ -193,5 +213,26 @@ export class DiscountNoticeComponent implements OnInit {
       }
     }
     return result;
+  }
+  // 
+  printedDiscount!:any;
+  printDiscountNotification(id: number) {
+    this.financialService.getDebitNotificationById(id).subscribe(res => {
+      if (res?.isSuccess) {
+        this.printedDiscount = res.results;
+  
+        setTimeout(() => {
+          const element = document.getElementById('printableDiscount');
+          const options = {
+            margin:       0.5,
+            filename:     `إشعار-خصم-رقم-${this.printedDiscount.id}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+          };
+          html2pdf().from(element).set(options).save();
+        }, 300);
+      }
+    });
   }
 }

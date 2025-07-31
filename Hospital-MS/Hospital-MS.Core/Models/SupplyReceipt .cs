@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Models;
+﻿namespace Hospital_MS.Core.Models;
 public class SupplyReceipt : AuditableEntity // ايصال التوريد
 {
     public int Id { get; set; }
@@ -20,4 +14,7 @@ public class SupplyReceipt : AuditableEntity // ايصال التوريد
     public AccountTree? Account { get; set; }
     public Treasury Treasury { get; set; } = default!;
     public CostCenterTree CostCenter { get; set; } = default!;
+
+    public DailyRestriction? DailyRestriction { get; set; } = default!;
+    public int? DailyRestrictionId { get; set; }
 }

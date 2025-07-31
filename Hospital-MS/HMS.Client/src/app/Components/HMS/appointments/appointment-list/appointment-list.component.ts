@@ -8,6 +8,7 @@ import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/Pagi
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { SharedService } from '../../../../Services/shared.service';
 declare var html2pdf: any;
+declare var bootstrap: any;
 import Swal from 'sweetalert2';
 import { Modal } from 'bootstrap';
 import { FormDropdownModel } from '../../../../Models/Generics/FormDropdownModel';
@@ -353,5 +354,55 @@ export class AppointmentListComponent implements OnInit {
   showCashMovementModal() {
     this.displayCashMovement = true;
   }
+  // 
+  medicalServices: any[];
+  totalAmountForShift: any;
+  closedBy: any;
+  closedAt: any;
+  shiftDay = new Date().toLocaleDateString('ar-EG', { weekday: 'long' });
+  confirmShiftClose() {
+    Swal.fire({
+      title: 'هل أنت متأكد؟',
+      text: 'هل تريد إغلاق حركة الشيفت؟',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، أغلق الشيفت',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.appointmentService.closeShift().subscribe(res => {
+          console.log(res);
+          
+          if (res?.isSuccess) {
+            const data = res.results;
+            this.medicalServices = data.medicalServices;
+            this.totalAmountForShift = data.totalAmount;
+            this.closedBy = data.closedBy;
+            this.closedAt = data.closedAt;
 
+            const modalElement = document.getElementById('shiftReportModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+          } else {
+            Swal.fire('خطأ', res.message || 'حدث خطأ ما', 'error');
+          }
+        }, () => {
+          Swal.fire('خطأ', 'فشل الاتصال بالسيرفر', 'error');
+        });
+      }
+    });
+  }
+  printShiftReport() {
+    const element = document.getElementById('printableShiftModal');
+    const opt = {
+      margin: 0.5,
+      filename: `تقرير-إيرادات-الشيفت-${new Date().toLocaleDateString('ar-EG')}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'cm', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
 }

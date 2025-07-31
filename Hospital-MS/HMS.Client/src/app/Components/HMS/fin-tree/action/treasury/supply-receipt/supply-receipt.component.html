@@ -76,7 +76,10 @@
                     <td>{{ add.costCenterName }}</td>
 
                     <td>
-                        <button type="button" class="btn btn-primary mx-2" (click)="editSupplyReceipt(add.id)">
+                        <button type="button" class="btn btn-primary mx-2" (click)="printSupplyReceipt(add.id)">
+                            <i class="fa fa-print"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning mx-2" (click)="editSupplyReceipt(add.id)">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button type="button" class="btn btn-danger mx-2" (click)="deleteSupplyReceipt(add.id)">
@@ -200,7 +203,6 @@
 
 <div #printSection dir="rtl" class="container p-4">
 
-    <!-- إذن الصرف -->
     <div class="p-2 mb-5" style="border: 1px solid #5A607F; border-radius: 10px;">
       <div class="d-flex justify-content-around align-items-center mb-2">
         <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
@@ -261,7 +263,8 @@
         </tbody>
       </table>
     </div>
-    <!-- قيد اليومية -->
+
+    
     <div class="p-2 mt-5" style="border: 1px solid #5A607F; border-radius: 10px;">
         <div class="d-flex justify-content-around align-items-center mb-2">
             <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
@@ -273,7 +276,7 @@
 
     <div class="row mb-2">
         <div class="col-md-6">
-            <strong>التاريخ:</strong> {{ addPermissionForm.value.date }}
+            <strong>التاريخ:</strong> {{ restrictionData?.restrictionDate }}
         </div>
         <div class="col-md-6">
             <strong>رقم المستند:</strong> {{ receiptNumber }}
@@ -281,23 +284,128 @@
     </div>
 
     <div class="mb-2">
-      <strong>التوجيه المحاسبي:</strong> {{ getTreasuryName(addPermissionForm.value.treasuryId) }}
+      <strong>التوجيه المحاسبي:</strong> {{ restrictionData?.accountingGuidanceName }}
     </div>
   
     <hr />
   
     <div class="mb-2">
-      {{ addPermissionForm.value.amount }} &nbsp; &nbsp; من حـ/ <strong>{{ getTreasuryName(addPermissionForm.value.treasuryId) }}</strong>
+      {{ restrictionData?.amount }} &nbsp; &nbsp; من حـ/ <strong>{{ restrictionData?.from }}</strong>
     </div>
     <hr />
     <div class="mb-2">
-      {{ addPermissionForm.value.amount }} &nbsp; &nbsp; إلى حـ/ <strong>{{ getAccountName(addPermissionForm.value.accountId) }}</strong>
+      {{ restrictionData?.amount }} &nbsp; &nbsp; إلى حـ/ <strong>{{ restrictionData?.to }}</strong>
     </div>
     <hr />
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <small class="fw-bold">الإسم:</small> {{userName}}
+        </div>
+        <div class="col-md-6">
+            <small class="fw-bold">التاريخ:</small> {{ today }}
+        </div>
+    </div>
+    </div>
+
+</div>
+
+
+
+<div id="printableSupplyReceipt" dir="rtl" class="container p-4">
+
+    <div class="p-2 mb-5" style="border: 1px solid #5A607F; border-radius: 10px;">
+      <div class="d-flex justify-content-around align-items-center mb-2">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <div>
+          <span>إيصال توريد رقم</span>
+          <span>{{ printedRecipt?.dailyRestriction?.restrictionNumber }}</span>
+        </div>
+      </div>
+    
+      <div class="mb-2">
+          <strong>تحريرًا في:</strong> {{ printedRecipt?.date }}
+      </div>
+  
+      <div class="row mb-2">
+          <div class="col-md-6">
+              <strong>استلمت من السيد:</strong> {{ printedRecipt?.receivedFrom }}
+          </div>
+          <div class="col-md-6">
+              <strong>المبلغ:</strong> {{ printedRecipt?.amount + ' ' + 'جنيه مصري' }}
+          </div>
+      </div>
+      
+      <div class="row mb-2">
+            <div class="col-md-6">
+              <strong>كود الحساب:</strong> {{ printedRecipt?.accountId }}
+            </div>
+            <div class="col-md-6">
+                <strong>اسم الحساب:</strong> {{getAccountName(printedRecipt?.accountId)}}
+            </div>
+      </div>
+      
+      <div class="mb-2">
+            <strong>المبلغ وقدره:</strong> {{ amountInWords }}
+      </div>
+    
+      <div class="mb-3">
+        <strong>شرح العملية:</strong> {{ printedRecipt?.description }}
+      </div>
+    
+      <table class="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th>الخزينة</th>
+            <th>مراجعة</th>
+            <th>اعتماد</th>
+            <th>المستلم</th>
+            <th>التوقيع</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+            <td>----------------</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    
+    <div class="p-2 mt-5" style="border: 1px solid #5A607F; border-radius: 10px;">
+        <div class="d-flex justify-content-around align-items-center mb-2">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <div>
+              <span>قيد يومية رقم</span>
+              <span>{{ printedRecipt?.dailyRestriction?.restrictionNumber }}</span>
+            </div>
+          </div>
+
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <strong>التاريخ:</strong> {{ printedRecipt?.dailyRestriction?.restrictionDate }}
+        </div>
+        <div class="col-md-6">
+            <strong>رقم المستند:</strong> {{ printedRecipt?.dailyRestriction?.restrictionNumber }}
+        </div>
+    </div>
+
     <div class="mb-2">
-      <strong>شرح القيد:</strong> {{ addPermissionForm.value.description }}
+      <strong>التوجيه المحاسبي:</strong> {{ printedRecipt?.dailyRestriction?.accountingGuidanceName }}
     </div>
   
+    <hr />
+  
+    <div class="mb-2">
+      {{ printedRecipt?.dailyRestriction?.amount }} &nbsp; &nbsp; من حـ/ <strong>{{ printedRecipt?.dailyRestriction?.from }}</strong>
+    </div>
+    <hr />
+    <div class="mb-2">
+      {{ printedRecipt?.dailyRestriction?.amount }} &nbsp; &nbsp; إلى حـ/ <strong>{{ printedRecipt?.dailyRestriction?.to }}</strong>
+    </div>
     <hr />
     <div class="row mt-3">
         <div class="col-md-6">

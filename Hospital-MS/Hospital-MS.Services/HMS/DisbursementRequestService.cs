@@ -152,7 +152,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
                 ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
-                Unit = item.Item?.Unit.Name,
+                Unit = item.Item?.Unit?.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax
             }).ToList()

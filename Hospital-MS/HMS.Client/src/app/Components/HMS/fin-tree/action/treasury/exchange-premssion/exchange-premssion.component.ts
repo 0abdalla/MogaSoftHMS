@@ -152,6 +152,7 @@ export class ExchangePremssionComponent implements OnInit {
   // 
   isEditMode : boolean = false;
   cuerrentExchangePermissionId: number | null = null;
+  restrictionNumber!:any;
   addPermission() {
     if (this.exPermissionForm.invalid) {
       this.exPermissionForm.markAllAsTouched();
@@ -174,7 +175,8 @@ export class ExchangePremssionComponent implements OnInit {
       this.financialService.addDispensePermission(formData).subscribe({
         next: (res:any) => {
           console.log(res);
-          this.receiptNumber = res.results;
+          this.receiptNumber = res.results.id;
+          this.restrictionNumber = res.results.restrictionNumber
           this.amountInWords = this.convertToArabicWords(formData.amount);
           this.getDispensePermissions();
           this.generateCombinedPDF();
@@ -411,5 +413,28 @@ export class ExchangePremssionComponent implements OnInit {
     if (!this.treasuries || !Array.isArray(this.treasuries)) return '---';
     return this.treasuries.find(s => s.id === id)?.name || '---';
   }
-  
+      // 
+      printedpermssion!:any;
+        printpermsission(id: number) {
+          this.financialService.getDispensePermissionsById(id).subscribe(res => {
+            if (res?.isSuccess) {
+              this.printedpermssion = res.results;
+              this.amountInWords = this.convertToArabicWords(this.printedpermssion.amount)
+              setTimeout(() => {
+                const element = document.getElementById('printablePermsission');
+                const options = {
+                  margin:       0.5,
+                  filename:     `إذن-صرف-رقم-${this.printedpermssion.id}.pdf`,
+                  image:        { type: 'jpeg', quality: 0.98 },
+                  html2canvas:  { scale: 2 },
+                  jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().from(element).set(options).save();
+              }, 300);
+            }else{
+              console.log('error');
+              
+            }
+          });
+        }
 }

@@ -112,13 +112,19 @@
                             <div class="form-group">
                                 <label class="form-label" for="type">نوع الخدمة</label>
                                 <select class="form-select shadow-none" formControlName="type" id="type">
-                    <option selected disabled value="">اختر نوع الخدمة</option>
-                    <option value="General">كشف</option>
-                    <option value="Consultation">استشارة</option>
-                    <option value="Surgery">عمليات</option>
-                    <option value="Screening">تحاليل</option>
-                    <option value="Radiology">أشعة</option>
-                  </select>
+                                    <option selected disabled value="">اختر نوع الخدمة</option>
+                                    <option value="General">كشف</option>
+                                    <option value="Consultation">استشارة</option>
+                                    <option value="Surgery">عمليات</option>
+                                    <option value="Screening">تحاليل</option>
+                                    <option value="MRI">أشعة رنين</option>
+                                    <option value="Panorama">أشعة بانوراما</option>
+                                    <option value="XRay">أشعة عادية</option>
+                                    <option value="CTScan">أشعة مقطعية</option>
+                                    <option value="Ultrasound">أشعة سونار</option>
+                                    <option value="Echo">أشعة إيكو</option>
+                                    <option value="Mammogram">أشعة ماموجرام</option>
+                                </select>
                                 <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
                                     <ng-container *ngIf="serviceForm.get('type')?.errors?.['required']">نوع الخدمة مطلوب</ng-container>
                                 </div>
@@ -194,12 +200,18 @@
                             <div class="form-group">
                                 <label class="form-label" for="type">نوع الخدمة</label>
                                 <select class="form-select shadow-none" formControlName="type" id="type">
-                    <option selected disabled value="">اختر نوع الخدمة</option>
-                    <option value="General">كشف</option>
-                    <option value="Consultation">استشارة</option>
-                    <option value="Surgery">عمليات</option>
-                    <option value="Screening">تحاليل</option>
-                    <option value="Radiology">أشعة</option>
+                                <option selected disabled value="">اختر نوع الخدمة</option>
+                                <option value="General">كشف</option>
+                                <option value="Consultation">استشارة</option>
+                                <option value="Surgery">عمليات</option>
+                                <option value="Screening">تحاليل</option>
+                                <option value="MRI">أشعة رنين</option>
+                                <option value="Panorama">أشعة بانوراما</option>
+                                <option value="XRay">أشعة عادية</option>
+                                <option value="CTScan">أشعة مقطعية</option>
+                                <option value="Ultrasound">أشعة سونار</option>
+                                <option value="Echo">أشعة إيكو</option>
+                                <option value="Mammogram">أشعة ماموجرام</option>
                   </select>
                                 <div *ngIf="serviceForm.get('type')?.invalid && serviceForm.get('type')?.touched" class="text-danger">
                                     <ng-container *ngIf="serviceForm.get('type')?.errors?.['required']">نوع الخدمة مطلوب</ng-container>

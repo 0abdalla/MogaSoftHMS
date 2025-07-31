@@ -1,9 +1,5 @@
 ﻿using Hospital_MS.Core.Contracts.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Hospital_MS.Core.Contracts.DailyRestrictions;
 
 namespace Hospital_MS.Core.Contracts.DispensePermission;
 public class DispensePermissionResponse
@@ -21,4 +17,5 @@ public class DispensePermissionResponse
     public string? AccountNumber { get; set; }
     public int? AccountId { get; set; }
     public AuditResponse Audit { get; set; } = new();
+    public PartialDailyRestrictionResponse DailyRestriction { get; set; } = new();
 }
