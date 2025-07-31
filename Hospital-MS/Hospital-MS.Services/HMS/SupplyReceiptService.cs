@@ -105,6 +105,13 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
 
             await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
+
+            // assign daily restriction to supply receipt
+
+            supplyReceipt.DailyRestrictionId = dailyRestriction.Id;
+            _unitOfWork.Repository<SupplyReceipt>().Update(supplyReceipt);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
             var response = new PartialDailyRestrictionResponse
@@ -164,6 +171,8 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 .Include(x => x.CostCenter)
                 .Include(x => x.Treasury)
                 .Include(x => x.Account)
+                .Include(x => x.DailyRestriction)
+                    .ThenInclude(dr => dr.AccountingGuidance)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -192,6 +201,16 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                     CreatedOn = supplyReceipt.CreatedOn,
                     UpdatedBy = supplyReceipt.UpdatedBy?.UserName,
                     UpdatedOn = supplyReceipt.UpdatedOn,
+                },
+                DailyRestriction = new PartialDailyRestrictionResponse
+                {
+                    Id = supplyReceipt.DailyRestriction?.Id ?? 0,
+                    RestrictionNumber = supplyReceipt.DailyRestriction?.RestrictionNumber,
+                    RestrictionDate = supplyReceipt.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
+                    AccountingGuidanceName = supplyReceipt.DailyRestriction?.AccountingGuidance?.Name ?? "",
+                    Amount = supplyReceipt.Amount,
+                    From = supplyReceipt.Treasury?.Name,
+                    To = supplyReceipt.Account?.NameAR
                 }
             };
             return ErrorResponseModel<SupplyReceiptResponse>.Success(GenericErrors.GetSuccess, response);

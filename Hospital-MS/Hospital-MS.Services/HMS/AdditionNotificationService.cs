@@ -76,6 +76,11 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
             await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
+            // add daily restriction to addition notice
+            notification.DailyRestrictionId = dailyRestriction.Id;
+            _unitOfWork.Repository<AdditionNotice>().Update(notification);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
             var response = new PartialDailyRestrictionResponse
@@ -86,7 +91,8 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 From = bank.Name,
                 To = account.NameAR,
                 RestrictionDate = dailyRestriction.RestrictionDate,
-                RestrictionNumber = dailyRestriction.RestrictionNumber
+                RestrictionNumber = dailyRestriction.RestrictionNumber,
+
             };
 
 
@@ -217,6 +223,8 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 .GetAll(x => x.Id == id && x.IsActive)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
+                .Include(x => x.DailyRestriction)
+                     .ThenInclude(dr => dr.AccountingGuidance)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -241,6 +249,16 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                     CreatedOn = notification.CreatedOn,
                     UpdatedBy = notification.UpdatedBy?.UserName,
                     UpdatedOn = notification.UpdatedOn
+                },
+                DailyRestriction = new PartialDailyRestrictionResponse
+                {
+                    Id = notification?.DailyRestriction?.Id,
+                    AccountingGuidanceName = notification?.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
+                    Amount = notification.Amount,
+                    From = notification.Bank.Name,
+                    To = notification.Account.NameAR ?? notification.Account.NameEN ?? "",
+                    RestrictionDate = notification.Date,
+                    RestrictionNumber = notification?.DailyRestriction?.RestrictionNumber ?? string.Empty
                 }
             };
             return ErrorResponseModel<AdditionNotificationResponse>.Success(GenericErrors.GetSuccess, response);

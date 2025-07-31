@@ -1,25 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 
 namespace Hospital_MS.Core.Enums
 {
     public enum AppointmentType
     {
         [EnumMember(Value = "كشف")]
-        General, 
+        General,
         [EnumMember(Value = "استشارة")]
-        Consultation, 
+        Consultation,
         [EnumMember(Value = "عمليات")]
-        Surgery, 
+        Surgery,
         [EnumMember(Value = "تحاليل")]
-        Screening, 
+        Screening,
         [EnumMember(Value = "أشعة")]
-        Radiology ,
+        Radiology,
         [EnumMember(Value = "طوارئ")]
-        Emergency
+        Emergency,
+
+
+        MRI,            // أشعة رنين
+        Panorama,       // بانوراما
+        CTScan,         // مقطعية
+        Ultrasound,     // سونار
+        XRay,           // عادية
+        Echo,           // إيكو
+        Mammogram       // مامو جرام
     }
 }

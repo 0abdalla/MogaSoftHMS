@@ -108,6 +108,12 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
+            // add daily restriction to dispense permission
+            permission.DailyRestrictionId = dailyRestriction.Id;
+
+            _unitOfWork.Repository<DispensePermission>().Update(permission);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
             var response = new PartialDailyRestrictionResponse
@@ -226,6 +232,8 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 .Include(x => x.Treasury)
                 .Include(x => x.CostCenter)
                 .Include(x => x.Account)
+                .Include(x => x.DailyRestriction)
+                    .ThenInclude(dr => dr.AccountingGuidance)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -252,6 +260,16 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                     CreatedOn = permission.CreatedOn,
                     UpdatedBy = permission.UpdatedBy?.UserName,
                     UpdatedOn = permission.UpdatedOn
+                },
+                DailyRestriction = new PartialDailyRestrictionResponse
+                {
+                    AccountingGuidanceName = permission.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
+                    Amount = permission.Amount,
+                    From = permission.Account?.NameAR ?? string.Empty,
+                    To = permission.Treasury?.Name ?? string.Empty,
+                    RestrictionDate = permission?.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
+                    Id = permission?.DailyRestriction?.Id,
+                    RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? string.Empty
                 }
 
             };

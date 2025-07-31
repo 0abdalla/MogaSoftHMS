@@ -1,9 +1,5 @@
 ﻿using Hospital_MS.Core.Contracts.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Hospital_MS.Core.Contracts.DailyRestrictions;
 
 namespace Hospital_MS.Core.Contracts.DebitNotices;
 public class DebitNoticeResponse
@@ -17,5 +13,7 @@ public class DebitNoticeResponse
     public string? CheckNumber { get; set; }
     public decimal Amount { get; set; }
     public string? Notes { get; set; }
-    public AuditResponse Audit { get; set; }
+    public AuditResponse Audit { get; set; } = new();
+
+    public PartialDailyRestrictionResponse DailyRestriction { get; set; } = new();
 }

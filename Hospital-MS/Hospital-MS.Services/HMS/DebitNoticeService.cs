@@ -75,6 +75,11 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
             await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
+            // add daily restriction to debit notice
+            debitNotice.DailyRestrictionId = dailyRestriction.Id;
+            _unitOfWork.Repository<DebitNotice>().Update(debitNotice);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
             var response = new PartialDailyRestrictionResponse
@@ -188,6 +193,8 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 .Include(x => x.CreatedBy)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
+                .Include(x => x.DailyRestriction)
+                    .ThenInclude(dr => dr.AccountingGuidance)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync();
 
@@ -213,6 +220,16 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                     CreatedOn = debitNotice.CreatedOn,
                     UpdatedBy = debitNotice.UpdatedBy?.UserName,
                     UpdatedOn = debitNotice.UpdatedOn
+                },
+                DailyRestriction = new PartialDailyRestrictionResponse
+                {
+                    AccountingGuidanceName = debitNotice.DailyRestriction?.AccountingGuidance?.Name,
+                    Amount = debitNotice.Amount,
+                    From = debitNotice.Account.NameAR,
+                    To = debitNotice.Bank.Name,
+                    Id = debitNotice?.DailyRestriction?.Id,
+                    RestrictionDate = debitNotice?.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
+                    RestrictionNumber = debitNotice?.DailyRestriction?.RestrictionNumber ?? ""
                 }
             };
 

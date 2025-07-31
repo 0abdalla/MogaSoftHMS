@@ -1,5 +1,4 @@
 ﻿using Hospital_MS.Core.Enums;
-using System.Security.Principal;
 
 namespace Hospital_MS.Core.Models
 {
@@ -28,5 +27,7 @@ namespace Hospital_MS.Core.Models
         public Doctor? Doctor { get; set; } = default!;
         public MedicalService? MedicalService { get; set; }
         public ICollection<MedicalServiceDetail>? MedicalServiceDetails { get; set; } = new HashSet<MedicalServiceDetail>();
+
+        public bool IsClosed { get; set; } = false;
     }
 }
