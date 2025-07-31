@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Models;
+﻿namespace Hospital_MS.Core.Models;
 public class DebitNotice : AuditableEntity // اشعار خصم
 {
     public int Id { get; set; }
@@ -18,4 +12,7 @@ public class DebitNotice : AuditableEntity // اشعار خصم
 
     public Bank Bank { get; set; } = default!;
     public AccountTree Account { get; set; } = default!;
+
+    public DailyRestriction? DailyRestriction { get; set; } = default!;
+    public int? DailyRestrictionId { get; set; }
 }

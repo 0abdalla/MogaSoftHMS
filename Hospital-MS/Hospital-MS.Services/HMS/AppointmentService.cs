@@ -1,5 +1,4 @@
-﻿using Azure;
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Extensions;
@@ -8,17 +7,18 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class AppointmentService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IAppointmentService
+    public class AppointmentService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, IHttpContextAccessor httpContextAccessor) : IAppointmentService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsync(CreateAppointmentRequest request, CancellationToken cancellationToken = default)
         {
@@ -531,5 +531,67 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
+        public async Task<ErrorResponseModel<ClosedShiftResponse>> CloseShiftAsync(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var closedShiftResponse = new ClosedShiftResponse();
+
+                var closedAppointments = await _unitOfWork.Repository<Appointment>()
+                    .GetAll(a => a.AppointmentDate <= DateOnly.FromDateTime(DateTime.UtcNow) && !a.IsClosed && a.Status != AppointmentStatus.Rejected)
+                    .Include(a => a.MedicalServiceDetails)
+                        .ThenInclude(msd => msd.MedicalService)
+                    //.AsNoTracking() // Prevent tracking issues
+                    .ToListAsync(cancellationToken);
+
+                var medicalServiceCounts = closedAppointments
+                    .SelectMany(a => a.MedicalServiceDetails)
+                    .GroupBy(msd => new
+                    {
+                        msd.MedicalServiceId,
+                        msd.MedicalService.Name,
+                        Price = msd.MedicalService.Price,
+                    })
+                    .Select(g => new MedicalServiceCountResponse
+                    {
+                        MedicalServiceId = g.Key.MedicalServiceId,
+                        MedicalServiceName = g.Key.Name,
+                        Count = g.Count(),
+                        Price = g.Key.Price,
+                        TotalPrice = g.Count() * (g.Key.Price ?? 0)
+                    })
+                    .ToList();
+
+                closedShiftResponse.MedicalServices = medicalServiceCounts;
+                closedShiftResponse.TotalAmount = medicalServiceCounts.Sum(m => m.TotalPrice);
+                closedShiftResponse.ClosedAt = DateTime.UtcNow;
+
+                var user = _httpContextAccessor.HttpContext?.User;
+                closedShiftResponse.ClosedBy = user?.Identity?.Name ?? "غير معرف";
+
+                // Update appointments (now tracked separately)
+                var appointmentsToUpdate = await _unitOfWork.Repository<Appointment>()
+                    .GetAll(a =>
+                        a.AppointmentDate <= DateOnly.FromDateTime(DateTime.UtcNow)
+                        && !a.IsClosed
+                        && a.Status != AppointmentStatus.Rejected)
+                    .ToListAsync(cancellationToken);
+
+                foreach (var appointment in appointmentsToUpdate)
+                {
+                    appointment.IsClosed = true;
+                    _unitOfWork.Repository<Appointment>().Update(appointment);
+                }
+
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                return ErrorResponseModel<ClosedShiftResponse>.Success(GenericErrors.GetSuccess, closedShiftResponse);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error closing shift: {ex.Message}");
+                return ErrorResponseModel<ClosedShiftResponse>.Failure(GenericErrors.TransFailed);
+            }
+        }
     }
 }

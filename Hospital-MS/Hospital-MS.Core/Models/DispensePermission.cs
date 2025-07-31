@@ -19,4 +19,7 @@ public class DispensePermission : AuditableEntity
     public Treasury? Treasury { get; set; }
 
     //public string Status { get; set; } = "Pending";
+
+    public DailyRestriction? DailyRestriction { get; set; } = default!;
+    public int? DailyRestrictionId { get; set; }
 }

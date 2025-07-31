@@ -4,8 +4,8 @@ public class DailyRestriction : AuditableEntity // قيد يومية
     public int Id { get; set; }
     public string RestrictionNumber { get; set; } = string.Empty;
     public DateOnly RestrictionDate { get; set; }
-    public int RestrictionTypeId { get; set; }
-    public RestrictionType RestrictionType { get; set; } = default!;
+    public int? RestrictionTypeId { get; set; }
+    public RestrictionType? RestrictionType { get; set; } = default!;
     //public string? LedgerNumber { get; set; }                     // رقم الدفتر
     public string? Description { get; set; }
     public string? DocumentNumber { get; set; }
