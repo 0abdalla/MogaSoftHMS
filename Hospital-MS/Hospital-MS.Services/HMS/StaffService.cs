@@ -196,7 +196,7 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.JobLevel)
                 .Include(x => x.JobTitle)
                 .Include(x => x.JobType)
-                .Include(x => x.StaffAttachments)
+                //.Include(x => x.StaffAttachments)
                 .Include(x => x.UpdatedBy)
                 .Include(x => x.CreatedBy)
                 .FirstOrDefaultAsync(cancellationToken: cancellationToken);
@@ -223,13 +223,13 @@ namespace Hospital_MS.Services.HMS
                 Gender = staff.Gender.ToString(),
                 MaritalStatus = staff.MaritalStatus.ToString(),
                 Code = staff.Code,
-                AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
-                BranchId = staff.BranchId,
-                BranchName = staff.Branch?.Name,
-                Allowances = staff.Allowances,
-                Rewards = staff.Rewards,
-                VisaCode = staff.VisaCode,
-                VariableSalary = staff.VariableSalary,
+                //AttachmentsUrls = staff.StaffAttachments.Select(a => a.FileUrl).ToList(),
+                //BranchId = staff.BranchId,
+                //BranchName = staff.Branch?.Name,
+                //Allowances = staff.Allowances,
+                //Rewards = staff.Rewards,
+                //VisaCode = staff.VisaCode,
+                //VariableSalary = staff.VariableSalary,
 
                 Audit = new AuditResponse
                 {

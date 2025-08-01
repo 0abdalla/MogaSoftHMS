@@ -60,5 +60,9 @@ namespace Hospital_MS.Services.Common
         public static Error ParentAccountNotFound = new("فشل في تعيين صلاحية جديدة", Status.Failed);
 
         public static Error StatusChangedSuccess = new("تم تغيير الحالة بنجاح", Status.Failed);
+
+        public static Error CalcStaffSalaries = new("لقد تم حساب مرتبات الموظفين لهذا الشهر بالفعل", Status.Failed);
+
+        
     }
 }

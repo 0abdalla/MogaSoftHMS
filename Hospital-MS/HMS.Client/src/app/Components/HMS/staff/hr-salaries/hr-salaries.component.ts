@@ -1,17 +1,19 @@
-import { Component, ElementRef, TemplateRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as ExcelJS from 'exceljs';
 import * as FileSaver from 'file-saver';
 import { NgbOffcanvas } from '@ng-bootstrap/ng-bootstrap';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { SharedService } from '../../../../Services/shared.service';
+import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-hr-salaries',
   templateUrl: './hr-salaries.component.html',
   styleUrl: './hr-salaries.component.css'
 })
-export class HrSalariesComponent {
+export class HrSalariesComponent implements OnInit {
   @ViewChild('fileInput') fileInput: ElementRef;
   @ViewChild('SalarySidePanel', { static: true }) SalarySidePanel!: TemplateRef<any>;
   @ViewChild('PrintSalaries', { static: false }) PrintSalaries: ElementRef;
@@ -19,6 +21,16 @@ export class HrSalariesComponent {
   data: any[] = [];
   headers: string[] = [];
   SalariesData: any[] = [];
+  AllSalariesData: any[] = [];
+  isFilter = true;
+  monthValue: any;
+  total = 0;
+  pagingFilterModel: PagingFilterModel = {
+    filterList: [],
+    currentPage: 1,
+    pageSize: 16,
+    searchText: ''
+  }
   TotalSalaries = {
     basicSalary: 0,
     secondShift: 0,
@@ -38,6 +50,19 @@ export class HrSalariesComponent {
   };
 
   constructor(private offcanvasService: NgbOffcanvas, private staffService: StaffService, private sharedService: SharedService) { }
+
+  ngOnInit(): void {
+    const today = new Date();
+    this.monthValue = today.toISOString().slice(0, 7);
+    this.GetAllStaffSalaries();
+  }
+
+  GetAllStaffSalaries() {
+    this.staffService.GetAllStaffSalaries(this.pagingFilterModel).subscribe(data => {
+      this.AllSalariesData = data.results;
+      this.total = data.totalCount;
+    })
+  }
 
   openNewSidePanel() {
     this.offcanvasService.open(this.SalarySidePanel, { panelClass: 'add-new-panel', position: 'end' });
@@ -237,7 +262,7 @@ export class HrSalariesComponent {
       alert('لا توجد بيانات للطباعة');
       return;
     }
-    
+
     this.sharedService.generatePdf(this.PrintSalaries.nativeElement, 'رواتب_الموظفين', 'landscape');
   }
 
@@ -250,5 +275,56 @@ export class HrSalariesComponent {
       totalDays: row["إجمالي الأيام"],
       date: row["التاريخ"]
     };
+  }
+
+  filterChecked(filters: FilterModel[]) {
+    this.pagingFilterModel.filterList = filters;
+    this.pagingFilterModel.currentPage = 1;
+    this.GetAllStaffSalaries();
+  }
+
+  onPageChange(obj: any) {
+    this.pagingFilterModel.currentPage = obj.page;
+    this.GetAllStaffSalaries();
+  }
+
+  CloseModal() {
+    const modalElement = document.getElementById('CalcSalariesModal');
+    const modal = bootstrap.Modal.getInstance(modalElement!);
+    if (modal) {
+      modal.hide();
+      modal.dispose();
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+  }
+
+  ApplyCalcSalaries() {
+    if (!this.monthValue) {
+      alert('برجاء اختيار الشهر لحساب الرواتب');
+      return;
+    }
+
+    const fullDate = `${this.monthValue}-01`;
+    this.staffService.CalculateStaffSalaries(fullDate).subscribe(data => {
+      debugger;
+      this.SalariesData = data.results;
+      if (!this.SalariesData || this.SalariesData?.length == 0)
+        alert('تم حفظ المرتبات لهذا الشهر برجاء التحقق من الجدول')
+      else
+        this.openNewSidePanel();
+      this.CloseModal();
+    });
+  }
+
+  SaveStaffSalaries() {
+    this.staffService.AddStaffSalaries(this.SalariesData).subscribe(data => {
+      if (data.isSuccess) {
+        this.offcanvasService.dismiss();
+        this.GetAllStaffSalaries();
+      }
+    })
   }
 }

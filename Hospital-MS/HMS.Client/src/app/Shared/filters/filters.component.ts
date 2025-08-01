@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FilterModel } from '../../Models/Generics/PagingFilterModel';
 import { FormDropdownModel } from '../../Models/Generics/FormDropdownModel';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-filters',
@@ -12,6 +13,7 @@ export class FiltersComponent {
   @Input() filterPlaceholder: string;
   @Input() showSearchText: boolean = true;
   @Input() showSelector: boolean = true;
+  @Input() showDateRangeInput: boolean = false;
   @Input() showDateInput: boolean = false;
   @Input() searchPlaceholder: string = '';
   @Input() categoryName: string = '';
@@ -21,8 +23,12 @@ export class FiltersComponent {
   SearchText: string = '';
   selectedName = '';
   filterSearch: string = '';
+  fromMonth: string = '';
+  toMonth: string = '';
+  monthValue: string = '';
+  monthDifference: number = 0;
 
-  constructor() { }
+  constructor(private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     this.selectedName = this.filterPlaceholder;
@@ -60,18 +66,49 @@ export class FiltersComponent {
   RemoveAllFilters() {
     this.SelectedFilter = [];
     this.SearchText = '';
+    this.fromMonth = '';
+    this.toMonth = '';
+    this.monthValue = '';
     this.selectedDate = null;
     this.selectedName = this.filterPlaceholder;
     this.filterChanged.emit(this.SelectedFilter);
   }
 
-  changeDate(range: any) {
+  calculateDifference() {
+    this.monthDifference = 0;
+
+    if (this.fromMonth && this.toMonth) {
+      const from = new Date(this.fromMonth);
+      const to = new Date(this.toMonth);
+
+    }
+  }
+
+  applyMonthRangeFilter() {
     this.SelectedFilter = [];
-    if (range && range.endDate) {
+    if (this.fromMonth && this.toMonth) {
+      const from = new Date(this.fromMonth);
+      const to = new Date(this.toMonth);
+      if (from > to) {
+        alert('التاريخ من أصغر من التاريخ إلى');
+        return;
+      }
       const dateFilter: FilterModel = {
         categoryName: 'Date',
-        fromDate: range.startDate.format('YYYY-MM-DD'),
-        toDate: range.endDate.format('YYYY-MM-DD'),
+        fromDate: this.datePipe.transform(this.fromMonth, 'YYYY-MM'),
+        toDate: this.datePipe.transform(this.toMonth, 'YYYY-MM'),
+      }
+      this.SelectedFilter.push(dateFilter);
+      this.filterChanged.emit(this.SelectedFilter);
+    }
+  }
+
+  applyMonthFilter() {
+    this.SelectedFilter = [];
+    if (this.monthValue) {
+      const dateFilter: FilterModel = {
+        categoryName: 'Date',
+        itemValue: this.datePipe.transform(this.monthValue, 'YYYY-MM'),
       }
       this.SelectedFilter.push(dateFilter);
       this.filterChanged.emit(this.SelectedFilter);

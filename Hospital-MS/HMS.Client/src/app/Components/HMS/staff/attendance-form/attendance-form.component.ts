@@ -276,7 +276,7 @@ export class AttendanceFormComponent implements OnInit {
       return;
     }
 
-    if (mappedData.some(item => item.code == null || item.name == null || item.workHours == null ||
+    if (mappedData.some(item => item.staffId == null || item.name == null || item.workHours == null ||
       item.workDays == null || item.requiredHours == null || item.totalFingerprintHours == null || item.sickDays == null || item.otherDays == null
       || item.fridays == null || item.totalDays == null || item.overtime == null)) {
       alert('برجاء إدخال ملف صالح ,قم بتحميل القالب وملئه ببيانات صالحة');
@@ -301,7 +301,7 @@ export class AttendanceFormComponent implements OnInit {
   mapArabicToEnglish(row: any): any {
     return {
       Id: 0,
-      code: row["رقم البصمة"],
+      staffId: row["رقم البصمة"],
       name: row["الاسم"],
       workHours: row["عدد الساعات"],
       workDays: row["ايام العمل"],
