@@ -51,7 +51,7 @@ namespace Hospital_MS.Services.Auth
                 }
 
                 var Pages = GetPagesByRoleId(roleId);
-                var Branch = await GetUserBranchByStaffId(35);
+                var Branch = await GetUserBranchByStaffId(user.StaffId.Value);
 
                 var response = new AuthResponse(
                     user.Id,
