@@ -205,8 +205,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
               summary: 'تم التعديل',
               detail: `${res.message}`
             });
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addPurchaseRequestModal')!);
-            modal.hide();
+            this.CloseModal();
             this.getpurchaseRequests();
           } else {
             this.toastrService.add({
@@ -230,8 +229,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
               summary: 'تم الإضافة',
               detail: `${res.message}`
             });
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addPurchaseRequestModal')!);
-            modal.hide();
+            this.CloseModal();
             this.getpurchaseRequests();
           } else {
             this.toastrService.add({
@@ -264,8 +262,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
           items: this.request.items
         });
 
-        const modal = new bootstrap.Modal(document.getElementById('addPurchaseRequestModal')!);
-        modal.show();
+        this.CloseModal();
       },
       error: (err) => {
         console.error('فشل تحميل بيانات طلب الشراء:', err);
@@ -448,12 +445,24 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
           hasBarcode: this.itemRes.hasBarcode,
           typeId: this.itemRes.typeId
         });
-        const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
-        modal.show();
+        this.CloseModal();
       },
       error: (err) => {
         console.error('فشل تحميل بيانات الصنف:', err);
       }
     });
+  }
+
+  CloseModal() {
+    const modalElement = document.getElementById('CalcSalariesModal');
+    const modal = bootstrap.Modal.getInstance(modalElement!);
+    if (modal) {
+      modal.hide();
+      modal.dispose();
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 }
