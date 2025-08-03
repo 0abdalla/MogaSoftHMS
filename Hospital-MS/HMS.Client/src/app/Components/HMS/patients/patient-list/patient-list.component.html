@@ -305,7 +305,7 @@
 <div class="modal fade" id="medicalHistoryModal" tabindex="-1" aria-labelledby="medicalHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content custom-modal">
-            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
+            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
             <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
             </div>
@@ -319,7 +319,7 @@
                 <div class="table-responsive mb-4">
                     <table class="table table-hover text-center">
                         <thead class="table-primary">
-                            <tr class="text-end">
+                            <tr class="text-start">
                                 <th>التاريخ</th>
                                 <th>الطبيب</th>
                                 <th>الغرفة</th>
@@ -350,7 +350,7 @@
                 <div class="table-responsive">
                     <table class="table table-hover text-center">
                         <thead class="table-secondary">
-                            <tr class="text-end">
+                            <tr class="text-start">
                                 <th>التاريخ</th>
                                 <th>الطبيب</th>
                                 <th>الخدمة الطبية</th>
@@ -362,7 +362,7 @@
                             <tr *ngFor="let history of medicalHistory?.appointments">
                                 <td>{{ history.appointmentDate | date : 'yyyy-MM-dd' }}</td>
                                 <td>{{ history.doctorName }}</td>
-                                <td>{{ history.medicalServiceName }}</td>
+                                <!-- <td>{{ history.medicalServiceName }}</td> -->
                                 <td>{{ mapTypeToArabic(history.type) }}</td>
                                 <td [ngClass]="{
                     'text-warning': history.status === 'Pending',
@@ -371,6 +371,7 @@
                   }">
                                     {{ mapStatusToArabic(history.status) }}
                                 </td>
+                                <td>{{ history.gender || 'ذكر' }}</td>
                             </tr>
                         </tbody>
                         <tbody *ngIf="medicalHistory?.appointments?.length === 0">

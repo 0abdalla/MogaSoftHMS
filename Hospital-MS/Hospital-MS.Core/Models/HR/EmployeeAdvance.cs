@@ -13,7 +13,6 @@ namespace Hospital_MS.Core.Models.HR
     {
         [Key]
         public int StaffAdvanceId { get; set; }
-        public int StaffId { get; set; }
         public int AdvanceNumber { get; set; }
         public int AdvanceTypeId { get; set; }
         public string? AdvanceName { get; set; }
@@ -28,5 +27,7 @@ namespace Hospital_MS.Core.Models.HR
         public DateTime? CreatedDate { get; set; }
         public string? ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public int StaffId { get; set; }
+        public Staff Staff { get; set; } = default!;
     }
 }

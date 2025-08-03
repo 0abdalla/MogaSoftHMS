@@ -1,16 +1,17 @@
 ﻿using Hospital_MS.Core.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models
 {
+    [Table("AttendaceSalaries", Schema = "dbo")]
     public class AttendanceSalary : AuditableEntity
     {
         public int Id { get; set; }
-        public string? Code { get; set; }           // رقم البصمة
         public string? Name { get; set; }           // الاسم
         public int? WorkHours { get; set; }         // عدد الساعات
         public double? WorkDays { get; set; }       // أيام العمل
@@ -23,5 +24,7 @@ namespace Hospital_MS.Core.Models
         public int? Overtime { get; set; }          // الإضافي
         public int? BranchId { get; set; }          // الفرع
         public DateTime? Date { get; set; }          // التاريخ
+        public int StaffId { get; set; }
+        public Staff Staff { get; set; } = default!;
     }
 }

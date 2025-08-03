@@ -10,6 +10,7 @@ import { EmployeeVacationModel } from '../../Models/HMS/Staff/EmployeeVacationMo
 import { GeneralSelectorModel } from '../../Models/Generics/GeneralSelectorModel';
 import { EmployeeAdvanceModel } from '../../Models/HMS/Staff/EmployeeAdvanceModel';
 import { EmployeeSalarySummaryModel } from '../../Models/HMS/Staff/EmployeeSalarySummaryModel';
+import { ErrorResponseModel } from '../../Models/Generics/ErrorResponseModel';
 
 @Injectable({
   providedIn: 'root'
@@ -257,14 +258,22 @@ export class StaffService {
     return this.http.post<any>(this.baseUrl + 'Attendance/GetAllAttendanceSalaries', filter);
   }
   // ================================= Branches ============================================
-  
+
   GetBranches(filter: PagingFilterModel) {
     return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
   }
 
   // ================================= StaffSalaries ============================================
 
-  CalculateStaffSalaries(Model: any) {
-    return this.http.post<any>(this.baseUrl + 'StaffSalaries/CalculateStaffSalaries', Model);
+  CalculateStaffSalaries(Date: any) {
+    return this.http.get<any>(this.baseUrl + 'StaffSalaries/CalculateStaffSalaries?Date=' + Date);
+  }
+
+  AddStaffSalaries(Salaries: any) {
+    return this.http.post<ErrorResponseModel<any>>(this.baseUrl + 'StaffSalaries/AddStaffSalaries', Salaries);
+  }
+
+  GetAllStaffSalaries(filter: PagingFilterModel) {
+    return this.http.post<any>(this.baseUrl + 'StaffSalaries/GetAllStaffSalaries', filter);
   }
 }

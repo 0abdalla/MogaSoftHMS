@@ -6,7 +6,7 @@
             <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
                 <div class="col-md-8 mb-2">
                     <div class="d-flex align-items-center gap-2">
-                        <div ngbDropdown class="d-inline-block">
+                        <!-- <div ngbDropdown class="d-inline-block">
                             <button type="button" class="btn btn-table-action d-flex align-items-center gap-2 border rounded px-3" id="dropdownBasic1" ngbDropdownToggle>
                                 <i class="fas fa-cogs"></i>
                                 <span>الإجراءات</span>
@@ -20,87 +20,76 @@
                                 </button>
                                 <input #fileInput id="fileInput" type='file' (change)="onFileUpload($event)" accept=".xlsx,.xls,.csv" hidden />
                             </div>
-                        </div>
+                        </div> -->
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="PrintSalariesClick()">
                             <i class="uil uil-print"></i>
                             <span class="navbar-brand m-0">طباعة</span>
                         </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
+                            <i class="uil uil-filter"></i>
+                            <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                        </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#CalcSalariesModal">
+                            <i class="uil-money-bill"></i>
+                            <span class="navbar-brand m-0">حساب الرواتب</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-2" *ngIf="total > 0">
+                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                </div>
+                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
+                    <div class="d-flex align-items-center">
+                        <ng-container>
+                            <app-filters [showSelector]="false" [showDateInput]="true" [searchPlaceholder]="'أدخل إسم او كود الموظف ...'" (filterChanged)="filterChecked($event)"></app-filters>
+                        </ng-container>
                     </div>
                 </div>
             </div>
-            <div class="p-3 bg-white" #PrintSalaries>
+            <div class="p-3 bg-white">
                 <div class="table-responsive shadow-sm radius-10">
                     <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
                         <thead>
                             <tr>
-                                <th rowspan="2">الاسم</th>
-                                <th rowspan="2">التاريخ</th>
-                                <th rowspan="2">المرتب الأساسي</th>
-                                <th rowspan="2">وردية ثانية</th>
-                                <th rowspan="2">إضافي</th>
-                                <th rowspan="2">الإجمالي</th>
-                                <th colspan="4">الخصومات</th>
-                                <th rowspan="2">الصافي</th>
-                                <th rowspan="2">الضرائب</th>
-                                <th rowspan="2">الجزاءات</th>
-                                <th rowspan="2">السلف</th>
-                                <th rowspan="2">الأجازات الغير مدفوعة</th>
-                                <th rowspan="2">إجمالي الأيام</th>
-                                <th rowspan="2">المستحق</th>
-                                <th rowspan="2">التوقيع بالاستلام</th>
-                            </tr>
-                            <tr>
+                                <th>كود الموظف</th>
+                                <th>التاريخ</th>
+                                <th>كود الفيزا</th>
+                                <th>الاسم</th>
+                                <th>المرتب الأساسي</th>
+                                <th>معدل الأجر اليومي</th>
+                                <th>أيام الحضور الفعلية</th>
+                                <th>الإجمالي</th>
                                 <th>تأمينات</th>
-                                <th>فرق أيام أساسي</th>
-                                <th>غياب</th>
-                                <th>إجمالي الخصومات</th>
+                                <th>صافي</th>
+                                <th>الضرائب</th>
+                                <th>السلف</th>
+                                <th>المستحق</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let item of SalariesData">
-                                <td>{{item.name}}</td>
+                            <tr *ngFor="let item of AllSalariesData">
+                                <td>{{item.employeeCode}}</td>
                                 <td>{{item.date | date:'yyyy-MM'}}</td>
+                                <td>{{item.visaCode}}</td>
+                                <td>{{item.name}}</td>
                                 <td>{{item.basicSalary}}</td>
-                                <td>{{item.secondShift}}</td>
-                                <td class="green">{{item.overtime}}</td>
+                                <td>{{item.dailyRate}}</td>
+                                <td>{{item.attendanceDays}}</td>
                                 <td>{{item.total}}</td>
                                 <td>{{item.insurance}}</td>
-                                <td>{{item.differenceBasicDays}}</td>
-                                <td>{{item.absence}}</td>
-                                <td>{{item.totalDeductions}}</td>
-                                <td>{{item.net}}</td>
+                                <td>{{item.netSalary}}</td>
                                 <td>{{item.taxes}}</td>
-                                <td>{{item.penalties}}</td>
-                                <td>{{item.loans}}</td>
-                                <td>{{item.vacation}}</td>
-                                <td>{{item.totalDays}}</td>
-                                <td>{{item.due}}</td>
-                                <td>----------------------</td>
+                                <td>{{item.advances}}</td>
+                                <td>{{item.amountDue}}</td>
                             </tr>
                         </tbody>
-                        <tfoot *ngIf="SalariesData.length > 0">
-                            <tr>
-                                <td>الإجمالي</td>
-                                <td></td>
-                                <td>{{TotalSalaries.basicSalary}}</td>
-                                <td>{{TotalSalaries.secondShift}}</td>
-                                <td>{{TotalSalaries.overtime}}</td>
-                                <td>{{TotalSalaries.total}}</td>
-                                <td>{{TotalSalaries.insurance}}</td>
-                                <td>{{TotalSalaries.differenceBasicDays}}</td>
-                                <td>{{TotalSalaries.absence}}</td>
-                                <td>{{TotalSalaries.totalDeductions}}</td>
-                                <td>{{TotalSalaries.net}}</td>
-                                <td>{{TotalSalaries.taxes}}</td>
-                                <td>{{TotalSalaries.penalties}}</td>
-                                <td>{{TotalSalaries.loans}}</td>
-                                <td>{{TotalSalaries.vacation}}</td>
-                                <td>{{TotalSalaries.totalDays}}</td>
-                                <td>{{TotalSalaries.due}}</td>
-                                <td></td>
-                            </tr>
-                        </tfoot>
                     </table>
+                </div>
+                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
+                    <div class="col-md-8 mb-2"></div>
+                    <div class="col-md-4 mb-2" *ngIf="total > 0">
+                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
+                    </div>
                 </div>
             </div>
         </div>
@@ -110,33 +99,67 @@
 <ng-template #SalarySidePanel let-offcanvas>
     <div class="offcanvas-header border-bottom py-4 px-4 bg-white shadow-sm">
         <i class="fas fa-user-plus text-primary fs-3 me-2"></i>
-        <h5 class="mb-0 fw-bold">استيراد ملف رواتب الموظفين</h5>
+        <h5 class="mb-0 fw-bold">معاينة رواتب الموظفين</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss()"></button>
     </div>
     <div class="offcanvas-body p-4 bg-light">
         <div class="card shadow-sm rounded-4 border-0">
             <div class="card-body p-4">
-                <h5 class="fw-semibold mb-4 border-bottom pb-2">معاينة البيانات المستوردة</h5>
+                <h5 class="fw-semibold mb-4 border-bottom pb-2">معاينة رواتب الموظفين</h5>
 
                 <div class="table-responsive" style="max-height: 700px;">
                     <table class="table table-bordered align-middle text-center table-hover table-striped mb-0" style="min-width: max-content;">
                         <thead class="table-primary text-dark">
                             <tr>
-                                <th *ngFor="let col of headers" class="text-nowrap px-3 py-2">{{ col }}</th>
+                                <th>كود الموظف</th>
+                                <th>التاريخ</th>
+                                <th>كود الفيزا</th>
+                                <th>الاسم</th>
+                                <th>المرتب الأساسي</th>
+                                <th>معدل الأجر اليومي</th>
+                                <th>أيام الحضور الفعلية</th>
+                                <th>الإجمالي</th>
+                                <th>تأمينات</th>
+                                <th>صافي</th>
+                                <th>الضرائب</th>
+                                <th>السلف</th>
+                                <th>المستحق</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let row of data; let rowIndex = index">
-                                <ng-container *ngFor="let col of headers">
-                                    <td class="px-2 py-1" *ngIf="col != 'التاريخ'">
-                                        <input type="text" [(ngModel)]="data[rowIndex][col]" class="form-control form-control-sm shadow-none text-center border-light" style="min-width: 120px;" />
-                                    </td>
-                                </ng-container>
-                                <td>
-                                    <input type="month" class="form-control form-control-sm shadow-none text-center border-light" [(ngModel)]="data[rowIndex]['التاريخ']" />
-                                </td>
+                            <tr *ngFor="let item of SalariesData">
+                                <td>{{item.employeeCode}}</td>
+                                <td>{{item.date | date:'yyyy-MM'}}</td>
+                                <td>{{item.visaCode}}</td>
+                                <td>{{item.name}}</td>
+                                <td>{{item.basicSalary}}</td>
+                                <td>{{item.dailyRate}}</td>
+                                <td>{{item.attendanceDays}}</td>
+                                <td>{{item.total}}</td>
+                                <td>{{item.insurance}}</td>
+                                <td>{{item.netSalary}}</td>
+                                <td>{{item.taxes}}</td>
+                                <td>{{item.advances}}</td>
+                                <td>{{item.amountDue}}</td>
                             </tr>
                         </tbody>
+                        <tfoot *ngIf="SalariesData.length > 0">
+                            <tr>
+                                <td>الإجمالي</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>{{TotalSalaries.basicSalary}}</td>
+                                <td>{{TotalSalaries.secondShift}}</td>
+                                <td>{{TotalSalaries.overtime}}</td>
+                                <td>{{TotalSalaries.total}}</td>
+                                <td>{{TotalSalaries.insurance}}</td>
+                                <td>{{TotalSalaries.differenceBasicDays}}</td>
+                                <td>{{TotalSalaries.absence}}</td>
+                                <td>{{TotalSalaries.totalDeductions}}</td>
+                                <td>{{TotalSalaries.totalDeductions}}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>
@@ -144,10 +167,30 @@
     </div>
     <div class="offcanvas-footer p-4 border-top bg-white shadow-sm">
         <div class="d-flex justify-content-center">
-            <button class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow-sm" (click)="SaveStaffSalaryFile()">
+            <button class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow-sm" (click)="SaveStaffSalaries()">
                 <i class="fas fa-save me-2"></i>
-                <span>معاينة</span>
+                <span>حفظ التغييرات</span>
             </button>
         </div>
     </div>
 </ng-template>
+
+<div class="modal fade" id="CalcSalariesModal" tabindex="-1" aria-labelledby="CalcSalariesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title" id="CalcSalariesLabel">حساب مرتبات الشهر</h5>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    هل تود حساب مرتبات شهر {{monthValue ?? '---'}} لجميع الموظفين؟
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button class="btn-blue me-2" (click)="ApplyCalcSalaries()">تطبيق</button>
+                    <button class="btn-red" (click)="CloseModal()">إلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

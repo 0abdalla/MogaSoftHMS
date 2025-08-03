@@ -323,6 +323,28 @@ export class MenueService {
       ]
     },
     {
+      displayName: 'التقاير',
+      icon: 'fa-solid fa-report',
+      isGroup: true,
+      subMenus: [
+        {
+          displayName: 'حساب الأستاذ',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/ledger-report',
+        },
+        {
+          displayName: 'حركة المخزن',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/store-movement'
+        },
+        {
+          displayName: 'حركة الصنف',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/item-movement'
+        }
+      ]
+    },
+    {
       displayName: 'الإعدادات العامة',
       icon: 'fa-solid fa-gear',
       isGroup: true,

@@ -24,12 +24,25 @@
             </div>
         </div>
     </div>
-    <div class="position-relative" style="max-width: 600px; width: 500px;" *ngIf="showDateInput">
-        <input type="text" class="form-control input-date-46 ps-5" ngxDaterangepickerMd [(ngModel)]="selectedDate" [locale]="{applyLabel: 'تطبيق',format: 'YYYY-MM-DD'}" placeholder="اختر التاريخ" autocomplete="off" (datesUpdated)="changeDate($event)" />
-
-        <!-- الأيقونة فقط للعرض وليس للتفاعل -->
-        <i class="fa fa-calendar position-absolute top-50 start-0 translate-middle-y ms-3 text-muted pointer-events-none"></i>
+    <div class="d-flex align-items-center gap-2" *ngIf="showDateInput">
+        <div class="input-group input-search" style="width: 197px;">
+            <span class="input-group-text bg-light">الشهر</span>
+            <input type="month" class="form-control" [(ngModel)]="monthValue" (change)="applyMonthFilter()" />
+        </div>
     </div>
+    <div class="d-flex align-items-center gap-2" *ngIf="showDateRangeInput">
+        <div class="input-group input-search" style="width: 180px;">
+            <span class="input-group-text bg-light">من</span>
+            <input type="month" class="form-control" [(ngModel)]="fromMonth" />
+        </div>
+        <div class="input-group input-search" style="width: 180px;">
+            <span class="input-group-text bg-light">إلى</span>
+            <input type="month" class="form-control" [(ngModel)]="toMonth" />
+        </div>
+
+        <button class="btn btn-sm btn-outline-primary" (click)="applyMonthRangeFilter()" [disabled]="!fromMonth || !toMonth">تطبيق</button>
+    </div>
+
     <div>
         <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2" (click)="RemoveAllFilters()">
             <i class="uil uil-eye"></i>

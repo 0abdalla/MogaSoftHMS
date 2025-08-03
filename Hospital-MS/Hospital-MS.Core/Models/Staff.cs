@@ -32,10 +32,10 @@ namespace Hospital_MS.Core.Models
         public JobDepartment? JobDepartment { get; set; }
         public Branch? Branch { get; set; }
         public ICollection<StaffAttachments> StaffAttachments { get; set; } = new HashSet<StaffAttachments>();
-
         public ICollection<EmployeeAdvance> EmployeeAdvances { get; set; } = new HashSet<EmployeeAdvance>();
-        public ICollection<Vacation> Vacations { get; set; } = new HashSet<Vacation>();
-        public ICollection<Penalty> Penalties { get; set; } = new HashSet<Penalty>();
+        public ICollection<AttendanceSalary> AttendaceSalaries { get; set; } = new HashSet<AttendanceSalary>();
+
+        
 
         public decimal VariableSalary { get; set; }
         public string? VisaCode { get; set; }

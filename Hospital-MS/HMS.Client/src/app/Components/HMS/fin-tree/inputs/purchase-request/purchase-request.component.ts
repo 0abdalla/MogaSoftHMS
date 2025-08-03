@@ -12,32 +12,32 @@ import { MessageService } from 'primeng/api';
   templateUrl: './purchase-request.component.html',
   styleUrl: './purchase-request.component.css'
 })
-export class PurchaseRequestComponent implements OnInit , AfterViewInit {
-  purchaseRequests : any[] = [];
-  pagingFilterModel : PagingFilterModel = {
-    currentPage : 1,
-    pageSize : 16,
-    filterList : [],
+export class PurchaseRequestComponent implements OnInit, AfterViewInit {
+  purchaseRequests: any[] = [];
+  pagingFilterModel: PagingFilterModel = {
+    currentPage: 1,
+    pageSize: 16,
+    filterList: [],
     searchText: ''
   };
-  pagingFilterModelSelect : PagingFilterModel = {
-    currentPage : 1,
-    pageSize : 100,
-    filterList : [],
+  pagingFilterModelSelect: PagingFilterModel = {
+    currentPage: 1,
+    pageSize: 100,
+    filterList: [],
     searchText: ''
   };
-  total : number = 0;
+  total: number = 0;
   // 
-  purchaseRequestForm!:FormGroup;
-  itemForm!:FormGroup;
-  isEditMode : boolean = false;
+  purchaseRequestForm!: FormGroup;
+  itemForm!: FormGroup;
+  isEditMode: boolean = false;
   currentPurchaseRequestId: number | null = null;
   allItems: any[] = [];
   stores: any[] = [];
-  groups:any[] = [];
-  units:any[]=[]
-  TitleList = ['المشتريات','طلبات شراء'];
-  isFilter : boolean = true;
+  groups: any[] = [];
+  units: any[] = []
+  TitleList = ['المشتريات', 'طلبات شراء'];
+  isFilter: boolean = true;
   // 
   userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
   get today(): string {
@@ -48,26 +48,26 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       month: 'long',
       day: 'numeric'
     });
-  
+
     const timeStr = date.toLocaleTimeString('ar-EG', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
     });
-  
+
     return `${dateStr} - الساعة ${timeStr}`;
-  }  
-  constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService){
-    this.purchaseRequestForm=this.fb.group({
-      requestDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
-      purpose:[null,Validators.required],
-      storeId:[null,Validators.required],
-      notes:[null],
+  }
+  constructor(private financialService: FinancialService, private fb: FormBuilder, private toastrService: MessageService) {
+    this.purchaseRequestForm = this.fb.group({
+      requestDate: [new Date().toISOString().substring(0, 10), [todayDateValidator]],
+      purpose: [null, Validators.required],
+      storeId: [null, Validators.required],
+      notes: [null],
       items: this.fb.array([
         this.createItemGroup()
       ]),
     })
-    
+
     this.itemForm = this.fb.group({
       nameAr: ['', Validators.required],
       nameEn: ['', Validators.required],
@@ -81,7 +81,7 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       hasBarcode: [true],
       typeId: ['1']
     });
-    
+
     this.getGroups();
     this.getUnits();
   }
@@ -89,7 +89,7 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
     this.pagingFilterModel.searchText = value;
     this.getpurchaseRequests();
   }
-  
+
   createItemGroup(): FormGroup {
     return this.fb.group({
       itemId: [null, Validators.required],
@@ -97,21 +97,21 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       notes: ['']
     });
   }
-  
+
   get items(): FormArray {
     return this.purchaseRequestForm.get('items') as FormArray;
   }
-  
+
   addItemRow() {
     this.items.push(this.createItemGroup());
   }
-  
+
   removeItemRow(index: number) {
     if (this.items.length > 1) {
       this.items.removeAt(index);
     }
   }
-  
+
   ngOnInit(): void {
     this.getpurchaseRequests();
     this.getItems();
@@ -119,65 +119,65 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
   }
   ngAfterViewInit() {
     const addItemModalEl = document.getElementById('addItemModal');
-  
+
     addItemModalEl?.addEventListener('hidden.bs.modal', () => {
       const addPurchaseRequestModal = new bootstrap.Modal(document.getElementById('addPurchaseRequestModal'));
       addPurchaseRequestModal.show();
     });
   }
-  
-  getItems(){
-    this.financialService.getItems(this.pagingFilterModel).subscribe((res : any)=>{
+
+  getItems() {
+    this.financialService.getItems(this.pagingFilterModel).subscribe((res: any) => {
       this.allItems = res.results;
       this.total = res.totalCount;
       console.log(this.allItems);
     })
   }
 
-  getStores(){
-    this.financialService.getStores(this.pagingFilterModel).subscribe((res : any)=>{
+  getStores() {
+    this.financialService.getStores(this.pagingFilterModel).subscribe((res: any) => {
       this.stores = res.results;
       this.total = res.totalCount;
       console.log(this.stores);
-    },error=>{
+    }, error => {
       console.log(error);
     })
   }
 
   getpurchaseRequests() {
-    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res : any)=>{
+    this.financialService.getPurchaseRequests(this.pagingFilterModel).subscribe((res: any) => {
       console.log('Full API Response:', res);
       this.purchaseRequests = res.results;
       this.total = res.totalCount;
       console.log('Purchase Requests:', this.purchaseRequests);
-        if (!res.results.length) {
-          console.log('No results returned for SearchText:', this.pagingFilterModel.searchText);
-        }
-      },error=>{
-        console.log(error);
-      })
+      if (!res.results.length) {
+        console.log('No results returned for SearchText:', this.pagingFilterModel.searchText);
+      }
+    }, error => {
+      console.log(error);
+    })
   }
-  
-  getGroups(){
-    this.financialService.getItemsGroups(this.pagingFilterModelSelect).subscribe((res : any)=>{
+
+  getGroups() {
+    this.financialService.getItemsGroups(this.pagingFilterModelSelect).subscribe((res: any) => {
       this.groups = res.results;
       console.log(this.groups);
     })
   }
-  getUnits(){
-    this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res : any)=>{
+  getUnits() {
+    this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res: any) => {
       this.units = res.results;
       console.log(this.units);
     })
   }
 
-  onPageChange(event:any){
-    this.pagingFilterModel.currentPage=event.page;
-    this.pagingFilterModel.pageSize=event.itemsPerPage;
+  onPageChange(event: any) {
+    this.pagingFilterModel.currentPage = event.page;
+    this.pagingFilterModel.pageSize = event.itemsPerPage;
     this.applyFilters();
   }
 
-  applyFilters(){
+  applyFilters() {
     this.getpurchaseRequests();
   }
   filterChecked(event: any) {
@@ -187,26 +187,27 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
     console.log('Updated Paging Filter Model:', this.pagingFilterModel);
     this.getpurchaseRequests();
   }
-  purNumber!:number;
+  purNumber!: number;
   addPurchaseRequest() {
     if (this.purchaseRequestForm.invalid) {
       this.purchaseRequestForm.markAllAsTouched();
       return;
     }
-  
+
     const formData = this.purchaseRequestForm.value;
-  
+
     if (this.isEditMode && this.currentPurchaseRequestId) {
       this.financialService.updatePurchaseRequest(this.currentPurchaseRequestId, formData).subscribe({
-        next: (res:any) => {
-          this.getpurchaseRequests();
-          if(res.isSuccess === true){
+        next: (res: any) => {
+          if (res.isSuccess === true) {
             this.toastrService.add({
               severity: 'success',
               summary: 'تم التعديل',
               detail: `${res.message}`
             });
-          }else{
+            this.CloseModal();
+            this.getpurchaseRequests();
+          } else {
             this.toastrService.add({
               severity: 'error',
               summary: 'فشل التعديل',
@@ -220,17 +221,17 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       });
     } else {
       this.financialService.addPurchaseRequest(formData).subscribe({
-        next: (res:any) => {
-          this.getpurchaseRequests();
-          this.purNumber=res.results;
-          // this.purchaseRequestForm.reset();
-          if(res.isSuccess === true){
+        next: (res: any) => {
+          this.purNumber = res.results;
+          if (res.isSuccess === true) {
             this.toastrService.add({
               severity: 'success',
               summary: 'تم الإضافة',
               detail: `${res.message}`
             });
-          }else{
+            this.CloseModal();
+            this.getpurchaseRequests();
+          } else {
             this.toastrService.add({
               severity: 'error',
               summary: 'فشل الإضافة',
@@ -245,14 +246,14 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       });
     }
   }
-  request!:any;
+  request!: any;
   editPurchaseRequest(id: number) {
     this.isEditMode = true;
     this.currentPurchaseRequestId = id;
-  
+
     this.financialService.getPurchaseRequestsById(id).subscribe({
       next: (data) => {
-        this.request=data.results;
+        this.request = data.results;
         console.log(this.request);
         this.purchaseRequestForm.patchValue({
           purpose: this.request.purpose,
@@ -260,9 +261,8 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
           notes: this.request.notes,
           items: this.request.items
         });
-  
-        const modal = new bootstrap.Modal(document.getElementById('addPurchaseRequestModal')!);
-        modal.show();
+
+        this.CloseModal();
       },
       error: (err) => {
         console.error('فشل تحميل بيانات طلب الشراء:', err);
@@ -314,12 +314,12 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
     const item = this.allItems?.find(i => i.id == itemId);
     return item ? item.nameAr : '—';
   }
-  
+
   getStoreName(storeId: number | string): string {
     const store = this.stores?.find(s => s.id == storeId);
     return store ? store.name : '—';
   }
-  
+
   generatePurchaseRequestPDF() {
     const element = document.getElementById('printablePurchaseRequest');
     if (!element) return;
@@ -337,9 +337,9 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
     this.financialService.getPurchaseRequestsById(id).subscribe({
       next: (res: any) => {
         const request = res.results;
-  
+
         if (!request) return;
-  
+
         this.purchaseRequestForm.patchValue({
           requestDate: request.requestDate,
           storeId: request.storeId,
@@ -347,13 +347,13 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
           notes: request.notes,
           items: request.items,
         });
-  
+
         this.purNumber = request.requestNumber;
-  
+
         setTimeout(() => {
           const element = document.getElementById('printablePurchaseRequest');
           if (!element) return;
-  
+
           element.classList.remove('d-none');
           html2pdf().set({
             margin: 10,
@@ -370,7 +370,7 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       }
     });
   }
-  currentItemId!:number;
+  currentItemId!: number;
   addItem() {
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
@@ -413,10 +413,10 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
           bootstrapModal.hide();
           this.itemForm.reset();
           addItemModal?.addEventListener('hidden.bs.modal', () => {
-          const purchaseModalEl = document.getElementById('addPurchaseRequestModal');
-          const purchaseModal = new bootstrap.Modal(purchaseModalEl)
-          purchaseModal.show();
-        }, { once: true });
+            const purchaseModalEl = document.getElementById('addPurchaseRequestModal');
+            const purchaseModal = new bootstrap.Modal(purchaseModalEl)
+            purchaseModal.show();
+          }, { once: true });
         },
         error: (err) => {
           console.error('خطأ أثناء الإضافة:', err);
@@ -424,12 +424,12 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
       });
     }
   }
-  itemRes:any;
+  itemRes: any;
   editItem(id: number) {
     this.isEditMode = true;
     this.currentItemId = id;
     this.financialService.getItemsById(id).subscribe({
-      next: (itemData:any) => {
+      next: (itemData: any) => {
         console.log(itemData);
         this.itemRes = itemData.results;
         this.itemForm.patchValue({
@@ -445,12 +445,24 @@ export class PurchaseRequestComponent implements OnInit , AfterViewInit {
           hasBarcode: this.itemRes.hasBarcode,
           typeId: this.itemRes.typeId
         });
-        const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
-        modal.show();
+        this.CloseModal();
       },
       error: (err) => {
         console.error('فشل تحميل بيانات الصنف:', err);
       }
     });
+  }
+
+  CloseModal() {
+    const modalElement = document.getElementById('CalcSalariesModal');
+    const modal = bootstrap.Modal.getInstance(modalElement!);
+    if (modal) {
+      modal.hide();
+      modal.dispose();
+    }
+    document.querySelectorAll('.modal-backdrop').forEach(b => b.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 }
