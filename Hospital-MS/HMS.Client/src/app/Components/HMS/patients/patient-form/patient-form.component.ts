@@ -87,12 +87,12 @@ export class PatientFormComponent implements OnInit {
     this.patientForm.get('hasCompanion')?.valueChanges.subscribe((value) => {
       this.updateCompanionValidators(value);
     });
-    this.patientForm.get('emergencyPhone02')?.valueChanges.subscribe(() => {
-      this.updateSecondContactValidators();
-    });
-    this.patientForm.get('emergencyContact02')?.valueChanges.subscribe(() => {
-      this.updateSecondContactValidators();
-    });
+    // this.patientForm.get('emergencyPhone02')?.valueChanges.subscribe(() => {
+    //   this.updateSecondContactValidators();
+    // });
+    // this.patientForm.get('emergencyContact02')?.valueChanges.subscribe(() => {
+    //   this.updateSecondContactValidators();
+    // });
     this.patientForm.get('insuranceCompanyId')?.valueChanges.subscribe(companyId => {
       const selectedCompany = this.insuranceCompaniesData.find(company => company.id === +companyId);
       this.insuranceCategories = selectedCompany?.insuranceCategories.map(i => { return { value: i.id, name: i.name } }) as GeneralSelectorModel[] || [];
@@ -100,6 +100,9 @@ export class PatientFormComponent implements OnInit {
   }
   addSecondContact() {
     this.showSecondContact = true;
+  }
+  removeSecondContact() {
+    this.showSecondContact = false;
   }
   ngOnInit(): void {
     this.loadAdmissionData();
@@ -204,21 +207,21 @@ export class PatientFormComponent implements OnInit {
     companionNationalId?.updateValueAndValidity();
     companionPhone?.updateValueAndValidity();
   }
-  updateSecondContactValidators(): void {
-    const emergencyPhone02 = this.patientForm.get('emergencyPhone02');
-    const emergencyContact02 = this.patientForm.get('emergencyContact02');
+  // updateSecondContactValidators(): void {
+  //   const emergencyPhone02 = this.patientForm.get('emergencyPhone02');
+  //   const emergencyContact02 = this.patientForm.get('emergencyContact02');
 
-    if (this.showSecondContact) {
-      emergencyPhone02?.setValidators([Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]);
-      emergencyContact02?.setValidators([Validators.required]);
-    } else {
-      emergencyPhone02?.setValidators([Validators.pattern(/^01[0125][0-9]{8}$/)]);
-      emergencyContact02?.setValidators([]);
-    }
+  //   if (this.showSecondContact) {
+  //     emergencyPhone02?.setValidators([Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]);
+  //     emergencyContact02?.setValidators([Validators.required]);
+  //   } else {
+  //     emergencyPhone02?.setValidators([Validators.pattern(/^01[0125][0-9]{8}$/)]);
+  //     emergencyContact02?.setValidators([]);
+  //   }
 
-    emergencyPhone02?.updateValueAndValidity();
-    emergencyContact02?.updateValueAndValidity();
-  }
+  //   emergencyPhone02?.updateValueAndValidity();
+  //   emergencyContact02?.updateValueAndValidity();
+  // }
   // 
   minDateValidator(minDate: Date): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
@@ -244,6 +247,7 @@ export class PatientFormComponent implements OnInit {
           const patientId = data.results[0].patientId;
           if (data.results && data.results.length > 0) {
             const patient = data.results[0];
+            console.log(patient);
             let genderValue = '';
             if (patient.patientGender === 'ذكر') {
               genderValue = 'Male';
@@ -259,11 +263,11 @@ export class PatientFormComponent implements OnInit {
               patientGender: genderValue,
               patientAddress: patient.address
             });
-            this.patientForm.get('patientName')?.disable();
-            this.patientForm.get('patientPhone')?.disable();
-            this.patientForm.get('patientNationalId')?.disable();
-            this.patientForm.get('patientBirthDate')?.disable();
-            this.patientForm.get('patientGender')?.disable();
+            // this.patientForm.get('patientName')?.disable();
+            // this.patientForm.get('patientPhone')?.disable();
+            // this.patientForm.get('patientNationalId')?.disable();
+            // this.patientForm.get('patientBirthDate')?.disable();
+            // this.patientForm.get('patientGender')?.disable();
 
             this.messageService.add({
               severity: 'success',

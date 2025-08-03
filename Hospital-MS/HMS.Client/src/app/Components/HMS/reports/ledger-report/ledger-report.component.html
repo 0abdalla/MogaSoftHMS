@@ -1,0 +1,164 @@
+<main id="ledger-report">
+    <h4>تقرير الأستاذ المساعد</h4>
+    <form class="form p-2 row" [formGroup]="ledgerForm" (ngSubmit)="showReport()">
+        <div class="col-lg-4">
+            <div class="mb-2">
+                <label class="form-label">اسم الحساب</label>
+                <ng-select
+                    [items]="accounts"
+                    bindLabel="nameAR"
+                    bindValue="accountId"
+                    placeholder="اختر الحساب"
+                    formControlName="accountId"
+                    class="text-end shadow-none w-100"
+                    [searchable]="true">
+                </ng-select>
+                <div *ngIf="ledgerForm.get('accountId')?.invalid && ledgerForm.get('accountId')?.touched" class="text-danger">
+                    اسم الحساب مطلوب
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <label class="form-label">التاريخ من</label>
+            <input type="date" class="form-control shadow-none" formControlName="from">
+            <div *ngIf="ledgerForm.get('from')?.invalid && ledgerForm.get('from')?.touched" class="text-danger">
+                    بداية التاريخ مطلوبة
+                </div>
+        </div>
+        <div class="col-lg-4">
+            <label class="form-label">التاريخ إلى</label>
+            <input type="date" class="form-control shadow-none" formControlName="to">
+            <div *ngIf="ledgerForm.get('to')?.invalid && ledgerForm.get('to')?.touched" class="text-danger">
+                    نهاية التاريخ مطلوبة
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <button type="submit" class="btn-blue">تأكيد</button>
+            </div>
+            <div class="col-lg-6">
+                <button type="reset" class="btn-red">إلغاء</button>
+            </div>
+        </div>
+    </form>
+</main>
+
+
+<div class="modal fade" id="ledgerReportModal" tabindex="-1" aria-labelledby="ledgerReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+            <div class="modal-header text-white">
+            <h5 class="modal-title" id="ledgerReportModalLabel">
+                تقرير الأستاذ المساعد - {{ selectedAccountName }} ({{ ledgerForm.value.from }} - {{ ledgerForm.value.to }})
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+            </div>
+            <div class="modal-body">
+            <table class="table table-hover text-center">
+                <thead class="table-secondary">
+                <tr class="text-start">
+                        <th>رقم القيد</th>
+                        <th>تاريخ القيد</th>
+                        <th>اسم الحساب</th>
+                        <th>شرح القيد</th>
+                        <th>مدين</th>
+                        <th>دائن</th>
+                        <th>الرصيد المرحل</th>
+                </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of reportData">
+                    <td>{{ item.entryNumber || '-' }}</td>
+                    <td>{{ item.entryDate || '-' }}</td>
+                
+                    <ng-container *ngIf="item.description === 'الرصيد السابق' || item.description === 'تسجيل قيد يومية'; else normalRow">
+                        <td colspan="2" class="fw-bold text-start">{{ item.description }}</td>
+                    </ng-container>
+                
+                    <ng-template #normalRow>
+                        <td>{{ item.from || 'خزينة شباك' }}</td>
+                        <td>{{ item.description }}</td>
+                    </ng-template>
+                
+                    <td [ngClass]="{ 'text-danger': item.debit < 0 }">
+                        {{ (item.debit < 0 ? -item.debit : item.debit) | number:'1.2-2' }} ج.م
+                    </td>
+                    <td [ngClass]="{ 'text-danger': item.credit < 0 }">
+                        {{ (item.credit < 0 ? -item.credit : item.credit) | number:'1.2-2' }} ج.م
+                    </td>
+                    <td [ngClass]="{ 'text-danger': item.carriedBalance < 0 }">
+                        {{ (item.carriedBalance < 0 ? -item.carriedBalance : item.carriedBalance) | number:'1.2-2' }} ج.م
+                    </td>
+                    </tr>
+                </tbody>
+                
+                <tfoot class="table-light">
+                    <tr class="fw-bold">
+                    <td colspan="4">الإجمالي</td>
+                    <td [ngClass]="{ 'text-danger': totalDebit < 0 }">
+                        {{ (totalDebit < 0 ? -totalDebit : totalDebit) | number }} ج.م
+                    </td>
+                    <td [ngClass]="{ 'text-danger': totalCredit < 0 }">
+                        {{ (totalCredit < 0 ? -totalCredit : totalCredit) | number }} ج.م
+                    </td>
+                    <td [ngClass]="{ 'text-danger': totalCarriedBalance < 0 }">
+                        {{ (totalCarriedBalance < 0 ? -totalCarriedBalance : totalCarriedBalance) | number }} ج.م
+                    </td>
+                    <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+                
+            </table>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center my-3">
+                    <button class="btn btn-outline-primary" (click)="printReport()">طباعة التقرير</button>
+                </div>
+            </div>
+        </div>
+      </div>
+</div>
+
+
+
+<div #printSection style="display: none;">
+    <h4 class="text-center">
+      تقرير الأستاذ المساعد - {{ selectedAccountName }} ({{ ledgerForm.value.from }} - {{ ledgerForm.value.to }})
+    </h4>
+    <table class="table table-bordered text-center">
+      <thead>
+        <tr>
+          <th>رقم القيد</th>
+          <th>تاريخ القيد</th>
+          <th>اسم الحساب</th>
+          <th>شرح القيد</th>
+          <th>مدين</th>
+          <th>دائن</th>
+          <th>الرصيد المرحل</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of reportData">
+          <td>{{ item.entryNumber || '-' }}</td>
+          <td>{{ item.entryDate || '-' }}</td>
+          <ng-container *ngIf="item.description === 'الرصيد السابق' || item.description === 'تسجيل قيد يومية'; else printNormalRow">
+            <td colspan="2">{{ item.description }}</td>
+          </ng-container>
+          <ng-template #printNormalRow>
+            <td>{{ item.from || 'خزينة شباك' }}</td>
+            <td>{{ item.description }}</td>
+          </ng-template>
+          <td [ngClass]="{ 'text-danger': item.debit < 0 }">
+            {{ (item.debit < 0 ? -item.debit : item.debit) | number:'1.2-2' }} ج.م
+          </td>
+          <td [ngClass]="{ 'text-danger': item.credit < 0 }">
+            {{ (item.credit < 0 ? -item.credit : item.credit) | number:'1.2-2' }} ج.م
+          </td>
+          <td [ngClass]="{ 'text-danger': item.carriedBalance < 0 }">
+            {{ (item.carriedBalance < 0 ? -item.carriedBalance : item.carriedBalance) | number:'1.2-2' }} ج.م
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
