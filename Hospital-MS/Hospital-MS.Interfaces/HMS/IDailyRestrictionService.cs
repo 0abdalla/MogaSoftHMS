@@ -10,4 +10,5 @@ public interface IDailyRestrictionService
     Task<ErrorResponseModel<DailyRestrictionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     Task<PagedResponseModel<List<DailyRestrictionResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default);
     Task<string> GenerateRestrictionNumberAsync(CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<List<AccountReportResponse>>> GetAccountReportAsync(int accountId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
 }

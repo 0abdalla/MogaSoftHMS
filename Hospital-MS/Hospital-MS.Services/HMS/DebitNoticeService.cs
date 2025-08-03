@@ -68,6 +68,8 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                           Credit = 0,
                           Note = null,
                           Debit = request.Amount,
+                          From = account.NameAR,
+                          To = bank.Name,
                     }
                 ]
             };

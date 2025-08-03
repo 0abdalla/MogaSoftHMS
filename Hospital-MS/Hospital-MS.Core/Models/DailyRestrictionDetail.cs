@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Models;
+﻿namespace Hospital_MS.Core.Models;
 public class DailyRestrictionDetail
 {
     public int Id { get; set; }
@@ -18,4 +12,7 @@ public class DailyRestrictionDetail
     public int? CostCenterId { get; set; }            // مركز التكلفة (FK, optional)
     public CostCenterTree? CostCenter { get; set; }       // مركز التكلفة (Navigation)
     public string? Note { get; set; }                 // ملاحظات
+
+    public string? From { get; set; }
+    public string? To { get; set; }
 }

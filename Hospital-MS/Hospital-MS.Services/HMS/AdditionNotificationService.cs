@@ -69,6 +69,8 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                         Credit = request.Amount,
                         Note = null,
                         Debit = 0,
+                        From = bank.Name,
+                        To = account.NameAR
                     }
                 ]
             };
