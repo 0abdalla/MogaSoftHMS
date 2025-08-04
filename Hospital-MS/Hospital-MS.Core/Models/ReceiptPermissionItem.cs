@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Models;
+﻿namespace Hospital_MS.Core.Models;
 public class ReceiptPermissionItem : AuditableEntity
 {
     public int Id { get; set; }
@@ -16,4 +10,7 @@ public class ReceiptPermissionItem : AuditableEntity
     public decimal TotalPrice { get; set; }
     public DateTime? ExpiryDate { get; set; }
     public bool IsActive { get; set; } = true;
+
+    public ReceiptPermission? ReceiptPermission { get; set; } = default!;
+    public int? ReceiptPermissionId { get; set; }
 }

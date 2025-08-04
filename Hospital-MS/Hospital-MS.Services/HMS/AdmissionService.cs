@@ -32,8 +32,8 @@ namespace Hospital_MS.Services.HMS
                 if (!roomExists)
                     return ErrorResponseModel<string>.Failure(new Error("لايوجد غرفة بهذا الرقم", Status.NotFound));
 
-                var bedExists = await _unitOfWork.Repository<Bed>().AnyAsync(b => b.Id == request.BedId, cancellationToken);
-                if (!bedExists)
+                var bedExists = await _unitOfWork.Repository<Bed>().GetByIdAsync(request.BedId);
+                if (bedExists == null)
                     return ErrorResponseModel<string>.Failure(new Error("لايوجد سرير بهذا الرقم", Status.NotFound));
 
                 var bedAssigned = await _unitOfWork.Repository<Admission>().AnyAsync(a => a.BedId == request.BedId, cancellationToken);
@@ -105,10 +105,13 @@ namespace Hospital_MS.Services.HMS
                     HasCompanion = request.HasCompanion,
                     InitialDiagnosis = request.InitialDiagnosis,
                     Notes = request.Notes,
-
                 };
 
                 await _unitOfWork.Repository<Admission>().AddAsync(admission, cancellationToken);
+
+                bedExists.Status = BedStatus.NotAvailable;
+                _unitOfWork.Repository<Bed>().Update(bedExists);
+
                 await _unitOfWork.CompleteAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
@@ -133,7 +136,7 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.Doctor)
                 .Include(x => x.Department)
                 .FirstOrDefaultAsync(cancellationToken);
-            
+
             if (admission is not { })
                 return ErrorResponseModel<AdmissionResponse>.Failure(GenericErrors.NotFound);
 
@@ -199,8 +202,9 @@ namespace Hospital_MS.Services.HMS
                 HealthStatus = x.HealthStatus,
                 Notes = x.Notes,
                 PatientPhoneNumber = x.Patient.Phone,
-                
-                
+                NationalId = x.Patient.NationalId,
+                Gender = x.Patient.Gender.ToString(),
+
             }).ToList().AsReadOnly();
 
             return ErrorResponseModel<IReadOnlyList<PatientAdmissionsResponse>>.Success(GenericErrors.GetSuccess, response);

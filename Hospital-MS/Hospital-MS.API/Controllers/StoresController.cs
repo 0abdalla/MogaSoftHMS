@@ -45,4 +45,11 @@ public class StoresController(IStoreService storeService) : ApiBaseController
         var result = await _storeService.DeleteAsync(id, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("movements/{storeId}")]
+    public async Task<IActionResult> GetStoreMovements(int storeId, [FromQuery] GetStoresMovementsRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _storeService.GetStoreMovementsAsync(storeId, request, cancellationToken);
+        return Ok(result);
+    }
 }
