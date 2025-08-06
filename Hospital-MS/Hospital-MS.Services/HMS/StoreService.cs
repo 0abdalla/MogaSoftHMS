@@ -135,79 +135,78 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
     public async Task<ErrorResponseModel<List<StoreMovementResponse>>> GetStoreMovementsAsync(int storeId, GetStoresMovementsRequest request, CancellationToken cancellationToken = default)
     {
         var store = await _unitOfWork.Repository<Store>()
-         .GetAll()
-         .Include(x => x.Type)
-         .FirstOrDefaultAsync(x => x.Id == storeId && x.IsActive, cancellationToken);
+                .GetAll()
+                .Include(x => x.Type)
+                .FirstOrDefaultAsync(x => x.Id == storeId && x.IsActive, cancellationToken);
 
         if (store == null)
             return ErrorResponseModel<List<StoreMovementResponse>>.Failure(GenericErrors.NotFound);
+
+        var lastReceiptPermissionNo = await _unitOfWork.Repository<ReceiptPermission>()
+                .GetAll(x => x.StoreId == storeId)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.PermissionNumber)
+                .FirstOrDefaultAsync(cancellationToken);
+
+        var lastIssuePermissionNo = await _unitOfWork.Repository<MaterialIssuePermission>()
+                .GetAll(x => x.StoreId == storeId)
+                .OrderByDescending(x => x.Id)
+                .Select(x => x.PermissionNumber)
+                .FirstOrDefaultAsync(cancellationToken);
 
         var fromDate = request.fromDate;
         var toDate = request.toDate;
 
         var receiptItemIds = await _unitOfWork.Repository<ReceiptPermissionItem>()
-                        .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.ReceiptPermission.PermissionDate >= fromDate && x.ReceiptPermission.PermissionDate <= toDate)
-                        .Select(x => x.ItemId)
-                        .Distinct()
-                        .ToListAsync(cancellationToken);
+                .GetAll(x => x.ReceiptPermission.StoreId == storeId
+                          && x.ReceiptPermission.PermissionDate >= fromDate
+                          && x.ReceiptPermission.PermissionDate <= toDate)
+                .Include(x => x.ReceiptPermission)
+                .Select(x => x.ItemId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
 
         var issueItemIds = await _unitOfWork.Repository<MaterialIssueItem>()
-                        .GetAll(x => x.MaterialIssuePermission.StoreId == storeId
-                                  && x.MaterialIssuePermission.PermissionDate >= fromDate
-                                  && x.MaterialIssuePermission.PermissionDate <= toDate)
-                        .Select(x => x.ItemId)
-                        .Distinct()
-                        .ToListAsync(cancellationToken);
+                .GetAll(x => x.MaterialIssuePermission.StoreId == storeId
+                          && x.MaterialIssuePermission.PermissionDate >= fromDate
+                          && x.MaterialIssuePermission.PermissionDate <= toDate)
+                .Include(x => x.MaterialIssuePermission)
+                .Select(x => x.ItemId)
+                .Distinct()
+                .ToListAsync(cancellationToken);
 
         var allItemIds = receiptItemIds.Union(issueItemIds).Distinct().ToList();
 
         var itemsQuery = _unitOfWork.Repository<Item>()
-                    .GetAll(x => allItemIds.Contains(x.Id) && x.IsActive)
-                    .Include(x => x.Group)
-                    .ThenInclude(z => z.MainGroup).AsQueryable();
-
-
-        if (request.MainGroupId.HasValue)
-            itemsQuery = itemsQuery.Where(x => x.Group.MainGroupId == request.MainGroupId.Value);
-
-        if (request.ItemGroupId.HasValue)
-            itemsQuery = itemsQuery.Where(x => x.GroupId == request.ItemGroupId.Value);
+                .GetAll(x => allItemIds.Contains(x.Id) && x.IsActive)
+                .Include(x => x.Group)
+                .ThenInclude(g => g.MainGroup)
+                .AsQueryable();
 
         var items = await itemsQuery.ToListAsync(cancellationToken);
 
-        // Get all ReceiptPermissions for this store and date rang
+
         var receiptDetails = await _unitOfWork.Repository<ReceiptPermissionItem>()
-            .GetAll(x => x.ReceiptPermission.StoreId == storeId)
-            .Include(x => x.ReceiptPermission)
-            .Where(x => x.ReceiptPermission.PermissionDate >= fromDate && x.ReceiptPermission.PermissionDate <= toDate)
-            .ToListAsync(cancellationToken);
+                .GetAll(x => x.ReceiptPermission.StoreId == storeId
+                          && x.ReceiptPermission.PermissionDate >= fromDate
+                          && x.ReceiptPermission.PermissionDate <= toDate)
+                .Include(x => x.ReceiptPermission)
+                .ToListAsync(cancellationToken);
 
-        // Get all MatrialIssues for this store and date range
         var issueDetails = await _unitOfWork.Repository<MaterialIssueItem>()
-            .GetAll(x => x.MaterialIssuePermission.StoreId == storeId)
-            .Include(x => x.MaterialIssuePermission)
-            .Where(x => x.MaterialIssuePermission.PermissionDate >= fromDate && x.MaterialIssuePermission.PermissionDate <= toDate)
-            .ToListAsync(cancellationToken);
+                .GetAll(x => x.MaterialIssuePermission.StoreId == storeId
+                          && x.MaterialIssuePermission.PermissionDate >= fromDate
+                          && x.MaterialIssuePermission.PermissionDate <= toDate)
+                .Include(x => x.MaterialIssuePermission)
+                .ToListAsync(cancellationToken);
 
-        // Get opening balances (before fromDate)
-        var openingReceipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
-            .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.ReceiptPermission.PermissionDate < fromDate)
-            .Include(x => x.ReceiptPermission)
-            .ToListAsync(cancellationToken);
-
-        var openingIssues = await _unitOfWork.Repository<MaterialIssueItem>()
-            .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && x.MaterialIssuePermission.PermissionDate < fromDate)
-            .Include(x => x.MaterialIssuePermission)
-            .ToListAsync(cancellationToken);
 
         var itemMovements = items.Select(item =>
         {
-            var openingBalance = openingReceipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity)
-                                - openingIssues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
+            var openingBalance = item.OpeningBalance;
 
             var receivedBalance = receiptDetails.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
             var issueBalance = issueDetails.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
-
             var totalBalance = openingBalance + receivedBalance - issueBalance;
 
             return new ItemMovementResponse
@@ -222,67 +221,36 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
 
         }).ToList();
 
-        List<StoreMovementResponse> result = [];
+
+        var filteredItems = items.AsQueryable();
 
         if (request.MainGroupId.HasValue)
-        {
-            var mainGroups = items.GroupBy(x => x.Group?.MainGroup)
-                .Select(mainGroup => new StoreMovementResponse
-                {
-                    MainGroupId = mainGroup.Key?.Id,
-                    MainGroupName = mainGroup.Key?.Name,
-                    ItemGroups = mainGroup.GroupBy(x => x.Group)
-                        .Select(itemGroup => new ItemGroupsResponse
-                        {
-                            ItemGroupId = itemGroup.Key?.Id,
-                            ItemGroupName = itemGroup.Key?.Name,
-                            Items = itemMovements.Where(m => itemGroup.Any(i => i.Id == m.ItemId)).ToList()
-                        }).ToList()
+            filteredItems = filteredItems.Where(x => x.Group.MainGroupId == request.MainGroupId.Value);
 
-                }).ToList();
+        if (request.ItemGroupId.HasValue)
+            filteredItems = filteredItems.Where(x => x.GroupId == request.ItemGroupId.Value);
 
-            result.AddRange(mainGroups);
-        }
-        else if (request.ItemGroupId.HasValue)
-        {
-            var itemGroups = items.GroupBy(x => x.Group)
-                .Select(itemGroup => new StoreMovementResponse
-                {
-                    MainGroupId = null,
-                    MainGroupName = null,
-                    ItemGroups = new List<ItemGroupsResponse>
-                    {
-                        new ItemGroupsResponse
-                        {
-                            ItemGroupId = itemGroup.Key?.Id,
-                            ItemGroupName = itemGroup.Key?.Name,
-                            Items = itemMovements.Where(m => itemGroup.Any(i => i.Id == m.ItemId)).ToList()
-                        }
-                    }
-                }).ToList();
-
-            result.AddRange(itemGroups);
-        }
-        else
-        {
-            result.Add(new StoreMovementResponse
+        var groupedResult = filteredItems
+            .GroupBy(x => x.Group.MainGroup)
+            .Select(mainGroup => new StoreMovementResponse
             {
-                MainGroupId = null,
-                MainGroupName = null,
-                ItemGroups = new List<ItemGroupsResponse>
-                {
-                    new ItemGroupsResponse
+                MainGroupId = mainGroup.Key.Id,
+                MainGroupName = mainGroup.Key.Name,
+                ItemGroups = mainGroup
+                    .GroupBy(x => x.Group)
+                    .Select(itemGroup => new ItemGroupsResponse
                     {
-                        ItemGroupId = null,
-                        ItemGroupName = null,
+                        ItemGroupId = itemGroup.Key.Id,
+                        ItemGroupName = itemGroup.Key.Name,
                         Items = itemMovements
-                    }
-                }
-            });
-        }
+                            .Where(m => itemGroup.Any(i => i.Id == m.ItemId))
+                            .ToList()
+                    }).ToList(),
+                LastReceiptPermissionNumber = lastReceiptPermissionNo,
+                MaterialIssuePermissionNumber = lastIssuePermissionNo
+            }).ToList();
 
-
-        return ErrorResponseModel<List<StoreMovementResponse>>.Success(GenericErrors.GetSuccess, result);
+        return ErrorResponseModel<List<StoreMovementResponse>>.Success(GenericErrors.GetSuccess, groupedResult);
     }
 }
 

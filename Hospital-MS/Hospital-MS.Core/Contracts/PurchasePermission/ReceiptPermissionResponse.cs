@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Contracts.PurchasePermission;
+﻿namespace Hospital_MS.Core.Contracts.PurchasePermission;
 public class ReceiptPermissionResponse
 {
     public int Id { get; set; }
@@ -18,4 +12,8 @@ public class ReceiptPermissionResponse
     public string StoreName { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
     public List<ReceiptPermissionItemResponse> Items { get; set; } = new();
+
+    public int? PurchaseOrderId { get; set; }
+    public string? PurchaseOrderNumber { get; set; }
+
 }

@@ -107,7 +107,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             Status = order.Status.ToString(),
             Items = order.Items.Where(i => i.IsActive).Select(i => new PurchaseOrderItemResponse
             {
-                Id = i.Id,
+                Id = i.ItemId,
                 ItemName = i.Item.NameAr,
                 Unit = i.Item.Unit.Name,
                 RequestedQuantity = i.RequestedQuantity,

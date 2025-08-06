@@ -8,4 +8,6 @@ public class StoreMovementResponse
 
     public List<ItemGroupsResponse> ItemGroups { get; set; } = [];
 
+    public string? LastReceiptPermissionNumber { get; set; }
+    public string? MaterialIssuePermissionNumber { get; set; }
 }

@@ -262,7 +262,7 @@ public class PriceQuotationService : IPriceQuotationService
                     PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
                     {
-                        Id = i.Id,
+                        Id = i.ItemId,
                         NameAr = i.Item.NameAr,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
