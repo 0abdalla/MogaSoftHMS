@@ -50,6 +50,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
                     UnitPrice = i.UnitPrice,
                     TotalPrice = i.TotalPrice,
                     IsActive = true
+
                 }).ToList()
             };
 
@@ -227,6 +228,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
                 UnitPrice = i.UnitPrice,
                 TotalPrice = i.TotalPrice,
                 IsActive = true
+
             }).ToList();
 
             _unitOfWork.Repository<ReceiptPermission>().Update(permission);
