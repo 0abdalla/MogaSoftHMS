@@ -47,6 +47,8 @@ export class AppsManagmementComponent {
               nameAR: page.nameAR,
             }
           ];
+          console.log(page.children);
+          
         }
       });
     });

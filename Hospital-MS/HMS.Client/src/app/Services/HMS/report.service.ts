@@ -11,4 +11,10 @@ export class ReportService {
   getLedgerReport(id : number , from : any , to : any){
     return this.http.get<any>(this.baseUrl + `DailyRestrictions/report/${id}?fromDate=${from}&toDate=${to}`);
   }
+  getStoreMovement(storeId:number , from : any , to : any , MainGroupId : number , ItemGroupId : number){
+    return this.http.get<any>(this.baseUrl + `Stores/movements/${storeId}?fromDate=${from}&toDate=${to}&MainGroupId=${MainGroupId}&ItemGroupId=${ItemGroupId}`);
+  }
+  getItemMovement(itemId:number , from : any , to : any , storeId : number){
+    return this.http.get<any>(this.baseUrl + `Items/movement/${itemId}?FromDate=${from}&ToDate=${to}&StoreId=${storeId}`);
+  }
 }

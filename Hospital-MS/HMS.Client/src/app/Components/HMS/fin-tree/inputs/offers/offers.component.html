@@ -199,13 +199,14 @@
 </div>
 
 
-<div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
     <div class="modal-content" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-      <div class="modal-header justify-content-center">
+      <div class="modal-header justify-content-between align-items-center ">
         <h5 class="modal-title" id="requestDetailsModalLabel">
           تفريغ العروض
         </h5> 
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
 
@@ -252,6 +253,7 @@
       <div class="modal-footer justify-content-center">
         <button type="button" class="btn-blue" (click)="postPrice()">إتمام الترسية</button>
         <button type="button" class="btn btn-secondary" (click)="printOffers()">طباعة</button>
+
       </div>
     </div>
   </div>

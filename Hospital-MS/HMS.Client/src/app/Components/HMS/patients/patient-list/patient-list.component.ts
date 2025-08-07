@@ -6,7 +6,7 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { SharedService } from '../../../../Services/shared.service';
-
+declare var bootstrap :any;
 @Component({
   selector: 'app-patient-list',
   templateUrl: './patient-list.component.html',
@@ -290,6 +290,7 @@ export class PatientListComponent {
       case 'Completed': return 'مكتمل';
       case 'Cancelled': return 'ملغي';
       case 'Staying': return 'إقامة';
+      case 'IntensiveCare' : return 'عناية مركزة'
       default: return status;
     }
   }
@@ -338,4 +339,21 @@ export class PatientListComponent {
     this.currentPage = 1;
     this.loadPatients();
   }
+  // 
+  backToMainModal(currentModalId: string, mainModalId: string = 'inpatientDetailsModal') {
+    const currentModalEl = document.getElementById(currentModalId);
+    const mainModalEl = document.getElementById(mainModalId);
+  
+    const currentModal = bootstrap.Modal.getInstance(currentModalEl!);
+    const mainModal = new bootstrap.Modal(mainModalEl!);
+  
+    if (currentModal) {
+      currentModal.hide();
+      setTimeout(() => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.add('modal-open');
+        mainModal.show();
+      }, 100);
+    }
+  }  
 }

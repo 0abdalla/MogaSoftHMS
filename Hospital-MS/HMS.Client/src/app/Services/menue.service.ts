@@ -192,7 +192,28 @@ export class MenueService {
         }
       ]
     },
-
+    {
+      displayName: 'التقاير',
+      icon: 'fa-solid fa-file-invoice',
+      isGroup: true,
+      subMenus: [
+        {
+          displayName: 'حساب الأستاذ',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/ledger-report',
+        },
+        {
+          displayName: 'حركة المخزن',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/store-movement'
+        },
+        {
+          displayName: 'حركة الصنف',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/item-movement'
+        }
+      ]
+    },
     {
       displayName: 'إعدادات النظام',
       icon: 'fa-solid fa-gear',
@@ -264,13 +285,6 @@ export class MenueService {
               icon: 'fa-solid fa-circle',
               route: '/hms/fin-tree/stores-types'
             }
-            // ,
-            // {
-            //   displayName: 'طريقة الصرف',
-            //   icon: 'fa-solid fa-circle',
-            //   route: '/hms/fin-tree/providers'
-            // },
-
           ]
         },
         {
@@ -323,28 +337,6 @@ export class MenueService {
       ]
     },
     {
-      displayName: 'التقاير',
-      icon: 'fa-solid fa-report',
-      isGroup: true,
-      subMenus: [
-        {
-          displayName: 'حساب الأستاذ',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/reports/ledger-report',
-        },
-        {
-          displayName: 'حركة المخزن',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/reports/store-movement'
-        },
-        {
-          displayName: 'حركة الصنف',
-          icon: 'fa-solid fa-circle',
-          route: '/hms/reports/item-movement'
-        }
-      ]
-    },
-    {
       displayName: 'الإعدادات العامة',
       icon: 'fa-solid fa-gear',
       isGroup: true,
@@ -361,27 +353,5 @@ export class MenueService {
         }
       ]
     }
-
-    // {
-    //   displayName: 'التقارير',
-    //   icon: 'fa-solid fa-chart-column',
-    //   subMenus: [
-    //     {
-    //       displayName: 'تقارير المالية',
-    //       icon: 'fa-solid fa-circle',
-    //       route: '/hms/reports/financial'
-    //     },
-    //     {
-    //       displayName: 'تقارير الطبية',
-    //       icon: 'fa-solid fa-circle',
-    //       route: '/hms/reports/medical'
-    //     },
-    //     {
-    //       displayName: 'تقارير حركة المخزن',
-    //       icon: 'fa-solid fa-circle',
-    //       route: '/hms/reports/stock-movement-report'
-    //     }
-    //   ]
-    // },
   ];
 }

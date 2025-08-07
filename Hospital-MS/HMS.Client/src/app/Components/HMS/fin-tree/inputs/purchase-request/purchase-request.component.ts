@@ -205,7 +205,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
               summary: 'تم التعديل',
               detail: `${res.message}`
             });
-            this.CloseModal();
+            // this.CloseModal();
             this.getpurchaseRequests();
           } else {
             this.toastrService.add({
@@ -229,7 +229,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
               summary: 'تم الإضافة',
               detail: `${res.message}`
             });
-            this.CloseModal();
+            // this.CloseModal();
             this.getpurchaseRequests();
           } else {
             this.toastrService.add({
@@ -262,7 +262,8 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
           items: this.request.items
         });
 
-        this.CloseModal();
+        const modal = new bootstrap.Modal(document.getElementById('addPurchaseRequestModal')!);
+        modal.show();
       },
       error: (err) => {
         console.error('فشل تحميل بيانات طلب الشراء:', err);
@@ -445,7 +446,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
           hasBarcode: this.itemRes.hasBarcode,
           typeId: this.itemRes.typeId
         });
-        this.CloseModal();
+        // this.CloseModal();
       },
       error: (err) => {
         console.error('فشل تحميل بيانات الصنف:', err);

@@ -405,4 +405,21 @@ export class AppointmentListComponent implements OnInit {
     };
     html2pdf().set(opt).from(element).save();
   }
+  // 
+  backToMainModal(currentModalId: string, mainModalId: string = 'bookingDetailsModal') {
+    const currentModalEl = document.getElementById(currentModalId);
+    const mainModalEl = document.getElementById(mainModalId);
+  
+    const currentModal = bootstrap.Modal.getInstance(currentModalEl!);
+    const mainModal = new bootstrap.Modal(mainModalEl!);
+  
+    if (currentModal) {
+      currentModal.hide();
+      setTimeout(() => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.add('modal-open');
+        mainModal.show();
+      }, 100);
+    }
+  }  
 }

@@ -327,18 +327,26 @@ export class AddItemsComponent implements OnInit {
   
     this.financialService.getReceiptPermissionsById(id).subscribe({
       next: (data) => {
-        this.permission=data.results;
-        console.log(this.permission);
+        this.permission = data.results;
+        const itemsArray = this.addPermissionForm.get('items') as FormArray;
+        itemsArray.clear();
+        this.permission.items.forEach((item: any) => {
+          itemsArray.push(this.fb.group({
+            id: [item.id, Validators.required],
+            unit: [item.unit, Validators.required],
+            quantity: [item.quantity, Validators.required],
+            unitPrice: [item.unitPrice, Validators.required],
+            totalPrice: [item.totalPrice, Validators.required],
+          }));
+        });
         this.addPermissionForm.patchValue({
           supplierId: this.permission.supplierId,
           documentNumber: this.permission.documentNumber,
           permissionDate: this.permission.permissionDate,
           notes: this.permission.notes,
-          items: this.permission.items,
           storeId: this.permission.storeId,
           purchaseOrderId: this.permission.purchaseOrderId
         });
-  
         const modal = new bootstrap.Modal(document.getElementById('addPermissionModal')!);
         modal.show();
       },
@@ -347,6 +355,7 @@ export class AddItemsComponent implements OnInit {
       }
     });
   }
+  
   deletePermission(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
