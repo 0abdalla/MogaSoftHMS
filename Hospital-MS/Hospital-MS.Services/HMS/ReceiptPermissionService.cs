@@ -129,6 +129,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
                     StoreName = x.Store.Name,
                     SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
+                    PurchaseOrderId = x.PurchaseOrderId,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new ReceiptPermissionItemResponse
                     {
                         ItemId = i.ItemId,
@@ -156,6 +157,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
             var permission = await _unitOfWork.Repository<ReceiptPermission>()
                 .GetAll()
                 .Include(x => x.Store)
+                .Include(x => x.PurchaseOrder)
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
@@ -176,6 +178,8 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork) : IReceiptPermissi
                 StoreName = permission.Store.Name,
                 StoreId = permission.StoreId,
                 Status = permission.Status.ToString(),
+                PurchaseOrderId = permission.PurchaseOrderId,
+                PurchaseOrderNumber = permission.PurchaseOrder.OrderNumber,
                 Items = permission.Items.Where(i => i.IsActive).Select(i => new ReceiptPermissionItemResponse
                 {
                     ItemId = i.ItemId,

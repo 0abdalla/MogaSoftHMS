@@ -7,13 +7,17 @@ import { FinReportsComponent } from './fin-reports/fin-reports.component';
 import { LedgerReportComponent } from './ledger-report/ledger-report.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { StoreMovementComponent } from './store-movement/store-movement.component';
+import { ItemMovementComponent } from './item-movement/item-movement.component';
 
 
 @NgModule({
   declarations: [
     MedReportsComponent,
     FinReportsComponent,
-    LedgerReportComponent
+    LedgerReportComponent,
+    StoreMovementComponent,
+    ItemMovementComponent
   ],
   imports: [
     CommonModule,

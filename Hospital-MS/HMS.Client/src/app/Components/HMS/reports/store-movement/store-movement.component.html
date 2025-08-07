@@ -1,0 +1,192 @@
+<main id="store-movement-report" class="p-2">
+    <h4>تقرير حركة مخزن</h4>
+    <form class="form p-2 row" [formGroup]="storeMovementForm" (ngSubmit)="showReport()">
+        <div class="col-lg-4">
+            <div class="mb-2">
+                <label class="form-label">اسم المخزن</label>
+                <ng-select
+                    [items]="stores"
+                    bindLabel="name"
+                    bindValue="id"
+                    placeholder="اختر المخزن"
+                    formControlName="storeId"
+                    class="text-end shadow-none w-100"
+                    [searchable]="true">
+                </ng-select>
+                <div *ngIf="storeMovementForm.get('storeId')?.invalid && storeMovementForm.get('storeId')?.touched" class="text-danger">
+                    اسم المخزن مطلوب
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+          <div class="mb-2">
+              <label class="form-label">اسم المجموعة الرئيسية</label>
+              <ng-select
+                  [items]="mainGroups"
+                  bindLabel="name"
+                  bindValue="id"
+                  placeholder="اختر المجموعة الرئيسية"
+                  formControlName="mainGroupId"
+                  class="text-end shadow-none w-100"
+                  [searchable]="true"
+                  (ngModelChange)="onMainGroupChange($event)">
+              </ng-select>
+              <div *ngIf="storeMovementForm.get('mainGroupId')?.invalid && storeMovementForm.get('mainGroupId')?.touched" class="text-danger">
+                  اسم المجموعة الرئيسية مطلوب
+              </div>
+          </div>
+      </div>
+      <div class="col-lg-4">
+          <div class="mb-2">
+              <label class="form-label">اسم مجموعة الأصناف</label>
+              <ng-select
+                  [items]="filteredItemGroups"
+                  bindLabel="name"
+                  bindValue="id"
+                  placeholder="اختر مجموعة الأصناف"
+                  formControlName="itemGroupId"
+                  class="text-end shadow-none w-100"
+                  [searchable]="true">
+              </ng-select>
+              <div *ngIf="storeMovementForm.get('itemGroupId')?.invalid && storeMovementForm.get('itemGroupId')?.touched" class="text-danger">
+                  اسم مجموعة الأصناف مطلوب
+              </div>
+          </div>
+      </div>
+        <div class="col-lg-6">
+            <label class="form-label">التاريخ من</label>
+            <input type="date" class="form-control shadow-none" formControlName="from">
+            <div *ngIf="storeMovementForm.get('from')?.invalid && storeMovementForm.get('from')?.touched" class="text-danger">
+                    بداية التاريخ مطلوبة
+                </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label">التاريخ إلى</label>
+            <input type="date" class="form-control shadow-none" formControlName="to">
+            <div *ngIf="storeMovementForm.get('to')?.invalid && storeMovementForm.get('to')?.touched" class="text-danger">
+                    نهاية التاريخ مطلوبة
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <button type="submit" class="btn-blue">تأكيد</button>
+            </div>
+            <div class="col-lg-6">
+                <button type="reset" class="btn-red">إلغاء</button>
+            </div>
+        </div>
+    </form>
+</main>
+
+
+<div class="modal fade" id="storeMovementReportModal" tabindex="-1" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div #printSection>
+            <div class="modal-header row justify-content-between text-white py-0">
+                  <h5 class="modal-title col-lg-8">تقرير حركة {{ selectedStore }} من ({{ storeMovementForm.value.from | date:'yyyy/MM/dd' }} إلى {{ storeMovementForm.value.to | date:'yyyy/MM/dd' }})</h5>
+                  <div class="col-lg-4">
+                    <div class="row mt-2" style="color: black;">
+                      <div class="col-lg-6">
+                        <h6>أخر إذن إستلام</h6> <p class="fw-bold"> {{ materialIssuePermissionNumber}}</p>
+                      </div>
+                      <div class="col-lg-6">
+                      <h6>أخر إذن صرف</h6> <p class="fw-bold"> {{ lastReceiptPermissionNumber}}</p>
+                      </div>
+                    </div>
+                  </div>
+                <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button> -->
+              </div>
+              <div class="modal-body">
+                
+                <div class="mb-3">
+                  <!-- <strong>المخزن:</strong> <br> -->
+                  <!-- <ng-container *ngIf="selectedMainGroup"><strong>المجموعة الرئيسية:</strong> {{ selectedMainGroup }}<br></ng-container> -->
+                  <ng-container *ngIf="selectedItemGroup"><strong>مجموعة الأصناف:</strong> {{ selectedItemGroup }}<br></ng-container>
+                </div>
+        
+                <div *ngFor="let itemGroup of groupedItemGroups">
+                  <h5 class="text-primary">{{ itemGroup.mainGroupName }}</h5>
+                  <h6 class="mt-3 text-success">{{ itemGroup.itemGroupName }}</h6>
+                
+                  <table class="table table-bordered table-striped text-center align-middle">
+                    <thead class="table-secondary">
+                      <tr class="text-start" style="text-wrap: nowrap;">
+                        <th>رقم الصنف</th>
+                        <th>اسم الصنف</th>
+                        <th>رصيد أول المدة</th>
+                        <th>الكمية المستلمة</th>
+                        <th>الكمية المنصرفة</th>
+                        <th>رصيد الصنف</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of itemGroup.items">
+                        <td>{{ item.itemId }}</td>
+                        <td>{{ item.itemName }}</td>
+                        <td>{{ item.openingBalance }}</td>
+                        <td>{{ item.receivedBalance }}</td>
+                        <td>{{ item.issueBalance }}</td>
+                        <td>{{ item.totalBalance }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                </div>
+                <!-- <div class="row mt-2">
+                  <div class="col-lg-6">
+                    <h6>أخر إذن إستلام</h6> {{ materialIssuePermissionNumber}}
+                  </div>
+                  <div class="col-lg-6">
+                    <h6>أخر إذن صرف</h6> {{ lastReceiptPermissionNumber}}
+                  </div>
+                </div> -->
+            </div>
+        </div>
+        <div class="modal-footer">
+          <div class="text-center">
+              <button class="btn-blue" (click)="printReport()">طباعة</button>
+          </div>
+      </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- <div #printSection style="display: none;">
+    <h4 class="text-center">
+      تقرير حركة المخزن - {{ selectedStore }} ({{ storeMovementForm.value.from }} - {{ storeMovementForm.value.to }})
+    </h4>
+    <div *ngFor="let mainGroup of storeMovementData">
+        <h5 class="mt-3 text-primary" *ngIf="mainGroup.mainGroupName">{{ mainGroup.mainGroupName }}</h5>
+
+        <div *ngFor="let itemGroup of groupedItemGroups">
+            <h5 class="text-primary">{{ itemGroup.mainGroupName }}</h5>
+            <h6 class="mt-3 text-success">{{ itemGroup.itemGroupName }}</h6>
+          
+            <table class="table table-bordered table-striped text-center align-middle">
+              <thead class="table-secondary">
+                <tr>
+                  <th>رقم الصنف</th>
+                  <th>اسم الصنف</th>
+                  <th>رصيد أول المدة</th>
+                  <th>الكمية المستلمة</th>
+                  <th>الكمية المنصرفة</th>
+                  <th>رصيد الصنف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of itemGroup.items">
+                  <td>{{ item.itemId }}</td>
+                  <td>{{ item.itemName }}</td>
+                  <td>{{ item.openingBalance }}</td>
+                  <td>{{ item.receivedBalance }}</td>
+                  <td>{{ item.issueBalance }}</td>
+                  <td>{{ item.totalBalance }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+  </div>
+</div> -->

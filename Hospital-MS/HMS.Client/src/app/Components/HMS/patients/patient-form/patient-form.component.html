@@ -1,4 +1,5 @@
 <main id="add-inpatient">
+    <p-toast position="top-left"></p-toast>
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
         <div class="card search-patient p-2 col-6 m-auto text-center mb-3">
@@ -58,6 +59,9 @@
                                     <div *ngIf="patientForm.get('patientBirthDate')?.hasError('minDate') && patientForm.get('patientBirthDate')?.touched" class="text-danger">
                                         تاريخ الميلاد يجب ألا يكون قبل عام 1920
                                     </div>
+                                    <div *ngIf="patientForm.get('patientBirthDate')?.hasError('maxDate') && patientForm.get('patientBirthDate')?.touched" class="text-danger">
+                                        تاريخ الميلاد يجب أن يكون صحيح
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -116,6 +120,67 @@
                         </div>
                 </div>
             </div>
+            <h4 class="mt-4 mb-3">🏥بيانات الأقامة</h4>
+      <div class="row mb-3">
+        <div class="col-lg-4">
+          <label for="admissionDate" class="form-label">تاريخ الدخول</label>
+          <input type="date" id="admissionDate" class="form-control shadow-none" value="{{currentDate}}" disabled />
+        </div>
+        <div class="col-lg-4">
+          <label for="departmentId" class="form-label">القسم</label>
+          <select id="departmentId" class="form-select shadow-none" formControlName="departmentId" (change)="onDepartmentChange()">
+            <option selected disabled value="">اختر القسم</option>
+            <option *ngFor="let department of departments" [value]="department.id">{{department.name}}</option>
+          </select>
+          <div *ngIf="patientForm.get('departmentId')?.invalid && patientForm.get('departmentId')?.touched" class="text-danger">
+            القسم مطلوب
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="doctorId" class="form-label">الطبيب المسؤول</label>
+          <select id="doctorId" class="form-select shadow-none" formControlName="doctorId">
+            <option selected disabled value="">اختر الطبيب المسئول</option>
+            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{doctor.fullName}}</option>
+          </select>
+          <div *ngIf="patientForm.get('doctorId')?.invalid && patientForm.get('doctorId')?.touched" class="text-danger">
+            الطبيب المسؤول مطلوب
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="roomType" class="form-label">نوع الغرفة</label>
+          <select id="roomType" class="form-select shadow-none" formControlName="roomType" (change)="onRoomTypeChange()">
+            <option selected disabled value="">اختر النوع</option>
+            <option value="Shared">عادية</option>
+            <option value="Private">فندقية</option>
+          </select>
+          <div *ngIf="patientForm.get('roomType')?.invalid && patientForm.get('roomType')?.touched" class="text-danger">
+            نوع الغرفة مطلوب
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="roomId" class="form-label">رقم الغرفة</label>
+          <select id="roomId" class="form-select shadow-none" formControlName="roomId" (change)="onRoomChange()">
+            <option selected disabled value="">اختر الغرفة</option>
+            <option *ngFor="let room of filteredRooms" [value]="room.id">{{room.number}}</option>
+          </select>
+          <div *ngIf="patientForm.get('roomId')?.invalid && patientForm.get('roomId')?.touched" class="text-danger">
+            رقم الغرفة مطلوب
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="bedId" class="form-label">رقم السرير</label>
+          <select id="bedId" class="form-select shadow-none" formControlName="bedId">
+            <option selected disabled value="">اختر السرير</option>
+            <option *ngFor="let bed of filteratedBeds" [value]="bed.id">{{bed.number}}</option>
+          </select>
+          <div *ngIf="patientForm.get('bedId')?.invalid && patientForm.get('bedId')?.touched" class="text-danger">
+            رقم السرير مطلوب
+          </div>
+        </div>
+        <div class="col-lg-12 text-center mt-3" *ngIf="selectedDailyPrice">
+          <h5>تكلفة الإقامة باليوم : <span> {{selectedDailyPrice}} جنيه</span></h5>
+        </div>
+      </div>
             <div class="inputs-wrapper border rounded bg-white mb-3">
                 <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50">
                     <h5 class="mb-0 fw-bold">
@@ -147,7 +212,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-2 mt-30">
+                        <!-- <div class="col-lg-2 mt-30">
                             <button class="btn btn-primary d-flex align-items-center gap-2 border rounded px-3" (click)="addSecondContact()" [disabled]="showSecondContact">
                                 <i class="fas fa-plus-circle"></i>
                                 <span>إضافة جهة اتصال</span>
@@ -157,7 +222,7 @@
                                 <i class="fas fa-plus-circle"></i>
                                 <span>حذف جهة اتصال</span>
                             </button>
-                        </div>
+                        </div> -->
                         <!-- <div class="col-lg-5" *ngIf="showSecondContact">
                             <div class="mb-2">
                                 <label class="form-label d-flex align-items-center gap-2">الإسم 2
@@ -236,7 +301,7 @@
                     <h5 class="mb-0 fw-bold">
                         <span>📋بيانات إضافية</span>
                     </h5>
-                    <button class="btn-blue" (click)="showAdditionalInfo = !showAdditionalInfo">
+                    <button class="btn-blue" (click)="toggleAdditionalInfo()">
                         {{ showAdditionalInfo ? 'إخفاء' : 'إظهار' }}
                     </button>
                 </div>
@@ -247,7 +312,11 @@
                                 <label class="form-label d-flex align-items-center gap-2">شركة التأمين
                                       <span class="text-danger">*</span>
                                     </label>
-                                <app-general-selector [data]="insuranceCompanies" formControlName="insuranceCompanyId"></app-general-selector>
+                                <!-- <app-general-selector [data]="insuranceCompanies" formControlName="insuranceCompanyId"></app-general-selector> -->
+                                 <select class="form-select shadow-none" formControlName="insuranceCompanyId">
+                                    <option selected disabled value="">اختر الشركة</option>
+                                    <option *ngFor="let company of insuranceCompaniesData" [value]="company.id">{{company.name}}</option>
+                                </select>
                                 <div *ngIf="patientForm.get('insuranceCompanyId')?.invalid && patientForm.get('insuranceCompanyId')?.touched" class="text-danger">
                                     شركة التأمين مطلوبة
                                 </div>
@@ -258,7 +327,11 @@
                                 <label class="form-label d-flex align-items-center gap-2">فئة التأمين
                                       <span class="text-danger">*</span>
                                     </label>
-                                <app-general-selector [data]="insuranceCategories" formControlName="insuranceCategoryId"></app-general-selector>
+                                <!-- <app-general-selector [data]="insuranceCategories" formControlName="insuranceCategoryId"></app-general-selector> -->
+                                 <select class="form-select shadow-none" formControlName="insuranceCategoryId">
+                                    <option selected disabled value="">اختر الفئة</option>
+                                    <option *ngFor="let category of insuranceCategories" [value]="category.id">{{category.name}}</option>
+                                </select>
                                 <div *ngIf="patientForm.get('insuranceCategoryId')?.invalid && patientForm.get('insuranceCategoryId')?.touched" class="text-danger">
                                     فئة التأمين مطلوبة
                                 </div>
@@ -283,10 +356,14 @@
                                 <label class="form-label d-flex align-items-center gap-2">الحالة الصحية الحالية
                                       <span class="text-danger">*</span>
                                     </label>
-                                <app-general-selector [data]="PatientHealthStatus" formControlName="healthStatus"></app-general-selector>
-                                <div *ngIf="patientForm.get('healthStatus')?.invalid && patientForm.get('healthStatus')?.touched" class="text-danger">
+                                <!-- <app-general-selector [data]="PatientHealthStatus" formControlName="healthStatus"></app-general-selector> -->
+                                 <select class="form-select shadow-none" formControlName="healthStatus">
+                                    <option selected disabled value="">اختر الحالة</option>
+                                    <option *ngFor="let status of PatientHealthStatus" [value]="status.value">{{status.name}}</option>
+                                </select>
+                                <!-- <div *ngIf="patientForm.get('healthStatus')?.invalid && patientForm.get('healthStatus')?.touched" class="text-danger">
                                     الحالة الصحية مطلوبة
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -295,9 +372,9 @@
                                       <span class="text-danger">*</span>
                                     </label>
                                 <textarea type="text" class="form-control shadow-none" formControlName="initialDiagnosis" placeholder="أدخل تشخيص مبدئي" autocomplete="off" rows="1"></textarea>
-                                <div *ngIf="patientForm.get('initialDiagnosis')?.invalid && patientForm.get('initialDiagnosis')?.touched" class="text-danger">
+                                <!-- <div *ngIf="patientForm.get('initialDiagnosis')?.invalid && patientForm.get('initialDiagnosis')?.touched" class="text-danger">
                                     التشخيص المبدئي مطلوب
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                         <div class="col-lg-4">
@@ -361,7 +438,7 @@
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-center">
-                <button type="submit" class="btn btn-success d-flex align-items-center justify-content-center gap-2 me-2" [disabled]="patientForm.invalid">
+                <button type="submit" class="btn btn-success d-flex align-items-center justify-content-center gap-2 me-2">
                     <i class="uil uil-save fs-3"></i>
                     <span>إضافة</span>
                 </button>

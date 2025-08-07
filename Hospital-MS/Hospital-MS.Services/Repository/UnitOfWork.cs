@@ -35,12 +35,17 @@ namespace Hospital_MS.Services.Repository
         public async Task<int> CompleteAsync(CancellationToken cancellationToken)
          => await _dbContext.SaveChangesAsync(cancellationToken);
 
-        public async ValueTask DisposeAsync()
-        => await _dbContext.DisposeAsync();
+        //public async ValueTask DisposeAsync()
+        //=> await _dbContext.DisposeAsync();
 
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
             return await _dbContext.Database.BeginTransactionAsync(cancellationToken);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await Task.CompletedTask;
         }
     }
 }

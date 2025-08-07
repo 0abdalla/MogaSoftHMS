@@ -1,4 +1,4 @@
-using Hospital_MS.Core.Common;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.DailyRestrictions;
 using Hospital_MS.Core.Models;
@@ -262,5 +262,122 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             }
         }
         return nextNumber.ToString("D5");
+    }
+
+    public async Task<ErrorResponseModel<List<AccountReportResponse>>> GetAccountReportAsync(int accountId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken)
+    {
+        ///    try
+        ///    {
+        ///        var account = await _unitOfWork.Repository<AccountTree>()
+        ///            .GetAll(x => x.AccountId == accountId)
+        ///            .FirstOrDefaultAsync(cancellationToken);
+        ///
+        ///        if (account == null)
+        ///            return ErrorResponseModel<List<AccountReportResponse>>.Failure(GenericErrors.NotFound);
+        ///
+        ///
+        ///
+        ///        var details = await _unitOfWork.Repository<DailyRestrictionDetail>()
+        ///            .GetAll(x => x.AccountId == accountId && x.DailyRestriction.IsActive)
+        ///            .Include(x => x.DailyRestriction)
+        ///            .OrderBy(x => x.Id)
+        ///            .ToListAsync(cancellationToken);
+        ///
+        ///        var reportList = new List<AccountReportResponse>();
+        ///        decimal runningBalance = 0;
+        ///
+        ///        foreach (var d in details)
+        ///        {
+        ///            runningBalance += d.Debit - d.Credit;
+        ///
+        ///            reportList.Add(new AccountReportResponse
+        ///            {
+        ///                DailyRestrictionNumber = d.DailyRestriction.RestrictionNumber,
+        ///                DailyRestrictionDate = d.DailyRestriction.RestrictionDate,
+        ///                AccountId = d.AccountId,
+        ///                AccountName = account.NameAR ?? account.NameEN ?? "",
+        ///                Description = d.DailyRestriction.Description,
+        ///                Debits = d.Debit,
+        ///                Credits = d.Credit,
+        ///                Balance = runningBalance,
+        ///                DailyRestrictionId = d.DailyRestriction.Id,
+        ///                From = d.From,
+        ///                To = d.To
+        ///            });
+        ///        }
+        ///
+        ///        return ErrorResponseModel<List<AccountReportResponse>>.Success(GenericErrors.GetSuccess, reportList);
+        ///    }
+        ///    catch
+        ///    {
+        ///        return ErrorResponseModel<List<AccountReportResponse>>.Failure(GenericErrors.TransFailed);
+        ///    }
+
+        try
+        {
+            var account = await _unitOfWork.Repository<AccountTree>()
+                .GetAll(x => x.AccountId == accountId)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (account == null)
+                return ErrorResponseModel<List<AccountReportResponse>>.Failure(GenericErrors.NotFound);
+
+            decimal openingBalance = await _unitOfWork.Repository<DailyRestrictionDetail>()
+                .GetAll(x => x.AccountId == accountId && x.DailyRestriction.IsActive && x.DailyRestriction.RestrictionDate < fromDate)
+                .SumAsync(x => x.Debit - x.Credit, cancellationToken);
+
+
+            var details = await _unitOfWork.Repository<DailyRestrictionDetail>()
+                .GetAll(x => x.AccountId == accountId
+                    && x.DailyRestriction.IsActive
+                    && x.DailyRestriction.RestrictionDate >= fromDate
+                    && x.DailyRestriction.RestrictionDate <= toDate)
+                .Include(x => x.DailyRestriction)
+                .OrderBy(x => x.DailyRestriction.RestrictionDate)
+                .ThenBy(x => x.DailyRestriction.RestrictionNumber)
+                .ToListAsync(cancellationToken);
+
+            var reportList = new List<AccountReportResponse>();
+            decimal runningBalance = openingBalance;
+
+            reportList.Add(new AccountReportResponse
+            {
+                DailyRestrictionNumber = "-",
+                DailyRestrictionDate = fromDate,
+                AccountId = accountId,
+                AccountName = account.NameAR ?? account.NameEN ?? "",
+                Description = "الرصيد السابق",
+                Debits = openingBalance > 0 ? openingBalance : 0,
+                Credits = openingBalance < 0 ? -openingBalance : 0,
+                Balance = openingBalance
+            });
+
+            foreach (var d in details)
+            {
+                runningBalance += d.Debit - d.Credit;
+
+                reportList.Add(new AccountReportResponse
+                {
+                    DailyRestrictionNumber = d.DailyRestriction.RestrictionNumber,
+                    DailyRestrictionDate = d.DailyRestriction.RestrictionDate,
+                    AccountId = d.AccountId,
+                    AccountName = account.NameAR ?? account.NameEN ?? "",
+                    Description = d.DailyRestriction.Description,
+                    Debits = d.Debit,
+                    Credits = d.Credit,
+                    Balance = runningBalance,
+                    DailyRestrictionId = d.DailyRestriction.Id,
+                    From = d.From,
+                    To = d.To
+                });
+            }
+
+            return ErrorResponseModel<List<AccountReportResponse>>.Success(GenericErrors.GetSuccess, reportList);
+        }
+        catch
+        {
+            return ErrorResponseModel<List<AccountReportResponse>>.Failure(GenericErrors.TransFailed);
+        }
+
     }
 }

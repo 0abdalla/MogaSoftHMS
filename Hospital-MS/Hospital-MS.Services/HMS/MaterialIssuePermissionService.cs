@@ -26,6 +26,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             if (department is null)
                 return ErrorResponseModel<MaterialIssuePermissionToReturnResponse>.Failure(GenericErrors.NotFound);
 
+
             var permission = new MaterialIssuePermission
             {
                 PermissionNumber = await GeneratePermissionNumber(cancellationToken),
@@ -50,6 +51,8 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
 
             await _unitOfWork.Repository<MaterialIssuePermission>().AddAsync(permission, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
+
+
             await transaction.CommitAsync(cancellationToken);
 
 

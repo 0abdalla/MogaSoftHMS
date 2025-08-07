@@ -5,14 +5,8 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Hospital_MS.Services.Repository;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -105,14 +99,16 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var entity = await _unitOfWork.Repository<AccountTree>().GetByIdAsync(AccountId);
+                var repo = _unitOfWork.Repository<AccountTree>();
+
+                var entity = await repo.GetAll(x => x.AccountId == AccountId).FirstOrDefaultAsync(cancellationToken);
 
                 if (entity != null)
                 {
 
-                    var childAccounts = _unitOfWork.Repository<AccountTree>().GetAll(x => x.ParentAccountId == AccountId);
+                    var childAccounts = await repo.GetAll(x => x.ParentAccountId == AccountId).ToListAsync(cancellationToken);
 
-                    if (childAccounts.Any())
+                    if (childAccounts.Count != 0)
                     {
                         foreach (var acc in childAccounts)
                         {
@@ -121,7 +117,7 @@ namespace Hospital_MS.Services.HMS
                             acc.IsParent = entity.IsParent;
                         }
                     }
-                    _unitOfWork.Repository<AccountTree>().Delete(entity);
+                    repo.Delete(entity);
                     await _unitOfWork.CompleteAsync(cancellationToken);
                 }
 
@@ -129,6 +125,7 @@ namespace Hospital_MS.Services.HMS
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }

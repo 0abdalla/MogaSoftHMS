@@ -101,6 +101,8 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                         Credit = 0,
                         Note = null,
                         Debit = request.Amount,
+                        From = account.NameAR,
+                        To = treasury.Name
                     }
                 ]
             };

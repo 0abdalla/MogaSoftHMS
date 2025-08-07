@@ -99,6 +99,9 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                         Credit = request.Amount,
                         Note = null,
                         Debit = 0,
+                        From = treasury.Name,
+                        To = account.NameAR,
+
                     }
                 ]
             };

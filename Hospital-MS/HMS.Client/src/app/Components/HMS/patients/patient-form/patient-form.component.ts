@@ -55,10 +55,11 @@ export class PatientFormComponent implements OnInit {
     private insuranceService: InsuranceService
   ) {
     const minBirthDate = new Date(1920, 0, 1);
+    const maxBirthDate = new Date(2025 , 0 , 1)
     this.patientForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
-      patientBirthDate: ['', [Validators.required, this.minDateValidator(minBirthDate)]],
+      patientBirthDate: ['', [Validators.required, this.minDateValidator(minBirthDate) , this.maxDateValidator(maxBirthDate)] ],
       patientNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       patientAddress: ['', Validators.required],
       patientStatus: ['', Validators.required],
@@ -75,8 +76,8 @@ export class PatientFormComponent implements OnInit {
       insuranceCompanyId: [''],
       insuranceCategoryId: [null],
       insuranceNumber: [null],
-      healthStatus: ['', Validators.required],
-      initialDiagnosis: ['', Validators.required],
+      healthStatus: ['',],
+      initialDiagnosis: ['',],
       hasCompanion: [false, Validators.required],
       companionName: ['', []],
       companionNationalId: ['', [Validators.pattern(/^[0-9]{14}$/)]],
@@ -100,10 +101,13 @@ export class PatientFormComponent implements OnInit {
   }
   addSecondContact() {
     this.showSecondContact = true;
+    this.updateSecondContactValidators(); // enable required
   }
   removeSecondContact() {
     this.showSecondContact = false;
+    this.updateSecondContactValidators(); // disable required
   }
+  
   ngOnInit(): void {
     this.loadAdmissionData();
     this.currentDate = new Date().toISOString().split('T')[0];
@@ -135,12 +139,24 @@ export class PatientFormComponent implements OnInit {
     });
   }
   onSubmit() {
+    console.log(this.patientForm.valid);
+    console.log(this.patientForm.errors);
+    console.log(this.patientForm.status);
+    console.log(this.patientForm); 
+    Object.keys(this.patientForm.controls).forEach(controlName => {
+      const control = this.patientForm.get(controlName);
+      if (control?.invalid) {
+        console.warn(`Invalid Control: ${controlName}`, control.errors);
+      }
+    });
+    
     if (this.patientForm.valid) {
       this.addmisionService.addAdmision(this.patientForm.value).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.patientForm.reset();
           this.showSecondContact = false;
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
+          console.log(res);
         },
         error: (error) => {
           console.error(error);
@@ -176,6 +192,7 @@ export class PatientFormComponent implements OnInit {
   onRoomChange() {
     const selectedRoomId = this.patientForm.get('roomId')?.value;
     const selectedRoom = this.rooms.find(room => room.id === +selectedRoomId);
+    console.log(selectedRoom);
     this.selectedDailyPrice = selectedRoom ? selectedRoom.dailyPrice : null;
     if (selectedRoomId) {
       this.filteratedBeds = this.beds.filter((bed: any) => bed.roomId === +selectedRoomId);
@@ -207,22 +224,22 @@ export class PatientFormComponent implements OnInit {
     companionNationalId?.updateValueAndValidity();
     companionPhone?.updateValueAndValidity();
   }
-  // updateSecondContactValidators(): void {
-  //   const emergencyPhone02 = this.patientForm.get('emergencyPhone02');
-  //   const emergencyContact02 = this.patientForm.get('emergencyContact02');
+  updateSecondContactValidators(): void {
+    const emergencyPhone02 = this.patientForm.get('emergencyPhone02');
+    const emergencyContact02 = this.patientForm.get('emergencyContact02');
 
-  //   if (this.showSecondContact) {
-  //     emergencyPhone02?.setValidators([Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]);
-  //     emergencyContact02?.setValidators([Validators.required]);
-  //   } else {
-  //     emergencyPhone02?.setValidators([Validators.pattern(/^01[0125][0-9]{8}$/)]);
-  //     emergencyContact02?.setValidators([]);
-  //   }
+    if (this.showSecondContact) {
+      emergencyPhone02?.setValidators([Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]);
+      emergencyContact02?.setValidators([Validators.required]);
+    } else {
+      emergencyPhone02?.setValidators([Validators.pattern(/^01[0125][0-9]{8}$/)]);
+      emergencyContact02?.setValidators([]);
+    }
 
-  //   emergencyPhone02?.updateValueAndValidity();
-  //   emergencyContact02?.updateValueAndValidity();
-  // }
-  // 
+    emergencyPhone02?.updateValueAndValidity();
+    emergencyContact02?.updateValueAndValidity();
+  }
+  
   minDateValidator(minDate: Date): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       if (!control.value) {
@@ -231,6 +248,18 @@ export class PatientFormComponent implements OnInit {
       const inputDate = new Date(control.value);
       if (inputDate < minDate) {
         return { minDate: { value: control.value } };
+      }
+      return null;
+    };
+  }
+  maxDateValidator(maxDate: Date): ValidatorFn {
+    return (control: AbstractControl): { [key: string]: any } | null => {
+      if (!control.value) {
+        return null;
+      }
+      const inputDate = new Date(control.value);
+      if (inputDate > maxDate) {
+        return { maxDate: { value: control.value } };
       }
       return null;
     };
@@ -249,16 +278,16 @@ export class PatientFormComponent implements OnInit {
             const patient = data.results[0];
             console.log(patient);
             let genderValue = '';
-            if (patient.patientGender === 'ذكر') {
+            if (patient.gender === 'ذكر') {
               genderValue = 'Male';
-            } else if (patient.patientGender === 'أنثى') {
+            } else if (patient.gender === 'أنثى') {
               genderValue = 'Female';
             }
             const birthDate = patient.dateOfBirth ? patient.dateOfBirth.split('T')[0] : '';
             this.patientForm.patchValue({
               patientName: patient.patientName,
               patientPhone: patient.phone,
-              patientNationalId: patient.patientNationalId,
+              patientNationalId: patient.nationalId,
               patientBirthDate: birthDate,
               patientGender: genderValue,
               patientAddress: patient.address
@@ -293,4 +322,20 @@ export class PatientFormComponent implements OnInit {
       });
     }
   }
+  toggleAdditionalInfo() {
+    this.showAdditionalInfo = !this.showAdditionalInfo;
+    if (this.showAdditionalInfo) {
+      this.patientForm.get('insuranceCompanyId')?.setValidators(Validators.required);
+      this.patientForm.get('insuranceCategoryId')?.setValidators(Validators.required);
+      this.patientForm.get('insuranceNumber')?.setValidators([Validators.required, Validators.pattern(/^\d+$/)]);
+    } else {
+      this.patientForm.get('insuranceCompanyId')?.clearValidators();
+      this.patientForm.get('insuranceCategoryId')?.clearValidators();
+      this.patientForm.get('insuranceNumber')?.clearValidators();
+    }
+    this.patientForm.get('insuranceCompanyId')?.updateValueAndValidity();
+    this.patientForm.get('insuranceCategoryId')?.updateValueAndValidity();
+    this.patientForm.get('insuranceNumber')?.updateValueAndValidity();
+  }
+  
 }

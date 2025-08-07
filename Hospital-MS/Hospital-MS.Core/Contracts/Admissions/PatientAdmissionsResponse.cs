@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Contracts.Admissions
+﻿namespace Hospital_MS.Core.Contracts.Admissions
 {
     public class PatientAdmissionsResponse
     {
@@ -15,9 +9,12 @@ namespace Hospital_MS.Core.Contracts.Admissions
         public string? HealthStatus { get; set; }
         public string? Notes { get; set; }
         public string? DoctorName { get; set; }
-        public  int? RoomNumber { get; set; }
-        public  int? BedNumber { get; set; }
+        public int? RoomNumber { get; set; }
+        public int? BedNumber { get; set; }
         public string? DepartmentName { get; set; }
         public string? PatientStatus { get; set; }
+
+        public string? NationalId { get; set; }
+        public string? Gender { get; set; }
     }
 }

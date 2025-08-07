@@ -1,0 +1,163 @@
+<main id="item-movement-report" class="p-2">
+    <h4>تقرير حركة صنف</h4>
+    <form class="form p-2 row" [formGroup]="itemMovementForm" (ngSubmit)="showReport()">
+        <div class="col-lg-6">
+            <div class="mb-2">
+                <label class="form-label">اسم المخزن</label>
+                <ng-select
+                    [items]="stores"
+                    bindLabel="name"
+                    bindValue="id"
+                    placeholder="اختر المخزن"
+                    formControlName="StoreId"
+                    class="text-end shadow-none w-100"
+                    [searchable]="true">
+                </ng-select>
+                <div *ngIf="itemMovementForm.get('StoreId')?.invalid && itemMovementForm.get('StoreId')?.touched" class="text-danger">
+                    اسم المخزن مطلوب
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="mb-2">
+                <label class="form-label">اسم الصنف</label>
+                <ng-select
+                    [items]="items"
+                    bindLabel="nameAr"
+                    bindValue="id"
+                    placeholder="اختر الصنف"
+                    formControlName="id"
+                    class="text-end shadow-none w-100"
+                    [searchable]="true">
+                </ng-select>
+                <div *ngIf="itemMovementForm.get('id')?.invalid && itemMovementForm.get('id')?.touched" class="text-danger">
+                    اسم الصنف مطلوب
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label">التاريخ من</label>
+            <input type="date" class="form-control shadow-none" formControlName="FromDate">
+            <div *ngIf="itemMovementForm.get('FromDate')?.invalid && itemMovementForm.get('FromDate')?.touched" class="text-danger">
+                    بداية التاريخ مطلوبة
+                </div>
+        </div>
+        <div class="col-lg-6">
+            <label class="form-label">التاريخ إلى</label>
+            <input type="date" class="form-control shadow-none" formControlName="ToDate">
+            <div *ngIf="itemMovementForm.get('ToDate')?.invalid && itemMovementForm.get('ToDate')?.touched" class="text-danger">
+                    نهاية التاريخ مطلوبة
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <button type="submit" class="btn-blue">تأكيد</button>
+            </div>
+            <div class="col-lg-6">
+                <button type="reset" class="btn-red">إلغاء</button>
+            </div>
+        </div>
+    </form>
+</main>
+
+<div class="modal fade" id="storeMovementReportModal" tabindex="-1" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content">
+        <div #printSection>
+          <div class="modal-header justify-content-between text-white">
+            <h5 class="modal-title">
+              تقرير حركة الصنف - {{ itemMovementData?.itemName }} من ({{ itemMovementForm.value.FromDate | date:'yyyy/MM/dd' }} إلى {{ itemMovementForm.value.ToDate | date:'yyyy/MM/dd' }})
+            </h5>
+          </div>
+          <div class="modal-body" *ngIf="itemMovementData">
+            <div class="row mb-3">
+                <div class="col-lg-6">
+                    <p><strong>اسم المخزن:</strong> {{ itemMovementData.storeName }}</p>
+                </div>
+                <div class="col-lg-6">
+                    <p><strong>المجموعة:</strong> {{ itemMovementData.itemGroupName }}</p>
+                </div>
+                <div class="col-lg-6">
+                    <p><strong>الوحدة:</strong> {{ itemMovementData.itemUnit }}</p>
+                </div>
+                <div class="col-lg-6">
+                    <p><strong>رصيد أول المدة:</strong> {{ itemMovementData.previousBalance }}</p>
+                </div>
+            </div>
+  
+            <hr>
+  
+            <div *ngIf="itemMovementData.itemReceipts?.length">
+              <h5 class="text-success">الإستلامات</h5>
+              <table class="table table-bordered text-center align-middle">
+                <thead class="table-secondary">
+                  <tr class="text-start">
+                    <th>رقم الإذن</th>
+                    <th>رقم المستند</th>
+                    <th>التاريخ</th>
+                    <th>النوع</th>
+                    <th>الكمية</th>
+                    <th>السعر للوحدة</th>
+                    <th>الإجمالي</th>
+                    <th>اسم المورد</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let receipt of itemMovementData.itemReceipts">
+                    <td>{{ receipt.receiptNumber }}</td>
+                    <td>{{ receipt.documentNumber }}</td>
+                    <td>{{ receipt.date }}</td>
+                    <td>{{ receipt.receiptType }}</td>
+                    <td>{{ receipt.totalReceiptsQuantity }}</td>
+                    <td>{{ receipt.unitPrice }}</td>
+                    <td>{{ receipt.totalPrice }}</td>
+                    <td>{{ receipt.supplierName }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+  
+            <div *ngIf="itemMovementData.itemIssues?.length">
+              <h5 class="text-danger mt-4">المصروفات</h5>
+              <table class="table table-bordered text-center align-middle">
+                <thead class="table-secondary">
+                  <tr class="text-start">
+                    <th>رقم الإذن</th>
+                    <th>رقم المستند</th>
+                    <th>التاريخ</th>
+                    <th>النوع</th>
+                    <th>رقم الفاتورة</th>
+                    <th>الكمية</th>
+                    <th>السعر للوحدة</th>
+                    <th>الإجمالي</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let issue of itemMovementData.itemIssues">
+                    <td>{{ issue.issueId }}</td>
+                    <td>{{ issue.documentNumber || '-' }}</td>
+                    <td>{{ issue.date }}</td>
+                    <td>{{ issue.issueType }}</td>
+                    <td>{{ issue.invoiceNumber || '-' }}</td>
+                    <td>{{ issue.totalIssuesQuantity }}</td>
+                    <td>{{ issue.unitPrice }}</td>
+                    <td>{{ issue.totalPrice }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+  
+            <!-- الإجماليات -->
+            <div class="mt-4">
+              <p><strong>إجمالي الكمية المستلمة:</strong> {{ itemMovementData.totalItemReceipts }}</p>
+              <p><strong>إجمالي الكمية المنصرفة:</strong> {{ itemMovementData.totalItemIssues }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-blue" (click)="printReport()">طباعة</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

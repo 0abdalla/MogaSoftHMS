@@ -196,22 +196,31 @@ export class OffersComponent {
   
     this.financialService.getOffersById(id).subscribe({
       next: (data) => {
-        this.order=data.results;
-        console.log(this.order);
-        this.offerForm.patchValue({
-          supplierId: this.order.supplierId,
-          notes: this.order.notes,
-          items: this.order.items
+        this.order = data.results;
+        const itemsArray = this.offerForm.get('items') as FormArray;
+        itemsArray.clear();
+        this.order.items.forEach((item: any) => {
+          itemsArray.push(this.fb.group({
+            itemId: [item.itemId ?? item.id, Validators.required],
+            quantity: [item.quantity, Validators.required],
+            unitPrice: [item.unitPrice, Validators.required],
+            notes: [item.notes || '']
+          }));
         });
-  
+        this.offerForm.patchValue({
+          purchaseRequestId: this.order.purchaseRequestId,
+          supplierId: this.order.supplierId,
+          notes: this.order.notes
+        });
         const modal = new bootstrap.Modal(document.getElementById('addOfferModal')!);
         modal.show();
       },
       error: (err) => {
-        console.error('فشل تحميل بيانات طلب الشراء:', err);
+        console.error('فشل تحميل بيانات عرض السعر:', err);
       }
     });
   }
+  
   deleteOffer(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
@@ -264,20 +273,27 @@ export class OffersComponent {
     this.selectedPurchaseRequestId = purchaseRequestId;
   
     this.financialService.getPriceQuotationById(purchaseRequestId).subscribe((res: any) => {
-      this.quotationDate = res.results[0].quotationDate;
+      this.quotationDate = res.results[0]?.quotationDate;
       this.quotationData = res?.results || [];
-      this.purNumber = res.results[0].purchaseRequestNumber;
-      console.log(this.quotationData);
-      
+      this.purNumber = res.results[0]?.purchaseRequestNumber;
+  
       if (!this.quotationData.length) {
-        alert('لا توجد عروض أسعار لهذا الطلب');
+        Swal.fire({
+          icon:"error",
+          title:"حدث خطأ",
+          text:"لا يوجد عروض أسعار لطلب الشراء المحدد",
+          confirmButtonText:'حسنًا',
+          confirmButtonColor:'#3085d6',
+          timer:5000
+        })
+        // alert('لا توجد عروض أسعار لهذا الطلب');
         return;
       }
   
       this.supplierNames = this.quotationData.map(q => q.supplierName);
       const allnameArs = this.quotationData.flatMap(q => q.items.map((i: any) => i.nameAr));
       this.uniqueItems = Array.from(new Set(allnameArs));
-        
+  
       this.structuredTable = this.uniqueItems.map(nameAr => {
         const row: any = { nameAr };
         this.quotationData.forEach(quotation => {
@@ -288,23 +304,24 @@ export class OffersComponent {
             total: item?.total || 0
           };
         });
-  
         return row;
       });
       const selectModalEl = document.getElementById('selectRequestModal');
-      const selectModal = bootstrap.Modal.getInstance(selectModalEl); 
+      const selectModal = bootstrap.Modal.getInstance(selectModalEl!);
       selectModal?.hide();
-  
-      const detailsModalEl = document.getElementById('requestDetailsModal');
-      const detailsModal = new bootstrap.Modal(detailsModalEl);
-      detailsModal.show();
+      setTimeout(() => {
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document.body.classList.add('modal-open');
+        const detailsModalEl = document.getElementById('requestDetailsModal');
+        const detailsModal = new bootstrap.Modal(detailsModalEl!);
+        detailsModal.show();
+      }, 300);
   
     }, error => {
       console.error('فشل تحميل عروض الأسعار:', error);
       alert('حدث خطأ أثناء تحميل عروض الأسعار.');
     });
-  }
-  
+  }  
 
   getTotalForSupplier(supplier: string): number {
     if (!this.structuredTable) return 0;

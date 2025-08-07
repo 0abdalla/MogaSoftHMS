@@ -44,7 +44,7 @@ namespace Hospital_MS.Services.HMS
                 foreach (DataRow row in dt.Rows)
                 {
                     row.TryTranslateEnum<PatientStatus>("Status");
-                    row.TryTranslateEnum<Gender>("Gender");                    
+                    row.TryTranslateEnum<Gender>("Gender");
                 }
 
                 return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
@@ -105,7 +105,7 @@ namespace Hospital_MS.Services.HMS
             catch (Exception)
             {
                 return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
-            } 
+            }
         }
 
         public async Task<ErrorResponseModel<string>> UpdateStatusAsync(int id, UpdatePatientStatusRequest request, CancellationToken cancellationToken = default)

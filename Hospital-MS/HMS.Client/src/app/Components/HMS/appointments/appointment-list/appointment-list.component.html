@@ -253,12 +253,13 @@
     </div>
 </div>
 
-<div class="modal fade" id="updateEmergencyModal" tabindex="-1" role="dialog" aria-labelledby="updateEmergencyModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateEmergencyModal" tabindex="-1" role="dialog" aria-labelledby="updateEmergencyModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
-            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-            <div class="modal-header">
+            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+            <div class="modal-header justify-content-between align-items-center">
                 <h5 class="modal-title" id="updateEmergencyModalLabel">تحديث الحالة</h5>
+                <button type="button" class="btn btn-secondary" (click)="backToMainModal('updateEmergencyModal')">رجوع</button>
             </div>
             <div class="modal-body">
                 <form [formGroup]="updateEmergencyForm" (ngSubmit)="onSubmit()">
@@ -288,15 +289,12 @@
     </div>
 </div>
 
-
-
-
-<div class="modal fade" id="cashMovementModal" tabindex="-1" aria-labelledby="cashMovementLabel" aria-hidden="true">
+<div class="modal fade" id="cashMovementModal" tabindex="-1" aria-labelledby="cashMovementLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header justify-content-between align-items-center">
                 <h5 class="modal-title" id="cashMovementLabel">كشف حركة الخزينة</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+                <button type="button" class="btn btn-secondary" (click)="backToMainModal('cashMovementModal')">رجوع</button>
             </div>
             <div class="modal-body">
                 <table class="table table-bordered text-center">
@@ -329,8 +327,6 @@
         </div>
     </div>
 </div>
-
-
 
 <div id="printablePDFContent" style=" display: none;" dir="rtl" class="container border rounded p-5">
     <div class="d-flex justify-content-around align-items-center mb-2">
@@ -421,10 +417,9 @@
           <strong>التاريخ:</strong> {{ today }}
         </div>
       </div>
-  </div>
-  
+</div>
 
-<div class="modal fade" id="shiftReportModal" tabindex="-1" aria-labelledby="shiftReportModalLabel" aria-hidden="true">
+<div class="modal fade" id="shiftReportModal" tabindex="-1" aria-labelledby="shiftReportModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content p-3">
         <div class="modal-body"  >
@@ -485,7 +480,6 @@
       </div>
     </div>
 </div>
-
 
 <div class="border rounded p-5" id="printableShiftModal">
           <div class="d-flex justify-content-evenly align-items-center">

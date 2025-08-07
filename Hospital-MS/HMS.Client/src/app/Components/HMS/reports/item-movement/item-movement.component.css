@@ -1,0 +1,7 @@
+#item-movement-report{
+    min-height: 100vh;
+}
+.modal-dialog-scrollable .modal-body {
+    max-height: 70vh !important;
+    overflow-y: auto !important;
+}

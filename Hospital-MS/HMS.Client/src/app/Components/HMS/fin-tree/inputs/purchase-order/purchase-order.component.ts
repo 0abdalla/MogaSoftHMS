@@ -243,10 +243,20 @@ export class PurchaseOrderComponent {
       next: (data) => {
         this.order=data.results;
         console.log(this.order);
+        const itemsArray = this.purchaseOrderForm.get('items') as FormArray;
+        itemsArray.clear();
+        this.order.items.forEach((item: any) => {
+          itemsArray.push(this.fb.group({
+            itemId: [item.itemId ?? item.id, Validators.required],
+            requestedQuantity: [item.requestedQuantity ?? item.quantity, Validators.required],
+            unitPrice: [item.unitPrice, Validators.required],
+            totalPrice: [item.totalPrice ?? (item.unitPrice * item.requestedQuantity), Validators.required],
+          }));          
+        });
         this.purchaseOrderForm.patchValue({
+          priceQuotationId: this.order.priceQuotationId,
           supplierId: this.order.supplierId,
-          description: this.order.description,
-          items: this.order.items
+          notes: this.order.notes
         });
   
         const modal = new bootstrap.Modal(document.getElementById('addPurchaseorderModal')!);
