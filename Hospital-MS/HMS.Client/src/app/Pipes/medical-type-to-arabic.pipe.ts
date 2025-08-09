@@ -14,8 +14,20 @@ export class MedicalTypeToArabicPipe implements PipeTransform {
         return 'عمليات';
       case 'Screening':
         return 'تحاليل';
-      case 'Radiology':
-        return 'أشعة';
+      case 'MRI':
+        return 'أشعة رنين';
+      case 'Panorama':
+        return 'أشعة بانوراما';
+      case 'XRay':
+        return 'أشعة عادية';
+      case 'CTScan':
+        return 'أشعة مقطعية';
+      case 'Ultrasound':
+        return 'أشعة سونار';
+      case 'Echo':
+        return 'أشعة إيكو';
+      case 'Mammogram':
+        return 'أشعة ماموجرام';
       default:
         return value;
     }

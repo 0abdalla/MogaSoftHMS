@@ -24,10 +24,10 @@
                     <i class="fas fa-plus-circle"></i>
                     <span>إضافة حجز</span>
                 </button>
-                <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="confirmShiftClose()">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="confirmShiftClose()">
                     <i class="fas fa-close"></i>
                     <span>إغلاق حركة الشيفت</span>
-                  </button>                  
+                  </button>
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
                     <i class="uil uil-filter"></i>
                     <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
@@ -71,7 +71,7 @@
                                     </td>
                                     <td>
                                         <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
-                                            {{ getServiceName(appointment.type) }}
+                                            {{ appointment.type | medicalTypeToArabic }}
                                         </p>
                                     </td>
                                     <td class="text-secondary fw-semibold">
@@ -165,7 +165,7 @@
                                                     <td>{{ item.medicalServiceDate | date: 'dd/MM/yyyy' }}</td>
                                                     <td>{{ item.medicalServiceName }}</td>
                                                     <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
-                                                    <td *ngIf="item.medicalServiceType == 'Screening' || item.medicalServiceType == 'Radiology'">{{ '---' }}</td>
+                                                    <td *ngIf="item.medicalServiceType != 'General' || item.medicalServiceType != 'Surgery' || item.medicalServiceType != 'Consultation'">{{ '---' }}</td>
                                                     <td>{{ item.medicalServicePrice }} جنيه</td>
                                                 </tr>
                                                 <tr *ngIf="selectedAppointment?.medicalServices?.length">
@@ -332,10 +332,10 @@
     <div class="d-flex justify-content-around align-items-center mb-2">
         <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
         <div class="text-center">
-            <h5 class="fw-bold mb-1">  حجز رقم    <span class="text-primary">  {{ selectedAppointment?.id }}</span></h5>
+            <h5 class="fw-bold mb-1"> حجز رقم <span class="text-primary">  {{ selectedAppointment?.id }}</span></h5>
         </div>
     </div>
-  
+
     <h5 class="fw-bold mb-2">بيانات المريض</h5>
     <div class="row">
         <div class="col-lg-6">
@@ -349,9 +349,9 @@
             <p><strong>الحالة:</strong> {{ selectedAppointment?.status || '---' }}</p>
         </div>
     </div>
-  
+
     <hr>
-  
+
     <h5 class="fw-bold mb-2">تفاصيل الحجز</h5>
     <div class="row">
         <div class="col-lg-6">
@@ -362,170 +362,170 @@
             <p><strong>طريقة الحجز:</strong> عبر التطبيق</p>
         </div>
     </div>
-  
+
     <div *ngIf="selectedAppointment?.medicalServices?.length">
-      <table class="border rounded">
-        <thead>
-          <tr>
-            <th>تاريخ الخدمة</th>
-            <th>نوع الخدمة</th>
-            <th>الدكتور</th>
-            <th>السعر</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of selectedAppointment?.medicalServices">
-            <td>{{ item.medicalServiceDate | date:'dd/MM/yyyy' }}</td>
-            <td>{{ item.medicalServiceName }}</td>
-            <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
-            <td *ngIf="item.medicalServiceType == 'Screening' || item.medicalServiceType == 'Radiology'">---</td>
-            <td>{{ item.medicalServicePrice }} جنيه</td>
-          </tr>
-          <tr>
-            <td colspan="3" class="fw-bold text-center">الإجمالي</td>
-            <td class="fw-bold">{{ totalPrice }} جنيه</td>
-          </tr>
-        </tbody>
-      </table>
+        <table class="border rounded">
+            <thead>
+                <tr>
+                    <th>تاريخ الخدمة</th>
+                    <th>نوع الخدمة</th>
+                    <th>الدكتور</th>
+                    <th>السعر</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of selectedAppointment?.medicalServices">
+                    <td>{{ item.medicalServiceDate | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ item.medicalServiceName }}</td>
+                    <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
+                    <td *ngIf="item.medicalServiceType == 'Screening' || item.medicalServiceType == 'Radiology'">---</td>
+                    <td>{{ item.medicalServicePrice }} جنيه</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="fw-bold text-center">الإجمالي</td>
+                    <td class="fw-bold">{{ totalPrice }} جنيه</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-  
-  
+
+
     <div *ngIf="selectedAppointment?.type === 'Emergency'">
-      <h5 class="fw-bold mb-2">بيانات المرافق</h5>
-      <div class="row">
-        <div class="col-lg-6">
-            <p><strong>الاسم:</strong> {{ selectedAppointment?.companionName || '---' }}</p>
-            <p><strong>الهوية:</strong> {{ selectedAppointment?.companionNationalId || '---' }}</p>
+        <h5 class="fw-bold mb-2">بيانات المرافق</h5>
+        <div class="row">
+            <div class="col-lg-6">
+                <p><strong>الاسم:</strong> {{ selectedAppointment?.companionName || '---' }}</p>
+                <p><strong>الهوية:</strong> {{ selectedAppointment?.companionNationalId || '---' }}</p>
+            </div>
+            <div class="col-lg-6">
+                <p><strong>رقم الهاتف:</strong> {{ selectedAppointment?.companionPhone || '---' }}</p>
+            </div>
         </div>
-        <div class="col-lg-6">
-            <p><strong>رقم الهاتف:</strong> {{ selectedAppointment?.companionPhone || '---' }}</p>
-        </div>
-      </div>
     </div>
     <div *ngIf="selectedAppointment?.notes">
         <hr>
         <h5 class="fw-bold mb-2">📝 ملاحظات إضافية</h5>
         <p>{{ selectedAppointment?.notes || '---' }}</p>
     </div>
-    
+
     <div class="row mt-4">
         <hr>
         <div class="col-md-6">
-          <strong>إسم المستخدم:</strong> {{ userName }}
+            <strong>إسم المستخدم:</strong> {{ userName }}
         </div>
         <div class="col-md-6 text-end">
-          <strong>التاريخ:</strong> {{ today }}
+            <strong>التاريخ:</strong> {{ today }}
         </div>
-      </div>
+    </div>
 </div>
 
 <div class="modal fade" id="shiftReportModal" tabindex="-1" aria-labelledby="shiftReportModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content p-3">
-        <div class="modal-body"  >
-          <div dir="rtl" class="px-4 bg-white">
-            <div class="d-flex justify-content-evenly align-items-center">
-              <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-              <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+        <div class="modal-content p-3">
+            <div class="modal-body">
+                <div dir="rtl" class="px-4 bg-white">
+                    <div class="d-flex justify-content-evenly align-items-center">
+                        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+                        <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
+                        <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
+                        <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
+                    </div>
+
+                    <table class="table table-bordered mt-3">
+                        <thead>
+                            <tr>
+                                <th>م</th>
+                                <th>نوع الخدمة</th>
+                                <th>العدد</th>
+                                <th>السعر</th>
+                                <th>السعر الإجمالي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let service of medicalServices; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ service.medicalServiceName }}</td>
+                                <td>{{ service.count }}</td>
+                                <td>{{ service.price | number:'1.2-2' }} ج.م</td>
+                                <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
+                                <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <hr class="my-4" />
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <p><strong>اسم المستخدم:</strong> {{ userName }}</p>
+                        </div>
+                        <div class="col-6">
+                            <p><strong>التاريخ:</strong> {{ today }}</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-  
-            <div class="row mt-3">
-              <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
-              <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
-              <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-primary" (click)="printShiftReport()">طباعة PDF</button>
             </div>
-  
-            <table class="table table-bordered mt-3">
-              <thead>
-                <tr>
-                  <th>م</th>
-                  <th>نوع الخدمة</th>
-                  <th>العدد</th>
-                  <th>السعر</th>
-                  <th>السعر الإجمالي</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let service of medicalServices; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ service.medicalServiceName }}</td>
-                  <td>{{ service.count }}</td>
-                  <td>{{ service.price | number:'1.2-2' }} ج.م</td>
-                  <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
-                  <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
-                </tr>
-              </tfoot>
-            </table>
-            <hr class="my-4" />
-            <div class="row text-center">
-              <div class="col-6">
-                <p><strong>اسم المستخدم:</strong> {{ userName }}</p>
-              </div>
-              <div class="col-6">
-                <p><strong>التاريخ:</strong> {{ today }}</p>
-              </div>
-            </div>
-          </div>
-  
         </div>
-        <div class="modal-footer justify-content-between">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-          <button type="button" class="btn btn-primary" (click)="printShiftReport()">طباعة PDF</button>
-        </div>
-      </div>
     </div>
 </div>
 
 <div class="border rounded p-5" id="printableShiftModal">
-          <div class="d-flex justify-content-evenly align-items-center">
-            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-            <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
-          </div>
+    <div class="d-flex justify-content-evenly align-items-center">
+        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+        <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+    </div>
 
-          <div class="row mt-3">
-            <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
-            <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
-            <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
-          </div>
+    <div class="row mt-3">
+        <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
+        <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
+        <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
+    </div>
 
-          <table class="table table-bordered mt-3">
-            <thead>
-              <tr>
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
                 <th>م</th>
                 <th>نوع الخدمة</th>
                 <th>العدد</th>
                 <th>السعر</th>
                 <th>السعر الإجمالي</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let service of medicalServices; let i = index">
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let service of medicalServices; let i = index">
                 <td>{{ i + 1 }}</td>
                 <td>{{ service.medicalServiceName }}</td>
                 <td>{{ service.count }}</td>
                 <td>{{ service.price | number:'1.2-2' }} ج.م</td>
                 <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
                 <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
                 <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
-              </tr>
-            </tfoot>
-          </table>
-          <hr class="my-4" />
-          <div class="row text-center">
-            <div class="col-6">
-              <p><strong>اسم المستخدم:</strong> {{ userName }}</p>
-            </div>
-            <div class="col-6">
-              <p><strong>التاريخ:</strong> {{ today }}</p>
-            </div>
-          </div>
+            </tr>
+        </tfoot>
+    </table>
+    <hr class="my-4" />
+    <div class="row text-center">
+        <div class="col-6">
+            <p><strong>اسم المستخدم:</strong> {{ userName }}</p>
+        </div>
+        <div class="col-6">
+            <p><strong>التاريخ:</strong> {{ today }}</p>
+        </div>
+    </div>
 </div>

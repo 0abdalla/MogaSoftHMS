@@ -14,10 +14,10 @@
                     <i class="uil uil-filter"></i>
                     <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
                 </button>
-                            <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openRadiologyBodyTypes(null)">
+                            <!-- <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openRadiologyBodyTypes(null)">
                     <i class="fas fa-plus-circle"></i>
                     <span>إضافة أشعة للجسم</span>
-                </button>
+                </button> -->
                         </div>
                     </div>
                     <div class="col-md-4 mb-2" *ngIf="total > 0">
@@ -39,7 +39,7 @@
                                     <th>الإسم</th>
                                     <th>السعر</th>
                                     <th>النوع</th>
-                                    <th>نوع أشعة الجسم</th>
+                                    <!-- <th>نوع أشعة الجسم</th> -->
                                     <th>الأيام</th>
                                     <th>الإجراءات</th>
                                 </tr>
@@ -50,9 +50,9 @@
                                         <td>{{ item.name }}</td>
                                         <td>{{ item.price }}</td>
                                         <td>{{ item.type | medicalTypeToArabic }}</td>
-                                        <td>
+                                        <!-- <td>
                                             <app-tag [tags]="item.bodyTypes" [header]="'أشعة الجسم'" [showWithMore]="true"></app-tag>
-                                        </td>
+                                        </td> -->
                                         <td>
                                             <app-tag [tags]="item.days" [header]="'الأيام'" [showWithMore]="true"></app-tag>
                                         </td>
@@ -114,7 +114,7 @@
                         </div>
                     </div>
 
-                    <div class="mb-3" *ngIf="serviceForm.get('type')?.value == 'Screening' || serviceForm.get('type')?.value == 'Radiology'">
+                    <div class="mb-3">
                         <label class="form-label">السعر</label>
                         <input type="number" class="form-control" formControlName="price">
                         <div *ngIf="serviceForm.get('price')?.invalid && serviceForm.get('price')?.touched" class="text-danger">

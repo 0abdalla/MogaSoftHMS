@@ -87,8 +87,8 @@ namespace Hospital_MS.Services.HMS
 
                     await _unitOfWork.CompleteAsync(cancellationToken);
 
-                    var appointmentNumber = await _unitOfWork.Repository<MedicalServiceDetail>()
-                                   .CountAsync(a => a.MedicalServiceId == service.MedicalServiceId && a.AppointmentDate == service.AppointmentDate, cancellationToken) + 1;
+                    var appointmentNumber = await _unitOfWork.Repository<Appointment>()
+                                   .CountAsync(a => a.Type == Enum.Parse<AppointmentType>(service.AppointmentType) && a.AppointmentDate == service.AppointmentDate, cancellationToken) + 1;
 
                     var appointment = new Appointment
                     {
@@ -111,29 +111,15 @@ namespace Hospital_MS.Services.HMS
                     if (request.MedicalServices.Count > 0)
                     {
                         var serviceDetails = new List<MedicalServiceDetail>();
-
-
-                        if (service.AppointmentType != "Radiology")
+                        foreach (var item in service.MedicalServiceIds)
                         {
                             var serviceDetail = new MedicalServiceDetail();
                             serviceDetail.AppointmentId = appointment.Id;
-                            serviceDetail.MedicalServiceId = service.MedicalServiceId;
+                            serviceDetail.MedicalServiceId = item;
                             serviceDetail.AppointmentDate = service.AppointmentDate;
+
                             serviceDetails.Add(serviceDetail);
                         }
-                        else
-                        {
-                            foreach (var item in service.RadiologyBodyTypeIds)
-                            {
-                                var serviceDetail = new MedicalServiceDetail();
-                                serviceDetail.AppointmentId = appointment.Id;
-                                serviceDetail.MedicalServiceId = service.MedicalServiceId;
-                                serviceDetail.AppointmentDate = service.AppointmentDate;
-                                serviceDetail.RadiologyBodyTypeId = item;
-                                serviceDetails.Add(serviceDetail);
-                            }
-                        }
-
                         await _unitOfWork.Repository<MedicalServiceDetail>().AddRangeAsync(serviceDetails, cancellationToken);
                     }
                     await _unitOfWork.CompleteAsync(cancellationToken);
@@ -202,8 +188,7 @@ namespace Hospital_MS.Services.HMS
                        PatientPhone = first.PatientPhone,
                        ClinicId = first.ClinicId,
                        ClinicName = first.ClinicName,
-                       MedicalServiceName = first.MedicalServiceName,
-                       RadiologyBodyTypeName = string.Join(";;;", g.Select(x => (string)x.RadiologyBodyTypeName).Where(x => !string.IsNullOrEmpty(x)).ToList()),
+                       MedicalServiceName =  string.Join(";;;", g.Select(x => (string)x.MedicalServiceName).Where(x => !string.IsNullOrEmpty(x)).ToList()),
                    };
                }).ToList();
 

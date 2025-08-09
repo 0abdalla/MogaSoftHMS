@@ -162,6 +162,7 @@ export class AppointmentListComponent implements OnInit {
   getPatients() {
     this.appointmentService.getAllAppointments(this.pagingFilterModel).subscribe({
       next: (data) => {
+        debugger;
         this.patients = data.results;
         this.total = data.totalCount;
         this.cdr.detectChanges();

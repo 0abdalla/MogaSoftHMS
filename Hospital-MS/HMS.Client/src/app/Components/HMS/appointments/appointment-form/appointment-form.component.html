@@ -67,7 +67,6 @@
                                     <th>تاريخ الحجز</th>
                                     <th>نوع الحجز</th>
                                     <th>نوع الخدمة</th>
-                                    <th>أشعة الجسم</th>
                                     <th>الدكتور المختص</th>
                                     <th>التكلفة</th>
                                     <th>الإجراءات</th>
@@ -79,15 +78,12 @@
                                         <td>{{ item.appointmentDate | date: 'dd/MM/yyyy' }}</td>
                                         <td>{{ item.appointmentType | medicalTypeToArabic }}</td>
                                         <td>{{ item.medicalServiceName }}</td>
-                                        <td>
-                                            <app-tag [tags]="item.radiologyBodyTypeNames" [header]="'أشعة الجسم'" [showWithMore]="true"></app-tag>
-                                        </td>
-                                        <td>{{ item.doctorName }}</td>
+                                        <td>{{ item.doctorName ?? '---' }}</td>
                                         <td>{{ item.price }} جنيه</td>
                                         <td class="d-flex gap-2">
-                                            <button type="button" class="btn btn-primary" (click)="openAppointmentDetailsModal(item)">
+                                            <!-- <button type="button" class="btn btn-primary" (click)="openAppointmentDetailsModal(item)">
                                                 <i class="fas fa-edit"></i>
-                                            </button>
+                                            </button> -->
                                             <button type="button" class="btn btn-danger" (click)="deleteAppointment(i)">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
@@ -206,7 +202,7 @@
                     <div class="mb-3">
                         <label for="app-date" class="form-label">تاريخ الحجز</label>
                         <input id="app-date" type="date" formControlName="appointmentDate" class="form-control shadow-none" (change)="onDayChange()">
-                        
+
                         <div *ngIf="appointmentDetailsForm.get('appointmentDate')?.invalid && appointmentDetailsForm.get('appointmentDate')?.touched && appointmentDetailsForm.get('appointmentDate')?.errors?.['notToday']" class="text-danger">
                             تاريخ الحجز يجب أن يكون اليوم أو لاحقًا
                         </div>
@@ -230,9 +226,10 @@
                             نوع الحجز مطلوب
                         </div>
                     </div>
-                    <div class="mb-3">
+
+                    <div class="mb-3" *ngIf="IsGeneral">
                         <label for="clinic" class="form-label">
-                            {{appointmentDetailsForm.get('appointmentType')?.value === 'Screening'? 'نوع التحليل': appointmentDetailsForm.get('appointmentType')?.value === 'MRI' || appointmentDetailsForm.get('appointmentType')?.value === 'Panorama' || appointmentDetailsForm.get('appointmentType')?.value === 'XRay' || appointmentDetailsForm.get('appointmentType')?.value === 'CTScan' || appointmentDetailsForm.get('appointmentType')?.value === 'Ultrasound' || appointmentDetailsForm.get('appointmentType')?.value === 'Echo' || appointmentDetailsForm.get('appointmentType')?.value === 'Mammogram'? 'نوع الأشعة': 'الخدمة الطبية'}}
+                            الخدمة الطبية
                         </label>
                         <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" (change)="onServiceSelected()">
                         <option selected disabled [value]="null">اختر الخدمة</option>
@@ -244,10 +241,11 @@
                         </option>
                     </select>
                         <div *ngIf="appointmentDetailsForm.get('medicalServiceId')?.invalid && appointmentDetailsForm.get('medicalServiceId')?.touched" class="text-danger">
-                            {{ appointmentDetailsForm.get('appointmentType')?.value === 'Screening' ? 'نوع التحليل مطلوب' : appointmentDetailsForm.get('appointmentType')?.value === 'MRI' || appointmentDetailsForm.get('appointmentType')?.value === 'Panorama' || appointmentDetailsForm.get('appointmentType')?.value === 'XRay' || appointmentDetailsForm.get('appointmentType')?.value === 'CTScan' || appointmentDetailsForm.get('appointmentType')?.value === 'Ultrasound' || appointmentDetailsForm.get('appointmentType')?.value === 'Echo' || appointmentDetailsForm.get('appointmentType')?.value === 'Mammogram' ? 'نوع الأشعة مطلوبة' : 'الخدمة الطبية مطلوبة' }}
+                            الخدمة الطبية مطلوبة
                         </div>
                     </div>
-                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value && appointmentDetailsForm.get('appointmentType')?.value != 'Screening' && appointmentDetailsForm.get('appointmentType')?.value != 'MRI' && appointmentDetailsForm.get('appointmentType')?.value != 'Panorama' && appointmentDetailsForm.get('appointmentType')?.value != 'XRay' && appointmentDetailsForm.get('appointmentType')?.value != 'CTScan' && appointmentDetailsForm.get('appointmentType')?.value != 'Ultrasound' && appointmentDetailsForm.get('appointmentType')?.value != 'Echo' && appointmentDetailsForm.get('appointmentType')?.value != 'Mammogram'">
+
+                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value && IsGeneral">
                         <label for="clinic-doctor" class="form-label">الدكتور المختص</label>
                         <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId" (change)="onDoctorSelected()">
                             <option selected disabled [value]="null">اختر الدكتور المختص</option>
@@ -258,15 +256,26 @@
                             {{ selectedDate ? 'لا يوجد أطباء متاحين في اليوم المحدد' : 'لا يوجد أطباء متاحين لهذه الخدمة' }}
                             </option>
                         </select>
+                        <div *ngIf="appointmentDetailsForm.get('doctorId')?.invalid && appointmentDetailsForm.get('doctorId')?.touched" class="text-danger">
+                            الدكتور المختص مطلوب
+                        </div>
                     </div>
-                    <!-- <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value == 'Radiology'">
-                        <label for="clinic-type" class="form-label">أشعة الجسم</label>
-                        <select id="clinic-type" class="form-select shadow-none" formControlName="radiologyBodyTypeId">
-                            <option selected disabled [value]="null">اختر أشعة الجسم</option>
-                            <option [value]="item.id" *ngFor="let item of radiologyTypesSelected">{{item.name}}</option>
-                        </select>
+
+                    <div class="mb-3" *ngIf="IsScreening || IsRadiology">
+                        <label for="clinic" class="form-label">
+                            {{IsScreening ? 'نوع التحليل': 'نوع الأشعة'}}
+                        </label>
+                        <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" (change)="onServiceSelected()">
+                        <option selected disabled [value]="null">اختر الخدمة</option>
+                        <option *ngFor="let service of filteredServices" [value]="service.id">
+                        {{ service.name }}
+                        </option>
+                        <option *ngIf="filteredServices.length === 0" disabled>
+                        {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
+                        </option>
+                    </select>
                         <div class="min-width-200 max-width-500 small-scroll overflow-auto p-2">
-                            <span class="badge round min-width-60 badge-muted me-1 mb-1" *ngFor="let item of radiologyTypesClicked;let i = index">
+                            <span class="badge round min-width-60 badge-muted me-1 mb-1" *ngFor="let item of radiologyTypesSelected;let i = index">
                             {{ item.name }}
                             <i class="fas fa-times ms-1 cursor-pointer"
                           (click)="removeRadiologyType(i)"
@@ -274,12 +283,14 @@
                           style="font-size: 0.8rem;"></i>
                           </span>
                         </div>
-                        <div *ngIf="appointmentDetailsForm.get('radiologyBodyTypeId')?.invalid && appointmentDetailsForm.get('radiologyBodyTypeId')?.touched" class="text-danger">
-                            أشعة الجسم مطلوبة
+                        <div *ngIf="appointmentDetailsForm.get('medicalServiceId')?.invalid && appointmentDetailsForm.get('medicalServiceId')?.touched" class="text-danger">
+                            {{ IsScreening ? 'نوع التحليل مطلوب' : 'نوع الأشعة مطلوبة' }}
                         </div>
-                    </div> -->
+                    </div>
+
+
                     <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn-blue">حفظ التغييرات</button>
+                        <button type="submit" class="btn-blue" [disabled]="appointmentDetailsForm.invalid">حفظ التغييرات</button>
                     </div>
                 </form>
             </div>
