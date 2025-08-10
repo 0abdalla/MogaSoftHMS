@@ -35,9 +35,8 @@ namespace Hospital_MS.Core.Contracts.Appointments
 
     public class MedicalServiceModel
     {
-        public int MedicalServiceId { get; set; }
         public DateOnly AppointmentDate { get; set; }
-        public List<int>? RadiologyBodyTypeIds { get; set; }
+        public List<int> MedicalServiceIds { get; set; }
         public string AppointmentType { get; set; }
     }
 }

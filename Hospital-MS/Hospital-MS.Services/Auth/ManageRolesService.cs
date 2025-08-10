@@ -1,19 +1,10 @@
-﻿using Azure;
-using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.Appointments;
-using Hospital_MS.Core.Migrations;
+﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.Auth
 {

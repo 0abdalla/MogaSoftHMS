@@ -31,7 +31,9 @@ export class EmergencyReceptionComponent {
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       emergencyLevel: ['', Validators.required],
       companionName: ['', Validators.required],
+      appointmentDate:[new Date().toISOString().substring(0, 10)],
       appointmentType: ['Emergency'],
+      gender: ['', Validators.required],
       companionNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       companionPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       notes: [''],
@@ -41,7 +43,13 @@ export class EmergencyReceptionComponent {
       referred: [''],
       referredClinic: [''],
       paymentMethod: [''],
-
+      medicalServices: this.fb.array([
+        this.fb.group({
+          appointmentDate: [new Date().toISOString().substring(0, 10)],
+          medicalServiceIds: [[]],
+          appointmentType: ['Emergency']
+        })
+      ])
     });
     this.insuranceService.getAllInsurances().subscribe({
       next: (data) => {
@@ -62,6 +70,7 @@ export class EmergencyReceptionComponent {
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: 'حدث خطأ أثناء إنشاء الحجز' });
+        console.log(this.emergencyForm.value);
       }
     })
   }

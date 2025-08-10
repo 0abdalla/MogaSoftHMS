@@ -2,7 +2,6 @@
 using Hospital_MS.Core.Contracts.Items;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_MS.API.Controllers;
@@ -43,6 +42,13 @@ public class ItemsController(IItemService itemService) : ApiBaseController
     public async Task<IActionResult> DeleteItem(int id, CancellationToken cancellationToken)
     {
         var result = await _itemService.DeleteItemAsync(id, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpGet("movement/{id}")]
+    public async Task<IActionResult> GetItemMovement(int id, [FromQuery] GetItemMovementRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _itemService.GetItemMovementAsyncV2(id, request, cancellationToken);
         return Ok(result);
     }
 }
