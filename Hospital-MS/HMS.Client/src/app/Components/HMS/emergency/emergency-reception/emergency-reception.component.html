@@ -16,6 +16,20 @@
                 </div>
                 <div class="col-lg-4 mb-3">
                     <div class="mt-3">
+                        <label for="name" class="form-label">النوع</label>
+                        <!-- <input id="name" formControlName="gender" placeholder="أدخل إسم المريض" class="form-control shadow-none" /> -->
+                        <select id="name" formControlName="gender" class="form-select shadow-none" placeholder="أدخل إسم المريض" class="form-control shadow-none" >
+                            <option value="" disabled selected>اختر النوع</option>
+                            <option value="Male">ذكر</option>
+                            <option value="Female">أنثى</option>
+                        </select>
+                        <div *ngIf="emergencyForm.get('gender')?.invalid && emergencyForm.get('gender')?.touched" class="text-danger">
+                            النوع مطلوب
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-3">
+                    <div class="mt-3">
                         <label for="patientPhone" class="form-label">رقم هاتف المريض</label>
                         <input id="patientPhone" formControlName="patientPhone" placeholder="أدخل رقم هاتف المريض" class="form-control shadow-none" />
                         <div *ngIf="emergencyForm.get('patientPhone')?.invalid && emergencyForm.get('patientPhone')?.touched" class="text-danger">
