@@ -19,5 +19,7 @@ namespace Hospital_MS.Interfaces.HMS
         Task UpdateAppointmentsToCompletedAsync();
 
         Task<ErrorResponseModel<ClosedShiftResponse>> CloseShiftAsync(CancellationToken cancellationToken = default);
+
+        Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsyncV2(CreateAppointmentRequest request, CancellationToken cancellationToken = default);
     }
 }
