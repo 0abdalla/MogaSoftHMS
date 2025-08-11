@@ -2,7 +2,6 @@
 using Hospital_MS.Core.Contracts.PurchasePermission;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -17,7 +16,7 @@ public class ReceiptPermissionsController(IReceiptPermissionService purchasePerm
     [HttpPost("")]
     public async Task<IActionResult> Create([FromBody] ReceiptPermissionRequest request, CancellationToken cancellationToken)
     {
-        var result = await _receiptPermissionService.CreateAsync(request, cancellationToken);
+        var result = await _receiptPermissionService.CreateAsyncV2(request, cancellationToken);
         return Ok(result);
     }
 

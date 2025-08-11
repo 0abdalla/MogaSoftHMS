@@ -1,12 +1,7 @@
 ﻿using Hospital_MS.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models;
-public class ReceiptPermission : AuditableEntity 
+public class ReceiptPermission : AuditableEntity
 {
     public int Id { get; set; }
     public string PermissionNumber { get; set; } = string.Empty;
@@ -25,4 +20,7 @@ public class ReceiptPermission : AuditableEntity
     //public PurchaseRequest PurchaseRequest { get; set; } = default!;
     public PurchaseOrder PurchaseOrder { get; set; } = default!;
     public ICollection<ReceiptPermissionItem> Items { get; set; } = new HashSet<ReceiptPermissionItem>();
+
+    public DailyRestriction DailyRestriction { get; set; } = default!;
+    public int? DailyRestrictionId { get; set; }
 }

@@ -1,4 +1,6 @@
-﻿namespace Hospital_MS.Core.Contracts.PurchasePermission;
+﻿using Hospital_MS.Core.Contracts.DailyRestrictions;
+
+namespace Hospital_MS.Core.Contracts.PurchasePermission;
 public class ReceiptPermissionResponse
 {
     public int Id { get; set; }
@@ -15,5 +17,7 @@ public class ReceiptPermissionResponse
 
     public int? PurchaseOrderId { get; set; }
     public string? PurchaseOrderNumber { get; set; }
+
+    public PartialDailyRestrictionResponse DailyRestriction { get; set; } = new();
 
 }

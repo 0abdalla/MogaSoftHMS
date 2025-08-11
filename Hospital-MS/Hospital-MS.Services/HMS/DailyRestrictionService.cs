@@ -247,21 +247,12 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
 
     public async Task<string> GenerateRestrictionNumberAsync(CancellationToken cancellationToken = default)
     {
-        var lastRestriction = await _unitOfWork.Repository<DailyRestriction>()
-            .GetAll()
-            .OrderByDescending(x => x.Id)
-            .FirstOrDefaultAsync(cancellationToken);
+        var year = DateTime.Now.Year;
 
-        int nextNumber = 1;
+        var count = await _unitOfWork.Repository<DailyRestriction>()
+            .CountAsync(x => x.RestrictionDate.Year == year, cancellationToken);
 
-        if (lastRestriction != null)
-        {
-            if (int.TryParse(lastRestriction.RestrictionNumber, out int lastNumber))
-            {
-                nextNumber = lastNumber + 1;
-            }
-        }
-        return nextNumber.ToString("D5");
+        return $"DR-{year}-{(count + 1):D5}";
     }
 
     public async Task<ErrorResponseModel<List<AccountReportResponse>>> GetAccountReportAsync(int accountId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken)
