@@ -195,6 +195,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     UnitPrice = i.UnitPrice,
                     TotalPrice = i.TotalPrice
                 }).ToList(),
+
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     Id = permission?.DailyRestriction?.Id,
@@ -205,7 +206,6 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     RestrictionDate = permission.DailyRestriction.RestrictionDate,
                     RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? string.Empty,
                     Number = permission.PermissionNumber
-
                 }
             };
 

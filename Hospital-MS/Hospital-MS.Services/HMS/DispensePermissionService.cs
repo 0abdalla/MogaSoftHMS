@@ -126,7 +126,8 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 From = account.NameAR,
                 To = treasury.Name,
                 RestrictionDate = dailyRestriction.RestrictionDate,
-                RestrictionNumber = dailyRestriction.RestrictionNumber
+                RestrictionNumber = dailyRestriction.RestrictionNumber,
+
             };
 
             return ErrorResponseModel<PartialDailyRestrictionResponse>.Success(GenericErrors.GetSuccess, response);

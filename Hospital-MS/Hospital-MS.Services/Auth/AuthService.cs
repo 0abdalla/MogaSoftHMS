@@ -1,4 +1,5 @@
 ﻿
+using Hangfire;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Auth;
 using Hospital_MS.Core.Models;
@@ -6,10 +7,14 @@ using Hospital_MS.Interfaces.Auth;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Text;
 
 namespace Hospital_MS.Services.Auth
 {
@@ -18,7 +23,9 @@ namespace Hospital_MS.Services.Auth
         SignInManager<ApplicationUser> signInManager,
         IJwtProvider jwtProvider, ISQLHelper _sQLHelper,
         IUnitOfWork _unitOfWork,
-        RoleManager<IdentityRole> _roleManager) : IAuthService
+        RoleManager<IdentityRole> _roleManager,
+        IHttpContextAccessor httpContextAccessor,
+        IEmailSender emailService) : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
@@ -26,6 +33,8 @@ namespace Hospital_MS.Services.Auth
         private readonly ISQLHelper sQLHelper = _sQLHelper;
         private readonly IUnitOfWork unitOfWork = _unitOfWork;
         private readonly RoleManager<IdentityRole> roleManager = _roleManager;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IEmailSender _emailService = emailService;
 
         public async Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
@@ -175,6 +184,71 @@ namespace Hospital_MS.Services.Auth
         {
             var Staff = await unitOfWork.Repository<Staff>().GetAll(i => i.Id == StaffId).Include(i => i.Branch).FirstOrDefaultAsync();
             return Staff.Branch;
+        }
+
+        public async Task<ErrorResponseModel<string>> SendResetPasswordCodeAsync(string userName)
+        {
+            // edit method to take user name instead of email 
+
+            if (await _userManager.FindByNameAsync(userName) is not { } user)
+                return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess); // return success to avoid email enumeration
+
+            //if (await _userManager.FindByEmailAsync(email) is not { } user)
+            //    return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess); // return success to avoid email enumeration
+
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            await SendResetPasswordEmailAsync(user, code);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+        }
+
+
+        public async Task<ErrorResponseModel<string>> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null)
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+
+            IdentityResult result;
+
+            try
+            {
+                var code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Code));
+                result = await _userManager.ResetPasswordAsync(user, code, request.NewPassword);
+            }
+            catch (FormatException)
+            {
+                result = IdentityResult.Failed(_userManager.ErrorDescriber.InvalidToken());
+            }
+
+            if (result.Succeeded)
+                return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+
+            var error = result.Errors.First();
+
+            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, error.Description);
+        }
+
+        private async Task SendResetPasswordEmailAsync(ApplicationUser user, string code)
+        {
+            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin;
+
+            var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
+                new Dictionary<string, string>
+                {
+                    { "{{name}}",user.FirstName},
+                    //{ "{{action_url", $"{origin}/auth/forgetPassword?email={user.Email}&code={code}"}
+                    { "{{action_url}}", $"{origin}/reset-password?email={Uri.EscapeDataString(user.Email!)}&code={Uri.EscapeDataString(code)}" }
+                }
+            );
+
+            BackgroundJob.Enqueue(() => _emailService.SendEmailAsync(user.Email!, "✅ HMS: Change Password", emailBody));
+
+            await Task.CompletedTask;
         }
     }
 }
