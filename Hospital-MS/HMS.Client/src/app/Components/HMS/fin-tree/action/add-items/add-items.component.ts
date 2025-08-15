@@ -259,7 +259,8 @@ export class AddItemsComponent implements OnInit {
     } else {
       this.financialService.addReceiptPermission(formData).subscribe({
         next: (res: any) => {
-          this.addNumber = res.results;
+          this.addNumber = res.results.number;
+          console.log('Full Data:' , res);
           console.log(this.addNumber);
           const formData = this.addPermissionForm.value;
           if (!this.allItems?.length || !this.stores?.length || !this.suppliers?.length) {
@@ -283,20 +284,13 @@ export class AddItemsComponent implements OnInit {
             supplierName: supplier,
             storeName: store,
             items: itemsWithNames,
-            totalAmount
+            totalAmount,
+            accountingGuidanceName: res.results.accountingGuidanceName,
+            restrictionNumber: res.results.restrictionNumber,
+            number: res.results.number
           };
-  
-          const addModalEl = document.getElementById('addPermissionModal');
-          const confirmModalEl = document.getElementById('confirmationModal');
-
-          if (addModalEl && confirmModalEl) {
-            const addModal = bootstrap.Modal.getInstance(addModalEl) || new bootstrap.Modal(addModalEl);
-            addModal.hide();
-
-            const confirmationModal = new bootstrap.Modal(confirmModalEl);
-            confirmationModal.show();
-          }
-          this.cleanUpBackdrop()
+          
+          this.printReceipt(this.savedOrderData);          
 
           // this.addPermissionForm.reset();
           if(res.isSuccess === true){
@@ -481,7 +475,7 @@ export class AddItemsComponent implements OnInit {
     const element = document.getElementById('receiptPrintArea');
     html2pdf().set({
       margin: 0.5,
-      filename: `إذن_استلام_رقم_${this.addNumber || 'MC-2025-00004'}.pdf`,
+      filename: `إذن_استلام_رقم_${this.addNumber || 'MC-2025-'}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -501,6 +495,8 @@ export class AddItemsComponent implements OnInit {
         return;
       }
       this.savedOrderData = data;
+      console.log('Data for Print:' , this.savedOrderData);
+      
       this.addPermissionForm.patchValue({
         orderDate: data.permissionDate,
         documentNumber: data.documentNumber,

@@ -275,13 +275,14 @@
             <strong>التاريخ:</strong> {{ exPermissionForm.value.date }}
         </div>
         <div class="col-md-6">
-            <strong>رقم المستند:</strong> {{ receiptNumber }}
+            <!-- <strong>رقم المستند:</strong> {{ receiptNumber }} -->
+      <strong>التوجيه المحاسبي:</strong> {{ getTreasuryName(exPermissionForm.value.treasuryId) }}
+
         </div>
     </div>
 
-    <div class="mb-2">
-      <strong>التوجيه المحاسبي:</strong> {{ getTreasuryName(exPermissionForm.value.treasuryId) }}
-    </div>
+    <!-- <div class="mb-2">
+    </div> -->
   
     <hr />
   
@@ -392,13 +393,11 @@
             <strong>التاريخ:</strong> {{ printedpermssion?.dailyRestriction?.restrictionDate }}
         </div>
         <div class="col-md-6">
-            <strong>رقم المستند:</strong> {{ printedpermssion?.dailyRestriction?.restrictionNumber }}
+            <!-- <strong>رقم المستند:</strong> {{ printedpermssion?.dailyRestriction?.restrictionNumber }} -->
+      <strong>التوجيه المحاسبي:</strong> {{ printedpermssion?.dailyRestriction?.accountingGuidanceName }}
         </div>
     </div>
 
-    <div class="mb-2">
-      <strong>التوجيه المحاسبي:</strong> {{ printedpermssion?.dailyRestriction?.accountingGuidanceName }}
-    </div>
   
     <hr />
   

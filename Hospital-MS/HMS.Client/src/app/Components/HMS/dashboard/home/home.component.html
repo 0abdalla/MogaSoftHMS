@@ -90,11 +90,11 @@
         <div class="col-lg-9 mb-4">
           <div class="bg-white p-3 shadow">
             <div class="row align-items-center">
-              <div class="col-lg-10">
+              <div class="col-lg-9">
                 <h4 class="mb-2 fw-bold">أفضل الأطباء</h4>
                 <p class="mb-0" style="color: #7C8FAC; font-weight: 500;">عدد الحالات اللتي أنجزها الطبيب</p>
               </div>
-              <div class="col-lg-2">
+              <div class="col-lg-3">
                 <select name="month" class="form-select shadow-none" (change)="onMonthChange($event)">
                   <option *ngFor="let month of months" [value]="month.value" [selected]="month.value === selectedMonth">
                     {{month.name + ' ' + selectedYear}}

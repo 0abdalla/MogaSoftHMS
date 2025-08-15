@@ -1,9 +1,10 @@
 import { trigger, transition, style, animate } from '@angular/animations';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-staff-list',
@@ -23,6 +24,8 @@ import { FilterModel } from '../../../../Models/Generics/PagingFilterModel';
 })
 
 export class StaffListComponent implements OnInit, OnDestroy {
+  @ViewChild('employeeDetailsPDF', { static: false }) employeeDetailsPDF!: ElementRef;
+
   TitleList = ['الموارد البشرية', 'بيانات الموظفين', 'الموظفين'];
   employees: any[] = [];
   employeesData: any[] = [];
@@ -192,12 +195,24 @@ export class StaffListComponent implements OnInit, OnDestroy {
   getEmployeeById(id: number) {
     this.staffService.getStaffById(id).subscribe({
       next: (res) => {
-        this.selectedEmployee = res;
+        const employee = res.results;
+        employee.gender = employee.gender === 'Male' ? 'ذكر' :
+        employee.gender === 'Female' ? 'أنثى' : 'غير محدد';
+        employee.status = employee.status === 'Active' ? 'نشط' :
+        employee.status === 'Inactive' ? 'غير نشط' : 'غير معروف';
+        employee.maritalStatus = employee.maritalStatus === 'Single' ? 'أعزب' :
+        employee.maritalStatus === 'Married' ? 'متزوج' :
+        employee.maritalStatus === 'Divorced' ? 'مطلق' :
+        employee.maritalStatus === 'Widowed' ? 'أرمل' : 'غير معروف';
+  
+        this.selectedEmployee = employee;
+        console.log(this.selectedEmployee);
       },
       error: (err) => {
+        console.error(err);
       }
     });
-  }
+  }  
 
   mapType(type: string): string | undefined {
     const typeMap: { [key: string]: string } = {
@@ -219,6 +234,17 @@ export class StaffListComponent implements OnInit, OnDestroy {
   }
 
   exportToPDF() {
+    const element = this.employeeDetailsPDF.nativeElement;
+
+    const options = {
+      margin:       0.5,
+      filename:     `تفاصيل_الموظف_${this.selectedEmployee?.fullName || 'بدون_اسم'}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+
+    html2pdf().from(element).set(options).save();
   }
 
   suspendEmployee() {

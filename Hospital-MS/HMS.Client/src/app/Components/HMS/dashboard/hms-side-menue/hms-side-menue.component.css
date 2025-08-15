@@ -72,7 +72,7 @@
 .menu a {
   color: #5A6A85;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   border-radius: 8px;
   text-decoration: none;
   display: flex;
@@ -106,7 +106,7 @@
   color: #D94A91 !important;
   border-radius: 6px !important;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   line-height: 140%;
   letter-spacing: -1%;
   text-align: right;
@@ -139,7 +139,7 @@
 }
 
 .submenu a {
-  font-size: 15px;
+  font-size: 14px;
   color: #5A6A85;
 }
 
