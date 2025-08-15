@@ -22,6 +22,7 @@ import { CostCenterTreeComponent } from './cost-center-tree-container/cost-cente
 import { CostCenterTreeItemComponent } from './cost-center-tree-container/cost-center-tree-item/cost-center-tree-item.component';
 import { AccountTreeComponent } from './account-tree-container/account-tree/account-tree.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { DoctorsDepartmentsListComponent } from './doctors-departments-list/doctors-departments-list.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AddEditCostCenterTreeComponent,
     CostCenterTreeComponent,
     CostCenterTreeItemComponent,
+    DoctorsDepartmentsListComponent,
     
   ],
   imports: [

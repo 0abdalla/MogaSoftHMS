@@ -231,7 +231,7 @@ export class MenueService {
         },
         {
           displayName: 'الأطباء',
-          icon: 'fa-solid fa-boxes-stacked',
+          icon: 'fa-solid fa-circle',
           isGroup: true,
           subMenus: [
             {
@@ -245,6 +245,12 @@ export class MenueService {
               icon: 'fa-solid fa-circle',
               route: '/hms/settings/medical-service',
               pageName: 'MedicalService'
+            },
+            {
+              displayName: 'الأقسام',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/settings/medical-departments-list',
+              pageName: 'DoctorsDepartmentsList'
             }
           ]
         },

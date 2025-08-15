@@ -86,6 +86,8 @@ export class HeaderComponent {
         return 'إدارة الأطباء';
       case '/hms/settings/medical-services-list':
         return 'إدارة الخدمات الطبية';
+      case '/hms/settings/medical-departments-list':
+        return 'إدارة الأقسام';
       case '/hms/settings/account-tree':
         return 'شجرة الحسابات'
       case 'hms/settings/cost-center-tree':
