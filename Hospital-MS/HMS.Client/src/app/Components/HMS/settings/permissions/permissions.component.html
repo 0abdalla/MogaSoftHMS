@@ -30,6 +30,7 @@
                 <thead>
                     <tr>
                         <th>الإسم</th>
+                        <th>الفرع</th>
                         <th>البريد الالكتروني</th>
                         <th>الصلاحية</th>
                         <th>الإجراءات</th>
@@ -43,6 +44,7 @@
                                 <span class="fw-bold">{{ user.fullName }}</span>
                             </div>
                         </td>
+                        <td>{{user.branchName}}</td>
                         <td>{{user.email}}</td>
                         <td>{{user.roleNameAr}}</td>
                         <td>
@@ -81,15 +83,15 @@
             <div class="modal-body">
                 <form [formGroup]="UserForm" (ngSubmit)="Register()">
                     <div class="mb-3">
-                        <label for="statusSelect" class="form-label">المستخدمين</label>
-                        <select id="statusSelect" class="form-select shadow-none" formControlName="staffId">
-                            <option selected disabled value="">اختر مستخدم</option>
-                            <option *ngFor="let user of UsersList" [value]="user.userId">
-                                {{ user.userName }}
+                        <label for="statusSelect" class="form-label">الفروع</label>
+                        <select id="statusSelect" class="form-select shadow-none" formControlName="branchId">
+                            <option selected disabled value="">اختر فرع</option>
+                            <option *ngFor="let user of BranchList" [value]="user.id">
+                                {{ user.name }}
                             </option>
                         </select>
-                        <div *ngIf="UserForm.get('staffId')?.invalid && UserForm.get('staffId')?.touched" class="text-danger">
-                            يرجى اختيار مستخدم
+                        <div *ngIf="UserForm.get('branchId')?.invalid && UserForm.get('branchId')?.touched" class="text-danger">
+                            يرجى اختيار فرع
                         </div>
                     </div>
                     <div class="mb-3">

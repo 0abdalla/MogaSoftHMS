@@ -8,11 +8,11 @@ import { AppointmentEditComponent } from './appointment-edit/appointment-edit.co
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  { path: 'list', component: AppointmentListComponent, canActivate:[authGuard],data: { pageName: 'appointments-list' } },
-  { path: 'detail/:id', component: AppointmentDetailComponent, canActivate:[authGuard],data: { pageName: 'appointments-list' } },
-  { path: 'add', component: AppointmentFormComponent, canActivate:[authGuard],data: { pageName: 'appointments-add' } },
-  { path: 'edit/:id', component: AppointmentEditComponent, canActivate:[authGuard],data: { pageName: 'appointments-add' } },
-  { path: "settings", component: AppointmetSettingsComponent, canActivate:[authGuard],data: { pageName: 'appointments-settings' } },
+  { path: 'list', component: AppointmentListComponent, canActivate:[authGuard],data: { pageName: 'AppointmentList' } },
+  { path: 'detail/:id', component: AppointmentDetailComponent, canActivate:[authGuard],data: { pageName: 'AppointmentList' } },
+  { path: 'add', component: AppointmentFormComponent, canActivate:[authGuard],data: { pageName: 'AppointmentList' } },
+  { path: 'edit/:id', component: AppointmentEditComponent, canActivate:[authGuard],data: { pageName: 'AppointmentList' } },
+  { path: "settings", component: AppointmetSettingsComponent, canActivate:[authGuard],data: { pageName: 'AppointmentList' } },
 ];
 
 @NgModule({

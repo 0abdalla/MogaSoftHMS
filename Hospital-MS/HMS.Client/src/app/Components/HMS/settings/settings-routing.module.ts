@@ -9,17 +9,18 @@ import { MedicalServicesListComponent } from './medical-services-list/medical-se
 import { authGuard } from '../../../Auth/auth.guard';
 import { AccountTreeContainerComponent } from './account-tree-container/account-tree-container.component';
 import { CostCenterTreeContainerComponent } from './cost-center-tree-container/cost-center-tree-container.component';
+import { DoctorsDepartmentsListComponent } from './doctors-departments-list/doctors-departments-list.component';
 
 const routes: Routes = [
-  { path: "medical-service", component: DoctorsMedicalServiceComponent, canActivate: [authGuard], data: { pageName: 'doctors' } },
-  { path: "doctors-list", component: DoctorsListComponent, canActivate: [authGuard], data: { pageName: 'doctors-list' } },
-  { path: "doctors", component: DoctorsSettingsEditComponent, canActivate: [authGuard], data: { pageName: 'doctors-list' } },
-  { path: "permissions", component: PermissionsComponent, canActivate: [authGuard], data: { pageName: 'permissions' } },
-  { path: "apps-managmement", component: AppsManagmementComponent, canActivate: [authGuard], data: { pageName: 'apps-managmement' } },
-  { path: "medical-services-list", component: MedicalServicesListComponent, canActivate: [authGuard], data: { pageName: 'medical-services-list' } },
-  { path: 'account-tree', component: AccountTreeContainerComponent, canActivate: [authGuard] },
-  { path: 'cost-center-tree', component: CostCenterTreeContainerComponent, canActivate: [authGuard] },
-
+  { path: "medical-service", component: DoctorsMedicalServiceComponent, canActivate: [authGuard], data: { pageName: 'MedicalService' } },
+  { path: "doctors-list", component: DoctorsListComponent, canActivate: [authGuard], data: { pageName: 'DoctorList' } },
+  { path: "doctors", component: DoctorsSettingsEditComponent, canActivate: [authGuard], data: { pageName: 'DoctorList' } },
+  { path: "permissions", component: PermissionsComponent, canActivate: [authGuard], data: { pageName: 'Permissions' } },
+  { path: "apps-managmement", component: AppsManagmementComponent, canActivate: [authGuard], data: { pageName: 'AppsManagmement' } },
+  { path: "medical-services-list", component: MedicalServicesListComponent, canActivate: [authGuard], data: { pageName: 'MedicalServicesList' } },
+  { path: 'account-tree', component: AccountTreeContainerComponent, canActivate: [authGuard], data: { pageName: 'AccountTree' } },
+  { path: 'cost-center-tree', component: CostCenterTreeContainerComponent, canActivate: [authGuard], data: { pageName: 'CostCenterTree' } },
+  { path: 'medical-departments-list', component: DoctorsDepartmentsListComponent, canActivate: [authGuard], data: { pageName: 'DoctorsDepartmentsList' } },
 ];
 
 @NgModule({

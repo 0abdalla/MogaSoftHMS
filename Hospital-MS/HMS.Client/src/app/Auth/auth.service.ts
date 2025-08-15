@@ -48,6 +48,10 @@ export class AuthService {
     return this.http.post<PagedResponseModel<any>>(`${this.baseUrl}Users/GetAllUsers`, pagingFilter);
   }
 
+  GetBranches(filter: PagingFilterModel) {
+    return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
+  }
+
   GetManageRolePages() {
     return this.http.get(`${this.baseUrl}ManageRoles/GetManageRolePages`);
   }
@@ -62,6 +66,10 @@ export class AuthService {
 
   GetPagesByRoleId(RoleId: any) {
     return this.http.get(`${this.baseUrl}ManageRoles/GetPagesByRoleId?RoleId=${RoleId}`);
+  }
+
+  GetAllPages() {
+    return this.http.get(`${this.baseUrl}ManageRoles/GetAllPages`);
   }
 
   GetAllEmployees() {

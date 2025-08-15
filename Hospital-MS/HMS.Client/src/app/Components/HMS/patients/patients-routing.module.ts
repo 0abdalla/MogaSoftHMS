@@ -8,12 +8,12 @@ import { AffairsComponent } from './affairs/affairs.component';
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  { path: 'list', component: PatientListComponent,canActivate:[authGuard],data: { pageName: 'patients-list' } },
-  { path: 'detail/:id', component: PatientDetailComponent,canActivate:[authGuard],data: { pageName: 'patients-list' } },
-  { path: 'add', component: PatientFormComponent,canActivate:[authGuard],data: { pageName: 'patients-add' } },
-  { path: 'edit/:id', component: PatientFormComponent,canActivate:[authGuard],data: { pageName: 'patients-add' } },
-  { path: "appointments", component: AppointmentListComponent,canActivate:[authGuard],data: { pageName: 'appointments-list' } },
-  { path: "affairs", component: AffairsComponent,canActivate:[authGuard],data: { pageName: 'Affairs' } },
+  { path: 'list', component: PatientListComponent,canActivate:[authGuard],data: { pageName: 'PatientList' } },
+  { path: 'detail/:id', component: PatientDetailComponent,canActivate:[authGuard],data: { pageName: 'PatientList' } },
+  { path: 'add', component: PatientFormComponent,canActivate:[authGuard],data: { pageName: 'PatientList' } },
+  { path: 'edit/:id', component: PatientFormComponent,canActivate:[authGuard],data: { pageName: 'PatientList' } },
+  { path: "appointments", component: AppointmentListComponent,canActivate:[authGuard],data: { pageName: 'AppointmentList' } },
+  { path: "affairs", component: AffairsComponent,canActivate:[authGuard],data: { pageName: 'PatientList' } },
 ];
 
 @NgModule({

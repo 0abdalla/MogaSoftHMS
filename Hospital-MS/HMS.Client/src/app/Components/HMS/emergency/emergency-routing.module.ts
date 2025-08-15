@@ -5,8 +5,8 @@ import { UpdateStatusComponent } from './update-status/update-status.component';
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  {path:"emergency-reception" , component : EmergencyReceptionComponent, canActivate:[authGuard],data: { pageName: 'emergency-reception' } },
-  {path:"update-emergency-reception" , component : UpdateStatusComponent, canActivate:[authGuard],data: { pageName: 'emergency-reception' } },
+  {path:"emergency-reception" , component : EmergencyReceptionComponent, canActivate:[authGuard],data: { pageName: 'EmergencyReception' } },
+  {path:"update-emergency-reception" , component : UpdateStatusComponent, canActivate:[authGuard],data: { pageName: 'EmergencyReception' } },
 ];
 
 @NgModule({

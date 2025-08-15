@@ -6,10 +6,10 @@ import { ExpenseListComponent } from './expense-list/expense-list.component';
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: BillListComponent,canActivate:[authGuard] },
-  { path: 'payment/add', component: PaymentFormComponent,canActivate:[authGuard] },
-  { path: 'payment/edit/:id', component: PaymentFormComponent,canActivate:[authGuard] },
-  { path: 'expenses', component: ExpenseListComponent,canActivate:[authGuard] },
+  { path: '', component: BillListComponent,canActivate:[authGuard], data: { pageName: 'PaymentList' } },
+  { path: 'payment/add', component: PaymentFormComponent,canActivate:[authGuard], data: { pageName: 'PaymentList' } },
+  { path: 'payment/edit/:id', component: PaymentFormComponent,canActivate:[authGuard], data: { pageName: 'PaymentList' } },
+  { path: 'expenses', component: ExpenseListComponent,canActivate:[authGuard], data: { pageName: 'Expense' } },
 ];
 
 @NgModule({

@@ -30,7 +30,7 @@ export class HMSSideMenueComponent {
     private permissionService: AppsService,
     private menuService: MenueService
   ) {
-    this.menusList = this.menuService.menus;
+    this.menusList = this.menuService.getFilteredMenus();
   }
 
   ngOnInit() {

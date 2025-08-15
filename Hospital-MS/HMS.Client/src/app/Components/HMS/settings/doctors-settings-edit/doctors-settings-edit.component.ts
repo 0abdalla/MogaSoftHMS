@@ -92,6 +92,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
   getDeps() {
     this.admissionService.getDepartments().subscribe((res) => {
       this.departments = res.results;
+      console.log(this.departments);
     });
   }
 

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { AppsService } from '../../../../Services/Permissions/apps.service';
 import { AuthService } from '../../../../Auth/auth.service';
 import { MessageService } from 'primeng/api';
+import { MenueService } from '../../../../Services/menue.service';
 
 @Component({
   selector: 'app-apps-managmement',
@@ -9,18 +10,20 @@ import { MessageService } from 'primeng/api';
   styleUrl: './apps-managmement.component.css'
 })
 export class AppsManagmementComponent {
-  TitleList = ['الإعدادات العامة','إدارة التطبيقات'];
+  TitleList = ['الإعدادات العامة', 'إدارة التطبيقات'];
   Pages: any[] = [];
   Roles: any[] = [];
   RoleId: any;
   permissions: { [key: string]: boolean } = {};
 
-  constructor(private permissionService: AppsService, private authService: AuthService, private messageService: MessageService) { }
+  constructor(private permissionService: AppsService, private authService: AuthService, private messageService: MessageService, private menueService: MenueService) {
+    this.Pages = this.menueService.flattenMenuLevels(this.menueService.menus);
+  }
 
   ngOnInit(): void {
     this.RoleId = '';
     this.GetAllRoles();
-    this.GetManageRolePages();
+    this.GetAllPages();
     this.permissionService.permissions$.subscribe(permissions => {
       this.permissions = permissions;
     });
@@ -36,40 +39,43 @@ export class AppsManagmementComponent {
     });
   }
 
-  GetManageRolePages() {
-    this.authService.GetManageRolePages().subscribe((data: any) => {
-      this.Pages = data;
-      this.Pages.forEach(page => {
-        if (page.children.length == 0) {
-          page.children = [
-            {
-              id: page.id,
-              nameAR: page.nameAR,
-            }
-          ];
-          console.log(page.children);
-          
-        }
-      });
+  markSelected(menus, allowedPages) {
+    for (const menu of menus) {
+      if (menu.pageName) {
+        menu.isSelected = allowedPages.includes(menu.pageName);
+      }
+      if (menu.subMenus && menu.subMenus.length > 0) {
+        this.markSelected(menu.subMenus, allowedPages);
+      }
+    }
+    return menus;
+  }
+
+  setPageId(menus, allowedPages) {
+    for (const menu of menus) {
+      if (menu.pageName) {
+        let pageId = allowedPages.find(page => page.pageName == menu.pageName)?.pageId;
+        menu.pageId = pageId;
+      }
+      if (menu.subMenus && menu.subMenus.length > 0) {
+        this.setPageId(menu.subMenus, allowedPages);
+      }
+    }
+    return menus;
+  }
+
+  GetAllPages() {
+    this.authService.GetAllPages().subscribe((data: any) => {
+      let allPages = data.results;
+      this.Pages = this.setPageId(this.Pages, allPages);
     });
   }
 
   GetPagesByRoleId() {
     this.authService.GetPagesByRoleId(this.RoleId).subscribe((data: any) => {
-      this.Pages.forEach(page => {
-        page.isSelected = false;
-        page.children.forEach(child => {
-          child.isSelected = false;
-        });
-      });
-      this.Pages.forEach(page => {
-        page.children.forEach(child => {
-          let obj = data.results.find((item: any) => item.pageId == child.id);
-          if (obj) {
-            child.isSelected = true;
-          }
-        });
-      })
+      debugger;
+      let allowedPages = data.results;
+      this.Pages = this.markSelected(this.Pages, allowedPages);
     });
   }
 
@@ -82,7 +88,7 @@ export class AppsManagmementComponent {
 
     const allUnselected = this.Pages.every(page => {
       const parentUnselected = !page.isSelected;
-      const childrenUnselected = page.children.every(child => !child.isSelected);
+      const childrenUnselected = page.subMenus.every(child => !child.isSelected);
       return parentUnselected && childrenUnselected;
     });
 
@@ -96,17 +102,18 @@ export class AppsManagmementComponent {
       pageIds: this.Pages.flatMap(page => {
         const ids: number[] = [];
         if (page.isSelected) {
-          ids.push(page.id);
+          ids.push(page.pageId);
         }
-        page.children.forEach(child => {
+        page.subMenus.forEach(child => {
           if (child.isSelected) {
-            ids.push(child.id);
+            ids.push(child.pageId);
           }
         });
         return ids;
       })
     }
 
+    debugger;
     this.authService.AssignRoleToPages(model).subscribe((data: any) => {
       if (data.isSuccess) {
         this.messageService.add({ severity: 'success', summary: 'نجاح', detail: data.message });

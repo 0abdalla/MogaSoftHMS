@@ -6,9 +6,9 @@ import { InsuranceEditComponent } from './insurance-edit/insurance-edit.componen
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  {path:"insurance-list", canActivate:[authGuard],component:InsuranceListComponent, data: { pageName: 'insurance-list' } },
-  {path:"add-insurance" , canActivate:[authGuard],component:InsuranceFormComponent, data: { pageName: 'add-insurance' } },
-  {path:"add-insurance/:id", canActivate:[authGuard],component:InsuranceEditComponent, data: { pageName: 'add-insurance' } },
+  {path:"insurance-list", canActivate:[authGuard],component:InsuranceListComponent, data: { pageName: 'InsuranceList' } },
+  {path:"add-insurance" , canActivate:[authGuard],component:InsuranceFormComponent, data: { pageName: 'InsuranceList' } },
+  {path:"add-insurance/:id", canActivate:[authGuard],component:InsuranceEditComponent, data: { pageName: 'InsuranceList' } },
 ];
 
 @NgModule({

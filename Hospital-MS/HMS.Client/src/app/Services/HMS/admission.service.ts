@@ -31,6 +31,9 @@ export class AdmissionService {
     return this.http.put(this.baseUrl + 'Patients/status/' + id, patient)
   }
   // 
+  addDepartment(department : any){
+    return this.http.post(this.baseUrl + 'Departments', department)
+  }
   getDepartments(){
     return this.http.get<any>(`${this.baseUrl}Departments`);
   }

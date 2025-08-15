@@ -8,11 +8,11 @@ import { StoreMovementComponent } from './store-movement/store-movement.componen
 import { ItemMovementComponent } from './item-movement/item-movement.component';
 
 const routes: Routes = [
-  {path:"financial" , component : FinReportsComponent,canActivate:[authGuard], data: { pageName: 'reports-financial' } },
-  {path:"medical" , component : MedReportsComponent,canActivate:[authGuard], data: { pageName: 'reports-medical' } },
-  {path:"ledger-report" , component : LedgerReportComponent},
-  {path:"store-movement" , component : StoreMovementComponent},
-  {path:"item-movement" , component : ItemMovementComponent}
+  {path:"financial" , component : FinReportsComponent,canActivate:[authGuard], data: { pageName: 'FinancialReport' } },
+  {path:"medical" , component : MedReportsComponent,canActivate:[authGuard], data: { pageName: 'MedicalReport' } },
+  {path:"ledger-report" , component : LedgerReportComponent,canActivate:[authGuard], data: { pageName: 'LedgerReport' } },
+  {path:"store-movement" , component : StoreMovementComponent, canActivate:[authGuard], data: { pageName: 'StoreMovement' } },
+  {path:"item-movement" , component : ItemMovementComponent, canActivate:[authGuard], data: { pageName: 'ItemMovement' } },
 ];
 
 @NgModule({
