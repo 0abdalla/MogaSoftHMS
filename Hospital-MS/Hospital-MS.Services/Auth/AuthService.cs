@@ -60,7 +60,7 @@ namespace Hospital_MS.Services.Auth
                 }
 
                 var Pages = GetPagesByRoleId(roleId);
-                var Branch = await GetUserBranchByStaffId(user.StaffId.Value);
+                var Branch = await GetUserBranchById(user.BranchId.Value);
 
                 var response = new AuthResponse(
                     user.Id,
@@ -99,7 +99,7 @@ namespace Hospital_MS.Services.Auth
                 LastName = request.LastName,
                 Email = request.Email,
                 UserName = request.Email,
-                //StaffId = request.StaffId,
+                BranchId = request.BranchId,
                 IsActive = true,
             };
 
@@ -180,10 +180,10 @@ namespace Hospital_MS.Services.Auth
             return dt;
         }
 
-        public async Task<Branch> GetUserBranchByStaffId(int StaffId)
+        public async Task<Branch> GetUserBranchById(int BranchId)
         {
-            var Staff = await unitOfWork.Repository<Staff>().GetAll(i => i.Id == StaffId).Include(i => i.Branch).FirstOrDefaultAsync();
-            return Staff.Branch;
+            var Branch = await unitOfWork.Repository<Branch>().GetAll(i => i.Id == BranchId).FirstOrDefaultAsync();
+            return Branch;
         }
 
         public async Task<ErrorResponseModel<string>> SendResetPasswordCodeAsync(string userName)

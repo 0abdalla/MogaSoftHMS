@@ -16,7 +16,7 @@ namespace Hospital_MS.Core.Contracts.Auth
    );
 
     public record RegisterUser(
-      int? StaffId,
+      int? BranchId,
       string FirstName,
       string LastName,
       string Email,

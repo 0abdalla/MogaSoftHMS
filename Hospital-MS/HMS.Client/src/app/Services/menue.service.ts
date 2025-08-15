@@ -395,4 +395,29 @@ export class MenueService {
     return filterRecursive(this.menus);
   }
 
+  flattenMenuLevels(menuList: MenuSidebarItem[]): MenuSidebarItem[] {
+    return menuList.map(menu => {
+      let flatChildren: MenuSidebarItem[] = [];
+      if (menu.subMenus && menu.subMenus.length > 0) {
+        function collectChildren(items: MenuSidebarItem[]) {
+          for (const item of items) {
+            const { subMenus, ...rest } = item;
+            if (item.route) {
+              flatChildren.push({ ...rest, route: item.route, subMenus: [] });
+            }
+
+            if (subMenus && subMenus.length > 0) {
+              collectChildren(subMenus);
+            }
+          }
+        }
+        collectChildren(menu.subMenus);
+      }
+
+      return {
+        ...menu,
+        subMenus: flatChildren.length > 0 ? flatChildren : []
+      };
+    });
+  }
 }

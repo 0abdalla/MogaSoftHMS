@@ -24,24 +24,17 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetManageRolePages")]
-        public IActionResult GetManageRolePages()
-        {
-            var result = _manageRolesService.GetManageRolePages();
-            return Ok(result);
-        }
-
-        [HttpGet("GetAllowedPagesByRoleName")]
-        public async Task<IActionResult> GetAllowedPagesByRoleName(string RoleName)
-        {
-            var result = await _manageRolesService.GetAllowedPagesByRoleName(RoleName);
-            return Ok(result);
-        }
-
         [HttpGet("GetPagesByRoleId")]
         public IActionResult GetPagesByRoleId(Guid RoleId)
         {
             var result = _manageRolesService.GetPagesByRoleId(RoleId);
+            return Ok(result);
+        }
+
+        [HttpGet("GetAllPages")]
+        public IActionResult GetAllPages()
+        {
+            var result = _manageRolesService.GetAllPages();
             return Ok(result);
         }
 

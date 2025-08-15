@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.PagesRole;
 using Hospital_MS.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -11,10 +12,9 @@ namespace Hospital_MS.Interfaces
 {
     public interface IManageRolesService
     {
-        List<Page> GetManageRolePages();
         Task<List<RoleDto>> GetAllRoles();
-        ErrorResponseModel<List<RolePermission>> GetPagesByRoleId(Guid RoleId);
-        Task<List<Page>> GetAllowedPagesByRoleName(string RoleName);
+        ErrorResponseModel<List<string>> GetPagesByRoleId(Guid RoleId);
+        ErrorResponseModel<List<PagesRolePermesstion>> GetAllPages();
         Task<ErrorResponseModel<string>> AssignRoleToPages(AssignRole Model, CancellationToken cancellationToken);
     }
 }

@@ -23,7 +23,7 @@ import { MessageService } from 'primeng/api';
   ],
 })
 export class PermissionsComponent implements OnInit {
-  TitleList = ['الإعدادات العامة','صلاحيات المستخدم'];
+  TitleList = ['الإعدادات العامة', 'صلاحيات المستخدم'];
   UserForm!: FormGroup;
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
@@ -31,8 +31,14 @@ export class PermissionsComponent implements OnInit {
     pageSize: 16,
     filterList: []
   };
+  branchPagingFilterModel: PagingFilterModel = {
+    searchText: '',
+    currentPage: 1,
+    pageSize: 50,
+    filterList: []
+  };
   UsersData: any[] = [];
-  UsersList: any[] = [];
+  BranchList: any[] = [];
   RolesList: any[] = [];
   Total = 0;
   showPassword = false;
@@ -40,31 +46,30 @@ export class PermissionsComponent implements OnInit {
 
   constructor(private authService: AuthService, private fb: FormBuilder, private sharedService: SharedService, private messageService: MessageService) {
     this.UserForm = this.fb.group({
-      staffId: ['', Validators.required],
+      branchId: ['', Validators.required],
       roleName: ['', Validators.required],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')]],
       password: ['', []],
       address: [''],
-      userId:['']
+      userId: ['']
     });
   }
 
   ngOnInit(): void {
     this.GetAllUsers();
-    this.GetAllEmployees();
+    this.GetBranches();
     this.GetAllRoles();
   }
 
   openAddEditUserModal(user: any) {
-    debugger;
     this.UserForm.reset();
-    this.UserForm.patchValue({ staffId: '', roleName: '' });
+    this.UserForm.patchValue({ branchId: '', roleName: '' });
     if (user) {
       this.isEdit = true;
       this.UserForm.patchValue({
-        staffId: user?.id,
+        branchId: user?.branchId,
         userId: user?.userId,
         roleName: user?.roleNAmeEn,
         firstName: user?.firstName,
@@ -72,15 +77,9 @@ export class PermissionsComponent implements OnInit {
         email: user?.email,
         address: user?.address
       });
-      this.UserForm.get('staffId')?.disable();
-      this.UserForm.get('firstName')?.disable();
-      this.UserForm.get('lastName')?.disable();
       this.setPasswordValidators(true);
     } else {
       this.isEdit = false;
-      this.UserForm.get('staffId')?.enable();
-      this.UserForm.get('firstName')?.enable();
-      this.UserForm.get('lastName')?.enable();
       this.setPasswordValidators(false);
     }
   }
@@ -117,9 +116,9 @@ export class PermissionsComponent implements OnInit {
     });
   }
 
-  GetAllEmployees() {
-    this.authService.GetAllEmployees().subscribe(response => {
-      this.UsersList = response.results;
+  GetBranches() {
+    this.authService.GetBranches(this.branchPagingFilterModel).subscribe(response => {
+      this.BranchList = response.results;
     });
   }
 
