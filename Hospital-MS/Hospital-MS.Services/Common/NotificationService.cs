@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Hospital_MS.Services.Common;
 public class NotificationService(IUnitOfWork unitOfWork,
      UserManager<ApplicationUser> userManager,
@@ -42,6 +41,29 @@ public class NotificationService(IUnitOfWork unitOfWork,
             createdAt = notification.CreatedAt,
             isRead = notification.IsRead
         }, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Notification>> GetAllNotificationsAsync(CancellationToken cancellationToken = default)
+    {
+        return await _unitOfWork.Repository<Notification>()
+            .GetAll()
+            .OrderByDescending(n => n.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task MarkNotificationAsReadAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var notification = await _unitOfWork.Repository<Notification>()
+            .GetByIdAsync(id, cancellationToken);
+
+        if (notification == null)
+            return;
+
+        notification.IsRead = true;
+
+        _unitOfWork.Repository<Notification>().Update(notification);
+        await _unitOfWork.CompleteAsync(cancellationToken);
+        // await _hubContext.Clients.Group("SystemAdmins").SendAsync("NotificationRead", notification.Id, cancellationToken);
     }
 
     public async Task SendNewPurchaseRequestNotification(int purchaseId)

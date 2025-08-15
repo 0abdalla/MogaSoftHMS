@@ -8,15 +8,15 @@ export const authGuard: CanActivateFn = (route, state) => {
 
   const token = authService.getToken();
   if (token) {
-    const allowedPage: string = route.data["pageName"];
-    if (allowedPage) {
-      if (authService.CheckUserAllowed(allowedPage)) {
-        return true;
-      } else {
-        router.navigateByUrl('/not-authorized');
-        return false;
-      }
-    }
+    // const allowedPage: string = route.data["pageName"];
+    // if (allowedPage) {
+    //   if (authService.CheckUserAllowed(allowedPage)) {
+    //     return true;
+    //   } else {
+    //     router.navigateByUrl('/not-authorized');
+    //     return false;
+    //   }
+    // }
     return true;
   } else {
     router.navigate(['/login']);

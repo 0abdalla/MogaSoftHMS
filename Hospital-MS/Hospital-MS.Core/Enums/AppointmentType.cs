@@ -17,13 +17,19 @@ namespace Hospital_MS.Core.Enums
         [EnumMember(Value = "طوارئ")]
         Emergency,
 
-
-        MRI,            // أشعة رنين
-        Panorama,       // بانوراما
-        CTScan,         // مقطعية
-        Ultrasound,     // سونار
-        XRay,           // عادية
-        Echo,           // إيكو
-        Mammogram       // مامو جرام
+        [EnumMember(Value = "أشعة")]
+        MRI,
+        [EnumMember(Value = "أشعة")]
+        Panorama,
+        [EnumMember(Value = "أشعة")]
+        CTScan,
+        [EnumMember(Value = "أشعة")]
+        Ultrasound,
+        [EnumMember(Value = "أشعة")]
+        XRay,
+        [EnumMember(Value = "أشعة")]
+        Echo,
+        [EnumMember(Value = "أشعة")]
+        Mammogram
     }
 }

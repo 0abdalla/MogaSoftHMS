@@ -87,88 +87,90 @@
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
 
-            <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="employeeDetailsLabel">تفاصيل الموظف</h5>
-            </div>
-
-            <div class="modal-body p-4">
-                <h4>👤 البيانات الشخصية</h4>
-                <div class="row mb-3">
-                    <div class="col-lg-4">
-                        <strong>الإسم الكامل:</strong> <span>{{ selectedEmployee?.fullName || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong>الرقم القومي:</strong> <span>{{ selectedEmployee?.nationalId || '---' }}</span>
-                    </div>
-
-                    <div class="col-lg-4">
-                        <strong>النوع:</strong> <span>{{ selectedEmployee?.gender || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong>الحالة الاجتماعية:</strong> <span>{{ selectedEmployee?.maritalStatus || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong>تاريخ الميلاد:</strong> <span>{{ selectedEmployee?.dateOfBirth || '---' }}</span>
-                    </div>
-
+            <div #employeeDetailsPDF>
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title" id="employeeDetailsLabel">تفاصيل الموظف</h5>
                 </div>
-
-                <hr>
-
-                <h4>💼 معلومات الوظيفة</h4>
-                <div class="row mb-3">
-                    <div class="col-lg-4">
-                        <strong>المسمى الوظيفي:</strong> <span>{{ selectedEmployee?.specialization || '---' }}</span>
+    
+                <div class="modal-body p-4">
+                    <h4>👤 البيانات الشخصية</h4>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <strong>الإسم الكامل:</strong> <span>{{ selectedEmployee?.fullName || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>الرقم القومي:</strong> <span>{{ selectedEmployee?.nationalId || '---' }}</span>
+                        </div>
+    
+                        <div class="col-lg-4">
+                            <strong>النوع:</strong> <span>{{ selectedEmployee?.gender || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>الحالة الاجتماعية:</strong> <span>{{ selectedEmployee?.maritalStatus || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>تاريخ الميلاد:</strong> <span>{{ selectedEmployee?.dateOfBirth || '---' }}</span>
+                        </div>
+    
                     </div>
-                    <div class="col-lg-4">
-                        <strong>القسم:</strong> <span>{{ selectedEmployee?.departmentName || '---' }}</span>
+    
+                    <hr>
+    
+                    <h4>💼 معلومات الوظيفة</h4>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <strong>المسمى الوظيفي:</strong> <span>{{ selectedEmployee?.jobTitleName || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>القسم:</strong> <span>{{ selectedEmployee?.jobDepartmentName || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>الفرع:</strong> <span>{{ selectedEmployee?.branchName || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>تاريخ التعيين:</strong> <span>{{ selectedEmployee?.hireDate || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>الحالة:</strong> <span> {{ selectedEmployee?.status || '---' }} </span>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                        <strong>الفرع:</strong> <span>{{ selectedEmployee?.branchName || '---' }}</span>
+    
+                    <hr>
+    
+                    <h4>📞 معلومات الاتصال</h4>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <strong>رقم الهاتف:</strong> <span>{{ selectedEmployee?.phoneNumber || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>البريد الإلكتروني:</strong> <span>{{ selectedEmployee?.email || '---' }}</span>
+                        </div>
+                        <div class="col-lg-4">
+                            <strong>العنوان:</strong> <span>{{ selectedEmployee?.address || '---' }}</span>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                        <strong>تاريخ التعيين:</strong> <span>{{ selectedEmployee?.hireDate || '---' }}</span>
+                    <hr>
+                    <h4>💰بيانات المرتب</h4>
+                    <div class="row mb-3">
+                        <div class="col-lg-3">
+                            <strong>المرتب الأساسي:</strong> <span>{{ selectedEmployee?.salary || '---' }}</span>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong>البدلات:</strong> <span>{{ selectedEmployee?.allowances || '---' }}</span>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong>الخصومات:</strong> <span>{{ selectedEmployee?.deductions || '---' }}</span>
+                        </div>
+                        <div class="col-lg-3">
+                            <strong>الإجمالي:</strong> <span>{{ selectedEmployee?.total || '---' }}</span>
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                        <strong>الحالة:</strong> <span> {{ selectedEmployee?.status || '---' }} </span>
-                    </div>
+    
+                    <hr>
+    
+                    <h4>📝 ملاحظات</h4>
+                    <p class="text-muted">{{ selectedEmployee?.notes || 'لا يوجد ملاحظات' }}</p>
                 </div>
-
-                <hr>
-
-                <h4>📞 معلومات الاتصال</h4>
-                <div class="row mb-3">
-                    <div class="col-lg-4">
-                        <strong>رقم الهاتف:</strong> <span>{{ selectedEmployee?.phoneNumber || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong>البريد الإلكتروني:</strong> <span>{{ selectedEmployee?.email || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong>العنوان:</strong> <span>{{ selectedEmployee?.address || '---' }}</span>
-                    </div>
-                </div>
-                <hr>
-                <h4>💰بيانات المرتب</h4>
-                <div class="row mb-3">
-                    <div class="col-lg-3">
-                        <strong>المرتب الأساسي:</strong> <span>{{ selectedEmployee?.salary || '---' }}</span>
-                    </div>
-                    <div class="col-lg-3">
-                        <strong>البدلات:</strong> <span>{{ selectedEmployee?.allowances || '---' }}</span>
-                    </div>
-                    <div class="col-lg-3">
-                        <strong>الخصومات:</strong> <span>{{ selectedEmployee?.deductions || '---' }}</span>
-                    </div>
-                    <div class="col-lg-3">
-                        <strong>الإجمالي:</strong> <span>{{ selectedEmployee?.total || '---' }}</span>
-                    </div>
-                </div>
-
-                <hr>
-
-                <h4>📝 ملاحظات</h4>
-                <p class="text-muted">{{ selectedEmployee?.notes || 'لا يوجد ملاحظات' }}</p>
             </div>
 
             <div class="modal-footer row">

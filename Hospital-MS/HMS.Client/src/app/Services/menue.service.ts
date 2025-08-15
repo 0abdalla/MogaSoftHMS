@@ -44,12 +44,6 @@ export class MenueService {
           icon: 'fa-solid fa-circle',
           route: '/hms/fin-tree/purchase-order'
         },
-        // {
-        //   displayName: 'الموردين',
-        //   icon: 'fa-solid fa-circle',
-        //   route: '/hms/fin-tree/providers'
-        // },
-        
       ]
     },
     {
@@ -225,7 +219,7 @@ export class MenueService {
           route: '/hms/patients/list',
         },
         {
-          displayName: 'إعدادات المواعيد والحجز',
+          displayName: ' المواعيد والحجز',
           icon: 'fa-solid fa-circle',
           route: '/hms/settings/medical-services-list'
         },
@@ -247,12 +241,12 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات وكلاء التامين',
+          displayName: ' وكلاء التامين',
           icon: 'fa-solid fa-circle',
           route: '/hms/insurance/insurance-list'
         },
         {
-          displayName: 'إعدادات المخازن',
+          displayName: 'المخازن',
           icon: 'fa-solid fa-circle',
           subMenus:[
             {
@@ -288,7 +282,7 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات المشتريات',
+          displayName: 'المشتريات',
           icon: 'fa-solid fa-circle',
           subMenus: [
             {
@@ -299,7 +293,7 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات الإدارة المالية',
+          displayName: 'الإدارة المالية',
           icon: 'fa-solid fa-circle',
           subMenus: [
             {
@@ -318,7 +312,7 @@ export class MenueService {
               route: '/hms/fin-tree/banks'
             },
             {
-              displayName: 'إعدادات السنة المالية',
+              displayName: 'السنة المالية',
               icon: 'fa-solid fa-circle',
               route: '/hms/fin-tree/year-fin-settings'
             },
@@ -330,7 +324,7 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات الموارد البشرية',
+          displayName: 'الموارد البشرية',
           icon: 'fa-solid fa-circle',
           route: ''
         },

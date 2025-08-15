@@ -14,7 +14,7 @@ namespace Hospital_MS.API.Controllers
         [HttpPost("")]
         public async Task<IActionResult> CreateAppointment([FromBody] CreateAppointmentRequest request, CancellationToken cancellationToken)
         {
-            var result = await _appointmentService.CreateAsync(request, cancellationToken);
+            var result = await _appointmentService.CreateAsyncV2(request, cancellationToken);
             return Ok(result);
         }
 

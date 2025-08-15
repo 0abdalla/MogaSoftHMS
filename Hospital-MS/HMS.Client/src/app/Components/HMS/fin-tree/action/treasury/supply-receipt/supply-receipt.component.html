@@ -61,6 +61,7 @@
         <table class="table table-hover mt-4">
             <thead>
                 <tr>
+                    <th>رقم المستند</th>
                     <th>التاريخ</th>
                     <th>الخزينة</th>
                     <th>المبلغ</th>
@@ -70,6 +71,7 @@
             </thead>
             <tbody *ngIf="adds?.length > 0">
                 <tr *ngFor="let add of adds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(add.id)" style="cursor: pointer">
+                    <td class="fw-bold">{{ add.id }}</td>
                     <td>{{ add.date | date:'yyyy-MM-dd' }}</td>
                     <td>{{ add.treasuryName }}</td>
                     <td>{{ add.amount + ' جنيه' }}</td>
@@ -279,12 +281,12 @@
             <strong>التاريخ:</strong> {{ restrictionData?.restrictionDate }}
         </div>
         <div class="col-md-6">
-            <strong>رقم المستند:</strong> {{ receiptNumber }}
+            <!-- <strong>رقم المستند:</strong> {{ receiptNumber }}ظ -->
+            <strong>التوجيه المحاسبي:</strong> {{ restrictionData?.accountingGuidanceName }}
         </div>
     </div>
 
     <div class="mb-2">
-      <strong>التوجيه المحاسبي:</strong> {{ restrictionData?.accountingGuidanceName }}
     </div>
   
     <hr />
@@ -389,12 +391,9 @@
             <strong>التاريخ:</strong> {{ printedRecipt?.dailyRestriction?.restrictionDate }}
         </div>
         <div class="col-md-6">
-            <strong>رقم المستند:</strong> {{ printedRecipt?.dailyRestriction?.restrictionNumber }}
+            <!-- <strong>رقم المستند:</strong> {{ printedRecipt?.dailyRestriction?.restrictionNumber }} -->
+            <strong>التوجيه المحاسبي:</strong> {{ printedRecipt?.dailyRestriction?.accountingGuidanceName }}
         </div>
-    </div>
-
-    <div class="mb-2">
-      <strong>التوجيه المحاسبي:</strong> {{ printedRecipt?.dailyRestriction?.accountingGuidanceName }}
     </div>
   
     <hr />

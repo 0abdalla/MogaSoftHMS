@@ -108,7 +108,8 @@ namespace Hospital_MS.Services.HMS
                     await _unitOfWork.CompleteAsync(cancellationToken);
 
 
-                    if (request.MedicalServices.Count > 0)
+                    // Only save MedicalServiceDetails if not Emergency
+                    if (!string.Equals(service.AppointmentType, "Emergency", StringComparison.OrdinalIgnoreCase) && request.MedicalServices.Count > 0)
                     {
                         var serviceDetails = new List<MedicalServiceDetail>();
                         foreach (var item in service.MedicalServiceIds)
@@ -129,16 +130,14 @@ namespace Hospital_MS.Services.HMS
                         .Include(a => a.MedicalService)
                         .FirstOrDefaultAsync(cancellationToken);
 
-
-
                     var response = new AppointmentToReturnResponse
                     {
                         AppointmentNumber = createdAppointment?.AppointmentNumber ?? 0,
                         MedicalServiceName = createdAppointment?.MedicalService?.Name,
                     };
                 }
-                await transaction.CommitAsync(cancellationToken);
 
+                await transaction.CommitAsync(cancellationToken);
 
                 return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess);
 
@@ -188,7 +187,7 @@ namespace Hospital_MS.Services.HMS
                        PatientPhone = first.PatientPhone,
                        ClinicId = first.ClinicId,
                        ClinicName = first.ClinicName,
-                       MedicalServiceName =  string.Join(";;;", g.Select(x => (string)x.MedicalServiceName).Where(x => !string.IsNullOrEmpty(x)).ToList()),
+                       MedicalServiceName = string.Join(";;;", g.Select(x => (string)x.MedicalServiceName).Where(x => !string.IsNullOrEmpty(x)).ToList()),
                    };
                }).ToList();
 
@@ -576,6 +575,136 @@ namespace Hospital_MS.Services.HMS
             {
                 Console.WriteLine($"Error closing shift: {ex.Message}");
                 return ErrorResponseModel<ClosedShiftResponse>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
+
+        public async Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsyncV2(CreateAppointmentRequest request, CancellationToken cancellationToken = default)
+        {
+            using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            try
+            {
+                if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
+                    return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.InvalidType);
+
+                var existingPatient = await _unitOfWork.Repository<Patient>()
+                        .GetAll(p => p.Phone == request.PatientPhone)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                Patient patient;
+
+                if (existingPatient != null)
+                {
+                    existingPatient.FullName = ArabicNormalizer.NormalizeArabic(request.PatientName);
+                    existingPatient.InsuranceCompanyId = request.InsuranceCompanyId;
+                    existingPatient.InsuranceCategoryId = request.InsuranceCategoryId;
+                    existingPatient.Gender = gender;
+
+                    _unitOfWork.Repository<Patient>().Update(existingPatient);
+                    patient = existingPatient;
+                }
+                else
+                {
+                    patient = new Patient
+                    {
+                        FullName = ArabicNormalizer.NormalizeArabic(request.PatientName),
+                        Phone = request.PatientPhone,
+                        InsuranceCompanyId = request.InsuranceCompanyId,
+                        InsuranceCategoryId = request.InsuranceCategoryId,
+                        Status = PatientStatus.Outpatient,
+                        Gender = gender
+                    };
+
+                    await _unitOfWork.Repository<Patient>().AddAsync(patient, cancellationToken);
+                }
+                foreach (var service in request.MedicalServices)
+                {
+                    if (!Enum.TryParse<AppointmentType>(service.AppointmentType, true, out var appointmentType))
+                        return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.InvalidType);
+
+                    bool isEmergency = appointmentType == AppointmentType.Emergency;
+
+                    // Only check doctor schedule if not Emergency
+                    if (!isEmergency)
+                    {
+                        var isNeedDoctor = service.AppointmentType == "General" || service.AppointmentType == "Consultation" || service.AppointmentType == "Surgery";
+                        if (isNeedDoctor)
+                        {
+                            var schedule = await _unitOfWork.Repository<DoctorSchedule>()
+                                .GetAll(s => s.DoctorId == request.DoctorId && s.WeekDay == service.AppointmentDate.DayOfWeek.ToString()).FirstOrDefaultAsync(cancellationToken);
+
+                            if (schedule == null)
+                                return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.ScheduleNotFound);
+
+                            if (schedule.CurrentAppointments >= schedule.Capacity)
+                                return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.ScheduleFull);
+
+                            schedule.CurrentAppointments++;
+                            _unitOfWork.Repository<DoctorSchedule>().Update(schedule);
+                        }
+                    }
+
+                    await _unitOfWork.CompleteAsync(cancellationToken);
+
+                    var appointmentNumber = await _unitOfWork.Repository<Appointment>()
+                                   .CountAsync(a => a.Type == appointmentType && a.AppointmentDate == service.AppointmentDate, cancellationToken) + 1;
+
+                    var appointment = new Appointment
+                    {
+                        PatientId = patient.Id,
+                        DoctorId = isEmergency ? null : request.DoctorId,
+                        AppointmentDate = service.AppointmentDate,
+                        Type = appointmentType,
+                        PaymentMethod = request.PaymentMethod,
+                        AppointmentNumber = appointmentNumber,
+                        EmergencyLevel = request.EmergencyLevel,
+                        CompanionName = request.CompanionName,
+                        CompanionNationalId = request.CompanionNationalId,
+                        CompanionPhone = request.CompanionPhone
+                    };
+
+                    await _unitOfWork.Repository<Appointment>().AddAsync(appointment, cancellationToken);
+                    await _unitOfWork.CompleteAsync(cancellationToken);
+
+                    // Only save MedicalServiceDetails if not Emergency
+                    if (!isEmergency && request.MedicalServices.Count > 0)
+                    {
+                        var serviceDetails = new List<MedicalServiceDetail>();
+                        foreach (var item in service.MedicalServiceIds)
+                        {
+                            var serviceDetail = new MedicalServiceDetail();
+                            serviceDetail.AppointmentId = appointment.Id;
+                            serviceDetail.MedicalServiceId = item;
+                            serviceDetail.AppointmentDate = service.AppointmentDate;
+
+                            serviceDetails.Add(serviceDetail);
+                        }
+                        await _unitOfWork.Repository<MedicalServiceDetail>().AddRangeAsync(serviceDetails, cancellationToken);
+                    }
+                    await _unitOfWork.CompleteAsync(cancellationToken);
+
+                    var createdAppointment = await _unitOfWork.Repository<Appointment>()
+                        .GetAll(a => a.Id == appointment.Id)
+                        .Include(a => a.MedicalService)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    var response = new AppointmentToReturnResponse
+                    {
+                        AppointmentNumber = createdAppointment?.AppointmentNumber ?? 0,
+                        MedicalServiceName = createdAppointment?.MedicalService?.Name,
+                    };
+                }
+
+                await transaction.CommitAsync(cancellationToken);
+
+                return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess);
+
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.TransFailed);
             }
         }
     }
