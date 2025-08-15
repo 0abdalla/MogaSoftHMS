@@ -224,7 +224,7 @@ export class MenueService {
           pageName: 'PatientsListSettings'
         },
         {
-          displayName: 'إعدادات المواعيد والحجز',
+          displayName: ' المواعيد والحجز',
           icon: 'fa-solid fa-circle',
           route: '/hms/settings/medical-services-list',
           pageName: 'MedicalServicesList'
@@ -249,13 +249,13 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات وكلاء التامين',
+          displayName: ' وكلاء التامين',
           icon: 'fa-solid fa-circle',
           route: '/hms/insurance/insurance-list',
           pageName: 'InsuranceList'
         },
         {
-          displayName: 'إعدادات المخازن',
+          displayName: 'المخازن',
           icon: 'fa-solid fa-circle',
           subMenus: [
             {
@@ -297,7 +297,7 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات المشتريات',
+          displayName: 'المشتريات',
           icon: 'fa-solid fa-circle',
           subMenus: [
             {
@@ -309,7 +309,7 @@ export class MenueService {
           ]
         },
         {
-          displayName: 'إعدادات الإدارة المالية',
+          displayName: 'الإدارة المالية',
           icon: 'fa-solid fa-circle',
           subMenus: [
             {
@@ -331,7 +331,7 @@ export class MenueService {
               pageName: 'Banks'
             },
             {
-              displayName: 'إعدادات السنة المالية',
+              displayName: 'السنة المالية',
               icon: 'fa-solid fa-circle',
               route: '/hms/fin-tree/year-fin-settings',
               pageName: 'YeaFinSettings'

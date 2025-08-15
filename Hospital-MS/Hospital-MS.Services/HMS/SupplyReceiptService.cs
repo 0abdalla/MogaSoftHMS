@@ -208,7 +208,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     Id = supplyReceipt.DailyRestriction?.Id ?? 0,
-                    RestrictionNumber = supplyReceipt.DailyRestriction?.RestrictionNumber,
+                    RestrictionNumber = supplyReceipt.DailyRestriction?.RestrictionNumber ?? string.Empty,
                     RestrictionDate = supplyReceipt.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
                     AccountingGuidanceName = supplyReceipt.DailyRestriction?.AccountingGuidance?.Name ?? "",
                     Amount = supplyReceipt.Amount,

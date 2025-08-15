@@ -1,10 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Interfaces.Auth
 {
@@ -13,5 +8,8 @@ namespace Hospital_MS.Interfaces.Auth
         Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<string>> RegisterAsync(RegisterUser request, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<string>> UpdateUserAsync(UpdateUserRequest request, CancellationToken cancellationToken = default);
+
+        Task<ErrorResponseModel<string>> SendResetPasswordCodeAsync(string userName);
+        Task<ErrorResponseModel<string>> ResetPasswordAsync(ResetPasswordRequest request);
     }
 }

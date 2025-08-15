@@ -293,70 +293,126 @@
 
 
 
-<div #printSection id="receiptPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
-    <div class="d-flex justify-content-evenly align-items-center">
-        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <h5 class="fw-bold mb-1"> إذن الإستلام  <span class="text-primary"> {{ addNumber }}</span></h5> 
+<div #printSection id="receiptPrintArea" dir="rtl" class="shadow py-2 px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="border rounded">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <h5 class="fw-bold mb-1"> إذن الإستلام  <span class="text-primary"> {{ addNumber }}</span></h5> 
+        </div>
+        <div class="container-fluid">
+            <div class="row mt-4" style="font-size: 16px;">
+                <hr>
+                <div class="col-6">
+                    <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
+                    <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
+                    <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
+                    <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>المخزن:</strong> {{ savedOrderData?.storeName || '---' }}</p>
+                    <p><strong>العملة:</strong> جنيه مصري</p>
+                    <p><strong>رقم القيد:</strong> {{ savedOrderData?.restrictionNumber || '---' }}</p>
+                    <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
+                </div>
+                <hr>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>الكمية</th>
+                        <th>تكلفة الصنف</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let item of savedOrderData?.items; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.itemName }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
+                        <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
+                    </tr>
+                    </tbody>
+                    <tfoot class="fw-bold bg-light">
+                    <tr>
+                        <td colspan="4">الإجمالي</td>
+                        <td colspan="1">{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <hr class="my-4">
+            <div class="row text-center">
+                <div class="col-6">
+                <p class="mt-2">أمين المخزن</p>
+                <hr style="width: 60%; margin: auto;">
+                </div>
+                <div class="col-6">
+                <p class="mt-2">المستلم</p>
+                <hr style="width: 60%; margin: auto;">
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-6">
+                <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+                </div>
+                <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ today }}</p>
+                </div>
+            </div>
+        </div>
     </div>
+    <div style="page-break-before: always;"></div>
+    <div class="border rounded mt-2">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <h5 class="fw-bold mb-1"> قيد رقم  <span class="text-primary"> {{ savedOrderData?.restrictionNumber }}</span></h5> 
+        </div>
     <div class="container-fluid">
         <div class="row mt-4" style="font-size: 16px;">
-            <hr>
             <div class="col-6">
                 <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
-                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
-                <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
-                <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
             </div>
             <div class="col-6">
-                <p><strong>المخزن:</strong> {{ savedOrderData?.storeName || '---' }}</p>
-                <p><strong>العملة:</strong> جنيه مصري</p>
-                <p><strong>رقم القيد:</strong> {{ savedOrderData?.entryNumber || '---' }}</p>
-                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
+                <p><strong>التوجيه المحاسبي:</strong> {{ savedOrderData?.accountingGuidanceName || '--' }}</p>
             </div>
-            <hr>
         </div>
-        
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
+
+        <table class="table table-bordered mt-4">
+            <thead class="bg-primary text-white">
                 <tr>
                     <th>م</th>
-                    <th>اسم الصنف</th>
-                    <th>الكمية</th>
-                    <th>تكلفة الصنف</th>
-                    <th>الإجمالي</th>
+                    <th>التفاصيل</th>
+                    <th>القيمة</th>
                 </tr>
-                </thead>
-                <tbody>
-                <tr *ngFor="let item of savedOrderData?.items; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ item.itemName }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
-                    <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
-                </tr>
-                </tbody>
-                <tfoot class="fw-bold bg-light">
+            </thead>
+            <tbody>
                 <tr>
-                    <td colspan="4">الإجمالي</td>
-                    <td colspan="1">{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                    <td>1</td>
+                    <td>من حــ\ {{ savedOrderData?.supplierName }}</td>
+                    <td>{{ savedOrderData?.totalAmount | number:'1.2-2' }} ج.م</td>
                 </tr>
-                </tfoot>
-            </table>
-        </div>
-        
+                <tr>
+                    <td>2</td>
+                    <td>إلى حــ\ {{ savedOrderData?.storeName }}</td>
+                    <td>{{ savedOrderData?.totalAmount | number:'1.2-2' }} ج.م</td>
+                </tr>
+            </tbody>
+        </table>
+
         <hr class="my-4">
-        <div class="row text-center">
-            <div class="col-6">
-            <p class="mt-2">أمين المخزن</p>
-            <hr style="width: 60%; margin: auto;">
-            </div>
-            <div class="col-6">
-            <p class="mt-2">المستلم</p>
-            <hr style="width: 60%; margin: auto;">
+        <div class="row">
+            <div class="col-12">
+                <p><strong>ملاحظات:</strong> {{ data.notes || '-' }}</p>
             </div>
         </div>
-        
         <hr class="my-4">
         <div class="row">
             <div class="col-6">
@@ -366,74 +422,131 @@
             <p><strong>التاريخ:</strong> {{ today }}</p>
             </div>
         </div>
+    </div>
     </div>
 </div> 
 
-<div #printSection id="reReceiptPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
-    <div class="d-flex justify-content-evenly align-items-center">
-        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <!-- <h4 class="text-center">  <span class="text-primary"> {{ savedOrderData?.permissionNumber }}</span></h4> -->
-        <h5 class="fw-bold mb-1"> إذن الإستلام  <span class="text-primary"> {{ savedOrderData?.permissionNumber }}</span></h5> 
+<div #printSection id="reReceiptPrintArea" dir="rtl" class="shadow py-2 px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="border rounded">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <!-- <h4 class="text-center">  <span class="text-primary"> {{ savedOrderData?.permissionNumber }}</span></h4> -->
+            <h5 class="fw-bold mb-1"> إذن الإستلام  <span class="text-primary"> {{ savedOrderData?.permissionNumber }}</span></h5> 
+        </div>
+        <div class="container-fluid">
+            <div class="row mt-4" style="font-size: 16px;">
+                <hr>
+                <div class="col-6">
+                    <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
+                    <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
+                    <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
+                    <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
+                </div>
+                <div class="col-6">
+                    <p><strong>المخزن:</strong> {{ savedOrderData?.storeName || '---' }}</p>
+                    <p><strong>العملة:</strong> جنيه مصري</p>
+                    <p><strong>رقم القيد:</strong> {{ savedOrderData?.dailyRestriction?.restrictionNumber || '---' }}</p>
+                    <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
+                </div>
+                <hr>
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                        <th>م</th>
+                        <th>اسم الصنف</th>
+                        <th>الكمية</th>
+                        <th>تكلفة الصنف</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let item of savedOrderData?.items; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>{{ item.itemName }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
+                        <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
+                    </tr>
+                    </tbody>
+                    <tfoot class="fw-bold bg-light">
+                    <tr>
+                        <td colspan="4">الإجمالي</td>
+                        <td colspan="1">{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+            
+            <hr class="my-4">
+            <div class="row text-center">
+                <div class="col-6">
+                <p class="mt-2">أمين المخزن</p>
+                <hr style="width: 60%; margin: auto;">
+                </div>
+                <div class="col-6">
+                <p class="mt-2">المستلم</p>
+                <hr style="width: 60%; margin: auto;">
+                </div>
+            </div>
+            
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-6">
+                <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+                </div>
+                <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ today }}</p>
+                </div>
+            </div>
+        </div>
     </div>
+    <div style="page-break-before: always;"></div>
+    <div class="border rounded mt-2">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <h5 class="fw-bold mb-1"> قيد رقم  <span class="text-primary"> {{ savedOrderData?.dailyRestriction?.restrictionNumber }}</span></h5> 
+        </div>
     <div class="container-fluid">
         <div class="row mt-4" style="font-size: 16px;">
-            <hr>
             <div class="col-6">
                 <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate }}</p>
-                <p><strong>اسم المورد:</strong> {{ savedOrderData?.supplierName }}</p>
-                <p><strong>رقم المستند:</strong> {{ savedOrderData?.documentNumber }}</p>
-                <p><strong>نوع الإضافة:</strong> فاتورة مورد</p>
             </div>
             <div class="col-6">
-                <p><strong>المخزن:</strong> {{ savedOrderData?.storeName || '---' }}</p>
-                <p><strong>العملة:</strong> جنيه مصري</p>
-                <p><strong>رقم القيد:</strong> {{ savedOrderData?.entryNumber || '---' }}</p>
-                <p><strong>ملاحظات:</strong> {{ savedOrderData?.notes || '-' }}</p>
+                <p><strong>التوجيه المحاسبي:</strong> {{ savedOrderData?.dailyRestriction?.accountingGuidanceName || '--' }}</p>
             </div>
-            <hr>
         </div>
-        
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead>
+
+        <table class="table table-bordered mt-4">
+            <thead class="bg-primary text-white">
                 <tr>
                     <th>م</th>
-                    <th>اسم الصنف</th>
-                    <th>الكمية</th>
-                    <th>تكلفة الصنف</th>
-                    <th>الإجمالي</th>
+                    <th>التفاصيل</th>
+                    <th>القيمة</th>
                 </tr>
-                </thead>
-                <tbody>
-                <tr *ngFor="let item of savedOrderData?.items; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ item.itemName }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
-                    <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
-                </tr>
-                </tbody>
-                <tfoot class="fw-bold bg-light">
+            </thead>
+            <tbody>
                 <tr>
-                    <td colspan="4">الإجمالي</td>
-                    <td colspan="1">{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                    <td>1</td>
+                    <td>من حــ\ {{ savedOrderData?.supplierName }}</td>
+                    <td>{{ getTotal() | number:'1.2-2' }} ج.م</td>
                 </tr>
-                </tfoot>
-            </table>
-        </div>
-        
+                <tr>
+                    <td>2</td>
+                    <td>إلى حــ\ {{ savedOrderData?.storeName }}</td>
+                    <td>{{ getTotal() | number:'1.2-2' }} ج.م</td>
+                </tr>
+            </tbody>
+        </table>
+
         <hr class="my-4">
-        <div class="row text-center">
-            <div class="col-6">
-            <p class="mt-2">أمين المخزن</p>
-            <hr style="width: 60%; margin: auto;">
-            </div>
-            <div class="col-6">
-            <p class="mt-2">المستلم</p>
-            <hr style="width: 60%; margin: auto;">
+        <div class="row">
+            <div class="col-12">
+                <p><strong>ملاحظات:</strong> {{ data.notes || '-' }}</p>
             </div>
         </div>
-        
         <hr class="my-4">
         <div class="row">
             <div class="col-6">
@@ -444,9 +557,10 @@
             </div>
         </div>
     </div>
+    </div>
 </div>
 
-<div #printEntrySection id="journalPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 " style="max-width: 900px; margin: auto;">
+<!-- <div #printEntrySection id="journalPrintArea" dir="rtl" class="border rounded shadow p-4 my-4 " style="max-width: 900px; margin: auto;">
     <h3 class="text-center">قيد رقم {{ data.documentNumber }}</h3>
     <div class="container-fluid">
         <div class="row mt-4" style="font-size: 16px;">
@@ -497,7 +611,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
 
 
@@ -513,7 +627,7 @@
         <div class="modal-body" *ngIf="savedOrderData">
             <p><strong>رقم المستند:</strong> {{ savedOrderData.documentNumber }}</p>
             <p><strong>رقم القيد:</strong> {{ savedOrderData?.restrictionNumber || '---' }}</p>
-            <p><strong>التاريخ:</strong> {{ savedOrderData.permissionDate | date:'yyyy-MM-dd' }}</p>
+            <p><strong>التاريخ:</strong> {{ savedOrderData?.permissionDate | date:'yyyy-MM-dd' }}</p>
             <p><strong>اسم المورد:</strong> {{ savedOrderData.supplierName }}</p>
             <p><strong>اسم المخزن:</strong> {{ savedOrderData.storeName }}</p>
             <p><strong>الإجمالي:</strong> {{ savedOrderData.totalAmount | number:'1.2-2' }} ج.م</p>            

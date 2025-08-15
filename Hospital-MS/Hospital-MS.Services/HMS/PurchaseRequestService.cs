@@ -58,18 +58,23 @@ namespace Hospital_MS.Services.HMS
                 await _unitOfWork.Repository<PurchaseRequest>().AddAsync(purchaseRequest, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                if (!isAdmin)
-                {
-                    BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
-                }
-
+                // Add notification to database after adding purchase request
                 var notification = new Notification
                 {
                     TargetId = purchaseRequest.Id,
                     Type = NotificationType.PurchaseRequest,
                     Status = purchaseRequest.Status.ToString(),
-                    AdditionalInfo = "طلب شراء جديد تمت إضافته"
+                    AdditionalInfo = "طلب شراء جديد تمت إضافته",
+                    CreatedAt = DateTime.UtcNow,
+                    IsRead = false
                 };
+                await _unitOfWork.Repository<Notification>().AddAsync(notification, cancellationToken);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                if (!isAdmin)
+                {
+                    BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
+                }
 
                 await _notificationService.CreateAndNotifyAsync(notification, cancellationToken);
 

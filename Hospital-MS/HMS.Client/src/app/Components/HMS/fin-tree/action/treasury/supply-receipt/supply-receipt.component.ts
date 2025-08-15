@@ -362,7 +362,7 @@ export class SupplyReceiptComponent implements OnInit {
               const element = document.getElementById('printableSupplyReceipt');
               const options = {
                 margin:       0.5,
-                filename:     `إيصال-توريد-رقم-${this.receiptNumber}.pdf`,
+                filename:     `إيصال-توريد-رقم-${this.printedRecipt.id}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
