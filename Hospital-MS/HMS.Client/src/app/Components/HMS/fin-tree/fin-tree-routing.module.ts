@@ -27,39 +27,40 @@ import { StoresTypesComponent } from './inputs/stores-types/stores-types.compone
 import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-settings.component';
 import { IssueRequestComponent } from './action/issue-request/issue-request.component';
 import { UnitsComponent } from './inputs/units/units.component';
+import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  {path:"items" , component : ItemsComponent},
-  {path:"items-group" , component : ItemsGroupComponent},
-  {path:"main-groups" , component : MainGroupComponent},
-  {path:"units" , component:UnitsComponent},
-  {path:"providers" , component : ProvidersComponent},
-  {path:"purchase-request" , component : PurchaseRequestComponent},
-  {path:"purchase-order" , component : PurchaseOrderComponent},
-  {path:"offers" , component : OffersComponent},
-  {path:"clients" , component : ClientsComponent},
-  {path:"boxes" , component : BoxsComponent},
-  {path:"stores" , component : StoresComponent},
-  {path:"stores-types" , component : StoresTypesComponent},
-  {path:"banks" , component : BanksComponent},
-  {path:"accounts" , component : AccountsComponent},
-  {path:"treasuries" , component : TreasuriesComponent},
+  {path:"items" , component : ItemsComponent, canActivate: [authGuard], data: { pageName: 'Items' }},
+  {path:"items-group" , component : ItemsGroupComponent, canActivate: [authGuard], data: { pageName: 'ItemsGroup' }},
+  {path:"main-groups" , component : MainGroupComponent, canActivate: [authGuard], data: { pageName: 'MainGroups' }},
+  {path:"units" , component:UnitsComponent, canActivate: [authGuard], data: { pageName: 'Units' }},
+  {path:"providers" , component : ProvidersComponent, canActivate: [authGuard], data: { pageName: 'Providers' }},
+  {path:"purchase-request" , component : PurchaseRequestComponent, canActivate: [authGuard], data: { pageName: 'PurchaseRequest' }},
+  {path:"purchase-order" , component : PurchaseOrderComponent, canActivate: [authGuard], data: { pageName: 'PurchaseOrder' }},
+  {path:"offers" , component : OffersComponent, canActivate: [authGuard], data: { pageName: 'Offers' }},
+  {path:"clients" , component : ClientsComponent, canActivate: [authGuard], data: { pageName: 'Clients' }},
+  {path:"boxes" , component : BoxsComponent, canActivate: [authGuard], data: { pageName: 'Boxes' }},
+  {path:"stores" , component : StoresComponent, canActivate: [authGuard], data: { pageName: 'Stores' }},
+  {path:"stores-types" , component : StoresTypesComponent, canActivate: [authGuard], data: { pageName: 'StoreTypes' }},
+  {path:"banks" , component : BanksComponent, canActivate: [authGuard], data: { pageName: 'Banks' }},
+  {path:"accounts" , component : AccountsComponent, canActivate: [authGuard], data: { pageName: 'Accounts' }},
+  {path:"treasuries" , component : TreasuriesComponent, canActivate: [authGuard], data: { pageName: 'Treasuries' }},
   // actions
-  {path:"add-items" , component : AddItemsComponent},
-  {path:"issue-request" , component : IssueRequestComponent},
-  {path:"issue-items" , component : IssueItemsComponent},
-  {path:"fetch-inventory" , component : FetchInventoryComponent},
+  {path:"add-items" , component : AddItemsComponent, canActivate: [authGuard], data: { pageName: 'AddItems' }},
+  {path:"issue-request" , component : IssueRequestComponent, canActivate: [authGuard], data: { pageName: 'IssueRequest' }},
+  {path:"issue-items" , component : IssueItemsComponent, canActivate: [authGuard], data: { pageName: 'IssueItems' }},
+  {path:"fetch-inventory" , component : FetchInventoryComponent, canActivate: [authGuard], data: { pageName: 'FetchInventory' }},
   // treasury
-  {path:"treasury" , component : TreasuryIndexComponent},
-  {path:"treasury/supply-receipt" , component : SupplyReceiptComponent},
-  {path:"treasury/exchange-permission" , component : ExchangePremssionComponent},
+  {path:"treasury" , component : TreasuryIndexComponent, canActivate: [authGuard], data: { pageName: 'Treasury' }},
+  {path:"treasury/supply-receipt" , component : SupplyReceiptComponent, canActivate: [authGuard], data: { pageName: 'Treasury' }},
+  {path:"treasury/exchange-permission" , component : ExchangePremssionComponent, canActivate: [authGuard], data: { pageName: 'Treasury' }},
   // bank
-  {path:'bank',component:BankIndexComponent},
-  {path:'bank/add-notice',component:AddNoticeComponent},
-  {path:'bank/discount-notice',component:DiscountNoticeComponent},
-  {path:'restrictions',component:RestrictionsComponent},
+  {path:'bank',component:BankIndexComponent, canActivate: [authGuard], data: { pageName: 'Bank' }},
+  {path:'bank/add-notice',component:AddNoticeComponent, canActivate: [authGuard], data: { pageName: 'AddNotice' }},
+  {path:'bank/discount-notice',component:DiscountNoticeComponent, canActivate: [authGuard], data: { pageName: 'DiscountNotice' }},
+  {path:'restrictions',component:RestrictionsComponent, canActivate: [authGuard], data: { pageName: 'Restrictions' }},
   // 
-  {path:'year-fin-settings',component:YearFinSettingsComponent}
+  {path:'year-fin-settings',component:YearFinSettingsComponent, canActivate: [authGuard], data: { pageName: 'YeaFinSettings' }}
 ];
 
 @NgModule({

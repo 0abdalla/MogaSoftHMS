@@ -6,10 +6,10 @@ import { SurgeryFormComponent } from './surgery-form/surgery-form.component';
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: AdmissionListComponent,canActivate:[authGuard] },
-  { path: 'admission/detail/:id', component: AdmissionDetailComponent,canActivate:[authGuard] },
-  { path: 'surgery/add', component: SurgeryFormComponent,canActivate:[authGuard] },
-  { path: 'surgery/edit/:id', component: SurgeryFormComponent,canActivate:[authGuard] },
+  { path: '', component: AdmissionListComponent,canActivate:[authGuard], data: { pageName: 'AdmissionList' } },
+  { path: 'admission/detail/:id', component: AdmissionDetailComponent,canActivate:[authGuard], data: { pageName: 'AdmissionList' } },
+  { path: 'surgery/add', component: SurgeryFormComponent,canActivate:[authGuard], data: { pageName: 'Surgery' } },
+  { path: 'surgery/edit/:id', component: SurgeryFormComponent,canActivate:[authGuard], data: { pageName: 'Surgery' } },
 ];
 
 @NgModule({

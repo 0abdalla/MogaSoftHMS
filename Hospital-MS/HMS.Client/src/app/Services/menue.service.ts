@@ -10,18 +10,21 @@ export class MenueService {
       displayName: 'المرضى',
       icon: 'fa-solid fa-users',
       route: '/hms/patients/list',
+      pageName: 'PatientList',
       isGroup: false
     },
     {
       displayName: 'المواعيد والحجز',
       icon: 'fa-solid fa-calendar-check',
-      route:'/hms/appointments/list',
+      route: '/hms/appointments/list',
+      pageName: 'AppointmentList',
       isGroup: false
     },
     {
       displayName: 'الطوارئ والإستقبال',
       icon: 'fa-solid fa-hospital-user',
       route: '/hms/emergency/emergency-reception',
+      pageName: 'EmergencyReception',
       isGroup: false
     },
     {
@@ -32,24 +35,21 @@ export class MenueService {
         {
           displayName: 'طلب شراء',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/purchase-request'
+          route: '/hms/fin-tree/purchase-request',
+          pageName: 'PurchaseRequest'
         },
         {
           displayName: 'عروض الأسعار',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/offers'
+          route: '/hms/fin-tree/offers',
+          pageName: 'Offers'
         },
         {
           displayName: 'أمر توريد ',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/purchase-order'
-        },
-        // {
-        //   displayName: 'الموردين',
-        //   icon: 'fa-solid fa-circle',
-        //   route: '/hms/fin-tree/providers'
-        // },
-        
+          route: '/hms/fin-tree/purchase-order',
+          pageName: 'PurchaseOrder'
+        }
       ]
     },
     {
@@ -60,17 +60,20 @@ export class MenueService {
         {
           displayName: 'إذن إستلام ',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/add-items'
+          route: '/hms/fin-tree/add-items',
+          pageName: 'AddItems'
         },
         {
           displayName: 'طلب صرف ',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/issue-request'
+          route: '/hms/fin-tree/issue-request',
+          pageName: 'IssueRequest'
         },
         {
           displayName: 'إذن صرف',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/issue-items'
+          route: '/hms/fin-tree/issue-items',
+          pageName: 'IssueItems'
         }
       ]
     },
@@ -83,28 +86,7 @@ export class MenueService {
           displayName: 'حركة الخزينة',
           icon: 'fa-solid fa-circle',
           route: '/hms/fin-tree/treasury',
-          // subMenus: [
-          //   {
-          //     displayName: 'إيصال توريد',
-          //     icon: 'fa-solid fa-circle',
-          //     route: '/hms/fin-tree/treasury/supply-receipt'
-          //   },
-          //   {
-          //     displayName: 'إذن صرف نقدي',
-          //     icon: 'fa-solid fa-circle',
-          //     route: '/hms/fin-tree/treasury/exchange-permission'
-          //   },
-          //   {
-          //     displayName: 'كشف حركة الخزينة',
-          //     icon: 'fa-solid fa-circle',
-          //     route: '/hms/fin-tree/treasury'
-          //   },
-          //   {
-          //     displayName: 'إغلاق حركة الخزينة',
-          //     icon: 'fa-solid fa-circle',
-          //     route: '/hms/staff/classification'
-          //   },
-          // ]
+          pageName: 'Treasury'
         },
         {
           displayName: 'حركة البنك',
@@ -113,29 +95,34 @@ export class MenueService {
             {
               displayName: 'اشعار اضافة',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/bank/add-notice'
+              route: '/hms/fin-tree/bank/add-notice',
+              pageName: 'AddNotice'
             },
             {
               displayName: 'اشعار خصم',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/bank/discount-notice'
+              route: '/hms/fin-tree/bank/discount-notice',
+              pageName: 'DiscountNotice'
             },
           ]
         },
         {
           displayName: 'القيود اليومية',
           icon: 'fa-solid fa-circle',
-          route: '/hms/fin-tree/restrictions'
+          route: '/hms/fin-tree/restrictions',
+          pageName: 'Restrictions'
         },
         {
           displayName: 'رواتب الموظفين',
           icon: 'fa-solid fa-circle',
-          route: '/hms/staff/salaries'
+          route: '/hms/staff/salaries',
+          pageName: 'Salaries'
         },
         {
           displayName: 'سلف الموظفين',
           icon: 'fa-solid fa-circle',
-          route: '/hms/staff/advances'
+          route: '/hms/staff/advances',
+          pageName: 'Advances'
         }
       ]
     },
@@ -151,44 +138,52 @@ export class MenueService {
             {
               displayName: 'الموظفين',
               icon: 'fa-solid fa-circle',
-              route: '/hms/staff/list'
+              route: '/hms/staff/list',
+              pageName: 'StaffList'
             },
             {
               displayName: 'الأقسام',
               icon: 'fa-solid fa-circle',
-              route: '/hms/staff/department-admin'
+              route: '/hms/staff/department-admin',
+              pageName: 'DepartmentAdmin'
             },
             {
               displayName: 'المستويات الوظيفية',
               icon: 'fa-solid fa-circle',
-              route: '/hms/staff/job-levels'
+              route: '/hms/staff/job-levels',
+              pageName: 'JobLevels'
             },
             {
               displayName: 'تصنيف الوظائف',
               icon: 'fa-solid fa-circle',
-              route: '/hms/staff/classification'
+              route: '/hms/staff/classification',
+              pageName: 'Classification'
             },
             {
               displayName: 'الوظائف',
               icon: 'fa-solid fa-circle',
-              route: '/hms/staff/job-management'
+              route: '/hms/staff/job-management',
+              pageName: 'JobManagement'
             }
           ]
         },
         {
           displayName: 'الأجازات',
           icon: 'fa-solid fa-circle',
-          route: '/hms/staff/vacation'
+          route: '/hms/staff/vacation',
+          pageName: 'Vacation'
         },
         {
           displayName: 'الجزاءات',
           icon: 'fa-solid fa-circle',
-          route: '/hms/staff/penalty'
+          route: '/hms/staff/penalty',
+          pageName: 'Penalty'
         },
         {
           displayName: 'الحضور والانصراف',
           icon: 'fa-solid fa-circle',
-          route: '/hms/staff/attendance'
+          route: '/hms/staff/attendance',
+          pageName: 'Attendance'
         }
       ]
     },
@@ -201,16 +196,19 @@ export class MenueService {
           displayName: 'حساب الأستاذ',
           icon: 'fa-solid fa-circle',
           route: '/hms/reports/ledger-report',
+          pageName: 'LedgerReport'
         },
         {
           displayName: 'حركة المخزن',
           icon: 'fa-solid fa-circle',
-          route: '/hms/reports/store-movement'
+          route: '/hms/reports/store-movement',
+          pageName: 'StoreMovement'
         },
         {
           displayName: 'حركة الصنف',
           icon: 'fa-solid fa-circle',
-          route: '/hms/reports/item-movement'
+          route: '/hms/reports/item-movement',
+          pageName: 'ItemMovement'
         }
       ]
     },
@@ -223,11 +221,13 @@ export class MenueService {
           displayName: 'إعدادات المرضي',
           icon: 'fa-solid fa-circle',
           route: '/hms/patients/list',
+          pageName: 'PatientsListSettings'
         },
         {
           displayName: 'إعدادات المواعيد والحجز',
           icon: 'fa-solid fa-circle',
-          route: '/hms/settings/medical-services-list'
+          route: '/hms/settings/medical-services-list',
+          pageName: 'MedicalServicesList'
         },
         {
           displayName: 'الأطباء',
@@ -237,53 +237,62 @@ export class MenueService {
             {
               displayName: 'الأطباء',
               icon: 'fa-solid fa-circle',
-              route: '/hms/settings/doctors-list'
+              route: '/hms/settings/doctors-list',
+              pageName: 'DoctorList'
             },
             {
               displayName: 'نوع الخدمة',
               icon: 'fa-solid fa-circle',
-              route: '/hms/settings/medical-service'
+              route: '/hms/settings/medical-service',
+              pageName: 'MedicalService'
             }
           ]
         },
         {
           displayName: 'إعدادات وكلاء التامين',
           icon: 'fa-solid fa-circle',
-          route: '/hms/insurance/insurance-list'
+          route: '/hms/insurance/insurance-list',
+          pageName: 'InsuranceList'
         },
         {
           displayName: 'إعدادات المخازن',
           icon: 'fa-solid fa-circle',
-          subMenus:[
+          subMenus: [
             {
               displayName: 'المجموعات الرئيسية',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/main-groups'
+              route: '/hms/fin-tree/main-groups',
+              pageName: 'MainGroups'
             },
             {
               displayName: 'مجموعات الاصناف',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/items-group'
+              route: '/hms/fin-tree/items-group',
+              pageName: 'ItemsGroup'
             },
             {
               displayName: 'الاصناف',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/items'
+              route: '/hms/fin-tree/items',
+              pageName: 'Items'
             },
             {
               displayName: 'الوحدات',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/units'
+              route: '/hms/fin-tree/units',
+              pageName: 'Units'
             },
             {
               displayName: 'المخازن',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/stores'
+              route: '/hms/fin-tree/stores',
+              pageName: 'Stores'
             },
             {
               displayName: 'أنواع المخازن',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/stores-types'
+              route: '/hms/fin-tree/stores-types',
+              pageName: 'StoreTypes'
             }
           ]
         },
@@ -294,7 +303,8 @@ export class MenueService {
             {
               displayName: 'الموردين',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/providers'
+              route: '/hms/fin-tree/providers',
+              pageName: 'Providers'
             },
           ]
         },
@@ -305,35 +315,35 @@ export class MenueService {
             {
               displayName: 'شجرة الحسابات',
               icon: 'fa-solid fa-circle',
-              route: '/hms/settings/account-tree'
+              route: '/hms/settings/account-tree',
+              pageName: 'AccountTree'
             },
             {
               displayName: 'الخزائن',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/boxes'
+              route: '/hms/fin-tree/boxes',
+              pageName: 'Boxes'
             },
             {
               displayName: 'البنوك',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/banks'
+              route: '/hms/fin-tree/banks',
+              pageName: 'Banks'
             },
             {
               displayName: 'إعدادات السنة المالية',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/year-fin-settings'
+              route: '/hms/fin-tree/year-fin-settings',
+              pageName: 'YeaFinSettings'
             },
             {
               displayName: 'مراكز التكلفة',
               icon: 'fa-solid fa-circle',
-              route: '/hms/settings/cost-center-tree'
-            },
+              route: '/hms/settings/cost-center-tree',
+              pageName: 'CostCenterTree'
+            }
           ]
-        },
-        {
-          displayName: 'إعدادات الموارد البشرية',
-          icon: 'fa-solid fa-circle',
-          route: ''
-        },
+        }
       ]
     },
     {
@@ -345,13 +355,44 @@ export class MenueService {
           displayName: 'إدارة التطبيقات',
           icon: 'fa-solid fa-circle',
           route: '/hms/settings/apps-managmement',
+          pageName: 'AppsManagmement'
         },
         {
           displayName: 'صلاحيات المستخدم',
           icon: 'fa-solid fa-circle',
-          route: '/hms/settings/permissions'
+          route: '/hms/settings/permissions',
+          pageName: 'Permissions'
         }
       ]
     }
   ];
+
+  getFilteredMenus(): MenuSidebarItem[] {
+    const pagesStr = sessionStorage.getItem('pages') ?? '';
+    const allowedPages = pagesStr.split(',').map(p => p.trim()).filter(Boolean);
+    const allowedSet = new Set(allowedPages);
+
+    const filterRecursive = (items: MenuSidebarItem[]): MenuSidebarItem[] => {
+      return (items || [])
+        .map(menu => {
+          const filteredChildren = menu.subMenus?.length
+            ? filterRecursive(menu.subMenus)
+            : undefined;
+
+          const hasPage = !!menu.pageName && allowedSet.has(menu.pageName);
+          const hasChildren = !!filteredChildren && filteredChildren.length > 0;
+
+          if (!hasPage && !hasChildren) return null;
+
+          return {
+            ...menu,
+            ...(hasChildren ? { subMenus: filteredChildren } : {})
+          } as MenuSidebarItem;
+        })
+        .filter((x): x is MenuSidebarItem => x !== null);
+    };
+
+    return filterRecursive(this.menus);
+  }
+
 }

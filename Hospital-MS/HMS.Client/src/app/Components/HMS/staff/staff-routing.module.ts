@@ -17,20 +17,20 @@ import { HrSalariesComponent } from './hr-salaries/hr-salaries.component';
 
 const routes: Routes = [
   { path: '', redirectTo : 'list' , pathMatch:"full" },
-  { path: 'list' , component : StaffListComponent, canActivate: [authGuard], data: { pageName: 'staff-list' } },
-  { path: 'detail/:id', component: StaffDetailComponent, canActivate: [authGuard], data: { pageName: 'staff-list' } },
-  { path: 'add', component: StaffFormComponent, canActivate: [authGuard], data: { pageName: 'staff-add' } },
-  { path: 'edit/:id', component: StaffFormComponent, canActivate: [authGuard], data: { pageName: 'staff-add' } },
-  { path: 'progression' , component:StaffProgressionManagmentComponent , canActivate: [authGuard] },
-  { path: 'classification' , component : StaffClassManagmentComponent , canActivate:[authGuard], data: { pageName: 'classification' } },
-  { path: 'department-admin' , component:StaffDepManagmentComponent , canActivate:[authGuard], data: { pageName: 'department-admin' } },
-  { path: 'job-management' , component:StaffJobManagementComponent , canActivate:[authGuard], data: { pageName: 'job-management' } },
+  { path: 'list' , component : StaffListComponent, canActivate: [authGuard], data: { pageName: 'StaffList' } },
+  { path: 'detail/:id', component: StaffDetailComponent, canActivate: [authGuard], data: { pageName: 'StaffList' } },
+  { path: 'add', component: StaffFormComponent, canActivate: [authGuard], data: { pageName: 'StaffList' } },
+  { path: 'edit/:id', component: StaffFormComponent, canActivate: [authGuard], data: { pageName: 'StaffList' } },
+  { path: 'progression' , component:StaffProgressionManagmentComponent , canActivate: [authGuard], data: { pageName: 'Progression' } },
+  { path: 'classification' , component : StaffClassManagmentComponent , canActivate:[authGuard], data: { pageName: 'Classification' } },
+  { path: 'department-admin' , component:StaffDepManagmentComponent , canActivate:[authGuard], data: { pageName: 'DepartmentAdmin' } },
+  { path: 'job-management' , component:StaffJobManagementComponent , canActivate:[authGuard], data: { pageName: 'JobManagement' } },
   { path: 'job-levels' , component:StaffLevelsComponent , canActivate:[authGuard] },
-  { path:"attendance", component : AttendanceFormComponent , data: { pageName: 'attendance' } },
-  { path:"penalty", component : HrPenaltyComponent , data: { pageName: 'penalty' } },
-  { path:"vacation", component : HrVacationComponent , data: { pageName: 'penalty' } },
-  { path:"advances", component : HrAdvancesComponent , data: { pageName: 'penalty' } },
-  { path:"salaries", component : HrSalariesComponent , data: { pageName: 'penalty' } },
+  { path:"attendance", component : AttendanceFormComponent , data: { pageName: 'Attendance' } },
+  { path:"penalty", component : HrPenaltyComponent , data: { pageName: 'Penalty' } },
+  { path:"vacation", component : HrVacationComponent , data: { pageName: 'Penalty' } },
+  { path:"advances", component : HrAdvancesComponent , data: { pageName: 'Penalty' } },
+  { path:"salaries", component : HrSalariesComponent , data: { pageName: 'Penalty' } },
   
 ];
 

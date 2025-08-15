@@ -6,10 +6,10 @@ import { InventoryListComponent } from './inventory-list/inventory-list.componen
 import { authGuard } from '../../../Auth/auth.guard';
 
 const routes: Routes = [
-  { path: '', component: MedicationListComponent,canActivate:[authGuard] },
-  { path: 'prescription/add', component: PrescriptionFormComponent,canActivate:[authGuard] },
-  { path: 'prescription/edit/:id', component: PrescriptionFormComponent,canActivate:[authGuard] },
-  { path: 'inventory', component: InventoryListComponent,canActivate:[authGuard] },
+  { path: '', component: MedicationListComponent,canActivate:[authGuard], data: { pageName: 'PrescriptionList' } },
+  { path: 'prescription/add', component: PrescriptionFormComponent,canActivate:[authGuard], data: { pageName: 'PrescriptionList' } },
+  { path: 'prescription/edit/:id', component: PrescriptionFormComponent,canActivate:[authGuard], data: { pageName: 'PrescriptionList' } },
+  { path: 'inventory', component: InventoryListComponent,canActivate:[authGuard], data: { pageName: 'Inventory' } },
 ];
 
 @NgModule({

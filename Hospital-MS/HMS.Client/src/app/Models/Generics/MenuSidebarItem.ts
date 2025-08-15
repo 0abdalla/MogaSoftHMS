@@ -3,5 +3,6 @@
     route?: string;
     icon?: string;
     isGroup?: boolean;
+    pageName?: string;
     subMenus?: MenuSidebarItem[] = [];
   }
