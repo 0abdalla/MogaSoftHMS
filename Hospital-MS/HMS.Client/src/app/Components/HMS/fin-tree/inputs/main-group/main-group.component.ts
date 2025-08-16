@@ -3,9 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
-declare var bootstrap:any;
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { MessageService } from 'primeng/api';
 
+declare var bootstrap: any;
 @Component({
   selector: 'app-main-group',
   templateUrl: './main-group.component.html',
@@ -25,7 +26,7 @@ export class MainGroupComponent implements OnInit {
   // 
   isFilter:boolean = true;
   TitleList = ['إعدادات النظام','إعدادات الإدارة المالية','المجموعات الرئيسية'];
-  constructor(private fb:FormBuilder , private financialService : FinancialService){
+  constructor(private fb:FormBuilder , private financialService : FinancialService , private messageService: MessageService){
     this.filterForm=this.fb.group({
       Search:[],
     })
@@ -92,7 +93,7 @@ export class MainGroupComponent implements OnInit {
   // 
   isEditMode: boolean = false;
   currentMainGroupId: number | null = null;
-  
+  MainGroup!:any;
   addMainGroup() {
     if (this.mainGroupForm.invalid) {
       this.mainGroupForm.markAllAsTouched();
@@ -105,12 +106,27 @@ export class MainGroupComponent implements OnInit {
       this.financialService.updateMainGroups(this.currentMainGroupId, formData).subscribe({
         next: () => {
           this.getMainGroups();
-          this.mainGroupForm.reset();
-          this.isEditMode = false;
-          this.currentMainGroupId = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'تم التعديل بنجاح',
+            detail: 'تم تعديل المجموعة بنجاح',
+          });
+          setTimeout(() => {
+            const modalElement = document.getElementById('addMainGroupModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+          }, 2000);
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'فشل التعديل',
+            detail: 'فشل تعديل المجموعة',
+          });
         }
       });
     } else {
@@ -118,28 +134,53 @@ export class MainGroupComponent implements OnInit {
         next: (res) => {
           console.log(res);
           console.log(this.mainGroupForm.value);
-          
+          if (res.isSuccess == true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإضافة بنجاح',
+              detail: 'تم إضافة المجموعة بنجاح',
+            });
+            
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: 'فشل إضافة المجموعة',
+            });
+          }
           this.getMainGroups();
-          // this.mainGroupForm.reset();
+          setTimeout(() => {
+            const modalElement = document.getElementById('addMainGroupModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+          }, 2000);
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'فشل الإضافة',
+            detail: 'فشل إضافة المجموعة',
+          });
         }
       });
     }
   }
-  MainGroup!:any;
+  
   editMainGroup(id: number) {
     this.isEditMode = true;
     this.currentMainGroupId = id;
   
     this.financialService.getMainGroupsById(id).subscribe({
-      next: (data:any) => {
-        this.MainGroup=data.results;
+      next: (data: any) => {
+        this.MainGroup = data.results;
         this.mainGroupForm.patchValue({
           name: this.MainGroup.name,
+          description: this.MainGroup.description,
         });
-  
         const modal = new bootstrap.Modal(document.getElementById('addMainGroupModal')!);
         modal.show();
       },
@@ -148,6 +189,7 @@ export class MainGroupComponent implements OnInit {
       }
     });
   }
+  
   deleteMainGroup(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
@@ -163,12 +205,29 @@ export class MainGroupComponent implements OnInit {
         this.financialService.deleteMainGroups(id).subscribe({
           next: () => {
             this.getMainGroups();
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الحذف بنجاح',
+              detail: 'تم حذف المجموعة بنجاح',
+            });
           },
           error: (err) => {
             console.error('فشل الحذف:', err);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الحذف',
+              detail: 'فشل حذف المجموعة',
+            });
           }
         });
       }
     });
+  }
+  // 
+  
+  resetFormOnClose() {
+    this.mainGroupForm.reset();
+    this.isEditMode = false;
+    this.currentMainGroupId = null;
   }
 }

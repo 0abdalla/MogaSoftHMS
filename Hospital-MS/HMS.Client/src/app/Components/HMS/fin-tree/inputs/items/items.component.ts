@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { MessageService } from 'primeng/api';
 declare var bootstrap: any;
 
 @Component({
@@ -40,7 +41,7 @@ export class ItemsComponent {
       }
       groups:any[];
       units!:any[];
-      constructor(private fb:FormBuilder , private financialService:FinancialService){
+      constructor(private fb:FormBuilder , private financialService:FinancialService , private messageService: MessageService){
         this.filterForm=this.fb.group({
           SearchText:[],
         })
@@ -126,6 +127,19 @@ export class ItemsComponent {
               this.itemForm.reset();
               this.isEditMode = false;
               this.currentItemId = null;
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم التعديل بنجاح',
+                detail: 'تم تعديل الصنف بنجاح',
+              });
+              setTimeout(() => {
+                const modalElement = document.getElementById('addItemModal');
+                if (modalElement) {
+                  const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                  modalInstance?.hide();
+                }
+                this.resetFormOnClose();
+              }, 1000);
             },
             error: (err) => {
               console.error('خطأ أثناء التعديل:', err);
@@ -137,8 +151,14 @@ export class ItemsComponent {
               console.log('تم إضافة الصنف:', res);
               this.getItems();
               console.log(JSON.stringify(formData));
-              
-              // this.itemForm.reset();
+              if(res.isSuccess == true){
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'تم الإضافة بنجاح',
+                  detail: 'تم إضافة الصنف بنجاح',
+                });
+              }
+              this.itemForm.reset();
             },
             error: (err) => {
               console.error('خطأ أثناء الإضافة:', err);
@@ -207,5 +227,10 @@ export class ItemsComponent {
     else
       this.pagingFilterModel.searchText = '';
     this.getItems();
+  }
+  resetFormOnClose() {
+    this.itemForm.reset();
+    this.isEditMode = false;
+    this.currentItemId = null;
   }
 }

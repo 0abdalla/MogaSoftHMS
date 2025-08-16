@@ -148,6 +148,10 @@ export class HeaderComponent {
         return 'طلبات شراء';
       case '/hms/fin-tree/offers':
         return 'عروض أسعار';
+      case '/hms/fin-tree/stores':
+        return 'المخازن';
+      case '/hms/fin-tree/stores-types':
+        return 'أنواع المخازن';
       default:
         console.warn('No matching route found for:', path);
         return 'Infinity Clinic';

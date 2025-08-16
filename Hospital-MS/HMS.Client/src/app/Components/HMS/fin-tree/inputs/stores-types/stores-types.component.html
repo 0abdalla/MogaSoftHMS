@@ -1,6 +1,7 @@
 <main id="stores-types">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -11,7 +12,7 @@
                         <button type="submit" class="btn-blue w-100 mx-2">
                             بحث <i class="fa fa-search me-1"></i> 
                         </button>
-                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
+                        <button data-bs-toggle="modal" data-bs-target="#addStoretypeModal" type="button" class="btn-red w-100 mx-2">
                             جديد <i class="fa fa-plus me-1"></i> 
                         </button>
                     </div>
@@ -21,9 +22,9 @@
         <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
             <div class="col-md-8 mb-2">
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addStoretypeModal">
                 <i class="fas fa-plus-circle"></i>
-                <span>إضافة مخزن</span>
+                <span>إضافة اسم مخزن</span>
             </button>
                     <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
                 <i class="uil uil-filter"></i>
@@ -91,19 +92,19 @@
 
 
 
-<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+<div class="modal fade" id="addStoretypeModal" tabindex="-1" aria-labelledby="addStoretypeModalLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addItemModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} نوع مخزن</h5>
+                <h5 class="modal-title" id="addStoretypeModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} نوع مخزن</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
                 <form [formGroup]="stotreTypeForm" (ngSubmit)="addStoreType()">
                     <div class="row">
 
                         <div class="col-md-12 mb-2">
-                            <label for="name" class="form-label">اسم المخزن</label>
-                            <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم المخزن">
+                            <label for="name" class="form-label">اسم نوع المخزن</label>
+                            <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم نوع المخزن">
                             <div *ngIf="stotreTypeForm.get('name')?.invalid && stotreTypeForm.get('name')?.touched" class="text-danger">
                                 <ng-container *ngIf="stotreTypeForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                             </div>
@@ -113,6 +114,9 @@
 
                     <div class="text-center mt-3">
                         <button type="submit" class="btn-blue" [disabled]="stotreTypeForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} نوع مخزن</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
+                            خروج
+                        </button>
                     </div>
                 </form>
 
