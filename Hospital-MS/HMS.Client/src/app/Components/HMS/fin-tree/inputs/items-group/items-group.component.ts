@@ -5,6 +5,7 @@ declare var bootstrap :any;
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-items-group',
   templateUrl: './items-group.component.html',
@@ -25,7 +26,7 @@ export class ItemsGroupComponent {
   }
   // 
   isFilter:boolean = true
-  constructor(private fb:FormBuilder , private financialService : FinancialService){
+  constructor(private fb:FormBuilder , private financialService : FinancialService , private messageService: MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
     })
@@ -109,9 +110,27 @@ export class ItemsGroupComponent {
           this.itemGroup.reset();
           this.isEditMode = false;
           this.currentItemGroupId = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'تم التعديل بنجاح',
+            detail: 'تم تعديل المجموعة بنجاح',
+          });
+          setTimeout(() => {
+            const modalElement = document.getElementById('addItemGropModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+          }, 1000);
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'فشل التعديل',
+            detail: 'فشل تعديل المجموعة',
+          });
         }
       });
     } else {
@@ -119,12 +138,29 @@ export class ItemsGroupComponent {
         next: (res) => {
           console.log(res);
           console.log(this.itemGroup.value);
-          
+          if (res.isSuccess == true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإضافة بنجاح',
+              detail: 'تم إضافة المجموعة بنجاح',
+            });         
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: 'فشل إضافة المجموعة',
+            });
+          }
           this.getItemGroups();
-          // this.itemGroup.reset();
+          this.itemGroup.reset();
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'فشل الإضافة',
+            detail: 'فشل إضافة المجموعة',
+          });
         }
       });
     }
@@ -166,9 +202,19 @@ export class ItemsGroupComponent {
           this.financialService.deleteItemsGroups(id).subscribe({
             next: () => {
               this.getItemGroups();
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم الحذف بنجاح',
+                detail: 'تم حذف المجموعة بنجاح',
+              });
             },
             error: (err) => {
               console.error('فشل الحذف:', err);
+              this.messageService.add({
+                severity: 'error',
+                summary: 'فشل الحذف',
+                detail: 'فشل حذف المجموعة',
+              });
             }
           });
         }
@@ -183,4 +229,10 @@ export class ItemsGroupComponent {
         this.pagingFilterModel.searchText = '';
       this.getItemGroups();
     }
+    
+  resetFormOnClose() {
+    this.itemGroup.reset();
+    this.isEditMode = false;
+    this.currentItemGroupId = null;
+  }
 }

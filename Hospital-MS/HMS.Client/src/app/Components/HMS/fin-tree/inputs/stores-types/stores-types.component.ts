@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
+import { MessageService } from 'primeng/api';
 declare var bootstrap:any;
 
 @Component({
@@ -22,7 +23,7 @@ export class StoresTypesComponent {
     currentPage:1,
   }
   isFilter:boolean=true;
-  constructor(private fb:FormBuilder , private financialService:FinancialService){
+  constructor(private fb:FormBuilder , private financialService:FinancialService , private messageService: MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
     })
@@ -65,11 +66,23 @@ export class StoresTypesComponent {
     if (this.isEditMode && this.currentStoreTypeId !== null) {
       this.financialService.updateStoreType(this.currentStoreTypeId, formData).subscribe({
         next: () => {
-          this.getStoresTypes();
-          this.closeModal();
+          this.getStoresTypes()
           this.stotreTypeForm.reset();
           this.isEditMode = false;
           this.currentStoreTypeId = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'تم التعديل بنجاح',
+            detail: 'تم تعديل الوحدة بنجاح',
+          });
+          setTimeout(() => {
+            const modalElement = document.getElementById('addStoretypeModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+          }, 1000);
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -77,11 +90,22 @@ export class StoresTypesComponent {
       });
     } else {
       this.financialService.addStoreType(formData).subscribe({
-        next: () => {
-          this.getStoresTypes();
-          this.closeModal();
+        next: (res:any) => {
+          this.getStoresTypes()
           this.stotreTypeForm.reset();
-        },
+          if(res.isSuccess == true){
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإضافة بنجاح',
+              detail: 'تم إضافة الوحدة بنجاح',
+            });
+          }else{
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: 'فشل إضافة الوحدة',
+            });
+          }        },
         error: (err) => {
           console.error('فشل الإضافة:', err);
         }
@@ -104,7 +128,7 @@ export class StoresTypesComponent {
           openingBalance: this.store.openingBalance
         });
   
-        const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
+        const modal = new bootstrap.Modal(document.getElementById('addStoretypeModal')!);
         modal.show();
       },
       error: (err) => {
@@ -125,8 +149,21 @@ export class StoresTypesComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.financialService.deleteStoreType(id).subscribe({
-          next: () => {
+          next: (res:any) => {
             this.getStoresTypes();
+            if(res.isSuccess == true){
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم الحذف بنجاح',
+                detail: 'تم حذف النوع بنجاح',
+              });
+            }else{
+              this.messageService.add({
+                severity: 'error',
+                summary: 'فشل الحذف',
+                detail: 'فشل حذف النوع',
+              });
+            }          
           },
           error: (err) => {
             console.error('فشل الحذف:', err);
@@ -134,21 +171,7 @@ export class StoresTypesComponent {
         });
       }
     });
-  }
-  closeModal() {
-    const modalElement = document.getElementById('addItemModal')!;
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-    modalInstance?.hide();
-    const backdrop = document.querySelector('.modal-backdrop');
-    if (backdrop) {
-      backdrop.remove();
-    }
-  
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
-  }
-    
+  } 
   // 
   filterChecked(filters: FilterModel[]){
     this.pagingFilterModel.currentPage = 1;
@@ -174,4 +197,9 @@ export class StoresTypesComponent {
   getServiceName(status: boolean): string {
     return status ? 'نشط' : 'غير نشط';
   }  
+  resetFormOnClose() {
+    this.stotreTypeForm.reset();
+    this.isEditMode = false;
+    this.currentStoreTypeId = null;
+  }
 }

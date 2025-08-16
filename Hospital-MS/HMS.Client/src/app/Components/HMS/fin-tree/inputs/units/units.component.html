@@ -20,6 +20,7 @@
             </form>
         </div> -->
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
             <div class="col-md-8 mb-2">
                 <div class="d-flex align-items-center gap-2">
@@ -91,7 +92,7 @@
 
 
 
-<div class="modal fade" id="addUnitModal" tabindex="-1" aria-labelledby="addUnitModalLabel" aria-hidden="true">
+<div class="modal fade" id="addUnitModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="addUnitModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header justify-content-center">
@@ -118,6 +119,9 @@
             <div class="text-center mt-3">
               <button type="submit" class="btn-blue" [disabled]="unitForm.invalid">
                 {{isEditMode ? "تعديل الوحدة" : "إضافة الوحدة"}}
+              </button>
+              <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
+                خروج
               </button>
             </div>
           </form>

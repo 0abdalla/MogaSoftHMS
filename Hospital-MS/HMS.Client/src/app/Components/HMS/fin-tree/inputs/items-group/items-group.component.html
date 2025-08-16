@@ -1,6 +1,7 @@
 <main id="items-group">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between">
@@ -56,18 +57,15 @@
             <thead>
                 <tr>
                     <th>الرقم</th>
+                    <th>الإسم</th>
                     <th>المجموعات الرئيسية</th>
                     <th>إجراءات</th>
                 </tr>
             </thead>
             <tbody *ngIf="itemGroups?.length > 0">
                 <tr *ngFor="let mainGroup of itemGroups | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(mainGroup.id)" style="cursor: pointer">
-                    <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ mainGroup.mainGroupName.charAt(0) }}</div>
-                            <span class="fw-bold">{{ mainGroup.mainGroupName }}</span>
-                        </div>
-                    </td>
+                    <td>{{ mainGroup.id }}</td>
+                    <td>{{ mainGroup.name }}</td>
                     <td>{{ mainGroup.mainGroupName }}</td>
                     <td>
                         <button type="button" class="btn btn-primary mx-2" (click)="editItemGroup(mainGroup.id)">
@@ -102,7 +100,7 @@
 
 
 
-<div class="modal fade" id="addItemGropModal" tabindex="-1" aria-labelledby="addItemGropModalLabel" aria-hidden="true">
+<div class="modal fade" id="addItemGropModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="addItemGropModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
@@ -155,6 +153,9 @@
 
                     <div class="text-center mt-3">
                         <button type="submit" class="btn-blue" [disabled]="itemGroup.invalid">{{ isEditMode ? 'تعديل المجموعة' : 'إضافة المجموعة' }}</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
+                            خروج
+                          </button>
                     </div>
                 </form>
             </div>

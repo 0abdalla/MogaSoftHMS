@@ -1,5 +1,6 @@
 <main id="main-group">
     <div class="container-fluid">
+        <p-toast position="top-left"></p-toast>
         <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -90,16 +91,15 @@
 
 
 
-
-<div class="modal fade" id="addMainGroupModal" tabindex="-1" aria-labelledby="addMainGroupModalLabel" aria-hidden="true">
+<div class="modal fade" id="addMainGroupModal" tabindex="-1" aria-labelledby="addMainGroupModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header justify-content-center">
               <h5 class="modal-title" id="addMainGroupModalLabel">
                 {{isEditMode ? 'تعديل مجموعة رئيسية' : 'إضافة مجموعة رئيسية'}}
               </h5>
-            </div>
-            <div class="modal-body">
+          </div>
+          <div class="modal-body">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
           <form [formGroup]="mainGroupForm" (ngSubmit)="addMainGroup()">
             <div class="row">
@@ -127,6 +127,9 @@
             <div class="text-center mt-3">
               <button type="submit" class="btn-blue" [disabled]="mainGroupForm.invalid">
                 {{isEditMode ? "تعديل المجموعة" : "إضافة المجموعة"}}
+              </button>
+              <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
+                خروج
               </button>
             </div>
           </form>

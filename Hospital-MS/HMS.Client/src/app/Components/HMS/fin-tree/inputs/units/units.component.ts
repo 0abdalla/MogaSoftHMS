@@ -4,6 +4,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
+import { MessageService } from 'primeng/api';
 declare var bootstrap:any;
 
 @Component({
@@ -24,7 +25,7 @@ export class UnitsComponent {
   // 
   filterForm!:FormGroup;
   unitForm!:FormGroup;
-  constructor(private finService : FinancialService , private fb : FormBuilder){
+  constructor(private finService : FinancialService , private fb : FormBuilder , private messageService: MessageService){
     this.filterForm=this.fb.group({
       Search:[],
     })
@@ -93,6 +94,19 @@ export class UnitsComponent {
           this.unitForm.reset();
           this.isEditMode = false;
           this.currentMainGroupId = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'تم التعديل بنجاح',
+            detail: 'تم تعديل الوحدة بنجاح',
+          });
+          setTimeout(() => {
+            const modalElement = document.getElementById('addUnitModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+          }, 1000);
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -105,7 +119,20 @@ export class UnitsComponent {
           console.log(this.unitForm.value);
           this.unitForm.reset();
           this.getUnits();
-          // this.mainGroupForm.reset();
+          if(res.isSuccess == true){
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإضافة بنجاح',
+              detail: 'تم إضافة الوحدة بنجاح',
+            });
+          }else{
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: 'فشل إضافة الوحدة',
+            });
+          }
+          this.unitForm.reset();
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -125,7 +152,7 @@ export class UnitsComponent {
           name: this.Unit.name,
         });
   
-        const modal = new bootstrap.Modal(document.getElementById('addMainGroupModal')!);
+        const modal = new bootstrap.Modal(document.getElementById('addUnitModal')!);
         modal.show();
       },
       error: (err) => {
@@ -155,5 +182,10 @@ export class UnitsComponent {
         });
       }
     });
+  }
+  resetFormOnClose() {
+    this.unitForm.reset();
+    this.isEditMode = false;
+    this.currentMainGroupId = null;
   }
 }
