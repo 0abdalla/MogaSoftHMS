@@ -153,18 +153,22 @@
                     <h4>💰بيانات المرتب</h4>
                     <div class="row mb-3">
                         <div class="col-lg-3">
-                            <strong>المرتب الأساسي:</strong> <span>{{ selectedEmployee?.salary || '---' }}</span>
+                          <strong>المرتب الأساسي:</strong>
+                          <span>{{ selectedEmployee?.basicSalary | number : '1.2-2' }} جنيه</span>
                         </div>
                         <div class="col-lg-3">
-                            <strong>البدلات:</strong> <span>{{ selectedEmployee?.allowances || '---' }}</span>
+                          <strong>البدلات:</strong>
+                          <span>{{ selectedEmployee?.allowances | number : '1.2-2' }} جنيه</span>
                         </div>
                         <div class="col-lg-3">
-                            <strong>الخصومات:</strong> <span>{{ selectedEmployee?.deductions || '---' }}</span>
+                          <strong>الخصومات:</strong>
+                          <span>{{ selectedEmployee?.deductions | number : '1.2-2' }} جنيه</span>
                         </div>
                         <div class="col-lg-3">
-                            <strong>الإجمالي:</strong> <span>{{ selectedEmployee?.total || '---' }}</span>
+                          <strong>صافي المرتب:</strong>
+                          <span>{{ selectedEmployee?.netSalary | number : '1.2-2' }} جنيه</span>
                         </div>
-                    </div>
+                      </div>                      
     
                     <hr>
     
@@ -174,16 +178,16 @@
             </div>
 
             <div class="modal-footer row">
-                <div class="col-3 m-0">
+                <div class="col-4 m-0">
                     <button class="btn col-12 btn-outline-warning" (click)="editEmployee()">تعديل البيانات</button>
                 </div>
-                <div class="col-3 m-0">
+                <!-- <div class="col-4 m-0">
                     <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
-                </div>
-                <div class="col-3 m-0">
+                </div> -->
+                <div class="col-4 m-0">
                     <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
                 </div>
-                <div class="col-3 m-0">
+                <div class="col-4 m-0">
                     <button class="btn col-12 btn-outline-primary" (click)="suspendEmployee()">تعليق مؤقت</button>
                 </div>
             </div>

@@ -5,6 +5,7 @@ import { StaffService } from '../../../../Services/HMS/staff.service';
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import html2pdf from 'html2pdf.js';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-staff-list',
@@ -38,7 +39,7 @@ export class StaffListComponent implements OnInit, OnDestroy {
   isFilter = true;
   private destroy$ = new Subject<void>();
 
-  constructor(private staffService: StaffService, private fb: FormBuilder) {
+  constructor(private staffService: StaffService, private fb: FormBuilder , private router : Router) {
     this.filterForm = this.fb.group({
       Search: [''],
       Type: ['']
@@ -196,14 +197,28 @@ export class StaffListComponent implements OnInit, OnDestroy {
     this.staffService.getStaffById(id).subscribe({
       next: (res) => {
         const employee = res.results;
+  
+        // ترجمة القيم
         employee.gender = employee.gender === 'Male' ? 'ذكر' :
-        employee.gender === 'Female' ? 'أنثى' : 'غير محدد';
+          employee.gender === 'Female' ? 'أنثى' : 'غير محدد';
         employee.status = employee.status === 'Active' ? 'نشط' :
-        employee.status === 'Inactive' ? 'غير نشط' : 'غير معروف';
+          employee.status === 'Inactive' ? 'غير نشط' : 'غير معروف';
         employee.maritalStatus = employee.maritalStatus === 'Single' ? 'أعزب' :
-        employee.maritalStatus === 'Married' ? 'متزوج' :
-        employee.maritalStatus === 'Divorced' ? 'مطلق' :
-        employee.maritalStatus === 'Widowed' ? 'أرمل' : 'غير معروف';
+          employee.maritalStatus === 'Married' ? 'متزوج' :
+          employee.maritalStatus === 'Divorced' ? 'مطلق' :
+          employee.maritalStatus === 'Widowed' ? 'أرمل' : 'غير معروف';
+  
+        // حساب التأمين والضريبة
+        const insuranceAmount = employee.basicSalary * (employee.insurance / 100);
+        const taxAmount = employee.basicSalary * (employee.tax / 100);
+  
+        // الخصومات = تأمين + ضريبة
+        employee.deductions = insuranceAmount + taxAmount;
+  
+        // صافي المرتب = الأساسي + البدلات - الخصومات
+        employee.netSalary = employee.basicSalary 
+                            + (employee.allowances || 0) 
+                            - employee.deductions;
   
         this.selectedEmployee = employee;
         console.log(this.selectedEmployee);
@@ -212,7 +227,8 @@ export class StaffListComponent implements OnInit, OnDestroy {
         console.error(err);
       }
     });
-  }  
+  }
+  
 
   mapType(type: string): string | undefined {
     const typeMap: { [key: string]: string } = {
@@ -226,6 +242,7 @@ export class StaffListComponent implements OnInit, OnDestroy {
 
   editEmployee() {
     if (this.selectedEmployee) {
+      this.router.navigate(['/hms/staff/edit', this.selectedEmployee.id]);
     }
   }
 

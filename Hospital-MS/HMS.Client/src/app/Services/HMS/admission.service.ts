@@ -37,6 +37,15 @@ export class AdmissionService {
   getDepartments(){
     return this.http.get<any>(`${this.baseUrl}Departments`);
   }
+  getDepartmentsById(id : number){
+    return this.http.get<any>(`${this.baseUrl}Departments/${id}`);
+  }
+  updateDepartment(id : number, department : any){
+    return this.http.put(this.baseUrl + 'Departments/' + id, department)
+  }
+  deleteDepartment(id : number){
+    return this.http.delete<any>(this.baseUrl + 'Departments/' + id);
+  }
   getWards(){
     return this.http.get<any>(`${this.baseUrl}Wards`);
   }

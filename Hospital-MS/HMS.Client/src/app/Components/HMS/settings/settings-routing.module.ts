@@ -10,6 +10,9 @@ import { authGuard } from '../../../Auth/auth.guard';
 import { AccountTreeContainerComponent } from './account-tree-container/account-tree-container.component';
 import { CostCenterTreeContainerComponent } from './cost-center-tree-container/cost-center-tree-container.component';
 import { DoctorsDepartmentsListComponent } from './doctors-departments-list/doctors-departments-list.component';
+import { FloorsComponent } from './appointment/floors/floors.component';
+import { RoomsComponent } from './appointment/rooms/rooms.component';
+import { BedsComponent } from './appointment/beds/beds.component';
 
 const routes: Routes = [
   { path: "medical-service", component: DoctorsMedicalServiceComponent, canActivate: [authGuard], data: { pageName: 'MedicalService' } },
@@ -21,6 +24,9 @@ const routes: Routes = [
   { path: 'account-tree', component: AccountTreeContainerComponent, canActivate: [authGuard], data: { pageName: 'AccountTree' } },
   { path: 'cost-center-tree', component: CostCenterTreeContainerComponent, canActivate: [authGuard], data: { pageName: 'CostCenterTree' } },
   { path: 'medical-departments-list', component: DoctorsDepartmentsListComponent, canActivate: [authGuard], data: { pageName: 'DoctorsDepartmentsList' } },
+  { path: 'floors', component: FloorsComponent, canActivate: [authGuard], data: { pageName: 'Floors' } },
+  { path: 'rooms', component: RoomsComponent, canActivate: [authGuard], data: { pageName: 'Rooms' } },
+  { path: 'beds', component: BedsComponent, canActivate: [authGuard], data: { pageName: 'Beds' } },
 ];
 
 @NgModule({

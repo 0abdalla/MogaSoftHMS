@@ -56,7 +56,7 @@ export class ItemsComponent {
           salesTax: [0],
           price: [0],
           hasBarcode: [true],
-          typeId: ['1']
+          typeId: [null]
         });
         
         this.getItems();
@@ -117,7 +117,7 @@ export class ItemsComponent {
           salesTax: Number(rawForm.salesTax),
           price: Number(rawForm.price),
           hasBarcode: rawForm.hasBarcode === true || rawForm.hasBarcode === 'true',
-          typeId: Number(rawForm.typeId)
+          typeId: null
         };
         if (this.isEditMode && this.currentItemId) {
           this.financialService.updateItem(this.currentItemId, formData).subscribe({
@@ -156,6 +156,12 @@ export class ItemsComponent {
                   severity: 'success',
                   summary: 'تم الإضافة بنجاح',
                   detail: 'تم إضافة الصنف بنجاح',
+                });
+              }else{
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'فشل الإضافة',
+                  detail: 'فشل إضافة الصنف',
                 });
               }
               this.itemForm.reset();

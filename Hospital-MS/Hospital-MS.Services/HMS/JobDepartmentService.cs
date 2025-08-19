@@ -1,23 +1,16 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.JobDepartment;
 using Hospital_MS.Core.Enums;
-using Hospital_MS.Core.Models.HR;
-using Hospital_MS.Core.Models;
-using Hospital_MS.Interfaces.HMS;
-using Hospital_MS.Services.Common;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hospital_MS.Interfaces.Repository;
-using Hospital_MS.Interfaces.Common;
-using Microsoft.EntityFrameworkCore;
-using Hospital_MS.Core.Contracts.Common;
-using Hospital_MS.Core.Contracts.JobTitle;
 using Hospital_MS.Core.Extensions;
+using Hospital_MS.Core.Models.HR;
+using Hospital_MS.Interfaces.Common;
+using Hospital_MS.Interfaces.HMS;
+using Hospital_MS.Interfaces.Repository;
+using Hospital_MS.Services.Common;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -54,6 +47,26 @@ namespace Hospital_MS.Services.HMS
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
+        }
+
+        public async Task<ErrorResponseModel<bool>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var jobDepartment = await _unitOfWork.Repository<JobDepartment>()
+                .GetAll(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (jobDepartment is null)
+                return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+            try
+            {
+                _unitOfWork.Repository<JobDepartment>().Delete(jobDepartment);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess, true);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
+            }
+
         }
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)

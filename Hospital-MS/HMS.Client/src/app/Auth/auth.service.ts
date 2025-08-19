@@ -111,4 +111,11 @@ export class AuthService {
     let ckeckRole = roles.some(i => i == role);
     return ckeckRole;
   }
+  // 
+  forgetPassword(data:any){
+    return this.http.post<any>(`${this.baseUrl}Auth/forget-password`, data);
+  }
+  resetPassword(data:any){
+    return this.http.post<any>(`${this.baseUrl}Auth/reset-password`, data);
+  }
 }

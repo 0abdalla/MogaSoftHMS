@@ -35,7 +35,8 @@ namespace Hospital_MS.Core.Models
         public ICollection<EmployeeAdvance> EmployeeAdvances { get; set; } = new HashSet<EmployeeAdvance>();
         public ICollection<AttendanceSalary> AttendaceSalaries { get; set; } = new HashSet<AttendanceSalary>();
 
-        
+
+        public bool IsAuthorized { get; set; }
 
         public decimal VariableSalary { get; set; }
         public string? VisaCode { get; set; }

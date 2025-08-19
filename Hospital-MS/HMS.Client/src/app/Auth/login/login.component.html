@@ -48,9 +48,42 @@
         </div>
         <button type="submit" [disabled]="loignForm.invalid" class="btn-blue w-100">تسجيل الدخول</button>
         <div class="text-center mt-3">
-          <p>هل نسيت كلمة المرور ؟ <a href="">تغيير كلمة المرور</a></p>
+          <p>هل نسيت كلمة المرور ؟ 
+            <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#forgetPasswordModal">تغيير كلمة المرور</a>
+          </p>         
         </div>
       </form>
     </div>
   </div>
 </main>
+
+
+<div class="modal fade" id="forgetPasswordModal" tabindex="-1" aria-labelledby="forgetPasswordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="forgetPasswordModalLabel">إعادة تعيين كلمة المرور</h5>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="forgetPassword">
+          <div class="mb-3">
+            <label class="form-label">اسم المستخدم</label>
+            <input type="text" class="form-control shadow-none" formControlName="userName" placeholder="ادخل اسم المستخدم" />
+            <div *ngIf="forgetPassword.get('userName')?.invalid && forgetPassword.get('userName')?.touched" class="text-danger">
+              اسم المستخدم مطلوب
+            </div>
+          </div>
+        </form>
+        <div *ngIf="forgetMessage" class="text-danger text-center">
+          {{ forgetMessage }}
+        </div>
+      </div>
+      <div class="text-center pb-2">
+        <button type="button" class="btn-blue" (click)="onForgetPassword()" [disabled]="forgetPassword.invalid">
+          إرسال
+        </button>
+        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal">خروج</button>
+      </div>
+    </div>
+  </div>
+</div>

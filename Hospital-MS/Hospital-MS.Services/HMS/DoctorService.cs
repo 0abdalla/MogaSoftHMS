@@ -3,7 +3,6 @@ using Hospital_MS.Core.Contracts.Doctors;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
@@ -12,12 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -58,8 +52,6 @@ namespace Hospital_MS.Services.HMS
                     Status = staffStatus,
                     Degree = request.Degree,
                     Notes = request.Notes,
-
-
                 };
 
                 if (request.Photo is not null)

@@ -232,14 +232,14 @@
                             الخدمة الطبية
                         </label>
                         <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" (change)="onServiceSelected()">
-                        <option selected disabled [value]="null">اختر الخدمة</option>
-                        <option *ngFor="let service of filteredServices" [value]="service.id">
-                        {{ service.name }}
-                        </option>
-                        <option *ngIf="filteredServices.length === 0" disabled>
-                        {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
-                        </option>
-                    </select>
+                            <option selected disabled [value]="null">اختر الخدمة</option>
+                            <option *ngFor="let service of filteredServices" [value]="service.id">
+                                {{ service.name }}
+                            </option>
+                            <option *ngIf="filteredServices.length === 0" disabled>
+                                {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
+                            </option>
+                        </select>
                         <div *ngIf="appointmentDetailsForm.get('medicalServiceId')?.invalid && appointmentDetailsForm.get('medicalServiceId')?.touched" class="text-danger">
                             الخدمة الطبية مطلوبة
                         </div>

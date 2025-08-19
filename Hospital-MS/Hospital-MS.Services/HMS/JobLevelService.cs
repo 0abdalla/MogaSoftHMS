@@ -50,6 +50,25 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
+        public async Task<ErrorResponseModel<bool>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var jobLevel = await _unitOfWork.Repository<JobLevel>()
+                .GetAll(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (jobLevel is null)
+                return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+            try
+            {
+                _unitOfWork.Repository<JobLevel>().Delete(jobLevel);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
             try

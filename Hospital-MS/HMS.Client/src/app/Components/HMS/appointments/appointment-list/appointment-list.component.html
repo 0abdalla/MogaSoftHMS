@@ -21,17 +21,21 @@
                 <div class="col-md-8 mb-2">
                     <div class="d-flex align-items-center gap-2">
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/appointments/add">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>إضافة حجز</span>
-                </button>
+                            <i class="fas fa-plus-circle"></i>
+                            <span>إضافة حجز</span>
+                        </button>
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="confirmShiftClose()">
-                    <i class="fas fa-close"></i>
-                    <span>إغلاق حركة الشيفت</span>
-                  </button>
+                            <i class="fas fa-close"></i>
+                            <span>إغلاق حركة الشيفت</span>
+                        </button>
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openChooseShiftModal()">
+                            <i class="fas fa-list"></i>
+                            <span>عرض حركة الشيفت</span>
+                        </button>
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
-                    <i class="uil uil-filter"></i>
-                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
-                </button>
+                            <i class="uil uil-filter"></i>
+                            <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
+                        </button>
                     </div>
                 </div>
                 <div class="col-md-4 mb-2" *ngIf="total > 0">
@@ -529,3 +533,29 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="chooseShiftModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+      <div class="modal-content p-3">
+        <div class="modal-header">
+          <h5 class="modal-title">اختيار حركة الشيفت</h5>
+        </div>
+        <div class="modal-body">
+            <label for="shiftSelect" class="form-label">اختر حركة الشيفت</label>
+            <select id="shiftSelect" class="form-select" [(ngModel)]="selectedShiftId">
+                <option [ngValue]="null">اختر حركة الشيفت</option>
+                <option *ngFor="let shift of shifts" [ngValue]="shift.id">
+                    {{ getDayName(shift.closedAt) }} - 
+                    {{ shift.closedAt | date:'dd/MM/yyyy' }} - 
+                    {{ shift.openedAt  }} - {{ shift.closedAt  }} - 
+                    {{ shift.closedBy }}
+                </option>
+            </select>              
+        </div>
+        <div class="text-center">
+            <button type="button" class="btn-blue" (click)="openShiftReport()">عرض</button>
+            <button type="button" class="btn-red mx-2" data-bs-dismiss="modal">خروج</button>
+        </div>
+      </div>
+    </div>
+  </div>

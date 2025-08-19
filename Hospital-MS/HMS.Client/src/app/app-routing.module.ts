@@ -5,9 +5,11 @@ import { LoginComponent } from './Auth/login/login.component';
 import { loadingInterceptor } from './Security/loading.interceptor';
 import { authGuard } from './Auth/auth.guard';
 import { NotAuthorizedComponent } from './Auth/not-authorized/not-authorized.component';
+import { ResetPasswordComponent } from './Auth/reset-password/reset-password.component';
 
 const routes: Routes = [
   { path: "login", component: LoginComponent },
+  { path:"reset-password" , component:ResetPasswordComponent},
   { path: 'not-authorized', component: NotAuthorizedComponent },
   {
     path: 'hms',

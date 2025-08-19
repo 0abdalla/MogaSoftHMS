@@ -15,7 +15,8 @@
                     <label class="form-label">الرقم القومي</label>
                     <input type="text" class="form-control shadow-none" formControlName="NationalId" placeholder="أدخل الرقم القومي">
                     <div *ngIf="doctorForm.get('NationalId')?.invalid && doctorForm.get('NationalId')?.touched" class="text-danger">
-                        الرقم القومي مطلوب
+                        <ng-container *ngIf="doctorForm.get('NationalId')?.errors?.['required']">الرقم القومي مطلوب</ng-container>
+                        <ng-container *ngIf="doctorForm.get('NationalId')?.errors?.['pattern']">الرقم القومي يجب أن يكون 14 رقمًا</ng-container>
                     </div>
                 </div>
                 <div class="col-lg-4 mt-1">

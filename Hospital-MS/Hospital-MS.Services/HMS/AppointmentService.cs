@@ -8,17 +8,19 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class AppointmentService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, IHttpContextAccessor httpContextAccessor) : IAppointmentService
+    public class AppointmentService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager) : IAppointmentService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         public async Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsync(CreateAppointmentRequest request, CancellationToken cancellationToken = default)
         {
@@ -551,7 +553,9 @@ namespace Hospital_MS.Services.HMS
                 closedShiftResponse.ClosedAt = DateTime.UtcNow;
 
                 var user = _httpContextAccessor.HttpContext?.User;
-                closedShiftResponse.ClosedBy = user?.Identity?.Name ?? "غير معرف";
+
+                var appUser = await _userManager.GetUserAsync(user);
+                closedShiftResponse.ClosedBy = appUser.UserName ?? "غير معرف";
 
                 // Update appointments (now tracked separately)
                 var appointmentsToUpdate = await _unitOfWork.Repository<Appointment>()
@@ -566,6 +570,50 @@ namespace Hospital_MS.Services.HMS
                     appointment.IsClosed = true;
                     _unitOfWork.Repository<Appointment>().Update(appointment);
                 }
+
+                var minDate = closedAppointments
+                        .Where(a => a.AppointmentDate.HasValue)
+                         .Min(a => a.AppointmentDate);
+
+                // save the closed shift 
+
+                var closedShift = new Shift
+                {
+                    TotalAmount = closedShiftResponse.TotalAmount,
+                    ClosedAt = closedShiftResponse.ClosedAt,
+                    ClosedBy = closedShiftResponse.ClosedBy,
+                    OpenedAt = minDate.HasValue
+                                ? minDate.Value.ToDateTime(TimeOnly.MinValue)
+                                : DateTime.UtcNow
+                };
+
+                await _unitOfWork.Repository<Shift>().AddAsync(closedShift, cancellationToken);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                foreach (var ms in medicalServiceCounts)
+                {
+                    var shiftService = new ShiftMedicalService
+                    {
+                        ShiftId = closedShift.Id,
+                        MedicalServiceId = ms.MedicalServiceId,
+                        MedicalServiceName = ms.MedicalServiceName,
+                        Count = ms.Count,
+                        Price = ms.Price,
+                        TotalPrice = ms.TotalPrice
+                    };
+
+                    await _unitOfWork.Repository<ShiftMedicalService>().AddAsync(shiftService, cancellationToken);
+                }
+
+                var newShift = new Shift
+                {
+                    OpenedAt = DateTime.UtcNow,
+                    TotalAmount = 0,
+                    ClosedBy = string.Empty,
+                    ClosedAt = null
+                };
+
+                await _unitOfWork.Repository<Shift>().AddAsync(newShift, cancellationToken);
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -707,6 +755,81 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.TransFailed);
             }
         }
+
+        public async Task<ErrorResponseModel<List<ShiftResponse>>> GetAllShiftsAsync(CancellationToken cancellationToken = default)
+        {
+
+            try
+            {
+                var shifts = await _unitOfWork.Repository<Shift>().GetAll()
+                    .Include(s => s.MedicalServices)
+                    .OrderByDescending(s => s.Id)
+                    .ToListAsync(cancellationToken);
+
+                var shiftResponses = shifts.Select(s => new ShiftResponse
+                {
+                    Id = s.Id,
+                    OpenedAt = s.OpenedAt,
+                    ClosedAt = s.ClosedAt,
+                    ClosedBy = s.ClosedBy,
+                    TotalAmount = s.TotalAmount,
+                    MedicalServices = s.MedicalServices.Select(ms => new ShiftMedicalServiceResponse
+                    {
+                        MedicalServiceId = ms.MedicalServiceId,
+                        MedicalServiceName = ms.MedicalServiceName,
+                        Count = ms.Count,
+                        Price = ms.Price,
+                        TotalPrice = ms.TotalPrice
+
+                    }).ToList()
+
+                }).ToList();
+                return ErrorResponseModel<List<ShiftResponse>>.Success(GenericErrors.GetSuccess, shiftResponses);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<List<ShiftResponse>>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
+        public async Task<ErrorResponseModel<ShiftResponse>> GetShiftByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+
+            try
+            {
+                var shift = await _unitOfWork.Repository<Shift>()
+                    .GetAll(s => s.Id == id)
+                    .Include(s => s.MedicalServices)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (shift == null)
+                    return ErrorResponseModel<ShiftResponse>.Failure(GenericErrors.NotFound);
+
+                var response = new ShiftResponse
+                {
+                    Id = shift.Id,
+                    OpenedAt = shift.OpenedAt,
+                    ClosedAt = shift.ClosedAt,
+                    ClosedBy = shift.ClosedBy,
+                    TotalAmount = shift.TotalAmount,
+                    MedicalServices = shift.MedicalServices.Select(ms => new ShiftMedicalServiceResponse
+                    {
+                        MedicalServiceId = ms.MedicalServiceId,
+                        MedicalServiceName = ms.MedicalServiceName,
+                        Count = ms.Count,
+                        Price = ms.Price,
+                        TotalPrice = ms.TotalPrice
+                    }).ToList()
+                };
+                return ErrorResponseModel<ShiftResponse>.Success(GenericErrors.GetSuccess, response);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<ShiftResponse>.Failure(GenericErrors.TransFailed);
+
+            }
+        }
+    }
 
         public AppointmentType SetAppointmentType(AppointmentType type) =>
             type switch

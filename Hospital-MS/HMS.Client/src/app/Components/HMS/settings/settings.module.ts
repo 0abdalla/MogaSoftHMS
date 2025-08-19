@@ -23,6 +23,10 @@ import { CostCenterTreeItemComponent } from './cost-center-tree-container/cost-c
 import { AccountTreeComponent } from './account-tree-container/account-tree/account-tree.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { DoctorsDepartmentsListComponent } from './doctors-departments-list/doctors-departments-list.component';
+import { Time12PipePipe } from '../../../Pipes/time12-pipe.pipe';
+import { FloorsComponent } from './appointment/floors/floors.component';
+import { RoomsComponent } from './appointment/rooms/rooms.component';
+import { BedsComponent } from './appointment/beds/beds.component';
 
 
 @NgModule({
@@ -42,6 +46,10 @@ import { DoctorsDepartmentsListComponent } from './doctors-departments-list/doct
     CostCenterTreeComponent,
     CostCenterTreeItemComponent,
     DoctorsDepartmentsListComponent,
+    // Time12PipePipe,
+    FloorsComponent,
+    RoomsComponent,
+    BedsComponent,
     
   ],
   imports: [

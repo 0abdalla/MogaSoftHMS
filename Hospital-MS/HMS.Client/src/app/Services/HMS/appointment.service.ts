@@ -32,6 +32,12 @@ export class AppointmentService {
   deleteAppointment(id: number): Observable<ErrorResponseModel<string>> {
     return this.http.delete<ErrorResponseModel<string>>(`${this.baseUrl}Appointments?id=${id}`);
   }
+  getAllShifts(){
+    return this.http.get(`${this.baseUrl}Appointments/all-shifts`);
+  }
+  getShiftById(id:number){
+    return this.http.get(`${this.baseUrl}Appointments/shift/${id}`);
+  }
   closeShift(){
     return this.http.post<any>(`${this.baseUrl}Appointments/close-shift`, {});
   }
@@ -82,5 +88,53 @@ export class AppointmentService {
 
   editService(id: number, service: any) {
     return this.http.put<any>(`${this.baseUrl}MedicalService/${id}`, service);
+  }
+  // 
+  getWards(){
+    return this.http.get<any>(`${this.baseUrl}Wards`);
+  }
+  getWardsById(id: number){
+    return this.http.get<any>(`${this.baseUrl}Wards/${id}`);
+  }
+  addWard(ward: any){
+    return this.http.post<any>(`${this.baseUrl}Wards`, ward);
+  }
+  editWard(id: number, ward: any){
+    return this.http.put<any>(`${this.baseUrl}Wards/${id}`, ward);
+  }
+  deleteWard(id: number){
+    return this.http.delete<any>(`${this.baseUrl}Wards/${id}`);
+  }
+  // 
+  getRooms(){
+    return this.http.get<any>(`${this.baseUrl}Rooms`);
+  }
+  getRoomsById(id: number){
+    return this.http.get<any>(`${this.baseUrl}Rooms/${id}`);
+  }
+  addRoom(room: any){
+    return this.http.post<any>(`${this.baseUrl}Rooms`, room);
+  }
+  editRoom(id: number, room: any){
+    return this.http.put<any>(`${this.baseUrl}Rooms/${id}`, room);
+  }
+  deleteRoom(id: number){
+    return this.http.delete<any>(`${this.baseUrl}Rooms/${id}`);
+  }
+  // 
+  getBeds(){
+    return this.http.get<any>(`${this.baseUrl}Beds`);
+  }
+  getBedsById(id: number){
+    return this.http.get<any>(`${this.baseUrl}Beds/${id}`);
+  }
+  addBed(bed: any){
+    return this.http.post<any>(`${this.baseUrl}Beds`, bed);
+  }
+  editBed(id: number, bed: any){
+    return this.http.put<any>(`${this.baseUrl}Beds/${id}`, bed);
+  }
+  deleteBed(id: number){
+    return this.http.delete<any>(`${this.baseUrl}Beds/${id}`);
   }
 }

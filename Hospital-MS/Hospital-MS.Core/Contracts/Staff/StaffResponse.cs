@@ -41,6 +41,14 @@ namespace Hospital_MS.Core.Contracts.Staff
         public decimal Allowances { get; set; } // البدلات
         public decimal Rewards { get; set; } // المكافأت
 
+
+        public double? BasicSalary { get; set; }
+        public int? Tax { get; set; }
+        public int? Insurance { get; set; }
+        public int? VacationDays { get; set; }
+
+        public bool IsAuthorized { get; set; }
+
         public AuditResponse Audit { get; set; }
 
     }

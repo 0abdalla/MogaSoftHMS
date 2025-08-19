@@ -188,27 +188,36 @@ namespace Hospital_MS.Services.Auth
 
         public async Task<ErrorResponseModel<string>> SendResetPasswordCodeAsync(string userName)
         {
-            // edit method to take user name instead of email 
+            try
+            {
+                // edit method to take user name instead of email 
 
-            if (await _userManager.FindByNameAsync(userName) is not { } user)
-                return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess); // return success to avoid email enumeration
+                if (await _userManager.FindByNameAsync(userName) is not { } user)
+                    return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess); // return success to avoid email enumeration
 
-            //if (await _userManager.FindByEmailAsync(email) is not { } user)
-            //    return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess); // return success to avoid email enumeration
+                //if (await _userManager.FindByEmailAsync(email) is not { } user)
+                //    return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess); // return success to avoid email enumeration
 
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
 
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            await SendResetPasswordEmailAsync(user, code);
+                await SendResetPasswordEmailAsync(user, code);
 
-            return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+                return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
+            }
+            catch (Exception ex)
+            {
+
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, ex.Message);
+            }
         }
 
 
         public async Task<ErrorResponseModel<string>> ResetPasswordAsync(ResetPasswordRequest request)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            //var user = await _userManager.FindByEmailAsync(request.Email);
+            var user = await _userManager.FindByNameAsync(request.UserName);
 
             if (user is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
@@ -242,7 +251,7 @@ namespace Hospital_MS.Services.Auth
                 {
                     { "{{name}}",user.FirstName},
                     //{ "{{action_url", $"{origin}/auth/forgetPassword?email={user.Email}&code={code}"}
-                    { "{{action_url}}", $"{origin}/reset-password?email={Uri.EscapeDataString(user.Email!)}&code={Uri.EscapeDataString(code)}" }
+                    { "{{action_url}}", $"{origin}/reset-password?user-name={Uri.EscapeDataString(user.UserName!)}&code={Uri.EscapeDataString(code)}" }
                 }
             );
 
