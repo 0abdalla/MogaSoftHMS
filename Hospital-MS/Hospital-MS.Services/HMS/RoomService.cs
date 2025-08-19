@@ -6,11 +6,6 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -34,7 +29,7 @@ namespace Hospital_MS.Services.HMS
                     Number = request.Number,
                     WardId = request.WardId,
                     DailyPrice = request.DailyPrice
-                    
+
                 };
 
                 await _unitOfWork.Repository<Room>().AddAsync(room, cancellationToken);
@@ -52,7 +47,8 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<List<RoomResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var rooms = await _unitOfWork.Repository<Room>().GetAll().Include(x => x.Ward).ToListAsync(cancellationToken);
+            var rooms = await _unitOfWork.Repository<Room>()
+                .GetAll().Include(x => x.Ward).ToListAsync(cancellationToken);
 
             var response = rooms.Select(room => new RoomResponse
             {
@@ -61,9 +57,9 @@ namespace Hospital_MS.Services.HMS
                 Type = room.Type.ToString(),
                 Status = room.Status.ToString(),
                 WardId = room.WardId,
-                WardNumber = room.Ward.Number,
+                WardName = room.Ward.Name,
                 DailyPrice = room.DailyPrice,
-                
+
 
             }).ToList();
 

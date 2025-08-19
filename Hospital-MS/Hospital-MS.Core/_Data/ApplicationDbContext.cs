@@ -77,8 +77,8 @@ namespace Hospital_MS.Core._Data
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<MedicalServiceDetail> MedicalServiceDetails { get; set; }
         public DbSet<EmployeeSalary> EmployeeSalaries { get; set; }
-
-
+        public DbSet<Shift> Shifts { get; set; }
+        public DbSet<ShiftMedicalService> ShiftMedicalServices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

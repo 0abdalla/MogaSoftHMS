@@ -1,23 +1,16 @@
 ﻿using Hospital_MS.Core.Common;
-using Hospital_MS.Core.Contracts.JobTitle;
+using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.JobType;
 using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models.HR;
-using Hospital_MS.Core.Models;
+using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hospital_MS.Core.Contracts.Common;
-using Microsoft.EntityFrameworkCore;
-using Hospital_MS.Interfaces.Common;
-using Hospital_MS.Core.Extensions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -41,7 +34,7 @@ namespace Hospital_MS.Services.HMS
             var type = new JobType
             {
                 Name = request.Name,
-                Description = request.Description, 
+                Description = request.Description,
                 Status = status
             };
 
@@ -55,6 +48,26 @@ namespace Hospital_MS.Services.HMS
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
+        }
+
+        public async Task<ErrorResponseModel<bool>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var jobType = await _unitOfWork.Repository<JobType>()
+                .GetAll(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (jobType is null)
+                return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+            try
+            {
+                _unitOfWork.Repository<JobType>().Delete(jobType);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
+            }
+
         }
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
@@ -106,8 +119,8 @@ namespace Hospital_MS.Services.HMS
             var response = new JobTypeResponse
             {
                 Id = jobType.Id,
-                Name = jobType.Name, 
-                Description = jobType.Description, 
+                Name = jobType.Name,
+                Description = jobType.Description,
                 Status = jobType.Status.GetArabicValue(),
                 Audit = new AuditResponse
                 {

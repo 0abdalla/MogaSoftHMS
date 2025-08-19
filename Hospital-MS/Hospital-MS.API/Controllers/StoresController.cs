@@ -52,4 +52,11 @@ public class StoresController(IStoreService storeService) : ApiBaseController
         var result = await _storeService.GetStoreMovementsAsync(storeId, request, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("items-order-limit/{storeId}")]
+    public async Task<IActionResult> GetItemsOrderLimit(int storeId, CancellationToken cancellationToken)
+    {
+        var result = await _storeService.GetItemsOrderLimitAsync(storeId, cancellationToken);
+        return Ok(result);
+    }
 }

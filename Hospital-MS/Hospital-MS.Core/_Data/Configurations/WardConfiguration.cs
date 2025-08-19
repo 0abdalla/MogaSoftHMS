@@ -8,11 +8,7 @@ namespace Hospital_MS.Core._Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Ward> builder)
         {
-            builder.Property(w => w.Number)
-               .IsRequired();
 
-            builder.Property(w => w.Capacity)
-                   .IsRequired();   
         }
     }
 }
