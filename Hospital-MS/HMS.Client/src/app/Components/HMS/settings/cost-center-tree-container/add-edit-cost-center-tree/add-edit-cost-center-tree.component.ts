@@ -67,7 +67,8 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
       nameEN: [null, [Validators.required]],
       parentId: [null],
       isPost: [false, [Validators.required]],
-      isActive: [true, [Validators.required]],
+      isActive: [false, [Validators.required]],
+      isGroup: [false, [Validators.required]],
       notes: [null],
 
     });
@@ -90,18 +91,19 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
   addNewCostCenter() {
     this.showLoader = true;
     this.settingService.CreateNewCostCenter(this.costCenterModel).subscribe(data => {
-        if (data?.isSuccess) {
-          this.formGroup?.reset();
-          this.dataUpdated.emit(true);
-        }
-        else {
-        }
-        this.showLoader = false;
-      }, err => {
-        this.showLoader = false;
-      }, () => {
-        this.showLoader = false;
-      });
+      if (data?.isSuccess) {
+        this.formGroup?.reset();
+        this.loadSelectors();
+        this.dataUpdated.emit(true);
+      }
+      else {
+      }
+      this.showLoader = false;
+    }, err => {
+      this.showLoader = false;
+    }, () => {
+      this.showLoader = false;
+    });
 
 
 
@@ -110,33 +112,34 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
   editCostCenter() {
     this.showLoader = true;
     this.settingService.UpdateCostCenterTree(this.costCenterModel.costCenterId, this.costCenterModel).subscribe(data => {
-        if (data?.isSuccess) {
-          this.initNewForm();
-          this.dataUpdated.emit(true);
-        }
-        else {
-        }
-        this.showLoader = false;
-      }, err => {
-        this.showLoader = false;
-      }, () => {
-        this.showLoader = false;
-      });
+      if (data?.isSuccess) {
+        this.initNewForm();
+        this.loadSelectors();
+        this.dataUpdated.emit(true);
+      }
+      else {
+      }
+      this.showLoader = false;
+    }, err => {
+      this.showLoader = false;
+    }, () => {
+      this.showLoader = false;
+    });
 
 
   }
 
   generateCostCenterNumber(parentCostCenterId: number = 0) {
     this.settingService.GenerateCostCenterNumber(parentCostCenterId).subscribe(data => {
-        if (data) {
-          this.formGroup?.patchValue({ costCenterNumber: data });
-        }
+      if (data) {
+        this.formGroup?.patchValue({ costCenterNumber: data });
+      }
 
-      }, err => {
+    }, err => {
 
-      }, () => {
+    }, () => {
 
-      });
+    });
   }
 
   fillEditForm(costCenterModel: CostCenterTreeModel) {
@@ -148,8 +151,8 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
       nameEN: costCenterModel.nameEN,
       parentId: costCenterModel.parentId,
       isPost: costCenterModel.isPost,
-      isActive: costCenterModel.isActive
-
+      isActive: costCenterModel.isActive,
+      isGroup: costCenterModel.isGroup
     });
   }
   loadSelectors() {

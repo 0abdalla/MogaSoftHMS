@@ -46,6 +46,7 @@ namespace Hospital_MS.Services.Finance
                                             IsParent = x.IsParent,
                                             IsExpences = x.IsExpences,
                                             IsPost = x.IsPost,
+                                            IsGroup = x.IsGroup,
                                             DisplayOrder = x.DisplayOrder,
                                             IsSelected = x.NameEN.Contains(SearchText) || x.NameEN.Contains(SearchText) || x.CostCenterNumber == SearchText
 
@@ -110,12 +111,12 @@ namespace Hospital_MS.Services.Finance
                 tbl.ParentId = Model.ParentId;
                 tbl.CostLevel = parent != null ? parent.CostLevel + 1 : 1;
                 tbl.NameAR = Model.NameAR;
-                tbl.NameEN = Model.NameEN;
+                tbl.NameEN = Model.NameAR;
                 tbl.IsActive = Model.IsActive;
                 tbl.IsLocked = Model.IsLocked;
                 tbl.IsParent = tbl.CostLevel == 1 ? true : false;
                 tbl.IsPost = Model.IsPost;
-                tbl.IsExpences = Model.IsExpences;
+                tbl.IsGroup = Model.IsGroup;
                 tbl.DisplayOrder = Model.DisplayOrder;
 
                 await _unitOfWork.Repository<CostCenterTree>().AddAsync(tbl, cancellationToken);
@@ -165,12 +166,12 @@ namespace Hospital_MS.Services.Finance
                     entity.ParentId = Model.ParentId;
                     entity.CostLevel = parent != null ? parent.CostLevel + 1 : 1;
                     entity.NameAR = Model.NameAR;
-                    entity.NameEN = Model.NameEN;
+                    entity.NameEN = Model.NameAR;
                     entity.IsActive = Model.IsActive;
                     entity.IsLocked = Model.IsLocked;
                     entity.IsParent = entity.CostLevel == 1 ? true : false;
                     entity.IsPost = Model.IsPost;
-                    entity.IsExpences = Model.IsExpences;
+                    entity.IsGroup = Model.IsGroup;
                     entity.DisplayOrder = Model.DisplayOrder;
 
                     _unitOfWork.Repository<CostCenterTree>().Update(entity);
@@ -194,18 +195,6 @@ namespace Hospital_MS.Services.Finance
 
                 if (entity != null)
                 {
-                    var childAccounts = await _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.ParentId == CostCenterId).ToListAsync();
-
-                    if (childAccounts.Any())
-                    {
-                        foreach (var acc in childAccounts)
-                        {
-                            acc.ParentId = entity.ParentId;
-                            acc.CostLevel = entity.CostLevel;
-                            acc.IsParent = entity.IsParent;
-                        }
-                    }
-
                     _unitOfWork.Repository<CostCenterTree>().Delete(entity);
                     await _unitOfWork.CompleteAsync(cancellationToken);
 

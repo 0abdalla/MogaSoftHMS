@@ -17,12 +17,11 @@ export class AddEditAccountTreeComponent {
   @Output() dataUpdated = new EventEmitter<boolean>();
   showLoader: boolean = false;
   parentAccountsList: any[] = [];
-  accountTypes: any[] = [];
-  currencyType: any[] = [{ currencyId: 1, nameAR: 'جنيه' }, { currencyId: 1, nameAR: 'ريال' }]
-  accountTypesSelectorData: GeneralSelectorModel[] = [];
+  accountTypesSelectorData: GeneralSelectorModel[] = [
+    { name: 'مدين', value: 1 },
+    { name: 'دائن', value: 2 },
+  ];
   parentAccountsSelectorData: GeneralSelectorModel[] = [];
-  currencyTypesSelectorData: GeneralSelectorModel[] = [];
-  costCenterSelector: GeneralSelectorModel[] = [];
   selectedAccountId: number = null;
   public formGroup: FormGroup;
 
@@ -57,12 +56,11 @@ export class AddEditAccountTreeComponent {
       accountNumber: [null],
       parentAccountId: [null],
       accountTypeId: [null, [Validators.required]],
-      currencyTypeId: [null],
       nameAR: [null, [Validators.required]],
-      isDisToCostCenter: [false, [Validators.required]],
       costCenterId: [null],
       isActive: [true, [Validators.required]],
       isGroup: [false, [Validators.required]],
+      isReadOnly: [false, [Validators.required]],
       notes: [null],
     });
 
@@ -84,6 +82,7 @@ export class AddEditAccountTreeComponent {
   addNewAccount() {
     this.showLoader = true;
     this.settingService.AddNewAccount(this.accountModel).subscribe(data => {
+      debugger;
       if (data?.isSuccess) {
         this.initNewForm();
         this.modalService?.dismissAll();
@@ -140,32 +139,19 @@ export class AddEditAccountTreeComponent {
       accountNumber: accountModel.accountNumber,
       accountTypeId: accountModel.accountTypeId,
       parentAccountId: accountModel.parentAccountId,
-      currencyTypeId: accountModel.currencyTypeId,
       nameAR: accountModel.nameAR,
       nameEN: accountModel.nameAR,
-      isDisToCostCenter: accountModel.isDisToCostCenter,
       costCenterId: accountModel.costCenterId,
       isActive: accountModel.isActive,
       isGroup: accountModel.isGroup,
-
+      isReadOnly: accountModel.isReadOnly,
     });
   }
 
   loadSelectors() {
-    this.settingService.GetAccountTypes().subscribe(data => {
-      this.accountTypesSelectorData = data;
-    });
-    this.settingService.GetCurrencySelector().subscribe(data => {
-      this.currencyTypesSelectorData = data;
-    });
     this.settingService.GetAccountsSelector(true).subscribe(data => {
       this.parentAccountsSelectorData = data;
     });
-
-    this.settingService.GetCostCenterSelector(false).subscribe(data => {
-      this.costCenterSelector = data;
-    });
-
   }
 
   getSelectedParentAccount(account: AccountTreeModel) {

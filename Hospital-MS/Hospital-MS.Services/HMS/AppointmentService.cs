@@ -655,7 +655,7 @@ namespace Hospital_MS.Services.HMS
                         PatientId = patient.Id,
                         DoctorId = isEmergency ? null : request.DoctorId,
                         AppointmentDate = service.AppointmentDate,
-                        Type = appointmentType,
+                        Type = SetAppointmentType(appointmentType),
                         PaymentMethod = request.PaymentMethod,
                         AppointmentNumber = appointmentNumber,
                         EmergencyLevel = request.EmergencyLevel,
@@ -707,5 +707,19 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<AppointmentToReturnResponse>.Failure(GenericErrors.TransFailed);
             }
         }
-    }
+
+        public AppointmentType SetAppointmentType(AppointmentType type) =>
+            type switch
+            {
+                AppointmentType.MRI
+                or AppointmentType.Panorama
+                or AppointmentType.CTScan
+                or AppointmentType.Ultrasound
+                or AppointmentType.XRay
+                or AppointmentType.Echo
+                or AppointmentType.Mammogram
+                    => AppointmentType.Radiology,
+                _ => type
+            };
+        }
 }

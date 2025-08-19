@@ -6,6 +6,7 @@ export interface CostCenterTreeModel {
     parentId: number;
     costLevel: number | null;
     isActive: boolean | null;
+    isGroup: boolean | null;
     isLocked: boolean | null;
     isParent: boolean | null;
     isPost: boolean | null;

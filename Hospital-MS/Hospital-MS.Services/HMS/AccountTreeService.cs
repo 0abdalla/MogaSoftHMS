@@ -40,9 +40,8 @@ namespace Hospital_MS.Services.HMS
                 tbl.IsActive = Model.IsActive;
                 tbl.IsGroup = Model.IsGroup;
                 tbl.NameAR = Model.NameAR;
-                tbl.NameEN = Model.NameEN;
+                tbl.NameEN = Model.NameAR;
                 tbl.IsDisToCostCenter = Model.IsDisToCostCenter;
-                tbl.CostCenterId = Model.CostCenterId;
                 tbl.CreatedDate = DateTime.Now;
                 tbl.CreatedBy = Model.CreatedBy;
 
@@ -77,9 +76,8 @@ namespace Hospital_MS.Services.HMS
                     entity.IsActive = Model.IsActive;
                     entity.IsGroup = Model.IsGroup;
                     entity.NameAR = Model.NameAR;
-                    entity.NameEN = Model.NameEN;
+                    entity.NameEN = Model.NameAR;
                     entity.IsDisToCostCenter = Model.IsDisToCostCenter;
-                    entity.CostCenterId = Model.CostCenterId;
                     entity.ModifiedDate = DateTime.Now;
                     entity.ModifiedBy = Model.ModifiedBy;
 
@@ -99,25 +97,11 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var repo = _unitOfWork.Repository<AccountTree>();
-
-                var entity = await repo.GetAll(x => x.AccountId == AccountId).FirstOrDefaultAsync(cancellationToken);
+                var entity = await _unitOfWork.Repository<AccountTree>().GetAll(x => x.AccountId == AccountId).FirstOrDefaultAsync(cancellationToken);
 
                 if (entity != null)
                 {
-
-                    var childAccounts = await repo.GetAll(x => x.ParentAccountId == AccountId).ToListAsync(cancellationToken);
-
-                    if (childAccounts.Count != 0)
-                    {
-                        foreach (var acc in childAccounts)
-                        {
-                            acc.ParentAccountId = entity.ParentAccountId;
-                            acc.AccountLevel = entity.AccountLevel;
-                            acc.IsParent = entity.IsParent;
-                        }
-                    }
-                    repo.Delete(entity);
+                    _unitOfWork.Repository<AccountTree>().Delete(entity);
                     await _unitOfWork.CompleteAsync(cancellationToken);
                 }
 
@@ -187,7 +171,7 @@ namespace Hospital_MS.Services.HMS
 
         public List<SelectorDataModel> GetCostCenterSelector(bool IsParent)
         {
-            var result = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.IsParent == IsParent).Select(a => new SelectorDataModel
+            var result = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.IsGroup == IsParent).Select(a => new SelectorDataModel
             {
                 Id = a.CostCenterId,
                 Name = a.NameAR,

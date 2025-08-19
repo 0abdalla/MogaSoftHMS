@@ -23,6 +23,7 @@ namespace Hospital_MS.Core.Models
         public bool? IsParent { get; set; }
         public bool? IsPost { get; set; }
         public int? IsExpences { get; set; }
+        public bool? IsGroup { get; set; }
         public int? DisplayOrder { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }

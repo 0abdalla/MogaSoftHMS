@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Contracts.CostCenterTree;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.CostCenterTree;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Interfaces.Finance;
 using Microsoft.AspNetCore.Http;
@@ -20,19 +21,19 @@ namespace Hospital_MS.API.Controllers
         [HttpPost]
         [Route("CreateNewCostCenter")]
 
-        public IActionResult CreateNewCostCenter(CostCenterTreeModel Model)
+        public async Task<ErrorResponseModel<string>> CreateNewCostCenter(CostCenterTreeModel Model)
         {
-            var results = _costCenterTreeService.CreateNewCostCenter(Model);
-            return Ok(results);
+            var results = await _costCenterTreeService.CreateNewCostCenter(Model);
+            return results;
         }
 
         [HttpPost]
         [Route("UpdateCostCenterTree")]
 
-        public IActionResult UpdateCostCenterTree(int CostCenterId, CostCenterTreeModel Model)
+        public async Task<ErrorResponseModel<string>> UpdateCostCenterTree(int CostCenterId, CostCenterTreeModel Model)
         {
-            var results = _costCenterTreeService.UpdateCostCenterTree(CostCenterId, Model);
-            return Ok(results);
+            var results = await _costCenterTreeService.UpdateCostCenterTree(CostCenterId, Model);
+            return results;
         }
         [HttpGet]
         [Route("GenerateCostCenterNumber")]
@@ -45,10 +46,10 @@ namespace Hospital_MS.API.Controllers
         [HttpGet]
         [Route("DeleteCostCenterTree")]
 
-        public IActionResult DeleteCostCenterTree(int CostCenterId)
+        public async Task<ErrorResponseModel<string>> DeleteCostCenterTree(int CostCenterId)
         {
-            var results = _costCenterTreeService.DeleteCostCenterTree(CostCenterId);
-            return Ok(results);
+            var results = await _costCenterTreeService.DeleteCostCenterTree(CostCenterId);
+            return results;
         }
 
 

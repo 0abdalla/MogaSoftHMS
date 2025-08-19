@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Contracts.AccountTree;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.AccountTree;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,10 @@ namespace Hospital_MS.API.Controllers
 
         [HttpPost]
         [Route("AddNewAccount")]
-        public IActionResult AddNewAccount(AccountTreeModel Model)
+        public async Task<ErrorResponseModel<string>> AddNewAccount(AccountTreeModel Model)
         {
-            var results = _accountTreeService.AddNewAccount(Model);
-            return Ok(results);
+            var results = await _accountTreeService.AddNewAccount(Model);
+            return results;
         }
         [HttpGet]
         [Route("GenerateAccountNumber")]
@@ -35,18 +36,18 @@ namespace Hospital_MS.API.Controllers
         [HttpPost]
         [Route("EditAccountTree")]
 
-        public IActionResult EditAccountTree(int AccountId, AccountTreeModel Model)
+        public async Task<ErrorResponseModel<string>> EditAccountTree(int AccountId, AccountTreeModel Model)
         {
-            var results = _accountTreeService.EditAccountTree(AccountId, Model);
-            return Ok(results);
+            var results = await _accountTreeService.EditAccountTree(AccountId, Model);
+            return results;
         }
         [HttpGet]
         [Route("DeleteAccountTree")]
 
-        public IActionResult DeleteAccountTree(int AccountId)
+        public async Task<ErrorResponseModel<string>> DeleteAccountTree(int AccountId)
         {
-            var results = _accountTreeService.DeleteAccountTree(AccountId);
-            return Ok(results);
+            var results = await _accountTreeService.DeleteAccountTree(AccountId);
+            return results;
         }
 
         [HttpGet]
