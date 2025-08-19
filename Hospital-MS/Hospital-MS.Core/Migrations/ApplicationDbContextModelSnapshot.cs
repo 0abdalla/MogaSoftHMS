@@ -42,7 +42,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("MedicalServiceId");
 
-                    b.ToTable("DoctorMedicalService");
+                    b.ToTable("DoctorMedicalService", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.AccountTree", b =>
@@ -232,7 +232,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("AdditionNotices");
+                    b.ToTable("AdditionNotices", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Admission", b =>
@@ -316,7 +316,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Admissions");
+                    b.ToTable("Admissions", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.ApplicationUser", b =>
@@ -489,7 +489,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Appointments");
+                    b.ToTable("Appointments", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Attendance", b =>
@@ -541,7 +541,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Attendances");
+                    b.ToTable("Attendances", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.AttendanceSalary", b =>
@@ -705,7 +705,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Beds");
+                    b.ToTable("Beds", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Booking", b =>
@@ -785,7 +785,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("Bookings");
+                    b.ToTable("Bookings", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Branch", b =>
@@ -875,7 +875,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Clinics");
+                    b.ToTable("Clinics", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.CostCenter", b =>
@@ -1294,7 +1294,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DisbursementRequest", b =>
@@ -1536,7 +1536,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("Doctors", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DoctorRating", b =>
@@ -1580,7 +1580,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("DoctorPerformances");
+                    b.ToTable("DoctorPerformances", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.DoctorSchedule", b =>
@@ -1631,7 +1631,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("DoctorSchedules");
+                    b.ToTable("DoctorSchedules", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.FiscalYear", b =>
@@ -1924,7 +1924,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("JobDepartment");
+                    b.ToTable("JobDepartment", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobLevel", b =>
@@ -1967,7 +1967,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("JobLevels");
+                    b.ToTable("JobLevels", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobTitle", b =>
@@ -2015,7 +2015,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("JobTitles");
+                    b.ToTable("JobTitles", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.HR.JobType", b =>
@@ -2058,7 +2058,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("JobTypes");
+                    b.ToTable("JobTypes", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.HR.Penalty", b =>
@@ -2259,7 +2259,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("InsuranceCategory");
+                    b.ToTable("InsuranceCategory", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.InsuranceCompany", b =>
@@ -2315,7 +2315,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("InsuranceCompany");
+                    b.ToTable("InsuranceCompany", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Item", b =>
@@ -2730,7 +2730,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MedicalServices");
+                    b.ToTable("MedicalServices", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.MedicalServiceDetail", b =>
@@ -2759,7 +2759,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("MedicalServiceId");
 
-                    b.ToTable("MedicalServiceDetails");
+                    b.ToTable("MedicalServiceDetails", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.MedicalServiceSchedule", b =>
@@ -2782,7 +2782,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("MedicalServiceId");
 
-                    b.ToTable("MedicalServiceSchedules");
+                    b.ToTable("MedicalServiceSchedules", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Notification", b =>
@@ -2814,7 +2814,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.NurseActivity", b =>
@@ -2861,7 +2861,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("NurseActivities");
+                    b.ToTable("NurseActivities", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.NurseShift", b =>
@@ -2909,7 +2909,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("NurseShifts");
+                    b.ToTable("NurseShifts", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Page", b =>
@@ -3044,7 +3044,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Patients");
+                    b.ToTable("Patients", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.PatientAttachment", b =>
@@ -3083,7 +3083,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("PatientAttachments");
+                    b.ToTable("PatientAttachments", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.PatientMedicalHistory", b =>
@@ -3122,7 +3122,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("PatientMedicalHistories");
+                    b.ToTable("PatientMedicalHistories", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.PriceQuotation", b =>
@@ -3503,7 +3503,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RadiologyBodyTypes");
+                    b.ToTable("RadiologyBodyTypes", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.ReceiptPermission", b =>
@@ -3744,7 +3744,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("WardId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Specialty", b =>
@@ -3764,7 +3764,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Specialties");
+                    b.ToTable("Specialties", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Staff", b =>
@@ -3894,7 +3894,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Staff");
+                    b.ToTable("Staff", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.StaffAttachments", b =>
@@ -3916,7 +3916,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("StaffId");
 
-                    b.ToTable("StaffAttachments");
+                    b.ToTable("StaffAttachments", (string)null);
                 });
 
             modelBuilder.Entity("Hospital_MS.Core.Models.StaffTreasury", b =>
@@ -4474,7 +4474,7 @@ namespace Hospital_MS.Reposatories.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("Wards");
+                    b.ToTable("Wards", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

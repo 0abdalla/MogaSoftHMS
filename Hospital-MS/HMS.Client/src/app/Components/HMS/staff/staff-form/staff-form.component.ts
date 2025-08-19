@@ -4,7 +4,7 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { forkJoin } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FinancialService } from '../../../../Services/HMS/financial.service';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 
@@ -37,13 +37,23 @@ export class StaffFormComponent implements OnInit {
     filterList: []
   }
   netSalary: number;
+  // 
+  employeeId: number;
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
     private financialService: FinancialService,
     private messageService: MessageService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute,
   ) {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.employeeId = +id;
+        this.loadEmployeeData(this.employeeId);
+      }
+    });
     this.employeeForm = this.fb.group({
       fullName: ['', Validators.required],
       nationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
@@ -56,6 +66,7 @@ export class StaffFormComponent implements OnInit {
       // 
       branchId: ['', Validators.required],
       basicSalary: [null, Validators.required],
+      allowances: [null , [Validators.required , Validators.min(0)]],
       tax: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
       insurance: [null, [Validators.required, Validators.min(0), Validators.max(100)]],
       vacationDays: [null, [Validators.required, Validators.min(0), Validators.max(30)]],
@@ -69,24 +80,26 @@ export class StaffFormComponent implements OnInit {
       JobTitleId: [{ value: '', disabled: true }, Validators.required],
       JobTypeId: ['', Validators.required],
       userName: [''],
-      password: [''],
+      password: ['' , Validators.minLength(8)],
       isAuthorized: [null, Validators.required]
     });
     this.employeeForm.get('basicSalary')!.valueChanges.subscribe(() => this.calculateNetSalary());
     this.employeeForm.get('tax')!.valueChanges.subscribe(() => this.calculateNetSalary());
     this.employeeForm.get('insurance')!.valueChanges.subscribe(() => this.calculateNetSalary());
+    this.employeeForm.get('allowances')!.valueChanges.subscribe(() => this.calculateNetSalary());
   }
   calculateNetSalary() {
     const salary = Number(this.employeeForm.get('basicSalary')?.value);
     const taxPercent = Number(this.employeeForm.get('tax')?.value);
     const insurancePercent = Number(this.employeeForm.get('insurance')?.value);
+    const allowances = Number(this.employeeForm.get('allowances')?.value);
     if (!salary || isNaN(taxPercent) || isNaN(insurancePercent)) {
       this.netSalary = null;
       return;
     }
     const taxAmount = salary * (taxPercent / 100);
     const insuranceAmount = salary * (insurancePercent / 100);
-    this.netSalary = salary - taxAmount - insuranceAmount;
+    this.netSalary = salary - taxAmount - insuranceAmount + allowances;
     const shouldDisable = this.netSalary <= 0;
     const isDisabled = this.employeeForm.disabled;
     if (shouldDisable) {
@@ -199,6 +212,7 @@ export class StaffFormComponent implements OnInit {
     this.staffService.addStaff(formData).subscribe({
       next: (data) => {
         // this.selectedFiles = [];
+        console.log(data);
         this.messageService.add({
           severity: 'success',
           summary: 'نجاح',
@@ -218,7 +232,7 @@ export class StaffFormComponent implements OnInit {
       },
     });
   }
-  loadStaffData() {
+  loadStaffData() { 
     forkJoin({
       jobDepartments: this.staffService.getJobDepartment('', 1, 100),
       jobTitles: this.staffService.getJobTitles('', 1, 100),
@@ -230,14 +244,76 @@ export class StaffFormComponent implements OnInit {
         this.jobDepartments = data.jobDepartments.results;
         this.jobTypes = data.jobTypes.results;
         this.jobTitles = data.jobTitles.results;
-        this.filteredJobTitles = [];
         this.jobLevels = data.jobLevels.results;
         this.branches = data.branches.results;
-        console.log(this.branches);
+  
+        // 👇 بعد ما اتأكد إن الـ jobTitles جهزت
+        if (this.employeeData?.jobDepartmentId) {
+          this.onDepartmentChange(this.employeeData.jobDepartmentId);
+  
+          this.employeeForm.patchValue({
+            JobTitleId: this.employeeData.jobTitleId
+          });
+        }
       },
       error: (error) => {
         console.error(error);
       }
     })
   }
+  
+  
+  // 
+  employeeData = null;
+  loadEmployeeData(id: number) {
+    this.staffService.getStaffById(id).subscribe({
+      next: (res: any) => {
+        this.employeeData = res.results;
+        this.employeeForm.patchValue({
+          fullName: this.employeeData.fullName,
+          nationalId: this.employeeData.nationalId,
+          gender: this.employeeData.gender,
+          phoneNumber: this.employeeData.phoneNumber,
+          email: this.employeeData.email,
+          address: this.employeeData.address,
+          type: this.employeeData.type ?? '', 
+          hireDate: this.employeeData.hireDate,
+          branchId: this.employeeData.branchId,
+          basicSalary: this.employeeData.basicSalary ?? 0,
+          tax: this.employeeData.tax ?? 0,
+          insurance: this.employeeData.insurance ?? 0,
+          allowances: this.employeeData.allowances ?? 0,
+          vacationDays: this.employeeData.vacationDays ?? 0,
+          status: this.employeeData.status,
+          maritalStatus: this.employeeData.maritalStatus,
+          notes: this.employeeData.notes,
+          JobDepartmentId: this.employeeData.jobDepartmentId,
+          JobLevelId: this.employeeData.jobLevelId,
+          JobTypeId: this.employeeData.jobTypeId,
+          isAuthorized: this.employeeData.isAuthorized ?? null,
+          userName: this.employeeData.userName ?? '',
+          password: '',
+        });
+      },
+      error: (err) => {
+        console.error(err);
+        this.messageService.add({ severity: 'error', summary: 'خطأ', detail: 'فشل في تحميل بيانات الموظف' });
+      }
+    });
+  }
+  onDepartmentChange(deptId: number) {
+    if (!this.jobTitles) {
+      this.filteredJobTitles = [];
+      this.employeeForm.get('JobTitleId')?.disable();
+      return;
+    }
+  
+    this.filteredJobTitles = this.jobTitles.filter((x: any) => x.departmentId === deptId);
+  
+    if (this.filteredJobTitles.length > 0) {
+      this.employeeForm.get('JobTitleId')?.enable();
+    } else {
+      this.employeeForm.get('JobTitleId')?.disable();
+    }
+  }  
 }

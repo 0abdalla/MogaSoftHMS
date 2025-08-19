@@ -7,7 +7,7 @@
                     <div class="d-flex align-items-center gap-2">
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addjobTypeModal">
                     <i class="fas fa-plus-circle"></i>
-                    <span>إضافة فئه</span>
+                    <span>إضافة تصنيف</span>
                 </button>
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
                     <i class="uil uil-filter"></i>
@@ -21,7 +21,7 @@
                 <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
                     <div class="d-flex align-items-center">
                         <ng-container>
-                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الفئة ...'" (filterChanged)="applyFilters($event)"></app-filters>
+                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم التصنيف ...'" (filterChanged)="applyFilters($event)"></app-filters>
                         </ng-container>
                     </div>
                 </div>
@@ -30,8 +30,8 @@
             <table class="table table-hover mt-4">
                 <thead>
                     <tr>
-                        <th>رقم الفئة</th>
-                        <th>إسم الفئة</th>
+                        <th>رقم التصنيف</th>
+                        <th>إسم التصنيف</th>
                         <th>الحالة</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -47,8 +47,11 @@
                         </td>
                         <td class="text-secondary" [ngClass]="jobType.status ==='نشط' ? 'text-success' : 'text-danger'">{{ jobType.status }}</td>
                         <td>
-                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editjobTypeModal" (click)="openjobTypeDetails(jobType.id)">
-                              <i class="fa-solid fa-pen"></i>
+                            <button type="button" class="btn btn-primary mx-2" (click)="editJobType(jobType.id)">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger mx-2" (click)="deleteJobType(jobType.id)">
+                                <i class="fa fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -74,23 +77,36 @@
 </main>
 
 
-<div class="modal fade" id="addjobTypeModal" tabindex="-1" aria-labelledby="addjobTypeModalLabel" aria-hidden="true">
+<div class="modal fade" id="addjobTypeModal" tabindex="-1" aria-labelledby="addjobTypeModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addjobTypeModalLabel">إضافة فئة</h5>
+                <h5 class="modal-title" id="addjobTypeModalLabel">{{isEditMode ? 'تعديل التصنيف' : 'إضافة تصنيف'}}</h5>
             </div>
             <div class="modal-body">
                 <form [formGroup]="jobTypeForm" (ngSubmit)="addJobType()">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
-                                <label class="form-label" for="name">إسم الفئة</label>
-                                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم الفئة">
+                                <label class="form-label" for="name">إسم التصنيف</label>
+                                <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم التصنيف">
                                 <div *ngIf="jobTypeForm.get('name')?.invalid && jobTypeForm.get('name')?.touched" class="text-danger">
-                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['required']">إسم الفئة مطلوب</ng-container>
-                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['minlength']">إسم الفئة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['required']">إسم التصنيف مطلوب</ng-container>
+                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['minlength']">إسم التصنيف يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2" *ngIf="isEditMode">
+                            <div class="form-group">
+                                <label class="form-label" for="status">الحالة</label>
+                                <select class="form-select shadow-none" formControlName="status" id="status">
+                                    <option selected disabled value="">اختر الحالة</option>
+                                    <option value="Active">نشط</option>
+                                    <option value="Inactive">غير نشط</option>
+                                </select>
+                                <div *ngIf="jobTypeForm.get('status')?.invalid && jobTypeForm.get('status')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTypeForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -106,31 +122,32 @@
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="jobTypeForm.invalid">إضافة الفئة</button>
+                        <button type="submit" class="btn-blue" [disabled]="jobTypeForm.invalid">{{isEditMode ? 'تعديل التصنيف' : 'إضافة التصنيف'}}</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
+<!-- 
 <div class="modal fade" id="editjobTypeModal" tabindex="-1" aria-labelledby="editjobTypeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="editjobTypeModalLabel">تعديل الفئة</h5>
+                <h5 class="modal-title" id="editjobTypeModalLabel">تعديل التصنيف</h5>
             </div>
             <div class="modal-body">
                 <form [formGroup]="jobTypeForm" (ngSubmit)="editJobType()">
                     <div class="row">
                         <div class="col-lg-6 mb-2">
                             <div class="form-group">
-                                <label class="form-label" for="name">إسم الفئة</label>
+                                <label class="form-label" for="name">إسم التصنيف</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name">
                                 <div *ngIf="jobTypeForm.get('name')?.invalid && jobTypeForm.get('name')?.touched" class="text-danger">
-                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['required']">إسم الفئة مطلوب</ng-container>
-                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['minlength']">إسم الفئة يجب أن يكون أكثر من 3 حروف</ng-container>
+                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['required']">إسم التصنيف مطلوب</ng-container>
+                                    <ng-container *ngIf="jobTypeForm.get('name')?.errors?.['minlength']">إسم التصنيف يجب أن يكون أكثر من 3 حروف</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -159,10 +176,10 @@
 
                     </div>
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="jobTypeForm.invalid">تعديل الفئة</button>
+                        <button type="submit" class="btn-blue" [disabled]="jobTypeForm.invalid">تعديل التصنيف</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</div> -->

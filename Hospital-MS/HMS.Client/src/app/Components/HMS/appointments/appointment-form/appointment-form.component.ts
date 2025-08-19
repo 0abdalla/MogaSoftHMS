@@ -142,9 +142,10 @@ export class AppointmentFormComponent implements OnInit {
         this.appointmentDetailsForm.get('doctorId')?.setValue(null);
       }
 
-      const selectedService = this.filteredServices.find(
+      const selectedService = (this.filteredServices || []).find(
         (service: any) => service.id === Number(medicalServiceId)
       );
+      console.log(selectedService);
       this.SelectedService = selectedService;
       this.selectedServicePrice = selectedService ? selectedService.price : null;
       this.showServicePrice = !!selectedService;
@@ -272,19 +273,33 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   filterServicesByDay() {
-    if (!this.selectedDate || !this.services.length) {
-      return;
-    }
+    if (!this.services || this.services.length === 0) return;
 
-    const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
-
-    this.filteredServices = this.filteredServices.filter(service => {
-      if (!service.medicalServiceSchedules || !service.medicalServiceSchedules.length) {
-        return false;
-      }
-      return service.medicalServiceSchedules.some((schedule: any) => {
-        return schedule.weekDay === dayOfWeek;
-      });
+    const dayOfWeek = this.selectedDate
+      ? new Date(this.selectedDate).toLocaleDateString('en-US', { weekday: 'long' })
+      : null;
+  
+    console.log("Selected Day:", dayOfWeek);
+  
+    this.filteredServices = this.services.filter(service => {
+      const formType = this.appointmentDetailsForm.get('appointmentType')?.value;
+  
+      const matchesType = formType
+        ? service.type?.toLowerCase() === formType.toLowerCase()
+        : true;
+  
+      const matchesDay =
+        dayOfWeek && service.medicalServiceSchedules?.length
+          ? service.medicalServiceSchedules.some((s: any) =>
+              s.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
+            )
+          : false;
+  
+      console.log("Service:", service.name);
+      console.log("Service Days:", service.medicalServiceSchedules?.map((s: any) => s.weekDay));
+      console.log("Matches Type:", matchesType, "Matches Day:", matchesDay);
+  
+      return matchesType && matchesDay;
     });
   }
 
@@ -327,18 +342,20 @@ export class AppointmentFormComponent implements OnInit {
     this.filterServicesByDay();
     this.filterDoctorsByDay();
   }
+
   onAppointmentTypeChange(): void {
     this.filterServices();
     this.appointmentDetailsForm.get('medicalServiceId')?.setValue(null);
   }
 
-  onServiceSelected(): void {
-    this.filterDoctors();
+  onServiceSelected() {
+    const selectedId = this.appointmentDetailsForm.get('medicalServiceId')?.value;
+  
     const selectedService = this.filteredServices.find(
-      service => service.id === Number(this.reservationForm.get('medicalServiceId')?.value)
+      (s: any) => s.id === selectedId
     );
-    this.selectedServicePrice = selectedService?.price || null;
-    this.showServicePrice = !!selectedService;
+  
+    console.log("Selected Service:", selectedService);
   }
 
   onSubmit() {
@@ -414,6 +431,7 @@ export class AppointmentFormComponent implements OnInit {
     this.staffService.getDoctors(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.doctors = data.results;
+        console.log("Doctors: " , this.doctors);
       },
       error: (err) => {
       }
@@ -463,6 +481,7 @@ export class AppointmentFormComponent implements OnInit {
     this.appointmentService.getServices(1, 100, '', filterParams).subscribe({
       next: (data) => {
         this.services = data.results || [];
+        console.log('Services: ',this.services);
       },
       error: (err) => {
         this.services = [];
@@ -506,7 +525,7 @@ export class AppointmentFormComponent implements OnInit {
     const formData = this.submittedData;
 
     return {
-      appointmentNumber: apiData.appointmentNumber,
+      appointmentNumber: apiData.appointmentNumber || '--',
       patientName: formData.patientName,
       patientPhone: formData.patientPhone,
       // appointmentType: formData.appointmentType,
@@ -595,10 +614,14 @@ export class AppointmentFormComponent implements OnInit {
 
     this.filteredDoctorsByService = doctors;
   }
-  private getEnglishDayOfWeek(date: Date): string {
-    const days = ['Sunday', 'Monday', 'Tusday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    return days[date.getDay()];
+  getEnglishDayOfWeek(date: Date): string {
+    const days = [
+      'Sunday', 'Monday', 'Tuesday', 'Wednesday',
+      'Thursday', 'Friday', 'Saturday'
+    ];
+    return days[new Date(date).getDay()];
   }
+  
 
   private filterServices(): void {
     const selectedType = this.appointmentDetailsForm.get('appointmentType')?.value;

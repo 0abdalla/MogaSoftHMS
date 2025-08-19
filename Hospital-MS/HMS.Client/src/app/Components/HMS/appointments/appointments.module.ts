@@ -13,6 +13,7 @@ import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
 import { AppointmentEditComponent } from './appointment-edit/appointment-edit.component';
 import { SharedModule } from '../../../Shared/shared.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { Time12PipePipe } from '../../../Pipes/time12-pipe.pipe';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     AppointmentFormComponent,
     AppointmetSettingsComponent,
     PrintInvoiceComponent,
-    AppointmentEditComponent
+    AppointmentEditComponent,
+    // Time12PipePipe
   ],
   imports: [
     CommonModule,

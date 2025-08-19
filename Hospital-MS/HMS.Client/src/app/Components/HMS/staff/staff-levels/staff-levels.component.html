@@ -47,8 +47,11 @@
                         </td>
                         <td class="text-secondary" [ngClass]="jobLevel.status ==='نشط' ? 'text-success' : 'text-danger'">{{ jobLevel.status }}</td>
                         <td>
-                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editjobLevelModal" (click)="openjobLevelDetails(jobLevel.id)">
-                              <i class="fa-solid fa-pen"></i>
+                            <button type="button" class="btn btn-primary mx-2" (click)="editJobLevel(jobLevel.id)">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger mx-2" (click)="deleteJobLevel(jobLevel.id)">
+                                <i class="fa fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -74,23 +77,36 @@
 </main>
 
 
-<div class="modal fade" id="addjobLevelModal" tabindex="-1" aria-labelledby="addjobLevelModalLabel" aria-hidden="true">
+<div class="modal fade" id="addjobLevelModal" tabindex="-1" aria-labelledby="addjobLevelModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addjobLevelModalLabel">إضافة مستوى</h5>
+                <h5 class="modal-title" id="addjobLevelModalLabel">{{isEditMode ? 'تعديل المستوى' : 'إضافة المستوى'}}</h5>
             </div>
             <div class="modal-body">
-                <form [formGroup]="jobLevelForm" (ngSubmit)="addjobLevel()">
+                <form [formGroup]="jobLevelForm" (ngSubmit)="addJobLevel()">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم المستوى</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم المستوى">
                                 <div *ngIf="jobLevelForm.get('name')?.invalid && jobLevelForm.get('name')?.touched" class="text-danger">
                                     <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['required']">إسم المستوى مطلوب</ng-container>
                                     <ng-container *ngIf="jobLevelForm.get('name')?.errors?.['minlength']">إسم المستوى يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2" *ngIf="isEditMode">
+                            <div class="form-group">
+                                <label class="form-label" for="status">الحالة</label>
+                                <select class="form-select shadow-none" formControlName="status" id="status">
+                                    <option  value="">اختر الحالة</option>
+                                    <option value="Active">نشط</option>
+                                    <option value="Inactive">غير نشط</option>
+                                </select>
+                                <div *ngIf="jobLevelForm.get('status')?.invalid && jobLevelForm.get('status')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobLevelForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -106,14 +122,15 @@
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="jobLevelForm.invalid">إضافة المستوى</button>
+                        <button type="submit" class="btn-blue" [disabled]="jobLevelForm.invalid">{{isEditMode ? 'تعديل المستوى' : 'إضافة المستوى'}}</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
+<!-- 
 <div class="modal fade" id="editjobLevelModal" tabindex="-1" aria-labelledby="editjobLevelModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -122,9 +139,9 @@
                 <h5 class="modal-title" id="editjobLevelModalLabel">تعديل المستوى</h5>
             </div>
             <div class="modal-body">
-                <form [formGroup]="jobLevelForm" (ngSubmit)="editjobLevel()">
+                <form [formGroup]="jobLevelForm" (ngSubmit)="editJobLevel()">
                     <div class="row">
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم المستوى</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name">
@@ -134,7 +151,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-2">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="form-label" for="status">الحالة</label>
                                 <select class="form-select shadow-none" formControlName="status" id="status">
@@ -165,4 +182,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->

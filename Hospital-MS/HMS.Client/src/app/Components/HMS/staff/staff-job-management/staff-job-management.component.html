@@ -49,8 +49,11 @@
                         <td>{{jobTitle?.jobDepartmentName}}</td>
                         <td class="text-secondary" [ngClass]="jobTitle.status === 'نشط' ? 'text-success' : 'text-danger'">{{ jobTitle.status }}</td>
                         <td>
-                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editjobTitleModal" (click)="openjobTitleDetails(jobTitle.id)">
-                              <i class="fa-solid fa-pen"></i>
+                            <button type="button" class="btn btn-primary mx-2" (click)="editJobTitle(jobTitle.id)">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger mx-2" (click)="deleteJobTitle(jobTitle.id)">
+                                <i class="fa fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -76,17 +79,17 @@
 </main>
 
 
-<div class="modal fade" id="addjobTitleModal" tabindex="-1" aria-labelledby="addjobTitleModalLabel" aria-hidden="true">
+<div class="modal fade" id="addjobTitleModal" tabindex="-1" aria-labelledby="addjobTitleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addjobTitleModalLabel">إضافة وظيفة</h5>
+                <h5 class="modal-title" id="addjobTitleModalLabel">{{isEditMode ? 'تعديل وظيفة' : 'إضافة وظيفة'}}</h5>
             </div>
             <div class="modal-body">
-                <form [formGroup]="jobTitleForm" (ngSubmit)="addjobTitle()">
+                <form [formGroup]="jobTitleForm" (ngSubmit)="addJobTitle()">
                     <div class="row">
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم الوظيفة</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم الوظيفة">
@@ -96,15 +99,28 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mb-2">
                             <div class="form-group">
                                 <label class="form-label" for="jobDepartmentId">القسم</label>
                                 <select class="form-select shadow-none" formControlName="jobDepartmentId" id="jobDepartmentId">
-                    <option selected disabled value="">اختر القسم</option>
-                    <option *ngFor="let dep of jobDeps" value="{{dep.id}}">{{dep.name}}</option>
-                  </select>
+                                    <option selected disabled value="">اختر القسم</option>
+                                    <option *ngFor="let dep of jobDeps" value="{{dep.id}}">{{dep.name}}</option>
+                                </select>
                                 <div *ngIf="jobTitleForm.get('jobDepartmentId')?.invalid && jobTitleForm.get('jobDepartmentId')?.touched" class="text-danger">
                                     <ng-container *ngIf="jobTitleForm.get('jobDepartmentId')?.errors?.['required']">القسم مطلوب</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2" *ngIf="isEditMode">
+                            <div class="form-group">
+                                <label class="form-label" for="status">الحالة</label>
+                                <select class="form-select shadow-none" formControlName="status" id="status">
+                                    <option selected disabled value="">اختر الحالة</option>
+                                    <option value="Active">نشط</option>
+                                    <option value="Inactive">غير نشط</option>
+                                </select>
+                                <div *ngIf="jobTitleForm.get('status')?.invalid && jobTitleForm.get('status')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobTitleForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -120,14 +136,15 @@
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">إضافة الوظيفة</button>
+                        <button type="submit" class="btn-blue" [disabled]="jobTitleForm.invalid">{{isEditMode ? 'تعديل الوظيفة' : 'إضافة الوظيفة'}}</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
+<!-- 
 <div class="modal fade" id="editjobTitleModal" tabindex="-1" aria-labelledby="editjobTitleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -191,4 +208,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->

@@ -1,5 +1,5 @@
 import { trigger, transition, style, animate, query } from '@angular/animations';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StaffService } from '../../../../Services/HMS/staff.service';
@@ -7,6 +7,8 @@ import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/Pagi
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { SharedService } from '../../../../Services/shared.service';
 declare var bootstrap: any;
+
+import html2pdf from 'html2pdf.js';
 @Component({
   selector: 'app-doctors-list',
   templateUrl: './doctors-list.component.html',
@@ -24,6 +26,8 @@ declare var bootstrap: any;
   ],
 })
 export class DoctorsListComponent implements OnInit {
+  @ViewChild('printSection', { static: false }) printSection!: ElementRef;
+
   TitleList = ['إدارة الأطباء', 'الأطباء'];
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
@@ -106,8 +110,8 @@ export class DoctorsListComponent implements OnInit {
           ...schedule,
           weekDay: this.translateWeekDay(schedule.weekDay)
         }))
-
       };
+      console.log(this.selectedDoctor);
     });
   }
   // 
@@ -138,8 +142,24 @@ export class DoctorsListComponent implements OnInit {
     this.router.navigate(['/hms/settings/doctors', doctorId]);
   }
   print() { }
-  exportToPDF() { }
-  susbendDoctor() { }
+  exportToPDF() {
+    if (!this.printSection) return;
+  
+    const doctorName = this.selectedDoctor?.fullName || '---';
+  
+    const options = {
+      margin:       0.5,
+      filename:     `تفاصيل الدكتور - ${doctorName}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+  
+    const element = this.printSection.nativeElement;
+  
+    html2pdf().from(element).set(options).save();
+  }
+    susbendDoctor() { }
   // 
   onPageChange(page: number) {
     this.pagingFilterModel.currentPage = page;
@@ -200,4 +220,17 @@ export class DoctorsListComponent implements OnInit {
     }
     return '---';
   }
+  // 
+  formatTime(time: string): string {
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    const date = new Date();
+    date.setHours(hours, minutes, seconds);
+    return new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    }).format(date);
+  }
+  
 }

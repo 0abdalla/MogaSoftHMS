@@ -72,7 +72,7 @@
                 <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
                     <td>{{ item.id }}</td>
                     <td>{{ item.nameAr }}</td>
-                    <td>{{ item.orderLimit }}</td>
+                    <td>{{ item.orderLimit + ' ' + item.unitName }}</td>
                     <td>{{ item.groupName }}</td>
                     <td>
                         <button type="button" class="btn btn-primary mx-1" (click)="editItem(item.id)">

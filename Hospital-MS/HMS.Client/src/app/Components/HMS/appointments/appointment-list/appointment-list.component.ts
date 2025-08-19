@@ -87,6 +87,7 @@ export class AppointmentListComponent implements OnInit {
     });
     this.getPatients();
     this.getCounts();
+    this.getAllShifts();
   }
   getServiceColor(type: string): string {
     const serviceObj = this.patientServices.find((s) => s.name === type);
@@ -361,6 +362,15 @@ export class AppointmentListComponent implements OnInit {
   closedBy: any;
   closedAt: any;
   shiftDay = new Date().toLocaleDateString('ar-EG', { weekday: 'long' });
+  shifts!:any;
+  getAllShifts(){
+    this.appointmentService.getAllShifts().subscribe({
+      next:(data:any)=>{
+        this.shifts = data.results
+        console.log('Shifts : ',this.shifts);
+      }
+    })
+  }
   confirmShiftClose() {
     Swal.fire({
       title: 'هل أنت متأكد؟',
@@ -422,5 +432,48 @@ export class AppointmentListComponent implements OnInit {
         mainModal.show();
       }, 100);
     }
+  }  
+  // 
+  selectedShiftId: number | null = null;
+  openChooseShiftModal() {
+    this.getAllShifts();
+    const modalElement = document.getElementById('chooseShiftModal');
+    const modal = new bootstrap.Modal(modalElement!);
+    modal.show();
+  }
+
+  openShiftReport() {
+    if (!this.selectedShiftId) {
+      Swal.fire('تنبيه', 'من فضلك اختر شيفت أولاً', 'warning');
+      return;
+    }
+  
+    this.appointmentService.getShiftById(this.selectedShiftId).subscribe({
+      next: (res: any) => {
+        if (res?.isSuccess) {
+          const data = res.results;
+          this.medicalServices = data.medicalServices;
+          this.totalAmountForShift = data.totalAmount;
+          this.closedBy = data.closedBy;
+          this.closedAt = data.closedAt;
+          this.shiftDay = data.day;
+          this.userName = data.closedBy;
+          const chooseModal = bootstrap.Modal.getInstance(document.getElementById('chooseShiftModal')!);
+          chooseModal?.hide();
+          const reportModal = new bootstrap.Modal(document.getElementById('shiftReportModal')!);
+          reportModal.show();
+        } else {
+          Swal.fire('خطأ', res.message || 'حدث خطأ ما', 'error');
+        }
+      },
+      error: () => {
+        Swal.fire('خطأ', 'فشل الاتصال بالسيرفر', 'error');
+      }
+    });
+  }
+  getDayName(dateString: string): string {
+    const date = new Date(dateString);
+    const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    return days[date.getDay()];
   }  
 }
