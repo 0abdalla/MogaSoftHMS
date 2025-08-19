@@ -4,7 +4,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { MessageService } from 'primeng/api';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-
+declare var bootstrap : any
 @Component({
   selector: 'app-medical-services-list',
   templateUrl: './medical-services-list.component.html',
@@ -24,7 +24,7 @@ export class MedicalServicesListComponent implements OnInit {
     pageSize: 16,
     filterList: []
   };
-  weekDays = [
+  weekDaysEnglish = [
     { day: 'الأحد', value: 'Sunday' },
     { day: 'الإثنين', value: 'Monday' },
     { day: 'الثلاثاء', value: 'Tuesday' },
@@ -53,15 +53,15 @@ export class MedicalServicesListComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1)]],
       type: ['', Validators.required],
-      medicalServiceSchedules: this.fb.array([this.createSchedule()]),
+      weekDays: this.fb.array([this.createSchedule()]),
     })
   }
 
   ngOnInit(): void {
     this.getServices();
   }
-  get medicalServiceSchedules(): FormArray {
-    return this.serviceForm.get('medicalServiceSchedules') as FormArray;
+  get weekDays(): FormArray {
+    return this.serviceForm.get('weekDays') as FormArray;
   }
   createSchedule(weekDay: string = ''): FormGroup {
     return this.fb.group({
@@ -70,12 +70,12 @@ export class MedicalServicesListComponent implements OnInit {
   }
 
   addSchedule() {
-    this.medicalServiceSchedules.push(this.createSchedule());
+    this.weekDays.push(this.createSchedule());
   }
 
   removeSchedule(index: number) {
-    if (this.medicalServiceSchedules.length > 1) {
-      this.medicalServiceSchedules.removeAt(index);
+    if (this.weekDays.length > 1) {
+      this.weekDays.removeAt(index);
     } else {
       this.messageService.add({
         severity: 'warn',
@@ -143,19 +143,21 @@ export class MedicalServicesListComponent implements OnInit {
     this.appointmentService.getServices().subscribe({
       next: (data) => {
         this.serviceDetails = data.results.find((service: any) => service.id === serviceId);
-        this.medicalServiceSchedules.clear();
+        console.log(this.serviceDetails);
+        this.weekDays.clear();
         const schedules = this.serviceDetails.medicalServiceSchedules || [];
         if (schedules.length === 0) {
-          this.medicalServiceSchedules.push(this.createSchedule());
+          this.weekDays.push(this.createSchedule());
         } else {
           schedules.forEach((schedule: any) => {
-            this.medicalServiceSchedules.push(this.createSchedule(schedule.weekDay));
+            this.weekDays.push(this.createSchedule(schedule.weekDay));
           });
         }
         this.serviceForm.patchValue({
           name: this.serviceDetails.name,
           price: this.serviceDetails.price,
           type: this.serviceDetails.type,
+          weekDays: this.serviceDetails.medicalServiceSchedules.map((schedule: any) => ({ weekDay: schedule.weekDay })),
         });
       },
       error: (err) => {
@@ -173,48 +175,92 @@ export class MedicalServicesListComponent implements OnInit {
     this.getServices();
   }
   addService() {
-    const formValue = this.serviceForm.value;
+    if (this.serviceForm.invalid) {
+      this.serviceForm.markAllAsTouched();
+      return;
+    }
+    const formValue = this.serviceForm.getRawValue();
+    formValue.weekDays = formValue.weekDays
+      .filter((s: any) => s.weekDay && s.weekDay.trim() !== '')
+      .map((s: any) => s.weekDay);  
+  
     this.appointmentService.addService(formValue).subscribe({
       next: (data) => {
         this.getServices();
-        this.messageService.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة الخدمة بنجاح' });
+        console.log("Sent Data:", formValue);
+        console.log("Response:", data);
+  
+        this.messageService.add({
+          severity: 'success',
+          summary: 'عملية ناجحة',
+          detail: 'تم إضافة الخدمة بنجاح'
+        });
+  
         this.serviceForm.reset();
-        this.medicalServiceSchedules.clear();
-        this.medicalServiceSchedules.push(this.createSchedule());
+        this.weekDays.clear();
+        this.weekDays.push(this.createSchedule());
       },
       error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة الخدمة' });
+        console.log("Sent Data:", formValue);
+        console.log("Error:", err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'حدث خطأ',
+          detail: 'حدث خطأ أثناء إضافة الخدمة'
+        });
       },
     });
   }
+  
+  
   onDayChange(index: number) {
-    const selectedDay = this.medicalServiceSchedules.at(index).get('weekDay')?.value;
+    const selectedDay = this.weekDays.at(index).get('weekDay')?.value;
     if (selectedDay && this.isDaySelected(selectedDay, index)) {
       this.messageService.add({
         severity: 'warn',
         summary: 'يوم مكرر',
         detail: 'هذا اليوم تم اختياره بالفعل، اختر يومًا آخر',
       });
-      this.medicalServiceSchedules.at(index).get('weekDay')?.setValue('');
+      this.weekDays.at(index).get('weekDay')?.setValue('');
     }
   }
   isDaySelected(day: string, currentIndex: number): boolean {
-    return this.medicalServiceSchedules.controls.some((control, index) => {
+    return this.weekDays.controls.some((control, index) => {
       return index !== currentIndex && control.get('weekDay')?.value === day;
     });
   }
   editService() {
-    this.appointmentService.editService(this.serviceDetails.id, this.serviceForm.value).subscribe({
+    const rawData = this.serviceForm.value;
+    const payload = {
+      ...rawData,
+      weekDays: rawData.weekDays.map((d: any) => d.weekDay)
+    };
+  
+    this.appointmentService.editService(this.serviceDetails.id, payload).subscribe({
       next: (data) => {
         this.getServices();
         this.messageService.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل الخدمة بنجاح' });
-        this.serviceForm.reset();
-        this.medicalServiceSchedules.clear();
-        this.medicalServiceSchedules.push(this.createSchedule());
+        console.log("Sent Data:", payload);
+        console.log("Response:", data);
+  
+        setTimeout(() => {
+          const modalElement = document.getElementById('editServiceModal');
+          if (modalElement) {
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            modalInstance?.hide();
+          }
+          this.resetFormOnClose();
+        }, 1000);
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل الخدمة' });
       },
     });
+  }
+  
+  resetFormOnClose() {
+    this.serviceForm.reset();
+    this.weekDays.clear();
+    this.weekDays.push(this.createSchedule());
   }
 }

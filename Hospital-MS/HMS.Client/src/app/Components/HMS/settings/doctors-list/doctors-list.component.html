@@ -45,25 +45,26 @@
                         <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
                             <thead>
                                 <tr>
+                                    <th>الرقم</th>
                                     <th>الإسم</th>
                                     <th>التخصص</th>
                                     <th>رقم الهاتف</th>
                                     <th>الحالة</th>
-                                    <th>الرقم</th>
-                                    <th>التكلفة</th>
+                                    <!-- <th>التكلفة</th> -->
                                     <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <ng-container>
                                     <tr *ngFor="let doctor of doctors" (click)="openDoctorModal(doctor.id)" style="cursor: pointer">
+                                        <td>{{ doctor.id }}</td>
                                         <td>
                                             <div class="d-flex align-items-center gap-2 justify-content-start">
                                                 <div class="avatar-circle">{{ doctor?.fullName?.charAt(0) }}</div>
                                                 <span class="fw-bold">{{ doctor.fullName }}</span>
                                             </div>
                                         </td>
-                                        <td>{{ getGeneralServiceName(doctor?.medicalServices) }}</td>
+                                        <td>{{ doctor?.department }}</td>
                                         <td>{{ doctor.phone }}</td>
                                         <td [ngClass]="{
                                 'text-success': doctor.status === 'متاح',
@@ -71,8 +72,7 @@
                               }">
                                             {{ doctor.status }}
                                         </td>
-                                        <td>{{ doctor.id }}</td>
-                                        <td>{{ doctor.price ?? '---' }}</td>
+                                        <!-- <td>{{ doctor.price ?? '---' }}</td> -->
                                         <td>
                                             <button class="btn btn-outline-warning" (click)="goToEditDoctor(doctor.id,$event)">
                             <i class="fa-light fa-pen-to-square"></i>
@@ -106,7 +106,7 @@
                 <h5 class="modal-title" id="doctorDetailsLabel">تفاصيل الطبيب</h5>
             </div>
 
-            <div class="modal-body p-4">
+            <div class="modal-body p-4" #printSection>
                 <h4>👤 البيانات الشخصية</h4>
                 <div class="row mb-3">
                     <div class="col-lg-4">
@@ -122,7 +122,7 @@
                         <strong class="strong">الحالة الاجتماعية:</strong> <span class="span"> {{ selectedDoctor?.maritalStatus || '---' }}</span>
                     </div>
                     <div class="col-lg-4">
-                        <strong class="strong">تاريخ الميلاد:</strong> <span class="span"> {{ selectedDoctor?.dateOfBirth || '---' }}</span>
+                        <strong class="strong">تاريخ الميلاد:</strong> <span class="span"> {{ selectedDoctor?.dateOfBirth | date:'dd-MM-yyyy' }}</span>
                     </div>
                     <div class="col-lg-4">
                         <strong class="strong">الدرجة العلمية:</strong> <span class="span"> {{ selectedDoctor?.degree || '---' }}</span>
@@ -135,10 +135,11 @@
                 <div class="row mb-3">
                     <div class="col-lg-4">
                         <strong class="strong">التخصص الطبي:</strong>
-                        <span class="span"> {{ selectedDoctor?.doctorMedicalServices ? getGeneralServiceName(selectedDoctor?.doctorMedicalServices) : '---' }}</span>
+                        <!-- <span class="span"> {{ selectedDoctor?.doctorMedicalServices ? getGeneralServiceName(selectedDoctor?.doctorMedicalServices) : '---' }}</span> -->
+                         <span class="span"> {{ selectedDoctor?.department || '---' }}</span>
                     </div>
                     <div class="col-lg-4">
-                        <strong class="strong">تاريخ التعيين:</strong> <span class="span">  {{ selectedDoctor?.startDate || '---' }}</span>
+                        <strong class="strong">تاريخ التعيين:</strong> <span class="span">  {{ selectedDoctor?.startDate | date:'dd-MM-yyyy' }}</span>
                     </div>
                     <div class="col-lg-4">
                         <strong class="strong">الحالة:</strong> <span class="span">  {{ selectedDoctor?.status || '---' }}</span>
@@ -171,7 +172,7 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>اليوم</th>
+                                    <th>اليوم</th>  
                                     <th>وقت البدء</th>
                                     <th>وقت الانتهاء</th>
                                 </tr>
@@ -179,8 +180,8 @@
                             <tbody>
                                 <tr *ngFor="let schedule of selectedDoctor?.doctorSchedules">
                                     <td>{{ schedule.weekDay || '---' }}</td>
-                                    <td>{{ schedule.startTime || '---' }}</td>
-                                    <td>{{ schedule.endTime || '---' }}</td>
+                                    <td>{{ schedule.startTime  }}</td>
+                                    <td>{{ schedule.endTime  }}</td>
                                 </tr>
                                 <tr *ngIf="!selectedDoctor?.doctorSchedules?.length">
                                     <td colspan="3" class="text-center">لا توجد مواعيد عمل</td>
@@ -197,17 +198,17 @@
             </div>
 
             <div class="modal-footer row">
-                <div class="col-3 m-0">
+                <!-- <div class="col-3 m-0">
                     <button class="btn col-12 btn-outline-warning" (click)="editDoctor(selectedDoctor.id)">تعديل البيانات</button>
-                </div>
-                <div class="col-3 m-0">
+                </div> -->
+                <!-- <div class="col-3 m-0">
                     <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
-                </div>
-                <div class="col-3 m-0">
+                </div> -->
+                <div class="col-6 m-0">
                     <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
                 </div>
-                <div class="col-3 m-0">
-                    <button class="btn col-12 btn-outline-primary" (click)="susbendDoctor()">تعليق مؤقت</button>
+                <div class="col-6 m-0">
+                    <button class="btn col-12 btn-outline-warning" (click)="susbendDoctor()">تعليق مؤقت</button>
                 </div>
             </div>
         </div>

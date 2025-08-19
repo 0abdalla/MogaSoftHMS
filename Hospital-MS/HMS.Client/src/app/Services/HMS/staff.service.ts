@@ -107,6 +107,9 @@ export class StaffService {
   updateJobType(id: number, jobType: any) {
     return this.http.put<any>(`${this.baseUrl}JobTypes/${id}`, jobType);
   }
+  deleteJobType(id: number) {
+    return this.http.delete<any>(`${this.baseUrl}JobTypes/${id}`);
+  }
   // 
   getJobTitles(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
@@ -125,6 +128,9 @@ export class StaffService {
   updateJobTitle(id: number, jobTitle: any) {
     return this.http.put<any>(`${this.baseUrl}JobTitles/${id}`, jobTitle);
   }
+  deleteJobTitle(id: number) {
+    return this.http.delete<any>(`${this.baseUrl}JobTitles/${id}`);
+  }
   // 
   getJobLevels(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
     let params = new HttpParams()
@@ -142,6 +148,9 @@ export class StaffService {
   }
   updateJobLevel(id: number, jobLevel: any) {
     return this.http.put<any>(`${this.baseUrl}JobLevels/${id}`, jobLevel);
+  }
+  deleteJobLevel(id: number) {
+    return this.http.delete<any>(`${this.baseUrl}JobLevels/${id}`);
   }
   // 
   getJobDepartment(searchText: string = '', currentPage: number = 1, pageSize: number = 10, filterList: any[] = []) {
@@ -162,6 +171,9 @@ export class StaffService {
   }
   updateJobDeprtment(id: number, jobDepartment: any) {
     return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}`, jobDepartment)
+  }
+  deleteJobDepartment(id: number) {
+    return this.http.delete<any>(`${this.baseUrl}JobDepartment/${id}`)
   }
 
   // ================================= Penalty ==========================================

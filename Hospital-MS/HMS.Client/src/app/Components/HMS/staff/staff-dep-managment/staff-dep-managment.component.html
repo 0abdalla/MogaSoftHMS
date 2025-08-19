@@ -47,8 +47,11 @@
                         </td>
                         <td class="text-secondary" [ngClass]="dep.status ==='نشط' ? 'text-success' : 'text-danger'">{{ dep.status }}</td>
                         <td>
-                            <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editdepModal" (click)="opendepDetails(dep.id)">
-                              <i class="fa-solid fa-pen"></i>
+                            <button type="button" class="btn btn-primary mx-2" (click)="editDep(dep.id)">
+                                <i class="fa fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger mx-2" (click)="deleteDep(dep.id)">
+                                <i class="fa fa-trash"></i>
                             </button>
                         </td>
                     </tr>
@@ -74,23 +77,36 @@
 </main>
 
 
-<div class="modal fade" id="adddepModal" tabindex="-1" aria-labelledby="adddepModalLabel" aria-hidden="true">
+<div class="modal fade" id="adddepModal" tabindex="-1" aria-labelledby="adddepModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="adddepModalLabel">إضافة قسم</h5>
+                <h5 class="modal-title" id="adddepModalLabel">{{isEditMode ? 'تعديل القسم' : 'إضافة قسم'}}</h5>
             </div>
             <div class="modal-body">
                 <form [formGroup]="jobDepsForm" (ngSubmit)="addDep()">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 mb-2">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم القسم</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="أدخل إسم القسم">
                                 <div *ngIf="jobDepsForm.get('name')?.invalid && jobDepsForm.get('name')?.touched" class="text-danger">
                                     <ng-container *ngIf="jobDepsForm.get('name')?.errors?.['required']">إسم القسم مطلوب</ng-container>
                                     <ng-container *ngIf="jobDepsForm.get('name')?.errors?.['minlength']">إسم القسم يجب أن يكون أكثر من 3 حروف</ng-container>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 mb-2" *ngIf="isEditMode">
+                            <div class="form-group">
+                                <label class="form-label" for="status">الحالة</label>
+                                <select class="form-select shadow-none" formControlName="status" id="status">
+                                    <option value="" disabled>اختر الحالة</option>
+                                    <option [ngValue]="'Active'">نشط</option>
+                                    <option [ngValue]="'Inactive'">غير نشط</option>
+                                </select>                                  
+                                <div *ngIf="jobDepsForm.get('status')?.invalid && jobDepsForm.get('status')?.touched" class="text-danger">
+                                    <ng-container *ngIf="jobDepsForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                                 </div>
                             </div>
                         </div>
@@ -106,15 +122,16 @@
                     </div>
 
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="jobDepsForm.invalid">إضافة الخدمة</button>
+                        <button type="submit" class="btn-blue" [disabled]="jobDepsForm.invalid">{{isEditMode ? 'تعديل القسم' : 'إضافة القسم'}}</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="editdepModal" tabindex="-1" aria-labelledby="editdepModalLabel" aria-hidden="true">
+<!-- 
+<div class="modal fade" id="editdepModal" tabindex="-1" aria-labelledby="editdepModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
@@ -138,10 +155,10 @@
                             <div class="form-group">
                                 <label class="form-label" for="status">الحالة</label>
                                 <select class="form-select shadow-none" formControlName="status" id="status">
-                    <option selected disabled value="">اختر الحالة</option>
-                    <option value="Active">نشط</option>
-                    <option value="Inactive">غير نشط</option>
-                  </select>
+                                    <option selected disabled value="">اختر الحالة</option>
+                                    <option value="Active">نشط</option>
+                                    <option value="Inactive">غير نشط</option>
+                                </select>
                                 <div *ngIf="jobDepsForm.get('status')?.invalid && jobDepsForm.get('status')?.touched" class="text-danger">
                                     <ng-container *ngIf="jobDepsForm.get('status')?.errors?.['required']">الحالة مطلوبة</ng-container>
                                 </div>
@@ -159,10 +176,11 @@
 
                     </div>
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="jobDepsForm.invalid">تعديل الخدمة</button>
+                        <button type="submit" class="btn-blue" [disabled]="jobDepsForm.invalid">تعديل القسم</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</div> -->

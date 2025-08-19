@@ -78,6 +78,14 @@ export class HeaderComponent {
         return 'إدارة الموظفين';
       case '/hms/staff/add':
         return 'إضافة موظف';
+      case 'hms/staff/department-admin':
+        return 'إدارة الأقسام';
+      case '/hms/staff/job-levels':
+        return 'إدارة المستويات الوظيفية';
+      case '/hms/staff/job-classification':
+        return 'إدارة التصنيف الوظيفي';
+      case '/hms/staff/job-management':
+        return 'إدارة الوظائف';
       case '/hms/reports':
         return 'التقارير';
       case '/hms/settings/doctors':
@@ -152,6 +160,7 @@ export class HeaderComponent {
         return 'المخازن';
       case '/hms/fin-tree/stores-types':
         return 'أنواع المخازن';
+      
       default:
         console.warn('No matching route found for:', path);
         return 'Infinity Clinic';

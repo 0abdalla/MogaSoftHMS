@@ -4,6 +4,8 @@ import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/Pagi
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import Swal from 'sweetalert2';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-staff-levels',
@@ -80,28 +82,161 @@ export class StaffLevelsComponent implements OnInit {
     this.getJobLevels();
   }
   // 
-  addjobLevel() {
-    this.staffService.addJobLevel(this.jobLevelForm.value).subscribe({
-      next: (res) => {
-        this.jobLevelForm.reset();
-        this.getJobLevels();
-        this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة المستوى بنجاح' });
-      },
-      error: (err) => {
-        this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة المستوى' });
-      }
-    })
-  }
-  editjobLevel() {
-    this.staffService.updateJobLevel(this.selectedJobLevel.id, this.jobLevelForm.value).subscribe({
-      next: (res) => {
-        this.jobLevelForm.reset();
-        this.getJobLevels();
-        this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل المستوى بنجاح' });
-      },
-      error: (err) => {
-        this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل المستوى' });
-      }
-    })
-  }
+  // addjobLevel() {
+  //   this.staffService.addJobLevel(this.jobLevelForm.value).subscribe({
+  //     next: (res) => {
+  //       this.jobLevelForm.reset();
+  //       this.getJobLevels();
+  //       this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم إضافة المستوى بنجاح' });
+  //     },
+  //     error: (err) => {
+  //       this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء إضافة المستوى' });
+  //     }
+  //   })
+  // }
+  // editjobLevel() {
+  //   this.staffService.updateJobLevel(this.selectedJobLevel.id, this.jobLevelForm.value).subscribe({
+  //     next: (res) => {
+  //       this.jobLevelForm.reset();
+  //       this.getJobLevels();
+  //       this.messageservice.add({ severity: 'success', summary: 'عملية ناجحة', detail: 'تم تعديل المستوى بنجاح' });
+  //     },
+  //     error: (err) => {
+  //       this.messageservice.add({ severity: 'error', summary: 'حدث خطأ', detail: 'حدث خطأ أثناء تعديل المستوى' });
+  //     }
+  //   })
+  // }
+  isEditMode: boolean = false;
+  currentJobLevelId: number | null = null;
+    addJobLevel() {
+          if (this.jobLevelForm.invalid) {
+            this.jobLevelForm.markAllAsTouched();
+            return;
+          }
+        
+          const formData = this.jobLevelForm.value;
+        
+          if (this.isEditMode && this.currentJobLevelId !== null) {
+            this.staffService.updateJobLevel(this.currentJobLevelId, formData).subscribe({
+              next: (data:any) => {
+                console.log(data);
+                this.getJobLevels();
+                this.jobLevelForm.reset();
+                this.isEditMode = false;
+                this.currentJobLevelId = null;
+                this.messageservice.add({
+                  severity: 'success',
+                  summary: 'تم التعديل بنجاح',
+                  detail: 'تم تعديل المستوى الوظيفي بنجاح',
+                });
+                setTimeout(() => {
+                  const modalElement = document.getElementById('addjobLevelModal');
+                  if (modalElement) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    modalInstance?.hide();
+                  }
+                  this.resetFormOnClose();
+                }, 1000);
+              },
+              error: (err) => {
+                console.error('فشل التعديل:', err);
+              }
+            });
+          } else {
+            this.staffService.addJobLevel(formData).subscribe({
+              next: (res:any) => {
+                console.log(res);
+                this.getJobLevels();
+                this.jobLevelForm.reset();
+                if(res.isSuccess==true){
+                  this.messageservice.add({
+                    severity: 'success',
+                    summary: 'تم الإضافة بنجاح',
+                    detail: 'تم إضافة المستوى الوظيفي بنجاح',
+                  });
+                }else{
+                  this.messageservice.add({
+                    severity: 'error',
+                    summary: 'فشل الإضافة',
+                    detail: 'فشل إضافة المستوى الوظيفي',
+                  });
+                }
+              },
+              error: (err) => {
+                console.error('فشل الإضافة:', err);
+              }
+            });
+          }
+        }
+        jobLevel!:any;
+        editJobLevel(id: number) {
+          this.isEditMode = true;
+          this.currentJobLevelId = id;
+        
+          this.staffService.getJobLevelById(id).subscribe({
+            next: (data) => {
+              // this.jobLevelForm.reset();
+              this.jobLevelForm.get('name')?.setValue('');
+              this.jobLevelForm.get('description')?.setValue('');
+              this.jobLevel=data.results;
+              let statusValue = this.jobLevel.status === 'نشط' ? 'Active' : 'Inactive';
+              this.jobLevelForm.patchValue({
+                name: this.jobLevel.name,
+                status: statusValue,
+                description: this.jobLevel.description,
+              });
+              console.log('Form value after patch:', this.jobLevelForm.value);
+              console.log('typeof statusValue:', typeof statusValue);
+              console.log('statusValue set to:', statusValue);
+              const modal = new bootstrap.Modal(document.getElementById('addjobLevelModal')!);
+              modal.show();
+            },
+            error: (err) => {
+              console.error('فشل تحميل بيانات المستوى الوظيفي:', err);
+            }
+          });
+        }
+    deleteJobLevel(id: number) {
+      Swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: 'هل تريد حذف هذا المستوى الوظيفي؟',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'نعم، حذف',
+        cancelButtonText: 'إلغاء'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.staffService.deleteJobLevel(id).subscribe({
+            next: (res:any) => {
+              this.getJobLevels();
+              if(res.isSuccess==true){
+                this.messageservice.add({
+                  severity: 'success',
+                  summary: 'تم الحذف بنجاح',
+                  detail: 'تم حذف المستوى الوظيفي بنجاح',
+                });
+              }else{
+                this.messageservice.add({
+                  severity: 'error',
+                  summary: 'فشل الحذف',
+                  detail: 'فشل حذف المستوى الوظيفي',
+                });
+              }
+            },
+            error: (err) => {
+              console.error('فشل الحذف:', err);
+            }
+          });
+        }
+      });
+    }
+    resetFormOnClose() {
+      // this.jobLevelForm.reset();
+      this.jobLevelForm.get('name').setValue('');
+      this.jobLevelForm.get('description').setValue('');
+      this.isEditMode = false;
+      this.currentJobLevelId = null;
+    }
 }

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StaffService } from '../../../../Services/HMS/staff.service';
@@ -34,26 +34,30 @@ export class DoctorsSettingsEditComponent implements OnInit {
     private admissionService: AdmissionService,
     private router: Router
   ) {
+    const minBirthDate = new Date(1920, 0, 1);
+    const maxBirthDate = new Date(2025 , 0 , 1);
+
     this.doctorId = this.activ.snapshot.queryParamMap.get('id');
 
     this.doctorForm = this.fb.group({
-      FullName: ['', Validators.required],
-      NationalId: ['', Validators.required],
-      Gender: ['', Validators.required],
-      DateOfBirth: ['', Validators.required],
-      MaritalStatus: ['', Validators.required],
-      Phone: ['', Validators.required],
+      FullName: ['', [Validators.required]],
+      NationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
+      Gender: ['', [Validators.required]],
+      DateOfBirth: ['', [Validators.required, this.minDateValidator(minBirthDate), this.maxDateValidator(maxBirthDate)]],
+      MaritalStatus: ['', [Validators.required]],
+      Phone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       Email: ['', [Validators.required, Validators.email]],
-      Address: ['', Validators.required],
-      DepartmentId: ['', Validators.required],
+      Address: ['', [Validators.required]],
+      DepartmentId: ['', [Validators.required]],
       SpecialtyId: ['1'],
-      Degree: ['', Validators.required],
-      Status: ['', Validators.required],
-      StartDate: ['', Validators.required],
+      Degree: ['', [Validators.required]],
+      Status: ['', [Validators.required]],
+      StartDate: ['', [Validators.required]],
       Notes: [''],
-      Price:['', Validators.required],
+      Price: ['', [Validators.required]],
       DoctorSchedules: this.fb.array([]),
     });
+
   }
 
   ngOnInit(): void {
@@ -62,7 +66,31 @@ export class DoctorsSettingsEditComponent implements OnInit {
     if (this.doctorId)
       this.getDoctorById(this.doctorId);
   }
-
+  
+    minDateValidator(minDate: Date): ValidatorFn {
+      return (control: AbstractControl): { [key: string]: any } | null => {
+        if (!control.value) {
+          return null;
+        }
+        const inputDate = new Date(control.value);
+        if (inputDate < minDate) {
+          return { minDate: { value: control.value } };
+        }
+        return null;
+      };
+    }
+    maxDateValidator(maxDate: Date): ValidatorFn {
+      return (control: AbstractControl): { [key: string]: any } | null => {
+        if (!control.value) {
+          return null;
+        }
+        const inputDate = new Date(control.value);
+        if (inputDate > maxDate) {
+          return { maxDate: { value: control.value } };
+        }
+        return null;
+      };
+    }
   get schedules(): FormArray {
     return this.doctorForm.get('DoctorSchedules') as FormArray;
   }
@@ -99,6 +127,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
   getDoctorById(id: number) {
     this.staffService.getDoctorById(id).subscribe((data) => {
       let doctor = data.results;
+      console.log(doctor);
       this.doctorForm.patchValue({
         FullName: doctor.fullName,
         NationalId: doctor.nationalId,
@@ -181,6 +210,8 @@ export class DoctorsSettingsEditComponent implements OnInit {
     } else {
       this.staffService.putDoctor(formData, this.doctorId).subscribe({
         next: (res: any) => {
+          console.log(res);
+          console.log('Sent Data:' , formData);
           this.messageService.add({
             severity: 'success',
             summary: 'عملية ناجحة',

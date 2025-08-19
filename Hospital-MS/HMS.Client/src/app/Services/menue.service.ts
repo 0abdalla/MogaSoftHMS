@@ -224,10 +224,31 @@ export class MenueService {
           pageName: 'PatientsListSettings'
         },
         {
-          displayName: ' المواعيد والحجز',
+          displayName: ' المواعيد',
           icon: 'fa-solid fa-circle',
           route: '/hms/settings/medical-services-list',
-          pageName: 'MedicalServicesList'
+          pageName: 'MedicalServicesList',
+          isGroup: true,
+          subMenus:[
+            {
+              displayName: 'الطوابق',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/settings/floors',
+              pageName: 'Floors'
+            },
+            {
+              displayName: 'الغرف',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/settings/rooms',
+              pageName: 'Rooms'
+            },
+            {
+              displayName: 'الأسرّة',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/settings/beds',
+              pageName: 'Beds'
+            }
+          ]
         },
         {
           displayName: 'الأطباء',
