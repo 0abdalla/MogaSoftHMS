@@ -59,4 +59,11 @@ public class StoresController(IStoreService storeService) : ApiBaseController
         var result = await _storeService.GetItemsOrderLimitAsync(storeId, cancellationToken);
         return Ok(result);
     }
+
+    [HttpGet("store-rate/{storeId}")]
+    public async Task<IActionResult> GetStoreRate(int storeId, [FromQuery] DateOnly fromDate, [FromQuery] DateOnly toDate, CancellationToken cancellationToken)
+    {
+        var result = await _storeService.GetStoreRateAsync(storeId, fromDate, toDate, cancellationToken);
+        return Ok(result);
+    }
 }

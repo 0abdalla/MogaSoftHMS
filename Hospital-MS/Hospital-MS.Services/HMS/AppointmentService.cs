@@ -843,5 +843,38 @@ namespace Hospital_MS.Services.HMS
                    => AppointmentType.Radiology,
                _ => type
            };
+
+        public async Task<ErrorResponseModel<AppointmentTypeCountsResponse>> GetCountsAsyncV2(CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var appointments = _unitOfWork.Repository<Appointment>().GetAll();
+
+                var response = new AppointmentTypeCountsResponse
+                {
+                    EmergencyAppointments = await appointments.CountAsync(a => a.Type == AppointmentType.Emergency, cancellationToken),
+                    GeneralAppointments = await appointments.CountAsync(a => a.Type == AppointmentType.General, cancellationToken),
+                    ConsultationAppointments = await appointments.CountAsync(a => a.Type == AppointmentType.Consultation, cancellationToken),
+                    SurgeryAppointments = await appointments.CountAsync(a => a.Type == AppointmentType.Surgery, cancellationToken),
+                    ScreeningAppointments = await appointments.CountAsync(a => a.Type == AppointmentType.Screening, cancellationToken),
+                    RadiologyAppointments = await appointments.CountAsync(a =>
+                        a.Type == AppointmentType.Radiology ||
+                        a.Type == AppointmentType.Panorama ||
+                        a.Type == AppointmentType.MRI ||
+                        a.Type == AppointmentType.CTScan ||
+                        a.Type == AppointmentType.Ultrasound ||
+                        a.Type == AppointmentType.XRay ||
+                        a.Type == AppointmentType.Echo ||
+                        a.Type == AppointmentType.Mammogram, cancellationToken),
+                    TotalAppointments = await appointments.CountAsync(cancellationToken)
+                };
+
+                return ErrorResponseModel<AppointmentTypeCountsResponse>.Success(GenericErrors.GetSuccess, response);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<AppointmentTypeCountsResponse>.Failure(GenericErrors.TransFailed);
+            }
+        }
     }
 }

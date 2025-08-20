@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Text;
 
@@ -25,7 +26,7 @@ namespace Hospital_MS.Services.Auth
         IUnitOfWork _unitOfWork,
         RoleManager<IdentityRole> _roleManager,
         IHttpContextAccessor httpContextAccessor,
-        IEmailSender emailService) : IAuthService
+        IEmailSender emailService, IConfiguration configuration) : IAuthService
     {
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
@@ -35,6 +36,7 @@ namespace Hospital_MS.Services.Auth
         private readonly RoleManager<IdentityRole> roleManager = _roleManager;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IEmailSender _emailService = emailService;
+        private readonly IConfiguration _configuration = configuration;
 
         public async Task<ErrorResponseModel<AuthResponse>> LoginAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
@@ -202,7 +204,7 @@ namespace Hospital_MS.Services.Auth
 
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-                await SendResetPasswordEmailAsync(user, code);
+                await SendResetPasswordEmailAsyncV2(user, code);
 
                 return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
             }
@@ -256,6 +258,27 @@ namespace Hospital_MS.Services.Auth
             );
 
             BackgroundJob.Enqueue(() => _emailService.SendEmailAsync(user.Email!, "✅ HMS: Change Password", emailBody));
+
+            await Task.CompletedTask;
+        }
+
+        private async Task SendResetPasswordEmailAsyncV2(ApplicationUser user, string code)
+        {
+            var frontendUrl = _configuration["Frontend:BaseUrl"]
+                              ?? throw new InvalidOperationException("Frontend:BaseUrl is not configured.");
+
+            var resetUrl = $"{frontendUrl}/reset-password?user-name={Uri.EscapeDataString(user.UserName!)}&code={Uri.EscapeDataString(code)}";
+
+            var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
+                new Dictionary<string, string>
+                {
+                { "{{name}}", user.FirstName ?? user.UserName ?? "User" },
+                { "{{action_url}}", resetUrl }
+                }
+            );
+
+            //BackgroundJob.Enqueue(() => _emailService.SendEmailAsync(user.Email!, "✅ HMS: Change Password", emailBody));
+            await _emailService.SendEmailAsync(user.Email!, "✅ HMS: Change Password", emailBody);
 
             await Task.CompletedTask;
         }

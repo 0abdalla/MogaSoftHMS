@@ -317,5 +317,70 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
 
         return ErrorResponseModel<List<ItemsOrderLimitResponse>>.Success(GenericErrors.GetSuccess, result);
     }
+
+    public async Task<ErrorResponseModel<List<StoreRateResponse>>> GetStoreRateAsync(int storeId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
+    {
+        var items = await _unitOfWork.Repository<Item>()
+            .GetAll(x => x.IsActive && x.GroupId != null)
+            .Include(x => x.Group)
+            .Where(x => x.Group != null)
+            .ToListAsync(cancellationToken);
+
+        var itemIds = items.Select(x => x.Id).ToList();
+
+        var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
+            .GetAll(x =>
+                x.ReceiptPermission.StoreId == storeId &&
+                x.IsActive &&
+                itemIds.Contains(x.ItemId) &&
+                x.ReceiptPermission.PermissionDate >= fromDate &&
+                x.ReceiptPermission.PermissionDate <= toDate)
+            .Include(x => x.ReceiptPermission)
+            .ToListAsync(cancellationToken);
+
+        var issues = await _unitOfWork.Repository<MaterialIssueItem>()
+            .GetAll(x =>
+                x.MaterialIssuePermission.StoreId == storeId &&
+                x.IsActive &&
+                itemIds.Contains(x.ItemId) &&
+                x.MaterialIssuePermission.PermissionDate >= fromDate &&
+                x.MaterialIssuePermission.PermissionDate <= toDate)
+            .Include(x => x.MaterialIssuePermission)
+            .ToListAsync(cancellationToken);
+
+        // Group by ItemGroup
+        var result = items
+            .GroupBy(x => x.Group)
+            .Select(g =>
+            {
+                var groupItems = g.ToList();
+
+                var rateItems = groupItems.Select(item =>
+                {
+                    var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
+                    var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
+                    var balance = item.OpeningBalance + received - issued;
+                    var totalAmount = balance * item.Cost;
+
+                    return new StoreRateItemsResponse
+                    {
+                        ItemId = item.Id,
+                        ItemName = item.NameAr,
+                        Balance = balance,
+                        TotalAmount = totalAmount
+                    };
+                }).ToList();
+
+                return new StoreRateResponse
+                {
+                    ItemGroupId = g.Key.Id,
+                    ItemGroupName = g.Key.Name,
+                    Items = rateItems
+                };
+            })
+            .ToList();
+
+        return ErrorResponseModel<List<StoreRateResponse>>.Success(GenericErrors.GetSuccess, result);
+    }
 }
 

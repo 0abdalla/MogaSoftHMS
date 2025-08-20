@@ -23,5 +23,7 @@ namespace Hospital_MS.Interfaces.HMS
         Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsyncV2(CreateAppointmentRequest request, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<List<ShiftResponse>>> GetAllShiftsAsync(CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<ShiftResponse>> GetShiftByIdAsync(int id, CancellationToken cancellationToken = default);
+
+        Task<ErrorResponseModel<AppointmentTypeCountsResponse>> GetCountsAsyncV2(CancellationToken cancellationToken = default);
     }
 }

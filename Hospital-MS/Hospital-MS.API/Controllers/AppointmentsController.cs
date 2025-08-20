@@ -87,5 +87,12 @@ namespace Hospital_MS.API.Controllers
             var result = await _appointmentService.GetShiftByIdAsync(id, cancellationToken);
             return Ok(result);
         }
+
+        [HttpGet("v2/appointments-counts")]
+        public async Task<IActionResult> GetAppointmentsCountsV2(CancellationToken cancellationToken)
+        {
+            var result = await _appointmentService.GetCountsAsyncV2(cancellationToken);
+            return Ok(result);
+        }
     }
 }
