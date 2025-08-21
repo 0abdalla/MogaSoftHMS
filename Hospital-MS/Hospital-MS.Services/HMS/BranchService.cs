@@ -120,6 +120,7 @@ public class BranchService : IBranchService
         {
             var query = _unitOfWork.Repository<Branch>()
                 .GetAll()
+                .OrderByDescending(x => x.Id)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))

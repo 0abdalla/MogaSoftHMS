@@ -39,6 +39,7 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
         {
             var query = _unitOfWork.Repository<StoreType>()
                 .GetAll()
+                .OrderByDescending(x => x.Id)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))

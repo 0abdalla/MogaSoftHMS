@@ -196,6 +196,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                     .ThenInclude(x => x.Account)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
+                .OrderByDescending(x => x.Id)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))

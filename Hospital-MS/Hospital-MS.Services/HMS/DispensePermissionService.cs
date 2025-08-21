@@ -176,6 +176,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 .Include(x => x.Account)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
+                .OrderByDescending(x => x.Id)
                 .Where(x => x.IsActive);
 
 

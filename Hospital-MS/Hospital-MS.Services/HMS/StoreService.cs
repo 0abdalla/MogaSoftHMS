@@ -65,6 +65,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var query = _unitOfWork.Repository<Store>()
             .GetAll()
             .Include(x => x.Type)
+            .OrderByDescending(x => x.Id)
             .Where(x => x.IsActive);
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))

@@ -171,6 +171,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
                 .ThenInclude(x => x.Unit)
+            .OrderByDescending(x => x.Id)
             .Where(x => x.IsActive);
 
         if (!string.IsNullOrEmpty(filter.SearchText))

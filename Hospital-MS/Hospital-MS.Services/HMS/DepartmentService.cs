@@ -59,6 +59,7 @@ namespace Hospital_MS.Services.HMS
         {
             var departments = await _unitOfWork.Repository<Department>()
                 .GetAll()
+                .OrderByDescending(i => i.Id)
                 .ToListAsync(cancellationToken: cancellationToken);
 
             var response = departments.Select(d => new DepartmentResponse

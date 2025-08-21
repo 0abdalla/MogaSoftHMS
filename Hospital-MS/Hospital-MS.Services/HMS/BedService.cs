@@ -6,11 +6,6 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -47,7 +42,11 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<List<BedResponse>>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var beds = await _unitOfWork.Repository<Bed>().GetAll().Include(i => i.Room).ToListAsync();
+            var beds = await _unitOfWork.Repository<Bed>()
+                .GetAll()
+                .Include(i => i.Room)
+                .OrderByDescending(i => i.Id)
+                .ToListAsync(cancellationToken: cancellationToken);
 
             var result = beds.Select(x => new BedResponse
             {

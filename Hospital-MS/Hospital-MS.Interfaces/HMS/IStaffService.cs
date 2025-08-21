@@ -1,11 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Staff;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Interfaces.HMS
 {
@@ -20,5 +15,7 @@ namespace Hospital_MS.Interfaces.HMS
 
         Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
         Task<PagedResponseModel<DataTable>> GetCountsAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> UpdateAsync(int id, CreateStaffRequest request, CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> InActiveStaffAsync(int id, CancellationToken cancellationToken = default);
     }
 }

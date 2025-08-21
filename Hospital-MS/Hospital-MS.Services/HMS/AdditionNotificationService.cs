@@ -141,6 +141,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 .GetAll(x => x.IsActive)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
+                .OrderByDescending(x => x.Id)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))
