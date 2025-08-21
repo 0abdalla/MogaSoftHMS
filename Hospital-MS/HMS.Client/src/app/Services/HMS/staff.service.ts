@@ -67,9 +67,9 @@ export class StaffService {
   addStaff(staff: any) {
     return this.http.post<any>(`${this.baseUrl}Staff`, staff);
   }
-  updateStaff(staff: any) {
-    return this.http.put<any>(`${this.baseUrl}Staff`, staff);
-  }
+  updateStaff(id: number, staff: any) {
+    return this.http.put<any>(`${this.baseUrl}Staff/${id}`, staff);
+  }  
   deleteStaff(id: number) {
     return this.http.delete<any>(`${this.baseUrl}Staff/${id}`);
   }

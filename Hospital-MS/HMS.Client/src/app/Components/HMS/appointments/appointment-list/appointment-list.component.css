@@ -126,7 +126,7 @@ td {
 }
 
 .col-2 {
-    width: calc(95.7% / 6) !important;
+    width: calc(100% / 5) !important;
 }
 
 .percentage {

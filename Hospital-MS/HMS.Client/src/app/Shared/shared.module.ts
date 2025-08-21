@@ -22,6 +22,7 @@ import { TagComponent } from './tag/tag.component';
 import { DayToArabicPipe } from '../Pipes/day-to-arabic.pipe';
 import { MedicalTypeToArabicPipe } from '../Pipes/medical-type-to-arabic.pipe';
 import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
+import { Time12Pipe } from '../Pipes/time12.pipe';
 
 
 @NgModule({
@@ -44,6 +45,7 @@ import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
     WorkflowStatusDirective,
     TagComponent,
     DayToArabicPipe,
+    Time12Pipe,
     MedicalTypeToArabicPipe
   ],
   imports: [
@@ -71,6 +73,7 @@ import { NgxDaterangepickerMd } from 'ngx-daterangepicker-material';
     WorkflowStatusDirective,
     TagComponent,
     DayToArabicPipe,
+    Time12Pipe,
     MedicalTypeToArabicPipe
   ],
   providers: [DatePipe]

@@ -12,8 +12,8 @@ import { LoginComponent } from './Auth/login/login.component';
 import { SharedModule } from './Shared/shared.module';
 import { NotAuthorizedComponent } from './Auth/not-authorized/not-authorized.component';
 import { IsTodayPipe } from './Pipes/is-today.pipe';
-import { Time12PipePipe } from './Pipes/time12-pipe.pipe';
 import { ResetPasswordComponent } from './Auth/reset-password/reset-password.component';
+import { Time12Pipe } from './Pipes/time12.pipe';
 
 @NgModule({
   declarations: [

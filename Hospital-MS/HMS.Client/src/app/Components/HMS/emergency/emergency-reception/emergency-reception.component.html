@@ -5,7 +5,7 @@
             <p-toast position="top-left"></p-toast>
             <h4>🏥بيانات الاستقبال</h4>
             <div class="row">
-                <div class="col-lg-4 mb-3">
+                <div class="col-lg-3 mb-3">
                     <div class="mt-3">
                         <label for="name" class="form-label">إسم المريض</label>
                         <input id="name" formControlName="patientName" placeholder="أدخل إسم المريض" class="form-control shadow-none" />
@@ -14,7 +14,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 mb-3">
+                <div class="col-lg-3 mb-3">
                     <div class="mt-3">
                         <label for="name" class="form-label">النوع</label>
                         <!-- <input id="name" formControlName="gender" placeholder="أدخل إسم المريض" class="form-control shadow-none" /> -->
@@ -28,7 +28,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 mb-3">
+                <div class="col-lg-3 mb-3">
                     <div class="mt-3">
                         <label for="patientPhone" class="form-label">رقم هاتف المريض</label>
                         <input id="patientPhone" formControlName="patientPhone" placeholder="أدخل رقم هاتف المريض" class="form-control shadow-none" />
@@ -38,15 +38,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 mb-3">
+                <div class="col-lg-3 mb-3">
                     <div class="mt-3">
                         <label for="triageLevel" class="form-label">درجة الخطورة</label>
                         <select id="triageLevel" formControlName="emergencyLevel" class="form-select shadow-none triage-select">
-                <option value="" disabled selected>اختر درجة الخطورة</option>
-                <option value="حرجة">حرجة</option>
-                <option value="متوسطة">متوسطة</option>
-                <option value="خفيفة">خفيفة</option>
-              </select>
+                            <option value="" disabled selected>اختر درجة الخطورة</option>
+                            <option value="حرجة">حرجة</option>
+                            <option value="متوسطة">متوسطة</option>
+                            <option value="خفيفة">خفيفة</option>
+                        </select>
                         <div *ngIf="emergencyForm.get('emergencyLevel')?.invalid && emergencyForm.get('emergencyLevel')?.touched" class="text-danger">
                             درجة الخطورة مطلوبة
                         </div>
@@ -95,9 +95,9 @@
                 <div class="col-lg-4">
                     <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
                     <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
-            <option selected disabled value="">اختر شركة التأمين</option>
-            <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{ insuranceCompany.name }}</option>
-          </select>
+                        <option selected disabled value="">اختر شركة التأمين</option>
+                        <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{ insuranceCompany.name }}</option>
+                    </select>
                 </div>
                 <div class="col-lg-4">
                   <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>

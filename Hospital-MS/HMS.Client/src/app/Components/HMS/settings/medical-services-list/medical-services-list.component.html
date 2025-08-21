@@ -33,6 +33,7 @@
                         <th>رقم الخدمة</th>
                         <th>إسم الخدمة</th>
                         <th>النوع</th>
+                        <th>الأيام</th>
                         <th>السعر</th>
                         <th>الإجراءات</th>
                     </tr>
@@ -49,6 +50,9 @@
                             </div>
                         </td>
                         <td class="text-secondary">{{ service.serviceType }}</td>
+                        <td>
+                            <app-tag [tags]="service.days" [header]="'الأيام'" [showWithMore]="true"></app-tag>
+                        </td>
                         <td class="text-secondary">{{ service.price }} <strong> جنيه</strong></td>
                         <td>
                             <!-- <button type="button" class="btn-outline-blue" data-bs-toggle="modal" data-bs-target="#editServiceModal" (click)="openServiceDetails(service.id)">

@@ -6,6 +6,7 @@ import { debounceTime, distinctUntilChanged, Subject, takeUntil } from 'rxjs';
 import { PagedResponseModel } from '../../../../Models/Generics/PagedResponseModel';
 import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { SharedService } from '../../../../Services/shared.service';
+import { Router } from '@angular/router';
 declare var bootstrap :any;
 @Component({
   selector: 'app-patient-list',
@@ -42,7 +43,7 @@ export class PatientListComponent {
   pagedResponseModel: PagedResponseModel<any> = {};
   // 
   medicalHistory!: any;
-  constructor(private admissionService: AdmissionService, private fb: FormBuilder, private messageService: MessageService, private sharedService: SharedService) {
+  constructor(private admissionService: AdmissionService, private fb: FormBuilder, private messageService: MessageService, private sharedService: SharedService , private router : Router) {
     this.filterForm = this.fb.group({
       Search: [''],
       Status: [''],
@@ -127,6 +128,7 @@ export class PatientListComponent {
           return patient;
         });
         this.total = data.totalCount;
+        console.log(this.patients);
       },
       error: (err) => {
         this.messageService.add({
@@ -356,4 +358,16 @@ export class PatientListComponent {
       }, 100);
     }
   }  
+  // 
+  goToAppointments(patient: any) {
+    this.router.navigate(['/hms/appointments/add'], {
+      state: {
+        patientData: {
+          patientName: patient?.patientName,
+          patientPhone: patient?.phone,
+          gender: patient?.patientGender === 'ذكر' ? 'Male' : 'Female'
+        }
+      }
+    });    
+  }
 }

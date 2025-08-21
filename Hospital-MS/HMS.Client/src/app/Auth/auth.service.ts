@@ -19,17 +19,21 @@ export class AuthService {
   login(data: { email: string; password: string }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}Auth/Login`, data).pipe(
       tap(response => {
-        sessionStorage.setItem('userId', response.results.userId);
-        sessionStorage.setItem('token', response.results.token);
-        sessionStorage.setItem('firstName', response.results.firstName);
-        sessionStorage.setItem('lastName', response.results.lastName);
-        sessionStorage.setItem('role', response.results.role);
-        sessionStorage.setItem('pages', response.results.pages);
-        sessionStorage.setItem('branchId', response.results.branchId);
-        sessionStorage.setItem('branchName', response.results.branchName);
+        if (response && response.results) {
+          sessionStorage.setItem('userId', response.results.userId ?? '');
+          sessionStorage.setItem('token', response.results.token ?? '');
+          sessionStorage.setItem('firstName', response.results.firstName ?? '');
+          sessionStorage.setItem('lastName', response.results.lastName ?? '');
+          sessionStorage.setItem('role', response.results.role ?? '');
+          sessionStorage.setItem('pages', response.results.pages ?? '');
+          sessionStorage.setItem('branchId', response.results.branchId ?? '');
+          sessionStorage.setItem('branchName', response.results.branchName ?? '');
+        } else {
+          console.error("Login API response is invalid:", response);
+        }
       })
     );
-  }
+  }  
 
   register(data: any) {
     return this.http.post<ErrorResponseModel<string>>(`${this.baseUrl}Auth/register`, data);

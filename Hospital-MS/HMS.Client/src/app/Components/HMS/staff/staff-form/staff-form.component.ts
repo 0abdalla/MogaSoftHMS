@@ -161,8 +161,10 @@ export class StaffFormComponent implements OnInit {
     }
   }
   onSubmit() {
+    console.log(this.employeeForm.value);
+    console.log(this.employeeId);
+    
     if (this.employeeForm.invalid) {
-
       this.messageService.add({
         severity: 'error',
         summary: 'فشل',
@@ -170,68 +172,79 @@ export class StaffFormComponent implements OnInit {
       });
       return;
     }
-
-    if (!this.selectedFiles || this.selectedFiles.length === 0) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'فشل',
-        detail: 'يجب اختيار ملف واحد على الأقل',
-      });
-      return;
-    }
-
     const formData = new FormData();
-    this.selectedFiles.forEach((file, index) => {
+    this.selectedFiles?.forEach((file, index) => {
       formData.append(`Files[${index}]`, file, file.name);
     });
-    formData.append('fullName', this.employeeForm.get('fullName')?.value || '');
-    formData.append('nationalId', this.employeeForm.get('nationalId')?.value || '')
-    formData.append('gender', this.employeeForm.get('gender')?.value || '');
-    formData.append('phoneNumber', this.employeeForm.get('phoneNumber')?.value || '');
-    formData.append('email', this.employeeForm.get('email')?.value || '');
-    formData.append('address', this.employeeForm.get('address')?.value || '');
-    formData.append('type', this.employeeForm.get('type')?.value || '');
-    formData.append('hireDate', this.employeeForm.get('hireDate')?.value || '');
-    formData.append('status', this.employeeForm.get('status')?.value || '');
-    formData.append('maritalStatus', this.employeeForm.get('maritalStatus')?.value || '');
-    formData.append('notes', this.employeeForm.get('notes')?.value || '');
-    formData.append('JobDepartmentId', (Number(this.employeeForm.get('JobDepartmentId')?.value) || 0).toString());
-    formData.append('JobLevelId', (Number(this.employeeForm.get('JobLevelId')?.value) || 0).toString());
-    formData.append('JobTitleId', (Number(this.employeeForm.get('JobTitleId')?.value) || 0).toString());
-    formData.append('JobTypeId', (Number(this.employeeForm.get('JobTypeId')?.value) || 0).toString());
-    formData.append('isAuthorized', this.employeeForm.get('isAuthorized')?.value?.toString() || 'false');
-    formData.append('userName', this.employeeForm.get('userName')?.value || '');
-    formData.append('password', this.employeeForm.get('password')?.value || '');
-
-    formData.append('basicSalary', this.employeeForm.get('basicSalary')?.value || '');
-    formData.append('tax', this.employeeForm.get('tax')?.value || '');
-    formData.append('insurance', this.employeeForm.get('insurance')?.value || '');
-    formData.append('vacationDays', this.employeeForm.get('vacationDays')?.value || '');
-    formData.append('branchId', this.employeeForm.get('branchId')?.value || '');
-
-    this.staffService.addStaff(formData).subscribe({
-      next: (data) => {
-        // this.selectedFiles = [];
-        console.log(data);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'نجاح',
-          detail: 'تم إضافة الموظف بنجاح',
-        });
-        // setTimeout(() => {
-        //   this.router.navigate(['/hms/staff/list']);
-        // }, 1000);
-      },
-      error: (error) => {
-        console.error(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'فشل',
-          detail: 'فشل في إضافة الموظف',
-        });
-      },
+    Object.keys(this.employeeForm.controls).forEach(key => {
+      formData.append(key, this.employeeForm.get(key)?.value ?? '');
     });
+    if (this.employeeId) {
+      this.staffService.updateStaff(this.employeeId, formData).subscribe({
+        next: (res: any) => {
+          if (res.isSuccess === true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'نجاح',
+              detail: 'تم تعديل بيانات الموظف بنجاح',
+            });
+            setTimeout(() => {
+              this.router.navigate(['/hms/staff/list']);
+            }, 1000);
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل',
+              detail: 'فشل في تعديل بيانات الموظف',
+            });
+            console.log('update', res);
+          }
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'فشل',
+            detail: 'فشل في تعديل بيانات الموظف',
+          });
+        },
+      });
+    }
+    
+    else {
+      this.staffService.addStaff(formData).subscribe({
+        next: (res: any) => {
+          if (res.isSuccess === true) {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'نجاح',
+              detail: 'تم إضافة الموظف بنجاح',
+            });
+            setTimeout(() => {
+              this.router.navigate(['/hms/staff/list']);
+            }, 1000);
+          }else{
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل',
+              detail: 'فشل في إضافة الموظف',
+            });
+            console.log('add',res);
+            console.log(res.message);
+            console.log(res.errors);
+            
+          }
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'فشل',
+            detail: 'فشل في إضافة الموظف',
+          });
+        }
+      });
+    }
   }
+  
   loadStaffData() { 
     forkJoin({
       jobDepartments: this.staffService.getJobDepartment('', 1, 100),
@@ -246,11 +259,8 @@ export class StaffFormComponent implements OnInit {
         this.jobTitles = data.jobTitles.results;
         this.jobLevels = data.jobLevels.results;
         this.branches = data.branches.results;
-  
-        // 👇 بعد ما اتأكد إن الـ jobTitles جهزت
         if (this.employeeData?.jobDepartmentId) {
           this.onDepartmentChange(this.employeeData.jobDepartmentId);
-  
           this.employeeForm.patchValue({
             JobTitleId: this.employeeData.jobTitleId
           });
@@ -269,6 +279,8 @@ export class StaffFormComponent implements OnInit {
     this.staffService.getStaffById(id).subscribe({
       next: (res: any) => {
         this.employeeData = res.results;
+        this.employeeId = this.employeeData.id;
+        console.log(this.employeeData);
         this.employeeForm.patchValue({
           fullName: this.employeeData.fullName,
           nationalId: this.employeeData.nationalId,
@@ -307,13 +319,12 @@ export class StaffFormComponent implements OnInit {
       this.employeeForm.get('JobTitleId')?.disable();
       return;
     }
-  
-    this.filteredJobTitles = this.jobTitles.filter((x: any) => x.departmentId === deptId);
+    this.filteredJobTitles = this.jobTitles.filter((x: any) => x.jobDepartmentId === deptId);
   
     if (this.filteredJobTitles.length > 0) {
       this.employeeForm.get('JobTitleId')?.enable();
     } else {
       this.employeeForm.get('JobTitleId')?.disable();
     }
-  }  
+  }   
 }
