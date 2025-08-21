@@ -1,6 +1,7 @@
 <main id="boxes">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -11,7 +12,7 @@
                         <button type="submit" class="btn-blue w-100 mx-2">
                             بحث <i class="fa fa-search me-1"></i> 
                         </button>
-                        <button data-bs-toggle="modal" data-bs-target="#addItemModal" type="button" class="btn-red w-100 mx-2">
+                        <button data-bs-toggle="modal" data-bs-target="#addBoxModal" type="button" class="btn-red w-100 mx-2">
                             جديد <i class="fa fa-plus me-1"></i> 
                         </button>
                     </div>
@@ -21,7 +22,7 @@
         <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
             <div class="col-md-8 mb-2">
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addItemModal">
+                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addBoxModal">
                 <i class="fas fa-plus-circle"></i>
                 <span>إضافة خزينة</span>
             </button>
@@ -46,9 +47,9 @@
             <thead>
                 <tr>
                     <th>الرقم</th>
-                    <th>الخزينة</th>
-                    <th>العملة</th>
-                    <th>الرصيد الأولي</th>
+                    <th>اسم الخزينة</th>
+                    <!-- <th>العملة</th> -->
+                    <th>رصيد أول المدة</th>
                     <th>الفرع</th>
                     <th>إجراءات</th>
                 </tr>
@@ -56,8 +57,8 @@
             <tbody *ngIf="items?.length > 0">
                 <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
                     <td>{{ item.id }}</td>
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.currency }}</td>
+                    <td class="fw-bold">{{ item.name }}</td>
+                    <!-- <td>{{ item.currency }}</td> -->
                     <td>{{ item.openingBalance + ' ' + item.currency }}</td>
                     <td>{{ item.branchName }}</td>
                     <td>
@@ -72,7 +73,7 @@
             </tbody>
             <tbody *ngIf="items?.length === 0">
                 <tr>
-                    <td colspan="4" class="text-center text-muted">لا يوجد خزائن حتى الآن</td>
+                    <td colspan="6" class="text-center text-muted">لا يوجد خزائن حتى الآن</td>
                 </tr>
             </tbody>
         </table>
@@ -92,20 +93,20 @@
 
 
 
-<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+<div class="modal fade" id="addBoxModal" tabindex="-1" aria-labelledby="addBoxModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addItemModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} خزينة جديدة</h5>
+                <h5 class="modal-title" id="addBoxModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} خزينة جديدة</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
                 <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
                     <div class="row">
                         <div class="col-md-12 mb-2">
-                            <label for="accountCode" class="form-label">تكويد الحسابات</label>
-                            <input type="text" class="form-control shadow-none" formControlName="accountCode" id="accountCode" placeholder="تكويد الحسابات">
-                            <div *ngIf="accountForm.get('accountCode')?.invalid && accountForm.get('accountCode')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('accountCode')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
+                            <label for="code" class="form-label">تكويد الحسابات</label>
+                            <input type="text" class="form-control shadow-none" formControlName="code" id="code" placeholder="تكويد الحسابات">
+                            <div *ngIf="accountForm.get('code')?.invalid && accountForm.get('code')?.touched" class="text-danger">
+                                <ng-container *ngIf="accountForm.get('code')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
                             </div>
                         </div>
 
@@ -121,8 +122,9 @@
                             <label for="branchId" class="form-label">الفرع</label>
                             <select class="form-select shadow-none" formControlName="branchId" id="branchId">
                                 <option selected disabled value="">اختر الفرع</option>
-                                <option value="1">الرئيسية</option>
-                                <option value="2">الفرع</option>
+                                <!-- <option value="1">الرئيسية</option>
+                                <option value="2">الفرع</option> -->
+                                <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }}</option>
                             </select>
                             <div *ngIf="accountForm.get('branchId')?.invalid && accountForm.get('branchId')?.touched" class="text-danger">
                                 <ng-container *ngIf="accountForm.get('branchId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
@@ -135,6 +137,7 @@
                                 <option selected disabled value="">اختر العملة</option>
                                 <option value="ريال">ريال</option>
                                 <option value="دولار">دولار</option>
+                                <option value="جنيه">جنيه</option>
                             </select>
                             <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
                                 <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
@@ -152,6 +155,9 @@
 
                     <div class="text-center mt-3">
                         <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} الخزينة</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
+                            خروج
+                        </button>
                     </div>
                 </form>
 

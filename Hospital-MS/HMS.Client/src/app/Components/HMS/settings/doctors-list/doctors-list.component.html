@@ -180,8 +180,8 @@
                             <tbody>
                                 <tr *ngFor="let schedule of selectedDoctor?.doctorSchedules">
                                     <td>{{ schedule.weekDay || '---' }}</td>
-                                    <td>{{ schedule.startTime  }}</td>
-                                    <td>{{ schedule.endTime  }}</td>
+                                    <td>{{ schedule.startTime | time12  }}</td>
+                                    <td>{{ schedule.endTime | time12  }}</td>
                                 </tr>
                                 <tr *ngIf="!selectedDoctor?.doctorSchedules?.length">
                                     <td colspan="3" class="text-center">لا توجد مواعيد عمل</td>

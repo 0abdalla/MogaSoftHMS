@@ -3,6 +3,8 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import Swal from 'sweetalert2';
+import { StaffService } from '../../../../../Services/HMS/staff.service';
+import { MessageService } from 'primeng/api';
 export declare var bootstrap:any;
 @Component({
   selector: 'app-boxs',
@@ -21,12 +23,13 @@ export class BoxsComponent implements OnInit{
     currentPage:1,
   }
   isFilter:boolean=true;
-  constructor(private fb:FormBuilder , private financialService:FinancialService){
+  branches:any[]=[];
+  constructor(private fb:FormBuilder , private financialService:FinancialService , private staffService : StaffService , private messageService : MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
     })
     this.accountForm = this.fb.group({
-      accountCode:['' , Validators.required],
+      code:['' , Validators.required],
       name: ['', Validators.required],
       branchId: ['', Validators.required],
       currency: ['', Validators.required],
@@ -35,6 +38,7 @@ export class BoxsComponent implements OnInit{
   }
   ngOnInit(): void {
     this.getTreasuries();
+    this.getBranches();
   }
   applyFilters(){
     this.total=this.items.length;
@@ -69,10 +73,23 @@ export class BoxsComponent implements OnInit{
       this.financialService.updateTreasury(this.currentTreasuryId, formData).subscribe({
         next: () => {
           this.getTreasuries();
-          this.closeModal();
+          // this.closeModal();
           this.accountForm.reset();
           this.isEditMode = false;
           this.currentTreasuryId = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'تم التعديل بنجاح',
+            detail: 'تم تعديل الوحدة بنجاح',
+          });
+          setTimeout(() => {
+            const modalElement = document.getElementById('addBoxModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+          }, 1000);
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -80,10 +97,24 @@ export class BoxsComponent implements OnInit{
       });
     } else {
       this.financialService.addTreasury(formData).subscribe({
-        next: () => {
+        next: (res:any) => {
+          console.log(res);
           this.getTreasuries();
-          this.closeModal();
+          // this.closeModal();
           this.accountForm.reset();
+          if(res.isSuccess == true){
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإضافة بنجاح',
+              detail: 'تم إضافة الخزنة بنجاح',
+            });
+          }else{
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: 'فشل إضافة الخزنة',
+            });
+          } 
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -99,15 +130,16 @@ export class BoxsComponent implements OnInit{
     this.financialService.getTreasuriesById(id).subscribe({
       next: (data) => {
         this.account=data.results;
+        console.log(this.account);
         this.accountForm.patchValue({
           name: this.account.name,
-          accountCode: this.account.accountCode,
+          code: this.account.code,
           branchId: this.account.branchId,
           currency: this.account.currency,
           openingBalance: this.account.openingBalance
         });
   
-        const modal = new bootstrap.Modal(document.getElementById('addItemModal')!);
+        const modal = new bootstrap.Modal(document.getElementById('addBoxModal')!);
         modal.show();
       },
       error: (err) => {
@@ -128,8 +160,21 @@ export class BoxsComponent implements OnInit{
     }).then((result) => {
       if (result.isConfirmed) {
         this.financialService.deleteTreasury(id).subscribe({
-          next: () => {
+          next: (res:any) => {
             this.getTreasuries();
+            if(res.isSuccess == true){
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم الحذف بنجاح',
+                detail: 'تم حذف الخزنة بنجاح',
+              });
+            }else{
+              this.messageService.add({
+                severity: 'error',
+                summary: 'فشل الحذف',
+                detail: 'فشل حذف الخزنة',
+              });
+            }          
           },
           error: (err) => {
             console.error('فشل الحذف:', err);
@@ -139,7 +184,7 @@ export class BoxsComponent implements OnInit{
     });
   }
   closeModal() {
-    const modalElement = document.getElementById('addItemModal')!;
+    const modalElement = document.getElementById('addBoxModal')!;
     const modalInstance = bootstrap.Modal.getInstance(modalElement);
     modalInstance?.hide();
     const backdrop = document.querySelector('.modal-backdrop');
@@ -169,5 +214,21 @@ export class BoxsComponent implements OnInit{
       console.log(this.items);
       this.applyFilters();
     })
+  }
+  getBranches() {
+    this.staffService.GetBranches({
+      searchText: "",
+      currentPage: 1,
+      pageSize: 16,
+      filterList: []
+    }).subscribe((res: any) => {
+      this.branches = res.results ?? [];
+      console.log("Branches:", this.branches);
+    });    
+  }
+  resetFormOnClose() {
+    this.accountForm.reset();
+    this.isEditMode = false;
+    this.currentTreasuryId = null;
   }
 }

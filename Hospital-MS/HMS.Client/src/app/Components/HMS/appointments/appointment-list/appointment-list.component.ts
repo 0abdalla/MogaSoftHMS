@@ -53,7 +53,7 @@ export class AppointmentListComponent implements OnInit {
     { name: 'استشارة', value: 'Consultation' },
     { name: 'عمليات', value: 'Surgery' },
     { name: 'تحاليل', value: 'Screening' },
-    { name: 'اشعه', value: 'Radiology' },
+    { name: 'أشعة', value: 'CTScan' },
     { name: 'طوارئ', value: 'Emergency' },
   ]
   userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')

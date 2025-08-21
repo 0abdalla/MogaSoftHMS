@@ -45,30 +45,32 @@
                     <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
                         <thead>
                             <tr>
-                                <th>الاسم</th>
-                                <th>العمر</th>
-                                <th>الحالة</th>
                                 <th>الرقم</th>
+                                <th>الاسم</th>
+                                <th>الهاتف</th>
+                                <th>الحالة</th>
                             </tr>
                         </thead>
                         <tbody>
                             <ng-container>
                                 <tr *ngFor="let patient of patients" (click)="openAdmissionDetails(patient.patientId)" data-bs-toggle="modal" data-bs-target="#inpatientDetailsModal" style="cursor: pointer">
                                     <td>
+                                        {{ patient.patientId }}
+                                    </td>
+                                    <td>
                                         <div class="d-flex align-items-center gap-2 justify-content-start">
                                             <div class="avatar-circle">{{ patient.patientName.charAt(0) }}</div>
                                             <span class="fw-bold">{{ patient.patientName }}</span>
                                         </div>
                                     </td>
-                                    <td class="text-secondary fw-semibold">{{ patient.dateOfBirth | age }} سنة</td>
+                                    <!-- <td class="text-secondary fw-semibold">{{ patient.dateOfBirth | age }} سنة</td> -->
+                                    <td>{{ patient.phone }}</td>
                                     <td>
                                         <p class="text-white status-pill" *ngIf="patient.patientStatus" [ngStyle]="{ backgroundColor: getStatusColor(patient.patientStatus) }">
                                             {{ patient.patientStatus }}
                                         </p>
                                     </td>
-                                    <td>
-                                        {{ patient.patientId }}
-                                    </td>
+                                    
                                     <!-- <td>
                                 <div class="w-100 d-flex align-items-center justify-content-center">
                                     <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2">
@@ -107,7 +109,7 @@
         <div class="modal-content">
             <img src="assets/vendors/imgs/pattern.png" alt="pattern" class="pattern img-fluid">
             <div class="modal-header justify-content-center text-center">
-                <h5 class="modal-title" id="inpatientDetailsLabel">بيانات المريض الداخلي</h5>
+                <h5 class="modal-title" id="inpatientDetailsLabel">بيانات {{ admissionDetails?.patientName || '---' }}</h5>
             </div>
 
             <div class="modal-body p-4">
@@ -137,20 +139,21 @@
                     </div>
                 </div>
 
-                <hr>
-
-                <h4 class="mb-3 ">🏥بيانات الإقامة</h4>
-                <div class="row mb-3">
-                    <div class="col-lg-4">
-                        <strong class="strong">تاريخ الدخول:</strong> {{admissionDetails?.admissionDate | date:'yyyy-MM-dd'}}
+                
+                <div *ngIf="admissionDetails?.patientStatus !== 'عيادات خارجية'">
+                    <hr>
+                    <h4 class="mb-3 ">🏥بيانات الإقامة</h4>
+                    <div class="row mb-3">
+                        <div class="col-lg-4">
+                            <strong class="strong">تاريخ الدخول:</strong> {{admissionDetails?.admissionDate | date:'yyyy-MM-dd'}}
+                        </div>
+                        <div class="col-lg-4">
+                            <strong class="strong">القسم:</strong> {{admissionDetails?.departmentName || '---'}}
+                        </div>
+                        <div class="col-lg-4">
+                            <strong class="strong">الطبيب:</strong> {{admissionDetails?.doctorName || '---'}}
+                        </div>
                     </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">القسم:</strong> {{admissionDetails?.departmentName || '---'}}
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">الطبيب:</strong> {{admissionDetails?.doctorName || '---'}}
-                    </div>
-                </div>
 
                 <div class="row mb-3">
                     <div class="col-lg-4">
@@ -163,6 +166,8 @@
                         <strong class="strong">نوع الغرفة:</strong> {{admissionDetails?.roomType || '---'}}
                     </div>
                 </div>
+            </div>
+
 
                 <hr>
 
@@ -206,10 +211,10 @@
                         <strong class="strong">تاريخ التسجيل:</strong> {{admissionDetails?.createdOn | date:'yyyy-MM-dd'}}
                     </div>
                     <div class="col-lg-4">
-                        <strong class="strong">أمراض مزمنة:</strong> {{admissionDetails?.chronicDiseases || '---'}}
+                        <strong class="strong">أمراض مزمنة:</strong> {{admissionDetails?.chronicDiseases || 'لا يوجد'}}
                     </div>
                     <div class="col-lg-4">
-                        <strong class="strong">عمليات سابقة:</strong> {{admissionDetails?.previousSurgeries || '---'}}
+                        <strong class="strong">عمليات سابقة:</strong> {{admissionDetails?.previousSurgeries || 'لا يوجد'}}
                     </div>
                 </div>
 
@@ -237,21 +242,25 @@
 
             <div class="modal-footer row">
                 <div class="col-2">
-                    <button class="btn col-12 btn-outline-info" data-bs-toggle="modal" data-bs-target="#patientModal" (click)="openStatusUpdateModal()">تحديث الحالة</button>
+                    <button class="btn col-12 btn-outline-success" data-bs-toggle="modal" data-bs-target="#patientModal" (click)="openStatusUpdateModal()">تحديث الحالة</button>
                 </div>
                 <div class="col-2">
                     <button class="btn col-12 btn-outline-info" data-bs-toggle="modal" data-bs-target="#medicalHistoryModal">التاريخ الطبي</button>
                 </div>
                 <div class="col-2">
-                    <button class="btn col-12 btn-outline-primary">ترتيب مواعيد</button>
-                </div>
-                <div class="col-2">
+                    <button 
+                        class="btn col-12 btn-outline-primary" 
+                        (click)="goToAppointments(admissionDetails)">
+                        ترتيب مواعيد
+                    </button>
+                </div>                  
+                <!-- <div class="col-2">
                     <button class="btn col-12 btn-outline-success">إنشاء فاتورة</button>
-                </div>
-                <div class="col-2">
+                </div> -->
+                <div class="col-2" routerLink="/hms/fin-tree/treasury/supply-receipt">
                     <button class="btn col-12 btn-outline-warning">إضافة مدفوعات</button>
                 </div>
-                <div class="col-2">
+                <div class="col-2" routerLink="/hms/reports/ledger-report">
                     <button class="btn col-12 btn-outline-secondary">كشف حساب</button>
                 </div>
             </div>
@@ -265,7 +274,6 @@
             <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
             <div class="modal-header justify-content-between align-items-center">
                 <h5 class="modal-title" id="patientModalLabel">تحديث حالة المريض</h5>
-                <button type="button" class="btn btn-secondary" (click)="backToMainModal('patientModal')">رجوع</button>
             </div>
             <div class="modal-body">
                 <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
@@ -282,10 +290,10 @@
                     <div class="mb-3">
                         <label for="statusSelect" class="form-label">الحالة الجديدة</label>
                         <select id="statusSelect" class="form-select shadow-none" formControlName="newStatus">
-              <option *ngFor="let status of patientStatuses" [value]="status.value">
-                {{ status.name }}
-              </option>
-            </select>
+                            <option *ngFor="let status of patientStatuses" [value]="status.value">
+                                {{ status.name }}
+                            </option>
+                        </select>
                         <div *ngIf="statusForm.get('newStatus')?.invalid && statusForm.get('newStatus')?.touched" class="text-danger">
                             يرجى اختيار حالة
                         </div>
@@ -296,6 +304,7 @@
                     </div>
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn-blue" [disabled]="statusForm.invalid">حفظ التغييرات</button>
+                        <button type="button" class="btn-red mx-2" (click)="backToMainModal('patientModal')">رجوع</button>
                     </div>
                 </form>
             </div>
@@ -309,7 +318,6 @@
             <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
             <div class="modal-header justify-content-between align-items-center">
                 <h5 class="modal-title" id="medicalHistoryModalLabel">السجل الطبي</h5>
-                <button type="button" class="btn btn-secondary" (click)="backToMainModal('medicalHistoryModal')">رجوع</button>
             </div>
             <div class="modal-body">
                 <div class="patient-info mb-4">
@@ -367,10 +375,10 @@
                                 <!-- <td>{{ history.medicalServiceName }}</td> -->
                                 <td>{{ mapTypeToArabic(history.type) }}</td>
                                 <td [ngClass]="{
-                    'text-warning': history.status === 'Pending',
-                    'text-success': history.status === 'Completed',
-                    'text-danger': history.status === 'Cancelled'
-                  }">
+                                    'text-warning': history.status === 'Pending',
+                                    'text-success': history.status === 'Completed',
+                                    'text-danger': history.status === 'Cancelled'
+                                }">
                                     {{ mapStatusToArabic(history.status) }}
                                 </td>
                                 <td>{{ history.gender || 'ذكر' }}</td>
@@ -382,6 +390,10 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+
+                <div class="text-center pt-3">
+                    <button type="button" class="btn-red" (click)="backToMainModal('medicalHistoryModal')">رجوع</button>
                 </div>
 
             </div>

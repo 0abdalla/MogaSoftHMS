@@ -264,7 +264,7 @@ export class MenueService {
             {
               displayName: 'نوع الخدمة',
               icon: 'fa-solid fa-circle',
-              route: '/hms/settings/medical-service',
+              route: '/hms/settings/medical-services-list',
               pageName: 'MedicalService'
             },
             {
@@ -298,16 +298,22 @@ export class MenueService {
               pageName: 'ItemsGroup'
             },
             {
+              displayName: 'الوحدات',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/fin-tree/units',
+              pageName: 'Units'
+            },
+            {
               displayName: 'الاصناف',
               icon: 'fa-solid fa-circle',
               route: '/hms/fin-tree/items',
               pageName: 'Items'
             },
             {
-              displayName: 'الوحدات',
+              displayName: 'أنواع المخازن',
               icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/units',
-              pageName: 'Units'
+              route: '/hms/fin-tree/stores-types',
+              pageName: 'StoreTypes'
             },
             {
               displayName: 'المخازن',
@@ -315,12 +321,6 @@ export class MenueService {
               route: '/hms/fin-tree/stores',
               pageName: 'Stores'
             },
-            {
-              displayName: 'أنواع المخازن',
-              icon: 'fa-solid fa-circle',
-              route: '/hms/fin-tree/stores-types',
-              pageName: 'StoreTypes'
-            }
           ]
         },
         {

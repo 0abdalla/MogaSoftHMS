@@ -105,7 +105,8 @@ export class StoresTypesComponent {
               summary: 'فشل الإضافة',
               detail: 'فشل إضافة الوحدة',
             });
-          }        },
+          }  
+        },
         error: (err) => {
           console.error('فشل الإضافة:', err);
         }

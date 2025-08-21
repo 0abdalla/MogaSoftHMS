@@ -11,7 +11,7 @@ declare var bootstrap : any
   styleUrl: './medical-services-list.component.css'
 })
 export class MedicalServicesListComponent implements OnInit {
-  TitleList = ['إعدادات النظام', 'إعدادات المواعيد والحجز'];
+  TitleList = ['إعدادات النظام', 'إدارة الخدمات الطبية'];
   services!: any[];
   total!: number;
   filterForm!: FormGroup;
@@ -85,7 +85,12 @@ export class MedicalServicesListComponent implements OnInit {
     }
   }
   getServices() {
-    this.appointmentService.getServices(this.pagingFilterModel.currentPage, this.pagingFilterModel.pageSize, this.pagingFilterModel.searchText, this.pagingFilterModel.filterList).subscribe({
+    this.appointmentService.getServices(
+      this.pagingFilterModel.currentPage,
+      this.pagingFilterModel.pageSize,
+      this.pagingFilterModel.searchText,
+      this.pagingFilterModel.filterList
+    ).subscribe({
       next: (data) => {
         this.services = data.results.map((service: any) => {
           switch (service.type) {
@@ -125,13 +130,21 @@ export class MedicalServicesListComponent implements OnInit {
           }
           return service;
         });
+        this.services.sort((a, b) => b.id - a.id);
         this.total = data.totalCount;
+        this.services.forEach(item => {
+          item.days = item.medicalServiceSchedules
+            .map(schedule => schedule.weekDay)
+            .join(';;;');
+        });
+  
+        console.log(this.services);
       },
       error: (err) => {
         this.services = [];
       }
     });
-  }
+  }  
   // 
   applyFilters(filters: FilterModel[]) {
     this.pagingFilterModel.filterList = filters;

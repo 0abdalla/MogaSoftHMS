@@ -1,5 +1,9 @@
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { Notifications } from '../../Models/HMS/notifications';
+import { NotificationsService } from '../../Services/HMS/notifications.service';
+import { NotificationHubService } from '../../Services/HMS/notification-hub.service';
 
 @Component({
   selector: 'app-header',
@@ -11,17 +15,19 @@ export class HeaderComponent {
   userProfileImage: string = 'assets/vendors/imgs/avatar.png';
   searchQuery: string = '';
   routeNow: string = '';
-
   @Input() isCollapsed: boolean = false;
   @Output() sidebarToggled = new EventEmitter<boolean>();
   activeMenu: string | null = null;
   activeSubmenuRoute: string = '';
   // 
+  notifications: Notifications[] = [];
+  private subscriptions: Subscription[] = [];
+
+  // 
   showNotifications = false;
-  notifications = ['إشعار 1', 'إشعار 2', 'إشعار 3'];
 
 
-  constructor(private router: Router) {}
+  constructor(private router: Router ,  private notificationsService: NotificationsService, private notificationHubService: NotificationHubService) {}
 
   ngOnInit(): void {
     this.setCurrentDate();
@@ -31,6 +37,18 @@ export class HeaderComponent {
         this.routeNow = this.getArabicRouteName(event.url);
       }
     });
+    const sub1 = this.notificationsService.getNotifications().subscribe(data => {
+      this.notifications = data;
+    });
+    const userId = Number(sessionStorage.getItem('userId'));
+    if (userId) {
+      this.notificationHubService.startConnection(userId);
+    }
+    const sub2 = this.notificationHubService.notifications$.subscribe(latestList => {
+      this.notifications = latestList;
+    });
+
+    this.subscriptions.push(sub1, sub2);
   }
 
   setCurrentDate(): void {
@@ -189,5 +207,9 @@ export class HeaderComponent {
     if (!bellClicked && !boxClicked) {
       this.showNotifications = false;
     }
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+    this.notificationHubService.stopConnection();
   }
 }

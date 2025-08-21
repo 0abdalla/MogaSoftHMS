@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Common.Consts;
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Staff;
 using Hospital_MS.Core.Enums;
@@ -8,17 +9,19 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, ISQLHelper sQLHelper) : IStaffService
+    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, ISQLHelper sQLHelper, UserManager<ApplicationUser> userManager) : IStaffService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
 
         public async Task<ErrorResponseModel<string>> CreateAsync(CreateStaffRequest request, CancellationToken cancellationToken = default)
         {
@@ -34,7 +37,6 @@ namespace Hospital_MS.Services.HMS
 
                 if (!Enum.TryParse<MaritalStatus>(request.MaritalStatus, true, out var maritalStatus))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidMaritalStatus);
-
 
                 var staff = new Staff
                 {
@@ -61,11 +63,36 @@ namespace Hospital_MS.Services.HMS
                     Allowances = request.Allowances,
                     Rewards = request.Rewards,
                     VariableSalary = request.VariableSalary,
-                    VisaCode = request.VisaCode
+                    VisaCode = request.VisaCode,
+                    IsAuthorized = request.IsAuthorized,
                 };
 
                 await _unitOfWork.Repository<Staff>().AddAsync(staff, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
+                // Handle account creation if IsAuthorized is true
+
+                if (request.IsAuthorized && !string.IsNullOrWhiteSpace(request.UserName) && !string.IsNullOrWhiteSpace(request.Password))
+                {
+                    var user = new ApplicationUser
+                    {
+                        UserName = request.UserName,
+                        Email = request.Email,
+                        FirstName = request.FullName,
+                        BranchId = request.BranchId,
+                        IsActive = true,
+                    };
+
+                    var result = await _userManager.CreateAsync(user, request.Password);
+
+                    if (!result.Succeeded)
+                    {
+                        await transaction.RollbackAsync(cancellationToken);
+                        return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, string.Join("; ", result.Errors.Select(e => e.Description)));
+                    }
+
+                    await _userManager.AddToRoleAsync(user, DefaultRoles.ReservationEmployee.Name);
+                }
 
                 var AttachmentItems = new List<StaffAttachments>();
                 var AttachmentURLs = new List<string>();
@@ -209,14 +236,9 @@ namespace Hospital_MS.Services.HMS
                 Id = staff.Id,
                 FullName = staff.FullName,
                 Email = staff.Email,
-                //Specialization = staff.Specialization,
                 PhoneNumber = staff.PhoneNumber,
                 HireDate = staff.HireDate,
                 Status = staff.Status.ToString(),
-                //ClinicId = staff.ClinicId,
-                //DepartmentId = staff.DepartmentId,
-                //ClinicName = staff.Clinic?.Name,
-                //DepartmentName = staff.Department?.Name,
                 NationalId = staff.NationalId,
                 Address = staff.Address,
                 Notes = staff.Notes,
@@ -246,7 +268,12 @@ namespace Hospital_MS.Services.HMS
                 JobTitleId = staff?.JobTitleId,
                 JobTitleName = staff?.JobTitle?.Name,
                 JobTypeId = staff?.JobTypeId,
-                JobTypeName = staff?.JobType?.Name
+                JobTypeName = staff?.JobType?.Name,
+                BasicSalary = staff?.BasicSalary,
+                VacationDays = staff?.VacationDays,
+                Tax = staff?.Tax,
+                Insurance = staff?.Insurance,
+                IsAuthorized = staff.IsAuthorized
             };
 
             return ErrorResponseModel<StaffResponse>.Success(GenericErrors.GetSuccess, response);

@@ -40,9 +40,12 @@ export class LoginComponent implements OnInit {
     this.authService.login(this.loignForm.value).subscribe({
       next:(data:any) => {
         this.router.navigate(['/hms']);
+        
       },
       error:(err) => {
         this.message = 'اسم المستخدم أو كلمة المرور غير صحيحين';
+        console.log(err);
+        
       }
     })
   }

@@ -9,15 +9,9 @@ using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -164,6 +158,25 @@ namespace Hospital_MS.Services.HMS
             catch (Exception)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+        }
+
+        public async Task<ErrorResponseModel<bool>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var jobTitle = await _unitOfWork.Repository<JobTitle>()
+                .GetAll(x => x.Id == id)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (jobTitle is null)
+                return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+            try
+            {
+                _unitOfWork.Repository<JobTitle>().Delete(jobTitle);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
             }
         }
     }

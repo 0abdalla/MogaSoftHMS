@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { FilterModel } from '../../../../../Models/Generics/PagingFilterModel';
 import { FinancialService } from '../../../../../Services/HMS/financial.service';
 import { BanksService } from '../../../../../Services/HMS/banks.service';
+import { MessageService } from 'primeng/api';
 export declare var bootstrap:any;
 @Component({
   selector: 'app-banks',
@@ -23,7 +24,7 @@ export class BanksComponent implements OnInit {
   }
   // 
   isFilter:boolean = true;
-  constructor(private fb:FormBuilder , private financialService : BanksService){
+  constructor(private fb:FormBuilder , private financialService : BanksService , private messageService : MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
     })
@@ -69,11 +70,24 @@ export class BanksComponent implements OnInit {
   
     if (this.isEditMode && this.currentBankId !== null) {
       this.financialService.updateBank(this.currentBankId, formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getBanks();
           this.accountForm.reset();
           this.isEditMode = false;
           this.currentBankId = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'تم التعديل بنجاح',
+            detail: 'تم تعديل البنك بنجاح',
+          });
+          setTimeout(() => {
+            const modalElement = document.getElementById('addItemModal');
+            if (modalElement) {
+              const modalInstance = bootstrap.Modal.getInstance(modalElement);
+              modalInstance?.hide();
+            }
+            this.resetFormOnClose();
+            }, 1000);
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -87,6 +101,19 @@ export class BanksComponent implements OnInit {
           
           this.getBanks();
           // this.accountForm.reset();
+          if(res.isSuccess == true){
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم الإضافة بنجاح',
+              detail: 'تم إضافة البنك بنجاح',
+            });
+          }else{
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل الإضافة',
+              detail: 'فشل إضافة البنك',
+            });
+          } 
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -131,8 +158,21 @@ export class BanksComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.financialService.deleteBank(id).subscribe({
-          next: () => {
+          next: (res:any) => {
             this.getBanks();
+            if(res.isSuccess == true){
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم الحذف بنجاح',
+                detail: 'تم حذف البنك بنجاح',
+              });
+            }else{
+              this.messageService.add({
+                severity: 'error',
+                summary: 'فشل الحذف',
+                detail: 'فشل حذف البنك',
+              });
+            }          
           },
           error: (err) => {
             console.error('فشل الحذف:', err);
@@ -171,5 +211,11 @@ export class BanksComponent implements OnInit {
       console.log(this.banks);
       this.applyFilters();
     })
+  }
+  // 
+  resetFormOnClose() {
+    this.accountForm.reset();
+    this.isEditMode = false;
+    this.currentBankId = null;
   }
 }

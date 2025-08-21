@@ -1,10 +1,7 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.JobLevel;
-using Hospital_MS.Core.Contracts.JobType;
 using Hospital_MS.Interfaces.HMS;
-using Hospital_MS.Services.HMS;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hospital_MS.API.Controllers
@@ -42,6 +39,17 @@ namespace Hospital_MS.API.Controllers
         {
             var result = await _jobLevelService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var result = await _jobLevelService.DeleteAsync(id, cancellationToken);
+            if (result.IsSuccess)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
         }
     }
 }

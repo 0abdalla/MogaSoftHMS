@@ -1,6 +1,7 @@
 <main id="banks">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -48,7 +49,7 @@
                     <th>الرقم</th>
                     <th>اسم البنك</th>
                     <th>رقم الحساب</th>
-                    <th>العملة</th>
+                    <th>رصيد أول المدة</th>
                     <th>إجراءات</th>
                 </tr>
             </thead>
@@ -59,7 +60,7 @@
                         <span class="fw-bold">{{ item.name }}</span>
                     </td>
                     <td>{{ item.accountNumber }}</td>
-                    <td>{{ item.currency }}</td>
+                    <td>{{ item.initialBalance }}</td>
                     <td>
                         <button type="button" class="btn btn-primary mx-2" (click)="editBank(item.id)">
                             <i class="fa fa-edit"></i>
@@ -92,7 +93,7 @@
 
 
 
-<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true">
+<div class="modal fade" id="addItemModal" tabindex="-1" aria-labelledby="addItemModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
@@ -149,6 +150,9 @@
 
                     <div class="text-center mt-3">
                         <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} بنك</button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
+                            خروج
+                        </button>
                     </div>
                 </form>
 

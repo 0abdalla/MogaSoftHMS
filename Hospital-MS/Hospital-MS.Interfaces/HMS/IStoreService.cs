@@ -11,4 +11,6 @@ public interface IStoreService
     Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default);
 
     Task<ErrorResponseModel<List<StoreMovementResponse>>> GetStoreMovementsAsync(int storeId, GetStoresMovementsRequest request, CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<List<ItemsOrderLimitResponse>>> GetItemsOrderLimitAsync(int storeId, CancellationToken cancellationToken = default);
+    Task<ErrorResponseModel<List<StoreRateResponse>>> GetStoreRateAsync(int storeId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default);
 }

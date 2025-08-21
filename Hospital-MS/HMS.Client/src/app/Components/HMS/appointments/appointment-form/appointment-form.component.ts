@@ -9,8 +9,11 @@ import { SharedService } from '../../../../Services/shared.service';
 import { PrintInvoiceComponent } from '../print-invoice/print-invoice.component';
 import { MessageService } from 'primeng/api';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
+import { Router } from '@angular/router';
+import { inject } from '@angular/core';
 import { todayDateValidator } from '../../../../validators/today-date.validator';
 declare var bootstrap: any;
+
 
 @Component({
   selector: 'app-appointment-form',
@@ -30,6 +33,7 @@ declare var bootstrap: any;
 })
 export class AppointmentFormComponent implements OnInit {
   @ViewChild('PrintInvioce', { static: false }) PrintInvoiceComponent: PrintInvoiceComponent;
+  // private router = inject(Router);
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
@@ -80,8 +84,9 @@ export class AppointmentFormComponent implements OnInit {
     private messageService: MessageService,
     private insuranceService: InsuranceService,
     private admissionService: AdmissionService,
-    private sharedService: SharedService
-  ) {
+    private sharedService: SharedService,
+    private router: Router,
+    ) {
 
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
@@ -333,6 +338,13 @@ export class AppointmentFormComponent implements OnInit {
     this.getInsuranceCompanies();
     this.loadPatients();
     this.getServices();
+    const navState: any = history.state;
+    if (navState?.patientData) {
+      this.reservationForm.patchValue(navState.patientData);
+      console.log('PatientData from state:', navState.patientData);
+    }else{
+      console.log('No patient data found in state');
+    }
   }
 
   onDayChange() {

@@ -6,7 +6,7 @@ import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { FilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import html2pdf from 'html2pdf.js';
 import { Router } from '@angular/router';
-
+declare var bootstrap : any;
 @Component({
   selector: 'app-staff-list',
   templateUrl: './staff-list.component.html',
@@ -197,8 +197,6 @@ export class StaffListComponent implements OnInit, OnDestroy {
     this.staffService.getStaffById(id).subscribe({
       next: (res) => {
         const employee = res.results;
-  
-        // ترجمة القيم
         employee.gender = employee.gender === 'Male' ? 'ذكر' :
           employee.gender === 'Female' ? 'أنثى' : 'غير محدد';
         employee.status = employee.status === 'Active' ? 'نشط' :
@@ -207,19 +205,12 @@ export class StaffListComponent implements OnInit, OnDestroy {
           employee.maritalStatus === 'Married' ? 'متزوج' :
           employee.maritalStatus === 'Divorced' ? 'مطلق' :
           employee.maritalStatus === 'Widowed' ? 'أرمل' : 'غير معروف';
-  
-        // حساب التأمين والضريبة
         const insuranceAmount = employee.basicSalary * (employee.insurance / 100);
         const taxAmount = employee.basicSalary * (employee.tax / 100);
-  
-        // الخصومات = تأمين + ضريبة
         employee.deductions = insuranceAmount + taxAmount;
-  
-        // صافي المرتب = الأساسي + البدلات - الخصومات
         employee.netSalary = employee.basicSalary 
                             + (employee.allowances || 0) 
                             - employee.deductions;
-  
         this.selectedEmployee = employee;
         console.log(this.selectedEmployee);
       },
@@ -242,7 +233,16 @@ export class StaffListComponent implements OnInit, OnDestroy {
 
   editEmployee() {
     if (this.selectedEmployee) {
-      this.router.navigate(['/hms/staff/edit', this.selectedEmployee.id]);
+      const modalEl = document.getElementById('employeeDetailsModal');
+      if (modalEl) {
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) {
+          modalInstance.hide();
+          setTimeout(() => {
+            this.router.navigate(['/hms/staff/edit', this.selectedEmployee.id]);
+          }, 300);
+        }
+      }
     }
   }
 

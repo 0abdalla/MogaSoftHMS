@@ -10,43 +10,32 @@
             <form [formGroup]="formGroup" autocomplete="off">
                 <div class="row mb-3">
                     <label class="form-label d-flex align-items-center gap-2">
+                        اسم المجموعة
+                        <span class="text-danger">*</span>
+                    </label>
+                    <app-general-selector formControlName="parentId" [data]="parentCostCenterSelectorData" [showSearch]="true" [placeholder]="'اسم المجموعة'"></app-general-selector>
+                </div>
+                <div class="row mb-3">
+                    <label class="form-label d-flex align-items-center gap-2">
                         رمز مركز التكلفة
                     </label>
                     <input type="text" class="form-control nw-form-input" formControlName="costCenterNumber" [disabled]="true" autocomplete="off" />
                 </div>
                 <div class="row mb-3">
                     <label class="form-label d-flex align-items-center gap-2">
-                        اسم مركز التكلفة (AR)
+                        اسم مركز التكلفة
                     </label>
                     <input type="text" class="form-control nw-form-input" formControlName="nameAR" autocomplete="off" />
                 </div>
-                <div class="row mb-3">
-                    <label class="form-label d-flex align-items-center gap-2">
-                        اسم مركز التكلفة (EN)
-                    </label>
-                    <input type="text" class="form-control nw-form-input" formControlName="nameEN" autocomplete="off" />
-                </div>
-
-                <div class="row mb-3">
-                    <label class="form-label d-flex align-items-center gap-2">
-                        متفرع من مركز التكلفة
-                        <span class="text-danger">*</span>
-                    </label>
-                    <app-general-selector formControlName="parentId" [data]="parentCostCenterSelectorData" [showSearch]="true" [placeholder]="'اسم مركز التكلفة'"></app-general-selector>
-                </div>
                 <hr class="my-4" />
                 <div class="row mb-3">
-                    <div class="col-sm-4">
-                        <label class="form-label d-flex align-items-center gap-2">
-                            مؤجل
-                        </label>
-                        <input class="big-checkbox" formControlName="isPost" type="checkbox">
+                    <div class="col-sm-4 d-flex align-items-center">
+                        <label class="form-label d-flex align-items-center gap-2 me-2" for="isGroup">{{formGroup.get('isGroup')?.value ? 'مجموعة' : 'فردي'}}</label>
+                        <input class="big-checkbox" formControlName="isGroup" type="checkbox" id="isGroup">
                     </div>
-                    <div class="col-sm-4">
-                        <label class="form-label d-flex align-items-center gap-2">
-                            مركز تكلفة نشط
-                        </label>
-                        <input class="big-checkbox" formControlName="isActive" type="checkbox">
+                    <div class="col-sm-4 d-flex align-items-center">
+                        <label class="form-label d-flex align-items-center gap-2 me-2" for="isActive">{{formGroup.get('isActive')?.value ? 'نشط' : 'غير نشط'}}</label>
+                        <input class="big-checkbox" formControlName="isActive" type="checkbox" id="isActive">
                     </div>
                 </div>
             </form>

@@ -13,19 +13,17 @@
         style="cursor: pointer; font-size: 20px;"
       ></i>
 
-      <div
-        class="notification-box shadow p-3"
-        *ngIf="showNotifications"
-        (click)="$event.stopPropagation()">
+      <div class="notification-box shadow p-3" *ngIf="showNotifications" (click)="$event.stopPropagation()">
         <div class="fw-bold mb-2">الإشعارات</div>
-        <div
-          *ngFor="let notification of notifications"
-          class="notification-item border-bottom py-2">
-          {{ notification }}
+        <div *ngFor="let notification of notifications" 
+            class="notification-item border-bottom py-2">
+          {{ notification.title }} - {{ notification.message }}
+        </div>
+        <div *ngIf="!notifications.length" class="text-muted">
+          لا توجد إشعارات جديدة
         </div>
       </div>
     </div>
-
       <div class="user-profile">
         <img [src]="userProfileImage" alt="User Profile" />
       </div>

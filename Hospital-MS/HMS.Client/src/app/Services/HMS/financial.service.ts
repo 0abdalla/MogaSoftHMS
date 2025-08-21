@@ -381,9 +381,13 @@ export class FinancialService {
     return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AccountTree/GetAccountTreeData?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
   }
   // 
-  getBranches(pagingFilter : PagingFilterModel){
-    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'Branches?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
-  }
+  getBranches(pagingFilter: PagingFilterModel) {
+    return this.http.post<PagedResponseModel<any>>(
+      this.baseUrl + 'Branches',
+      pagingFilter
+    );
+  }  
+  
   getBranchesById(id:number){
     return this.http.get<any>(this.baseUrl + 'Branches/' + id);
   }

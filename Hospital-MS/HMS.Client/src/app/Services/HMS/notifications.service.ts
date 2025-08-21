@@ -10,6 +10,6 @@ export class NotificationsService {
   baseUrl = environment.baseUrl;
   constructor(private http : HttpClient) { }
   getNotifications(): Observable<Notifications[]> {
-    return this.http.get<Notifications[]>(`${this.baseUrl}/Notifications`);
+    return this.http.get<Notifications[]>(`${this.baseUrl}Notifications`);
   }
 }

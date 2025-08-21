@@ -11,7 +11,7 @@ namespace Hospital_MS.Core.Contracts.CostCenterTree
         public int? CostCenterId { get; set; }
         public string CostCenterNumber { get; set; }
         public string NameAR { get; set; }
-        public string NameEN { get; set; }
+        public string? NameEN { get; set; }
         public int? ParentId { get; set; }
         public int? CostLevel { get; set; }
         public bool? IsActive { get; set; }
@@ -19,6 +19,7 @@ namespace Hospital_MS.Core.Contracts.CostCenterTree
         public bool? IsParent { get; set; }
         public bool? IsPost { get; set; }
         public int? IsExpences { get; set; }
+        public bool? IsGroup { get; set; }
         public int? DisplayOrder { get; set; }
         public bool IsSelected { get; set; }
         public List<CostCenterTreeModel> Children { get; set; } = new List<CostCenterTreeModel>();
