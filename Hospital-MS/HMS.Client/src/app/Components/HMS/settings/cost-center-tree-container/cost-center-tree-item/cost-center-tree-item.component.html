@@ -1,6 +1,6 @@
-<div (click)="toggleNode(costCenter)" class="tree-row d-flex align-items-center justify-content-between cursor-pointer  pss-{{costCenter.costLevel+1}}" [style]="getLevelClass(costCenter.costLevel)">
+<div (click)="toggleNode(costCenter)" class="tree-row d-flex align-items-center justify-content-between cursor-pointer pss-1" [style]="getLevelClass(costCenter.costLevel)">
     <div class="tree-row-text d-flex align-items-center col-5">
-        <i *ngIf="costCenter.isGroup" class="fas " [class]="!expanded?'fa-plus-circle':'fa-minus-circle'"></i>
+        <!-- <i *ngIf="costCenter.isGroup" class="fas " [class]="!expanded?'fa-plus-circle':'fa-minus-circle'"></i> -->
         <span class="ms-2" [ngClass]="{'bg-warning': costCenter.isSelected}">{{costCenter.costCenterNumber}} - {{ costCenter.nameAR }}</span>
     </div>
     <!-- <div class="tree-row-text d-flex align-items-center col-5">
@@ -15,6 +15,6 @@
         </div>
     </div>
 </div>
-<div *ngIf="costCenter.children &&(expanded||costCenter.isSelected) ">
+<!-- <div *ngIf="costCenter.children &&(expanded||costCenter.isSelected) ">
     <app-cost-center-tree-item (selectedCostCenter)="selectCostCenter($event)" *ngFor="let child of costCenter.children" [costCenter]="child"></app-cost-center-tree-item>
-</div>
+</div> -->

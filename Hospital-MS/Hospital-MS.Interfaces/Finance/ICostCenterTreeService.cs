@@ -16,7 +16,7 @@ namespace Hospital_MS.Interfaces.Finance
         Task<ErrorResponseModel<string>> UpdateCostCenterTree(int CostCenterId, CostCenterTreeModel Model, CancellationToken cancellationToken = default);
         string GenerateCostCenterNumber(int? ParentCostCenterId);
         Task<ErrorResponseModel<string>> DeleteCostCenterTree(int CostCenterId, CancellationToken cancellationToken = default);
-        Task<List<CostCenterTree>> GetCostCenterTreeData(bool IsParent);
+        Task<List<CostCenterTree>> GetCostCenterTreeDataBySearch(string? SearchText);
         List<CostCenterTreeModel> GetCostCenterTreeHierarchicalData(string SearchText);
     }
 }

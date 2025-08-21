@@ -65,9 +65,9 @@ namespace Hospital_MS.API.Controllers
 
         [HttpGet]
         [Route("GetCostCenterTreeData")]
-        public async Task<List<CostCenterTree>> GetCostCenterTreeData(bool IsParent)
+        public async Task<List<CostCenterTree>> GetCostCenterTreeData(string? SearchText)
         {
-            return await _costCenterTreeService.GetCostCenterTreeData(IsParent);
+            return await _costCenterTreeService.GetCostCenterTreeDataBySearch(SearchText);
         }
     }
 }
