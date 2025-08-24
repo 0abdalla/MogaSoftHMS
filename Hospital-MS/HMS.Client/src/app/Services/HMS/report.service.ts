@@ -17,4 +17,10 @@ export class ReportService {
   getItemMovement(itemId:number , from : any , to : any , storeId : number){
     return this.http.get<any>(this.baseUrl + `Items/movement/${itemId}?FromDate=${from}&ToDate=${to}&StoreId=${storeId}`);
   }
+  getItemOrderLimit(id:number){
+    return this.http.get<any>(this.baseUrl + `Stores/items-order-limit/${id}`);
+  }
+  getStoreRate(id:number , from : any , to : any){
+    return this.http.get<any>(this.baseUrl + `Stores/store-rate/${id}?fromDate=${from}&toDate=${to}`);
+  }
 }

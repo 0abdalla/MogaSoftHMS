@@ -209,6 +209,18 @@ export class MenueService {
           icon: 'fa-solid fa-circle',
           route: '/hms/reports/item-movement',
           pageName: 'ItemMovement'
+        },
+        {
+          displayName: 'حد الطلب',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/item-order-limit',
+          pageName: 'ItemOrderLimit'
+        },
+        {
+          displayName: 'تقييم المخزون',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/store-rate',
+          pageName: 'StoreRate'
         }
       ]
     },
