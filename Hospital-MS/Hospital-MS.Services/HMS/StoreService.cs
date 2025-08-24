@@ -383,5 +383,207 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
 
         return ErrorResponseModel<List<StoreRateResponse>>.Success(GenericErrors.GetSuccess, result);
     }
+
+    public async Task<ErrorResponseModel<List<StoreRateResponseV2>>> GetStoreRateAsyncV2(int storeId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
+    {
+        var store = await _unitOfWork.Repository<Store>()
+            .GetAll(x => x.Id == storeId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (store == null)
+            return ErrorResponseModel<List<StoreRateResponseV2>>.Failure(GenericErrors.NotFound);
+
+
+        var storeItemIds = await _unitOfWork.Repository<ReceiptPermissionItem>()
+            .GetAll(x =>
+                x.ReceiptPermission.StoreId == storeId &&
+                x.IsActive &&
+                x.ReceiptPermission.PermissionDate >= fromDate &&
+                x.ReceiptPermission.PermissionDate <= toDate)
+            .Select(x => x.ItemId)
+            .Union(
+                _unitOfWork.Repository<MaterialIssueItem>()
+                .GetAll(x =>
+                    x.MaterialIssuePermission.StoreId == storeId &&
+                    x.IsActive &&
+                    x.MaterialIssuePermission.PermissionDate >= fromDate &&
+                    x.MaterialIssuePermission.PermissionDate <= toDate)
+                .Select(x => x.ItemId)
+            )
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        if (!storeItemIds.Any())
+            return ErrorResponseModel<List<StoreRateResponseV2>>.Success(GenericErrors.GetSuccess, new List<StoreRateResponseV2>());
+
+        // Get only the items linked to this store
+        var items = await _unitOfWork.Repository<Item>()
+            .GetAll(x => x.IsActive && storeItemIds.Contains(x.Id) && x.GroupId != null)
+            .Include(x => x.Group)
+                .ThenInclude(g => g.MainGroup)
+            .ToListAsync(cancellationToken);
+
+
+        var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
+            .GetAll(x =>
+                x.ReceiptPermission.StoreId == storeId &&
+                x.IsActive &&
+                storeItemIds.Contains(x.ItemId) &&
+                x.ReceiptPermission.PermissionDate >= fromDate &&
+                x.ReceiptPermission.PermissionDate <= toDate)
+            .Include(x => x.ReceiptPermission)
+            .ToListAsync(cancellationToken);
+
+
+        var issues = await _unitOfWork.Repository<MaterialIssueItem>()
+            .GetAll(x =>
+                x.MaterialIssuePermission.StoreId == storeId &&
+                x.IsActive &&
+                storeItemIds.Contains(x.ItemId) &&
+                x.MaterialIssuePermission.PermissionDate >= fromDate &&
+                x.MaterialIssuePermission.PermissionDate <= toDate)
+            .Include(x => x.MaterialIssuePermission)
+            .ToListAsync(cancellationToken);
+
+        // Group by MainGroup → ItemGroup
+        var result = items
+            .Where(x => x.Group != null && x.Group.MainGroup != null)
+            .GroupBy(x => x.Group.MainGroup)
+            .Select(mainGroup =>
+            {
+                var itemGroups = mainGroup
+                    .GroupBy(i => i.Group)
+                    .Select(g =>
+                    {
+                        var groupItems = g.ToList();
+
+                        var rateItems = groupItems.Select(item =>
+                        {
+                            var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
+                            var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
+                            var balance = item.OpeningBalance + received - issued;
+                            var totalAmount = balance * item.Cost;
+
+                            return new StoreRateItemsResponseV2
+                            {
+                                ItemId = item.Id,
+                                ItemName = item.NameAr,
+                                Balance = balance,
+                                TotalAmount = totalAmount
+                            };
+                        }).ToList();
+
+                        return new StoreRateItemGroupResponseV2
+                        {
+                            ItemGroupId = g.Key.Id,
+                            ItemGroupName = g.Key.Name,
+                            Items = rateItems
+                        };
+                    })
+                    .ToList();
+
+                return new StoreRateResponseV2
+                {
+                    MainGroupId = mainGroup.Key.Id,
+                    MainGroupName = mainGroup.Key.Name,
+                    StoreId = store.Id,
+                    StoreName = store.Name,
+                    ItemGroups = itemGroups
+                };
+            })
+            .ToList();
+
+        return ErrorResponseModel<List<StoreRateResponseV2>>.Success(GenericErrors.GetSuccess, result);
+    }
+
+    public async Task<ErrorResponseModel<List<MainGroupResponseV2>>> GetItemsOrderLimitAsyncV2(int storeId, CancellationToken cancellationToken = default)
+    {
+        var store = await _unitOfWork.Repository<Store>()
+            .GetAll(x => x.Id == storeId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (store == null)
+            return ErrorResponseModel<List<MainGroupResponseV2>>.Failure(GenericErrors.NotFound);
+
+        var storeItemIds = await _unitOfWork.Repository<ReceiptPermissionItem>()
+            .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.IsActive)
+            .Select(x => x.ItemId)
+            .Union(
+                _unitOfWork.Repository<MaterialIssueItem>()
+                .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && x.IsActive)
+                .Select(x => x.ItemId)
+            )
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        if (!storeItemIds.Any())
+            return ErrorResponseModel<List<MainGroupResponseV2>>.Success(GenericErrors.GetSuccess, new List<MainGroupResponseV2>());
+
+        var items = await _unitOfWork.Repository<Item>()
+            .GetAll(x => x.IsActive && storeItemIds.Contains(x.Id) && x.GroupId != null)
+            .Include(x => x.Group)
+                .ThenInclude(g => g.MainGroup)
+            .ToListAsync(cancellationToken);
+
+        var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
+            .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.IsActive && storeItemIds.Contains(x.ItemId))
+            .Include(x => x.ReceiptPermission)
+            .ToListAsync(cancellationToken);
+
+        var issues = await _unitOfWork.Repository<MaterialIssueItem>()
+            .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && x.IsActive && storeItemIds.Contains(x.ItemId))
+            .Include(x => x.MaterialIssuePermission)
+            .ToListAsync(cancellationToken);
+
+        // Group by MainGroup → ItemGroup
+        var result = items
+            .Where(x => x.Group != null && x.Group.MainGroup != null)
+            .GroupBy(x => x.Group.MainGroup) // group by MainGroup
+            .Select(mainGroup =>
+            {
+                var itemGroups = mainGroup
+                    .GroupBy(i => i.Group) // then group by ItemGroup
+                    .Select(g =>
+                    {
+                        var groupItems = g.ToList();
+
+                        var itemLimits = groupItems.Select(item =>
+                        {
+                            var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
+                            var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
+                            var balance = item.OpeningBalance + received - issued;
+
+                            return new ItemLimitsResponseV2
+                            {
+                                ItemId = item.Id,
+                                ItemName = item.NameAr,
+                                OrderLimit = item.OrderLimit,
+                                Balance = balance
+                            };
+                        }).ToList();
+
+                        return new ItemsOrderLimitResponseV2
+                        {
+                            ItemGroupId = g.Key.Id,
+                            ItemGroupName = g.Key.Name,
+                            Items = itemLimits
+                        };
+                    })
+                    .ToList();
+
+                return new MainGroupResponseV2
+                {
+                    MainGroupId = mainGroup.Key.Id,
+                    MainGroupName = mainGroup.Key.Name,
+                    StoreId = store.Id,
+                    StoreName = store.Name,
+                    ItemGroups = itemGroups
+                };
+            })
+            .ToList();
+
+        return ErrorResponseModel<List<MainGroupResponseV2>>.Success(GenericErrors.GetSuccess, result);
+    }
 }
+
 
