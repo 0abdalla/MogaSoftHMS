@@ -164,7 +164,9 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 .Include(x => x.Supplier)
                 .Include(x => x.DailyRestriction)
                 .Include(x => x.Items)
-                .ThenInclude(i => i.Item)
+                    .ThenInclude(i => i.Item)
+                .Include(i => i.Items)
+                    .ThenInclude(i => i.Item.Unit)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (permission == null)
@@ -193,7 +195,8 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     Unit = i.Unit,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
-                    TotalPrice = i.TotalPrice
+                    TotalPrice = i.TotalPrice,
+                    UnitId = i.Item.UnitId
                 }).ToList(),
 
                 DailyRestriction = new PartialDailyRestrictionResponse

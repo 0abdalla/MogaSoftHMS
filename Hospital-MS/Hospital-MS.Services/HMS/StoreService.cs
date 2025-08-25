@@ -254,136 +254,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         return ErrorResponseModel<List<StoreMovementResponse>>.Success(GenericErrors.GetSuccess, groupedResult);
     }
 
-    public async Task<ErrorResponseModel<List<ItemsOrderLimitResponse>>> GetItemsOrderLimitAsync(int storeId, CancellationToken cancellationToken = default)
-    {
-        //var store = await _unitOfWork.Repository<Store>()
-        //    .GetAll()
-        //    .FirstOrDefaultAsync(x => x.Id == storeId, cancellationToken);
-
-        //if (store == null)
-        //    return ErrorResponseModel<List<ItemsOrderLimitResponse>>.Failure(GenericErrors.NotFound);
-
-
-        var items = await _unitOfWork.Repository<Item>()
-            .GetAll(x => x.IsActive)
-            .Include(x => x.Group)
-            .ToListAsync(cancellationToken);
-
-        var itemIds = items.Select(x => x.Id).ToList();
-
-        var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
-            .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.IsActive && itemIds.Contains(x.ItemId))
-            .Include(x => x.ReceiptPermission)
-            .ToListAsync(cancellationToken);
-
-        var issues = await _unitOfWork.Repository<MaterialIssueItem>()
-            .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && x.IsActive && itemIds.Contains(x.ItemId))
-            .Include(x => x.MaterialIssuePermission)
-            .ToListAsync(cancellationToken);
-
-        // Group by ItemGroup
-        var result = items
-            .GroupBy(x => x.Group)
-            .Select(g =>
-            {
-                var groupItems = g.ToList();
-                var groupItemIds = groupItems.Select(i => i.Id).ToList();
-
-                var itemLimits = groupItems.Select(item =>
-                {
-                    var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
-                    var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
-                    var balance = item.OpeningBalance + received - issued;
-
-                    return new ItemLimitsResponse
-                    {
-                        ItemId = item.Id,
-                        ItemName = item.NameAr,
-                        OrderLimit = item.OrderLimit,
-                        Balance = balance
-                    };
-
-                }).ToList();
-
-                return new ItemsOrderLimitResponse
-                {
-                    ItemGroupId = g.Key.Id,
-                    ItemGroupName = g.Key.Name,
-                    Items = itemLimits,
-                    //StoreId = store?.Id,
-                    //StoreName = store?.Name
-                };
-            })
-            .ToList();
-
-        return ErrorResponseModel<List<ItemsOrderLimitResponse>>.Success(GenericErrors.GetSuccess, result);
-    }
-
-    public async Task<ErrorResponseModel<List<StoreRateResponse>>> GetStoreRateAsync(int storeId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
-    {
-        var items = await _unitOfWork.Repository<Item>()
-            .GetAll(x => x.IsActive && x.GroupId != null)
-            .Include(x => x.Group)
-            .Where(x => x.Group != null)
-            .ToListAsync(cancellationToken);
-
-        var itemIds = items.Select(x => x.Id).ToList();
-
-        var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
-            .GetAll(x =>
-                x.ReceiptPermission.StoreId == storeId &&
-                x.IsActive &&
-                itemIds.Contains(x.ItemId) &&
-                x.ReceiptPermission.PermissionDate >= fromDate &&
-                x.ReceiptPermission.PermissionDate <= toDate)
-            .Include(x => x.ReceiptPermission)
-            .ToListAsync(cancellationToken);
-
-        var issues = await _unitOfWork.Repository<MaterialIssueItem>()
-            .GetAll(x =>
-                x.MaterialIssuePermission.StoreId == storeId &&
-                x.IsActive &&
-                itemIds.Contains(x.ItemId) &&
-                x.MaterialIssuePermission.PermissionDate >= fromDate &&
-                x.MaterialIssuePermission.PermissionDate <= toDate)
-            .Include(x => x.MaterialIssuePermission)
-            .ToListAsync(cancellationToken);
-
-        // Group by ItemGroup
-        var result = items
-            .GroupBy(x => x.Group)
-            .Select(g =>
-            {
-                var groupItems = g.ToList();
-
-                var rateItems = groupItems.Select(item =>
-                {
-                    var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
-                    var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
-                    var balance = item.OpeningBalance + received - issued;
-                    var totalAmount = balance * item.Cost;
-
-                    return new StoreRateItemsResponse
-                    {
-                        ItemId = item.Id,
-                        ItemName = item.NameAr,
-                        Balance = balance,
-                        TotalAmount = totalAmount
-                    };
-                }).ToList();
-
-                return new StoreRateResponse
-                {
-                    ItemGroupId = g.Key.Id,
-                    ItemGroupName = g.Key.Name,
-                    Items = rateItems
-                };
-            })
-            .ToList();
-
-        return ErrorResponseModel<List<StoreRateResponse>>.Success(GenericErrors.GetSuccess, result);
-    }
-
     public async Task<ErrorResponseModel<List<StoreRateResponseV2>>> GetStoreRateAsyncV2(int storeId, DateOnly fromDate, DateOnly toDate, CancellationToken cancellationToken = default)
     {
         var store = await _unitOfWork.Repository<Store>()
@@ -499,8 +369,8 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
     public async Task<ErrorResponseModel<List<MainGroupResponseV2>>> GetItemsOrderLimitAsyncV2(int storeId, CancellationToken cancellationToken = default)
     {
         var store = await _unitOfWork.Repository<Store>()
-            .GetAll(x => x.Id == storeId)
-            .FirstOrDefaultAsync(cancellationToken);
+         .GetAll(x => x.Id == storeId)
+         .FirstOrDefaultAsync(cancellationToken);
 
         if (store == null)
             return ErrorResponseModel<List<MainGroupResponseV2>>.Failure(GenericErrors.NotFound);
@@ -547,20 +417,24 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                     {
                         var groupItems = g.ToList();
 
-                        var itemLimits = groupItems.Select(item =>
-                        {
-                            var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
-                            var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
-                            var balance = item.OpeningBalance + received - issued;
-
-                            return new ItemLimitsResponseV2
+                        var itemLimits = groupItems
+                            .Select(item =>
                             {
-                                ItemId = item.Id,
-                                ItemName = item.NameAr,
-                                OrderLimit = item.OrderLimit,
-                                Balance = balance
-                            };
-                        }).ToList();
+                                var received = receipts.Where(r => r.ItemId == item.Id).Sum(r => r.Quantity);
+                                var issued = issues.Where(i => i.ItemId == item.Id).Sum(i => i.Quantity);
+                                var balance = item.OpeningBalance + received - issued;
+
+                                return new ItemLimitsResponseV2
+                                {
+                                    ItemId = item.Id,
+                                    ItemName = item.NameAr,
+                                    OrderLimit = item.OrderLimit,
+                                    Balance = balance
+                                };
+                            })
+
+                            .Where(x => x.Balance <= x.OrderLimit)
+                            .ToList();
 
                         return new ItemsOrderLimitResponseV2
                         {
@@ -569,6 +443,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                             Items = itemLimits
                         };
                     })
+                    .Where(g => g.Items.Any())
                     .ToList();
 
                 return new MainGroupResponseV2
@@ -580,6 +455,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                     ItemGroups = itemGroups
                 };
             })
+            .Where(mg => mg.ItemGroups.Any())
             .ToList();
 
         return ErrorResponseModel<List<MainGroupResponseV2>>.Success(GenericErrors.GetSuccess, result);
