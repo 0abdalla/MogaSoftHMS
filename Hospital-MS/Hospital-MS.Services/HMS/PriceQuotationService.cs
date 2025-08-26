@@ -325,6 +325,58 @@ public class PriceQuotationService : IPriceQuotationService
         }
     }
 
+    public async Task<PagedResponseModel<string>> SubmitPriceQuotationByPurchaseRequestIdAsyncV2(int purchaseRequestId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var quotations = await _unitOfWork.Repository<PriceQuotation>()
+                .GetAll()
+                .Include(x => x.Items)
+                .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId)
+                .ToListAsync(cancellationToken);
+
+            if (quotations.Count == 0)
+                return PagedResponseModel<string>.Failure(GenericErrors.NotFound);
+
+            var quotationsWithTotal = quotations
+                .Select(q => new
+                {
+                    Quotation = q,
+                    TotalAmount = q.Items.Where(i => i.IsActive).Sum(i => i.Quantity * i.UnitPrice)
+                })
+                .ToList();
+
+            var minQuotation = quotationsWithTotal
+                .OrderBy(q => q.TotalAmount)
+                .First();
+
+            foreach (var q in quotationsWithTotal)
+            {
+                q.Quotation.Status = q == minQuotation ? QuotationStatus.Approved : QuotationStatus.Rejected;
+                _unitOfWork.Repository<PriceQuotation>().Update(q.Quotation);
+            }
+
+            // Update PurchaseRequest with selected PriceQuotationId
+            var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
+                .GetAll()
+                .FirstOrDefaultAsync(x => x.Id == purchaseRequestId, cancellationToken);
+
+            if (purchaseRequest != null)
+            {
+                purchaseRequest.PriceQuotationId = minQuotation.Quotation.Id;
+                _unitOfWork.Repository<PurchaseRequest>().Update(purchaseRequest);
+            }
+
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return PagedResponseModel<string>.Success(GenericErrors.GetSuccess, 1, "تم التحديث بنجاح");
+        }
+        catch (Exception)
+        {
+            return PagedResponseModel<string>.Failure(GenericErrors.TransFailed);
+        }
+    }
+
     public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PriceQuotationRequest request, CancellationToken cancellationToken = default)
     {
         try

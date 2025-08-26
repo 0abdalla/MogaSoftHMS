@@ -56,7 +56,8 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 DocumentNumber = debitNotice.Id.ToString(),
                 RestrictionTypeId = null,
                 IsActive = true,
-                AccountingGuidanceId = 2,
+                // TODO : replace with the correct accounting guidance id for debit notice
+                AccountingGuidanceId = 15,
                 RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =

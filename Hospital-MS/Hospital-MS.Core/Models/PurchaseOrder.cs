@@ -1,9 +1,4 @@
 ﻿using Hospital_MS.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models;
 public class PurchaseOrder : AuditableEntity
@@ -18,7 +13,10 @@ public class PurchaseOrder : AuditableEntity
     public PurchaseStatus Status { get; set; } = PurchaseStatus.Pending;
     public bool IsActive { get; set; } = true;
 
-    public int? PriceQuotationId { get; set; }
-    public PriceQuotation? PriceQuotation { get; set; }
+    //public int? PriceQuotationId { get; set; }
+    //public PriceQuotation? PriceQuotation { get; set; }
+
+    public int? PurchaseRequestId { get; set; }
+    public PurchaseRequest? PurchaseRequest { get; set; }
     public ICollection<PurchaseOrderItem> Items { get; set; } = new HashSet<PurchaseOrderItem>();
 }

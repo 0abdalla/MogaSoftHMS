@@ -63,7 +63,7 @@ public class PriceQuotationsController : ApiBaseController
     [HttpPut("SubmitPriceQuotation/{purchaseRequestId}")]
     public async Task<IActionResult> PriceQuotation(int purchaseRequestId, CancellationToken cancellationToken)
     {
-        var result = await _service.SubmitPriceQuotationByPurchaseRequestIdAsync(purchaseRequestId, cancellationToken);
+        var result = await _service.SubmitPriceQuotationByPurchaseRequestIdAsyncV2(purchaseRequestId, cancellationToken);
         return Ok(result);
     }
 

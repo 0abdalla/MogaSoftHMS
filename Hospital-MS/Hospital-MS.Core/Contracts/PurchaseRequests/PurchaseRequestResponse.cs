@@ -1,4 +1,6 @@
-﻿namespace Hospital_MS.Core.Contracts.PurchaseRequests;
+﻿using Hospital_MS.Core.Contracts.PriceQuotation;
+
+namespace Hospital_MS.Core.Contracts.PurchaseRequests;
 public class PurchaseRequestResponse
 {
     public int Id { get; set; }
@@ -11,4 +13,6 @@ public class PurchaseRequestResponse
     public string Status { get; set; } = string.Empty;
     public string? Notes { get; set; }
     public List<PurchaseRequestItemResponse> Items { get; set; } = [];
+
+    public PriceQuotationResponse? PriceQuotation { get; set; }
 }

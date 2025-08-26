@@ -105,6 +105,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 .Include(x => x.Store)
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
+                .Include(x => x.PurchaseOrder)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
@@ -133,6 +134,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
                     PurchaseOrderId = x.PurchaseOrderId,
+                    PurchaseOrderNumber = x.PurchaseOrder.OrderNumber,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new ReceiptPermissionItemResponse
                     {
                         ItemId = i.ItemId,
@@ -167,6 +169,8 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     .ThenInclude(i => i.Item)
                 .Include(i => i.Items)
                     .ThenInclude(i => i.Item.Unit)
+                .Include(x => x.DailyRestriction)
+                    .ThenInclude(d => d.AccountingGuidance)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (permission == null)
@@ -202,12 +206,12 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     Id = permission?.DailyRestriction?.Id,
-                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
+                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance?.Name ?? null,
                     Amount = totalAmount,
                     From = permission.Supplier.Name,
                     To = permission.Store.Name,
                     RestrictionDate = permission.DailyRestriction.RestrictionDate,
-                    RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? string.Empty,
+                    RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? null,
                     Number = permission.PermissionNumber
                 }
             };
@@ -316,14 +320,14 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 RestrictionDate = request.PermissionDate,
                 RestrictionTypeId = null,
                 Description = $"قيد إذن استلام رقم {permission.PermissionNumber}",
-                AccountingGuidanceId = 1, // المخازن
+                AccountingGuidanceId = 16, // المخازن
                 IsActive = true,
                 Details = new List<DailyRestrictionDetail>
                 {
                     new DailyRestrictionDetail
                     {
                         // TODO: Replace with actual account ID for inventory
-                        AccountId = 13,
+                        AccountId = 406,
                         Debit = totalAmount,
                         Credit = totalAmount,
                         CostCenterId = null,
@@ -353,7 +357,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 To = store.Name,
                 RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber,
-
+                Number = permission.PermissionNumber
             };
 
             return ErrorResponseModel<PartialDailyRestrictionResponse>.Success(GenericErrors.AddSuccess, response);

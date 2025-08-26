@@ -89,7 +89,8 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 DocumentNumber = treasuryOperation.Id.ToString(),
                 RestrictionTypeId = null,
                 IsActive = true,
-                AccountingGuidanceId = 1,
+                // TODO : replace it
+                AccountingGuidanceId = 17,
                 RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =

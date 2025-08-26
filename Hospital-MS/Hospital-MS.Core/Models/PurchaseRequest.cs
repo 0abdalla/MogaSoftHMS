@@ -1,9 +1,4 @@
 ﻿using Hospital_MS.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models;
 public class PurchaseRequest : AuditableEntity
@@ -20,5 +15,7 @@ public class PurchaseRequest : AuditableEntity
     public bool IsActive { get; set; } = true;
 
 
+    public int? PriceQuotationId { get; set; }
+    public PriceQuotation? PriceQuotation { get; set; }
     public ICollection<PurchaseRequestItem> Items { get; set; } = new HashSet<PurchaseRequestItem>();
 }
