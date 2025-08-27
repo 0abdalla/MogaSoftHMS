@@ -1,4 +1,6 @@
-﻿namespace Hospital_MS.Core.Contracts.MaterialIssuePermission;
+﻿using Hospital_MS.Core.Contracts.DailyRestrictions;
+
+namespace Hospital_MS.Core.Contracts.MaterialIssuePermission;
 public class MaterialIssuePermissionResponse
 {
     public int Id { get; set; }
@@ -16,4 +18,6 @@ public class MaterialIssuePermissionResponse
 
     public int? DisbursementRequestId { get; set; }
     public string? DisbursementRequestNumber { get; set; }
+
+    public PartialDailyRestrictionResponse DailyRestriction { get; set; } = new();
 }

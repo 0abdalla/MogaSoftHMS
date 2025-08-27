@@ -14,60 +14,6 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IDailyRestrictionService _dailyRestrictionService = dailyRestrictionService;
 
-    public async Task<ErrorResponseModel<string>> CreateAsync(ReceiptPermissionRequest request, CancellationToken cancellationToken = default)
-    {
-        using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var store = await _unitOfWork.Repository<Store>()
-                .GetByIdAsync(request.StoreId, cancellationToken);
-            if (store is null)
-                return ErrorResponseModel<string>.Failure(new Error("المخزن غير موجود", Status.NotFound));
-
-            var supplier = await _unitOfWork.Repository<Supplier>()
-                .GetByIdAsync(request.SupplierId, cancellationToken);
-            if (supplier is null)
-                return ErrorResponseModel<string>.Failure(new Error("المورد غير موجود", Status.NotFound));
-
-            var purchaseRequest = await _unitOfWork.Repository<PurchaseOrder>()
-                .GetByIdAsync(request.PurchaseOrderId, cancellationToken);
-            if (purchaseRequest is null)
-                return ErrorResponseModel<string>.Failure(new Error("امر الشراء غير موجود", Status.NotFound));
-
-            var permission = new ReceiptPermission
-            {
-                PermissionNumber = await GeneratePermissionNumber(cancellationToken),
-                DocumentNumber = request.DocumentNumber,
-                PermissionDate = request.PermissionDate,
-                StoreId = request.StoreId,
-                SupplierId = request.SupplierId,
-                PurchaseOrderId = request.PurchaseOrderId,
-                Notes = request.Notes,
-
-                Items = request.Items.Select(i => new ReceiptPermissionItem
-                {
-                    ItemId = i.Id,
-                    Unit = i.Unit,
-                    Quantity = i.Quantity,
-                    UnitPrice = i.UnitPrice,
-                    TotalPrice = i.TotalPrice,
-                    IsActive = true
-
-                }).ToList()
-            };
-
-            await _unitOfWork.Repository<ReceiptPermission>().AddAsync(permission, cancellationToken);
-            await _unitOfWork.CompleteAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, permission.PermissionNumber);
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        }
-    }
 
     public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {

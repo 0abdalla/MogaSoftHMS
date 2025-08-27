@@ -10,4 +10,6 @@ public class PartialDailyRestrictionResponse
     public decimal Amount { get; set; }
 
     public string? Number { get; set; }
+
+
 }
