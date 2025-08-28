@@ -30,21 +30,22 @@
             <table class="table table-hover mt-4">
                 <thead>
                     <tr>
-                        <th>رقم السرير</th>
+                        <!-- <th>رقم السرير</th> -->
                         <th>الغرفة</th>
                         <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody *ngIf="beds?.length > 0">
                     <tr *ngFor="let bed of beds | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }"  style="cursor: pointer">
-                        <td class="text-secondary">{{ bed.id }}</td>
+                        <!-- <td class="text-secondary">{{ bed.id }}</td> -->
                         <td>
-                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <!-- <div class="d-flex align-items-center gap-2 justify-content-start">
                                 <div class="avatar-circle">
-                                    {{ (bed.name?.split(' ')[1]?.charAt(0) || bed.name?.charAt(0)) }}
+                                    {{ (bed.room?.name?.split(' ')[1]?.charAt(0) || bed.room?.name?.charAt(0)) }}
                                 </div>
-                                <span class="fw-bold">{{ bed.name }}</span>
-                            </div>
+                                <span class="fw-bold">غرفة رقم {{ bed.room?.number }}</span>
+                            </div> -->
+                            سرير رقم {{ bed?.number }}
                         </td>
                         <td>
                             <button type="button" class="btn btn-primary mx-2" (click)="editBed(bed.id)">
@@ -96,32 +97,32 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="roomId">الغرفة</label>
-                                <select class="form-control shadow-none" formControlName="roomId" id="roomId">
+                                <select class="form-select shadow-none" formControlName="roomId" id="roomId">
                                     <option value="" selected disabled>اختر الغرفة</option>
-                                    <option *ngFor="let room of rooms" [value]="room.id">{{ room.name }}</option>
+                                    <option *ngFor="let room of rooms" [value]="room.id">غرفة رقم {{ room.number }}</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="number">رقم السرير</label>
                                 <input type="number" class="form-control shadow-none" formControlName="number" id="number">
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="status">الحالة</label>
-                                <select class="form-control shadow-none" formControlName="status" id="status">
+                                <select class="form-select shadow-none" formControlName="status" id="status">
                                     <option selected disabled value="">اختر الحالة</option>
-                                    <option value="نشط">نشط</option>
-                                    <option value="غير نشط">غير نشط</option>
+                                    <option value="Available">متاح</option>
+                                    <option value="Occupied">محجوز</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="dailyPrice">سعر اليوم</label>
                                 <input type="number" class="form-control shadow-none" formControlName="dailyPrice" id="dailyPrice">

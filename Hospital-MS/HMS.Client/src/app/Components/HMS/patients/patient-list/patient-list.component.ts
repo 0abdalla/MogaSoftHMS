@@ -252,6 +252,7 @@ export class PatientListComponent {
       next: (res) => {
         this.admissionDetails = res.results;
         this.getMedicalHistory(id);
+        console.log(this.admissionDetails);
       },
       error: (err) => {
         console.error('Failed to fetch admission data', err);

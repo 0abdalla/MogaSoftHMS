@@ -73,26 +73,23 @@
             <thead>
                 <tr>
                     <th>رقم القيد</th>
-                    <th>نوع القيد</th>
-                    <th>حالة القيد</th>
-                    <th>التوجيه المحاسبي</th>
                     <th>التاريخ</th>
+                    <th>المبلغ</th>
+                    <th>التوجيه المحاسبي</th>
                     <th>الإجراءات</th>
                 </tr>
             </thead>
             <tbody *ngIf="restrictions?.length > 0">
                 <tr *ngFor="let restriction of restrictions | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openRestriction(restriction.id)" style="cursor: pointer">
-                    <td>{{ restriction.restrictionNumber }}</td>
-                    <td>{{ restriction.restrictionTypeName }}</td>
-                    <td>
-                        <p class="text-white status-pill fw-bold" [ngStyle]="{ backgroundColor: getStatusColor(restriction.restrictionStatus) }">
-                            {{ getStatusName(restriction.restrictionStatus) || 'غير مرحل' }}
-                        </p>
-                      </td>
+                    <td class="fw-bold">{{ restriction.restrictionNumber }}</td>
+                    <td>{{ restriction.restrictionDate | date:'yyyy-MM-dd' }}</td>
+                    <td>{{ restriction.details?.[0]?.credit | number:'1.2-2' }} ج.م</td>
                     <td>{{ restriction.accountingGuidanceName }}</td>
-                    <td>{{ restriction.restrictionDate }}</td>
                     <td>
-                        <button type="button" class="btn btn-primary mx-2" (click)="editRestriction(restriction.id)">
+                        <button type="button" class="btn btn-primary mx-2" (click)="printRestriction(restriction.id)">
+                            <i class="fa fa-print"></i>
+                        </button>
+                        <button type="button" class="btn btn-warning mx-2" (click)="editRestriction(restriction.id)">
                             <i class="fa fa-edit"></i>
                         </button>
                         <button type="button" class="btn btn-danger mx-2" (click)="deleteRestriction(restriction.id)">
@@ -124,7 +121,7 @@
 
 
 
-<div class="modal fade" id="addRestrictionModal" tabindex="-1" aria-labelledby="addRestrictionModalLabel" aria-hidden="true">
+<div class="modal fade" id="addRestrictionModal" tabindex="-1" aria-labelledby="addRestrictionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
@@ -227,11 +224,12 @@
                         </div>
                     </div>
                     <div class="text-center text-danger" *ngIf="!isBalanced">
-                        ⚠️ مجموع المدين لا يساوي مجموع الدائن.
-                      </div>
+                        مجموع المدين لا يساوي مجموع الدائن.
+                    </div>
                       
                     <div class="text-center mt-4">
-                        <button type="submit" class="btn-blue" [disabled]="restrictionForm.invalid"> {{isEditMode ? 'تعديل' : 'إضافة'}} قيود يومية</button>
+                        <button type="submit" class="btn-blue" [disabled]="restrictionForm.invalid || !isBalanced"> {{isEditMode ? 'تعديل' : 'إضافة'}} قيود يومية</button>
+                        <button class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()">خروج</button>
                     </div>
                 </form>
             </div>

@@ -83,7 +83,7 @@
 
 
 
-<div class="modal fade" id="addPurchaseRequestModal" tabindex="-1" aria-labelledby="addPurchaseRequestModalLabel" aria-hidden="true">
+<div class="modal fade" id="addPurchaseRequestModal" tabindex="-1" aria-labelledby="addPurchaseRequestModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header justify-content-center">
@@ -167,7 +167,9 @@
                   <div class="text-center">
                       <button type="submit" class="btn-blue px-4" [disabled]="purchaseRequestForm.invalid">
                           {{ isEditMode ? 'حفظ التعديلات' : 'إضافة طلب شراء' }}
-                        </button>                          
+                        </button>     
+                <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()">خروج</button>             
+
                   </div>
               </form>
           </div>
@@ -361,7 +363,8 @@
           <div class="text-center mt-3">
               <button type="submit" class="btn-blue" [disabled]="itemForm.invalid">
                   {{ isEditMode ? 'حفظ التعديلات' : 'إضافة الصنف' }}
-                </button>                  
+                </button>     
+                <button type="button" class="btn-red mx-2" data-bs-dismiss="modal">خروج</button>             
           </div>
         </form>
       </div>

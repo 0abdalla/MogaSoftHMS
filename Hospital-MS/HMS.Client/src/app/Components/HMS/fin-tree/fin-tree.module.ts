@@ -36,6 +36,7 @@ import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-se
 import { IssueRequestComponent } from './action/issue-request/issue-request.component';
 import { IsTodayPipe } from '../../../Pipes/is-today.pipe';
 import { UnitsComponent } from './inputs/units/units.component';
+import { AccountGuidanceComponent } from './inputs/account-guidance/account-guidance.component';
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import { UnitsComponent } from './inputs/units/units.component';
     YearFinSettingsComponent,
     IssueRequestComponent,
     IsTodayPipe,
-    UnitsComponent
+    UnitsComponent,
+    AccountGuidanceComponent
   ],
   imports: [
     CommonModule,

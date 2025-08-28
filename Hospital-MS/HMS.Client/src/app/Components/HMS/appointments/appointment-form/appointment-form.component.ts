@@ -278,55 +278,56 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   filterServicesByDay() {
-    if (!this.services || this.services.length === 0) return;
-
+    if (!this.services || this.services.length === 0) {
+      this.filteredServices = [];
+      return;
+    }
+  
     const dayOfWeek = this.selectedDate
       ? new Date(this.selectedDate).toLocaleDateString('en-US', { weekday: 'long' })
       : null;
   
-    console.log("Selected Day:", dayOfWeek);
+    const formType = this.appointmentDetailsForm.get('appointmentType')?.value;
   
     this.filteredServices = this.services.filter(service => {
-      const formType = this.appointmentDetailsForm.get('appointmentType')?.value;
-  
       const matchesType = formType
         ? service.type?.toLowerCase() === formType.toLowerCase()
         : true;
   
-      const matchesDay =
-        dayOfWeek && service.medicalServiceSchedules?.length
-          ? service.medicalServiceSchedules.some((s: any) =>
-              s.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
-            )
-          : false;
-  
-      console.log("Service:", service.name);
-      console.log("Service Days:", service.medicalServiceSchedules?.map((s: any) => s.weekDay));
-      console.log("Matches Type:", matchesType, "Matches Day:", matchesDay);
+      const matchesDay = dayOfWeek
+        ? (service.medicalServiceSchedules?.length > 0 &&
+           service.medicalServiceSchedules.some((s: any) =>
+             s.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
+           ))
+        : true;
   
       return matchesType && matchesDay;
     });
+  
+    console.log("Filtered Services (final):", this.filteredServices);
   }
+  
 
   filterDoctorsByDay() {
     if (!this.selectedDate || !this.doctors.length) {
       this.filteredDoctors = [];
-      this.filteredDoctorsByService = [];
       return;
     }
-
+  
     const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
-
-    this.filteredDoctors = this.filteredDoctors.filter(doctor => {
+  
+    this.filteredDoctors = this.doctors.filter(doctor => {
       if (!doctor.doctorSchedules || !doctor.doctorSchedules.length) {
         return false;
       }
-      return doctor.doctorSchedules.some((schedule: any) => {
-        return schedule.weekDay === dayOfWeek;
-      });
+      return doctor.doctorSchedules.some((schedule: any) =>
+        schedule.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
+      );
     });
-    this.filteredDoctorsByService = [...this.filteredDoctors];
+  
+    console.log("Filtered Doctors:", this.filteredDoctors);
   }
+  
 
   getArabicDayOfWeek(date: Date): string {
     const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -356,19 +357,23 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   onAppointmentTypeChange(): void {
-    this.filterServices();
-    this.appointmentDetailsForm.get('medicalServiceId')?.setValue(null);
+    // this.filterServices();
+    // this.appointmentDetailsForm.get('medicalServiceId')?.setValue(null);
+    this.filterDoctorsByDay();
+    this.filterServicesByDay();
   }
 
   onServiceSelected() {
-    const selectedId = this.appointmentDetailsForm.get('medicalServiceId')?.value;
+    const selectedId = Number(this.appointmentDetailsForm.get('medicalServiceId')?.value);
   
     const selectedService = this.filteredServices.find(
       (s: any) => s.id === selectedId
     );
   
+    this.SelectedService = selectedService;
     console.log("Selected Service:", selectedService);
   }
+  
 
   onSubmit() {
     debugger;
@@ -635,41 +640,41 @@ export class AppointmentFormComponent implements OnInit {
   }
   
 
-  private filterServices(): void {
-    const selectedType = this.appointmentDetailsForm.get('appointmentType')?.value;
+  // private filterServices(): void {
+  //   const selectedType = this.appointmentDetailsForm.get('appointmentType')?.value;
 
-    if (!selectedType) {
-      this.filteredServices = [];
-      return;
-    }
-    let services = this.services.filter(service => service.type === selectedType);
+  //   if (!selectedType) {
+  //     this.filteredServices = [];
+  //     return;
+  //   }
+  //   let services = this.services.filter(service => service.type === selectedType);
 
-    if (this.selectedDate) {
+  //   if (this.selectedDate) {
 
-      const dayOfWeek = this.getArabicDayOfWeek(this.selectedDate);
-      var servicesFiltered = services.filter(service => {
-        if (!service.medicalServiceSchedules || service.medicalServiceSchedules.length === 0) {
-          return true;
-        }
-        return service.medicalServiceSchedules.some(schedule =>
-          schedule.weekDay === dayOfWeek
-        );
-      });
-      if (servicesFiltered.length == 0) {
-        const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
-        var servicesFiltered = services.filter(service => {
-          if (!service.medicalServiceSchedules || service.medicalServiceSchedules.length === 0) {
-            return true;
-          }
-          return service.medicalServiceSchedules.some(schedule =>
-            schedule.weekDay === dayOfWeek
-          );
-        });
-      }
-    }
+  //     const dayOfWeek = this.getArabicDayOfWeek(this.selectedDate);
+  //     var servicesFiltered = services.filter(service => {
+  //       if (!service.medicalServiceSchedules || service.medicalServiceSchedules.length === 0) {
+  //         return true;
+  //       }
+  //       return service.medicalServiceSchedules.some(schedule =>
+  //         schedule.weekDay === dayOfWeek
+  //       );
+  //     });
+  //     if (servicesFiltered.length == 0) {
+  //       const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
+  //       var servicesFiltered = services.filter(service => {
+  //         if (!service.medicalServiceSchedules || service.medicalServiceSchedules.length === 0) {
+  //           return true;
+  //         }
+  //         return service.medicalServiceSchedules.some(schedule =>
+  //           schedule.weekDay === dayOfWeek
+  //         );
+  //       });
+  //     }
+  //   }
 
-    this.filteredServices = servicesFiltered;
-  }
+  //   this.filteredServices = servicesFiltered;
+  // }
 
   removeRadiologyType(index: number) {
     this.radiologyTypesSelected.splice(index, 1);

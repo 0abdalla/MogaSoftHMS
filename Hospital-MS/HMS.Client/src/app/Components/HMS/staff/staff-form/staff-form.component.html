@@ -206,10 +206,10 @@
                 </div>
 
                 <div class="col-lg-4" *ngIf="employeeForm.get('isAuthorized')?.value === true">
-                    <label class="form-label">اسم المستخدم</label>
-                    <input type="text" class="form-control shadow-none" formControlName="userName" placeholder="أدخل اسم المستخدم">
+                    <label class="form-label">المستخدم</label>
+                    <input type="text" class="form-control shadow-none" formControlName="userName" placeholder="أدخل المستخدم">
                     <div *ngIf="employeeForm.get('userName')?.invalid && (employeeForm.get('userName')?.touched)" class="text-danger">
-                        <ng-container *ngIf="employeeForm.get('userName')?.errors?.['required']">اسم المستخدم مطلوب</ng-container>
+                        <ng-container *ngIf="employeeForm.get('userName')?.errors?.['required']">المستخدم مطلوب</ng-container>
                     </div>
                 </div>
 

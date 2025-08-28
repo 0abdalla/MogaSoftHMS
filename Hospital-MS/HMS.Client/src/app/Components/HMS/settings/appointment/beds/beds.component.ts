@@ -85,9 +85,10 @@ export class BedsComponent {
       
         if (this.isEditMode && this.currentBedId !== null) {
           this.appointmentService.editBed(this.currentBedId, formData).subscribe({
-            next: () => {
-              this.getRooms();
+            next: (res:any) => {
+              this.getBeds();
               this.bedForm.reset();
+              console.log(res);
               this.isEditMode = false;
               this.currentBedId = null;
               this.messageService.add({
@@ -113,6 +114,8 @@ export class BedsComponent {
             next: (res:any) => {
               this.getRooms();
               this.bedForm.reset();
+              console.log(res);
+
               if(res.isSuccess==true){
                 this.messageService.add({
                   severity: 'success',

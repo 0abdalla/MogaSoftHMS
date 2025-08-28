@@ -358,6 +358,12 @@ export class MenueService {
               pageName: 'AccountTree'
             },
             {
+              displayName: 'التوجيهات المحاسبية',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/fin-tree/account-guidance',
+              pageName: 'AccountGuidance'
+            },
+            {
               displayName: 'الخزائن',
               icon: 'fa-solid fa-circle',
               route: '/hms/fin-tree/boxes',

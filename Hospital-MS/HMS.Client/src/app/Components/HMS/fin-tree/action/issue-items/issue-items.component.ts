@@ -34,7 +34,7 @@ export class IssueItemsComponent implements OnInit {
   suppliers:any[]=[];
   stores:any[]=[];
   purchaseRequests:any[]=[];
-  branchs:any[] = [];
+  // branchs:any[] = [];
   allRequests:any[]=[]
   jobDeps:any[]=[]
   // 
@@ -80,7 +80,7 @@ export class IssueItemsComponent implements OnInit {
     this.getSuppliers();
     this.getStores();
     // this.getPurchaseRequests();
-    this.getBranches();
+    // this.getBranches();
     this.getAllRequests();
     this.getDeps();
     // 
@@ -235,16 +235,21 @@ export class IssueItemsComponent implements OnInit {
           this.depName = res.results.jobDepartmentName;
           this.printedPermissionData = {
             ...formData,
+            permissionDate: res.results.permissionDate,
+            restrictionNumber: res.results.dailyRestriction?.restrictionNumber,
+            restrictionDate: res.results.dailyRestriction?.restrictionDate,
+            accountingGuidanceName: res.results.dailyRestriction?.accountingGuidanceName,
+            amount: res.results.dailyRestriction?.amount,
+            from: res.results.dailyRestriction?.from,
+            to: res.results.dailyRestriction?.to,
             disbursementRequestNumber: this.allRequests.find(ar => ar.id === formData.disbursementRequestId)?.number || '',
             storeName: this.stores.find(s => s.id === formData.storeId)?.name || '',
-            branchName: this.branchs.find(b => b.id === formData.branchId)?.name || '',
             depName: this.jobDeps.find(j => j.id === formData.jobDepartmentId)?.name || '',
             itemsNames: formData.items.map((i:any) => {
               const item = this.allItems.find(ai => ai.id === i.itemId);
               return item?.nameAr || '';
             })
           };
-  
           setTimeout(() => this.printPDF(), 300);
           this.addPermissionForm.reset();
         },
@@ -326,15 +331,15 @@ export class IssueItemsComponent implements OnInit {
     });
   }
   // 
-  getBranches(){
-    this.financialService.getBranches(this.pagingFilterModelSelect).subscribe({
-      next:(res:any)=>{
-        this.branchs = res.results;
-        console.log('Branchs' , this.branchs);
+  // getBranches(){
+  //   this.financialService.getBranches(this.pagingFilterModelSelect).subscribe({
+  //     next:(res:any)=>{
+  //       this.branchs = res;
+  //       console.log('Branchs' , this.branchs);
         
-      }
-    })
-  }
+  //     }
+  //   })
+  // }
   getDeps() {
     this.staffService.getJobDepartment(this.pagingFilterModelSelect.searchText, this.pagingFilterModelSelect.currentPage, this.pagingFilterModelSelect.pageSize, this.pagingFilterModelSelect.filterList).subscribe({
       next: (data: any) => {
@@ -342,13 +347,13 @@ export class IssueItemsComponent implements OnInit {
         console.log('Deps',this.jobDeps);
         this.total = data.totalCount;
       }, error: (err) => {
-        console.error('فشل تحميل بيانات المخازن:', err);
+        console.error('فشل تحميل بيانات الأقسام:', err);
       }
     })
   }
-  getBranchName(id:number){
-    return this.branchs.find(b => b.id === id)?.nameAr || '';
-  }
+  // getBranchName(id:number){
+  //   return this.branchs.find(b => b.id === id)?.nameAr || '';
+  // }
   getStoreName(id:number){
     return this.stores.find(s => s.id === id)?.nameAr || '';
   }
@@ -358,8 +363,14 @@ export class IssueItemsComponent implements OnInit {
     this.financialService.getMaterialIssuePermissionsById(id).subscribe({
       next: (res: any) => {
         const data = res.results;
+        console.log(data);
+        
         this.dataForRePrint = {
           ...data,
+          accountingGuidanceName : data.dailyRestriction?.accountingGuidanceName,
+          from: data.dailyRestriction?.from,
+          to: data.dailyRestriction?.to,
+          amount: data.dailyRestriction?.amount,
           disbursementRequestNumber: this.allRequests.find(r => r.id === data.disbursementRequestId)?.number || '',
           storeName: this.stores.find(s => s.id === data.storeId)?.name || '',
           jobDepartmentName: this.jobDeps.find(j => j.id === data.jobDepartmentId)?.name || '',
@@ -407,5 +418,11 @@ export class IssueItemsComponent implements OnInit {
       console.error('حدث خطأ أثناء توليد PDF:', err);
       element.style.display = 'none';
     });
+  }
+  // 
+  resetForm() {
+    this.addPermissionForm.reset();
+    this.isEditMode = false;
+    this.currentMaterialIssuePermissionId = null;
   }
 }

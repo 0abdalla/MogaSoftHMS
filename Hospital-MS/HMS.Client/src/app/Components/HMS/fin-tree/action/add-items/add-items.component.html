@@ -1,6 +1,7 @@
 <main id="add-items">
     <div class="container-fluid">
         <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+        <p-toast position="top-left"></p-toast>
         <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
@@ -68,6 +69,7 @@
                     <th>التاريخ</th>
                     <!-- <th>نوع الإستلام</th> -->
                     <th>اسم المورد</th>
+                    <th>رقم أمر التوريد</th>
                     <th>رقم المستند</th>
                     <!-- <th>مستخدم الإنشاء</th>
                     <th>مستخدم التعديل</th> -->
@@ -82,6 +84,7 @@
                     <td class="text-secondary">{{ add.permissionDate | date:'yyyy-MM-dd' }}</td>
                     <!-- <td>{{ add.typeName }}</td> -->
                     <td>{{ add.supplierName }}</td>
+                    <td>{{ add.purchaseOrderNumber }}</td>
                     <td>{{ add.documentNumber }}</td>
                     <!-- <td>{{ add.audit?.createdBy || '-' }}</td>
                     <td>{{ add.audit?.updatedBy || '-' }}</td> -->
@@ -89,10 +92,10 @@
                         <button class="btn btn-primary mx-1" (click)="generateReceiptPermissionPDFById(add.id)">
                           <i class="fa fa-print"></i>
                         </button> 
-                        <button type="button" class="btn btn-warning mx-2" (click)="editPermission(add.id)">
+                        <button type="button" class="btn btn-warning mx-1" (click)="editPermission(add.id)">
                             <i class="fa fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-danger mx-2" (click)="deletePermission(add.id)">
+                        <button type="button" class="btn btn-danger mx-1" (click)="deletePermission(add.id)">
                             <i class="fa fa-trash"></i>
                         </button>
                     </td>
@@ -120,7 +123,7 @@
 
 
 
-<div class="modal fade" id="addPermissionModal" tabindex="-1" aria-labelledby="addPermissionModalLabel" aria-hidden="true">
+<div class="modal fade" id="addPermissionModal" tabindex="-1" aria-labelledby="addPermissionModalLabel" aria-hidden="true" data-bs-backdrop="static">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
@@ -211,7 +214,7 @@
 
                             <div formArrayName="items">
                                 <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-                                  <div class="col-md-2">
+                                  <div class="col-md-3">
                                     <label class="form-label">الصنف</label>
                                     <!-- <select class="form-select shadow-none" formControlName="id">
                                       <option disabled selected value="">اختر الصنف</option>
@@ -229,27 +232,31 @@
                                      </ng-select>
                                   </div>
                               
-                                  <div class="col-md-2">
+                                  <!-- <div class="col-md-3">
                                     <label class="form-label">الوحدة</label>
-                                    <select class="form-select shadow-none" formControlName="unit">
-                                        <option value="" selected disabled>اختر الوحدة</option>
-                                        <option value="لتر">لتر</option>
-                                        <option value="كجم">كجم</option>
-                                        <option value="قطعة">قطعة</option>
-                                    </select>
-                                  </div>
+                                    <ng-select
+                                       [items]="allUnits"
+                                       bindLabel="name"
+                                       bindValue="id"
+                                       placeholder="اختر الوحدة"
+                                       formControlName="unit"
+                                       class="text-end shadow-none w-100"
+                                       [searchable]="true"
+                                     >
+                                     </ng-select>
+                                  </div> -->
 
-                                  <div class="col-md-2">
+                                  <div class="col-md-3">
                                     <label class="form-label">الكمية</label>
                                     <input type="number" class="form-control shadow-none" formControlName="quantity">
                                   </div>
                                   
-                                  <div class="col-md-2">
+                                  <div class="col-md-3">
                                     <label class="form-label">السعر</label>
                                     <input type="number" class="form-control shadow-none" formControlName="unitPrice">
                                   </div>
 
-                                  <div class="col-md-2">
+                                  <div class="col-md-3">
                                     <label class="form-label">الإجمالي</label>
                                     <input type="number" class="form-control shadow-none" formControlName="totalPrice">
                                   </div>
@@ -279,6 +286,9 @@
                     <div class="text-center">
                         <button type="submit" class="btn-blue px-5 mx-2" [disabled]="addPermissionForm.invalid">
                             {{isEditMode ? 'تعديل إذن إستلام' : 'إضافة إذن إستلام'}}
+                        </button>
+                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()">
+                            خروج
                         </button>
                         <!-- <button type="button" class="btn-red px-5 mx-2" (click)="printJournalEntry()">طباعة القيد</button>
                         <button type="button" class="btn btn-warning px-5 mx-2" (click)="printAdditionPermission()">طباعة إذن اللإضافة</button> -->
@@ -361,7 +371,7 @@
             <hr class="my-4">
             <div class="row">
                 <div class="col-6">
-                <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+                <p><strong>المستخدم:</strong> {{ username }}</p>
                 </div>
                 <div class="col-6">
                 <p><strong>التاريخ:</strong> {{ today }}</p>
@@ -416,7 +426,7 @@
         <hr class="my-4">
         <div class="row">
             <div class="col-6">
-            <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+            <p><strong>المستخدم:</strong> {{ username }}</p>
             </div>
             <div class="col-6">
             <p><strong>التاريخ:</strong> {{ today }}</p>
@@ -495,7 +505,7 @@
             <hr class="my-4">
             <div class="row">
                 <div class="col-6">
-                <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+                <p><strong>المستخدم:</strong> {{ username }}</p>
                 </div>
                 <div class="col-6">
                 <p><strong>التاريخ:</strong> {{ today }}</p>
@@ -550,7 +560,7 @@
         <hr class="my-4">
         <div class="row">
             <div class="col-6">
-            <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+            <p><strong>المستخدم:</strong> {{ username }}</p>
             </div>
             <div class="col-6">
             <p><strong>التاريخ:</strong> {{ today }}</p>
@@ -604,7 +614,7 @@
         <hr class="my-4">
         <div class="row">
             <div class="col-6">
-            <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+            <p><strong>المستخدم:</strong> {{ username }}</p>
             </div>
             <div class="col-6">
             <p><strong>تاريخ الطباعة:</strong> {{ today }}</p>

@@ -358,4 +358,11 @@ export class RestrictionsComponent {
       default: return 'غير محدد';
     }
   }
+  // 
+  printRestriction(id:number){}
+  resetForm(){
+    this.restrictionForm.reset();
+    this.currentRestrictionId = null;
+    this.isEditMode = false;
+  }
 }
