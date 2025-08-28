@@ -24,5 +24,25 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBedById(int id, CancellationToken cancellationToken)
+        {
+            var result = await _bedService.GetByIdAsync(id, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBed(int id, [FromBody] CreateBedRequest request, CancellationToken cancellationToken)
+        {
+            var result = await _bedService.UpdateAsync(id, request, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBed(int id, CancellationToken cancellationToken)
+        {
+            var result = await _bedService.DeleteAsync(id, cancellationToken);
+            return Ok(result);
+        }
     }
 }

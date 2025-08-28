@@ -21,15 +21,16 @@ namespace Hospital_MS.Services.HMS
                 if (!Enum.TryParse<RoomType>(request.Type, true, out var roomType))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
-                if (!Enum.TryParse<RoomType>(request.Type, true, out var roomStatus))
+                if (!Enum.TryParse<RoomStatus>(request.Type, true, out var roomStatus))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
                 var room = new Room
                 {
                     Number = request.Number,
                     WardId = request.WardId,
-                    DailyPrice = request.DailyPrice
-
+                    DailyPrice = request.DailyPrice,
+                    Type = roomType,
+                    Status = roomStatus,
                 };
 
                 await _unitOfWork.Repository<Room>().AddAsync(room, cancellationToken);
@@ -43,6 +44,25 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
 
+        }
+
+        public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var room = await _unitOfWork.Repository<Room>()
+                    .GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                if (room == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+                _unitOfWork.Repository<Room>().Delete(room);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
         }
 
         public async Task<ErrorResponseModel<List<RoomResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -60,10 +80,57 @@ namespace Hospital_MS.Services.HMS
                 WardName = room.Ward.Name,
                 DailyPrice = room.DailyPrice,
 
-
             }).ToList();
 
             return ErrorResponseModel<List<RoomResponse>>.Success(GenericErrors.GetSuccess, response);
+        }
+
+        public async Task<ErrorResponseModel<RoomResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var room = await _unitOfWork.Repository<Room>()
+                .GetAll().Include(x => x.Ward)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+            if (room == null)
+                return ErrorResponseModel<RoomResponse>.Failure(GenericErrors.NotFound);
+            var response = new RoomResponse
+            {
+                Id = room.Id,
+                Number = room.Number,
+                Type = room.Type.ToString(),
+                Status = room.Status.ToString(),
+                WardId = room.WardId,
+                WardName = room.Ward.Name,
+                DailyPrice = room.DailyPrice,
+            };
+            return ErrorResponseModel<RoomResponse>.Success(GenericErrors.GetSuccess, response);
+
+        }
+
+        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, CreateRoomRequest request, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var room = await _unitOfWork.Repository<Room>()
+                    .GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                if (room == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+                if (!Enum.TryParse<RoomType>(request.Type, true, out var roomType))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
+                if (!Enum.TryParse<RoomType>(request.Type, true, out var roomStatus))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
+                room.Number = request.Number;
+                room.WardId = request.WardId;
+                room.DailyPrice = request.DailyPrice;
+                _unitOfWork.Repository<Room>().Update(room);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+
         }
     }
 }
