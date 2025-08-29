@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReportService } from '../../../../Services/HMS/report.service';
 import { FinancialService } from '../../../../Services/HMS/financial.service';
+import html2pdf from 'html2pdf.js';
 declare var bootstrap : any;
 @Component({
   selector: 'app-store-rate',
@@ -63,33 +64,47 @@ export class StoreRateComponent implements OnInit {
   showStoreRateReport() {
     if (this.storeRateForm.invalid) return;
   
-    const { storeId, StoreName, fromDate, toDate } = this.storeRateForm.value;
+    const { storeId, fromDate, toDate } = this.storeRateForm.value;
   
     this.reportService.getStoreRate(storeId, fromDate, toDate).subscribe(response => {
       if (response.isSuccess) {
         const groupedData: any = {};
   
-        response.results.forEach((group: any) => {
-          if (!groupedData[group.itemGroupId]) {
-            groupedData[group.itemGroupId] = {
-              itemGroupId: group.itemGroupId,
-              itemGroupName: group.itemGroupName,
-              items: []
+        response.results.forEach((mainGroup: any) => {
+          if (!groupedData[mainGroup.mainGroupId]) {
+            groupedData[mainGroup.mainGroupId] = {
+              mainGroupId: mainGroup.mainGroupId,
+              mainGroupName: mainGroup.mainGroupName,
+              itemGroups: []
             };
           }
-          groupedData[group.itemGroupId].items.push(...group.items);
+  
+          mainGroup.itemGroups.forEach((itemGroup: any) => {
+            groupedData[mainGroup.mainGroupId].itemGroups.push(itemGroup);
+          });
         });
   
         this.storeRateData = Object.values(groupedData);
   
-        this.selectedStoreName = StoreName;
+        this.selectedStoreName = this.stores.find((s: any) => s.id === storeId)?.name;
         this.selectedFromDate = fromDate;
         this.selectedToDate = toDate;
   
-        const modal = new bootstrap.Modal(document.getElementById('storeRateReport'));
+        const modal = new bootstrap.Modal(document.getElementById('storeRateReport')!);
         modal.show();
       }
     });
   }
   
+  printReport() {
+    const element = document.getElementById('printSection');
+    const options = {
+      margin:       0.5,
+      filename:     `تقرير تقييم المخزون - ${this.selectedStoreName}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(options).save();
+  }
 }
