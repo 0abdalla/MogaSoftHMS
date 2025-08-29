@@ -95,7 +95,7 @@
 
 
 
-<div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="addProviderModalLabel" aria-hidden="true">
+<div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="addProviderModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
@@ -108,102 +108,98 @@
                     <div class="row p-3 mb-3">
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>تكويد الحسابات</label>
+                                <label class="form-label">تكويد الحسابات</label>
                                 <input type="text" formControlName="accountCode" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-9">
                             <div class="form-group">
-                                <label>اسم المورد</label>
+                                <label class="form-label">اسم المورد</label>
                                 <input type="text" formControlName="name" class="form-control shadow-none text-end" placeholder="أدخل اسم المورد">
                             </div>
                         </div>
 
                         <div class="col-md-12 mt-3">
                             <div class="form-group">
-                                <label>العنوان</label>
+                                <label class="form-label">العنوان</label>
                                 <input type="text" formControlName="address" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>اسم المسئول</label>
+                                <label class="form-label">اسم المسئول</label>
                                 <input type="text" formControlName="responsibleName1" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>اسم المسئول 2</label>
+                                <label class="form-label">اسم المسئول 2</label>
                                 <input type="text" formControlName="responsibleName2" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>هاتف العميل</label>
+                                <label class="form-label">هاتف العميل</label>
                                 <input type="text" formControlName="phone1" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>هاتف العميل 2</label>
+                                <label class="form-label">هاتف العميل 2</label>
                                 <input type="text" formControlName="phone2" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>الرقم الضريبي</label>
+                                <label class="form-label">الرقم الضريبي</label>
                                 <input type="text" formControlName="taxNumber" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>السجل التجاري</label>
+                                <label class="form-label">السجل التجاري</label>
                                 <input type="text" formControlName="job" class="form-control shadow-none text-end">
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row p-3 mb-3">
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>الفاكس 1</label>
+                                <label class="form-label">الفاكس 1</label>
                                 <input type="number" formControlName="fax1" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-6 mt-3">
                             <div class="form-group">
-                                <label>الفاكس 2</label>
+                                <label class="form-label">الفاكس 2</label>
                                 <input type="number" formControlName="fax2" class="form-control shadow-none text-end">
                             </div>
                         </div>
                     </div>
-
                     <div class="row p-3 mb-3">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>البريد الإلكتروني</label>
+                                <label class="form-label">البريد الإلكتروني</label>
                                 <input type="email" formControlName="email" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-12 mt-3">
                             <div class="form-group">
-                                <label>الموقع على الشبكة</label>
+                                <label class="form-label">الموقع على الشبكة</label>
                                 <input type="text" formControlName="website" class="form-control shadow-none text-end">
                             </div>
                         </div>
 
                         <div class="col-md-12 mt-3">
                             <div class="form-group">
-                                <label>ملاحظات</label>
+                                <label class="form-label">ملاحظات</label>
                                 <textarea formControlName="notes" class="form-control shadow-none text-end"></textarea>
                             </div>
                         </div>
@@ -212,7 +208,8 @@
                     <div class="text-center">
                         <button type="submit" class="btn-blue px-4" [disabled]="providerForm.invalid">
                             {{ isEditMode ? 'حفظ التعديلات' : 'إضافة المورد' }}
-                          </button>                          
+                        </button>      
+                        <button class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()">خروج</button>                    
                     </div>
                 </form>
             </div>

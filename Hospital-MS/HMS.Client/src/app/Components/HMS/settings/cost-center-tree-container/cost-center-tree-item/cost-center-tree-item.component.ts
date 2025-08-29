@@ -34,9 +34,9 @@ export class CostCenterTreeItemComponent implements OnInit {
   }
 
   getLevelClass(level: number) {
-    var paddingValue = level
-    if (level > 0)
-      paddingValue = level * 2;
-    return 'padding-right:' + paddingValue + 'rem !important';
+    // var paddingValue = level
+    // if (level > 0)
+    //   paddingValue = level * 2;
+    return 'padding-right:' + 2 + 'rem !important';
   }
 }

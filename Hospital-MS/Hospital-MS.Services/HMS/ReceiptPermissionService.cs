@@ -14,60 +14,6 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IDailyRestrictionService _dailyRestrictionService = dailyRestrictionService;
 
-    public async Task<ErrorResponseModel<string>> CreateAsync(ReceiptPermissionRequest request, CancellationToken cancellationToken = default)
-    {
-        using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var store = await _unitOfWork.Repository<Store>()
-                .GetByIdAsync(request.StoreId, cancellationToken);
-            if (store is null)
-                return ErrorResponseModel<string>.Failure(new Error("المخزن غير موجود", Status.NotFound));
-
-            var supplier = await _unitOfWork.Repository<Supplier>()
-                .GetByIdAsync(request.SupplierId, cancellationToken);
-            if (supplier is null)
-                return ErrorResponseModel<string>.Failure(new Error("المورد غير موجود", Status.NotFound));
-
-            var purchaseRequest = await _unitOfWork.Repository<PurchaseOrder>()
-                .GetByIdAsync(request.PurchaseOrderId, cancellationToken);
-            if (purchaseRequest is null)
-                return ErrorResponseModel<string>.Failure(new Error("امر الشراء غير موجود", Status.NotFound));
-
-            var permission = new ReceiptPermission
-            {
-                PermissionNumber = await GeneratePermissionNumber(cancellationToken),
-                DocumentNumber = request.DocumentNumber,
-                PermissionDate = request.PermissionDate,
-                StoreId = request.StoreId,
-                SupplierId = request.SupplierId,
-                PurchaseOrderId = request.PurchaseOrderId,
-                Notes = request.Notes,
-
-                Items = request.Items.Select(i => new ReceiptPermissionItem
-                {
-                    ItemId = i.Id,
-                    Unit = i.Unit,
-                    Quantity = i.Quantity,
-                    UnitPrice = i.UnitPrice,
-                    TotalPrice = i.TotalPrice,
-                    IsActive = true
-
-                }).ToList()
-            };
-
-            await _unitOfWork.Repository<ReceiptPermission>().AddAsync(permission, cancellationToken);
-            await _unitOfWork.CompleteAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-
-            return ErrorResponseModel<string>.Success(GenericErrors.AddSuccess, permission.PermissionNumber);
-        }
-        catch (Exception)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
-        }
-    }
 
     public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
@@ -105,6 +51,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 .Include(x => x.Store)
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
+                .Include(x => x.PurchaseOrder)
                 .Where(x => x.IsActive);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
@@ -133,6 +80,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
                     PurchaseOrderId = x.PurchaseOrderId,
+                    PurchaseOrderNumber = x.PurchaseOrder.OrderNumber,
                     Items = x.Items.Where(i => i.IsActive).Select(i => new ReceiptPermissionItemResponse
                     {
                         ItemId = i.ItemId,
@@ -164,7 +112,11 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 .Include(x => x.Supplier)
                 .Include(x => x.DailyRestriction)
                 .Include(x => x.Items)
-                .ThenInclude(i => i.Item)
+                    .ThenInclude(i => i.Item)
+                .Include(i => i.Items)
+                    .ThenInclude(i => i.Item.Unit)
+                .Include(x => x.DailyRestriction)
+                    .ThenInclude(d => d.AccountingGuidance)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (permission == null)
@@ -193,18 +145,19 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     Unit = i.Unit,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
-                    TotalPrice = i.TotalPrice
+                    TotalPrice = i.TotalPrice,
+                    UnitId = i.Item.UnitId
                 }).ToList(),
 
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     Id = permission?.DailyRestriction?.Id,
-                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
+                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance?.Name ?? null,
                     Amount = totalAmount,
                     From = permission.Supplier.Name,
                     To = permission.Store.Name,
                     RestrictionDate = permission.DailyRestriction.RestrictionDate,
-                    RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? string.Empty,
+                    RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? null,
                     Number = permission.PermissionNumber
                 }
             };
@@ -313,14 +266,14 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 RestrictionDate = request.PermissionDate,
                 RestrictionTypeId = null,
                 Description = $"قيد إذن استلام رقم {permission.PermissionNumber}",
-                AccountingGuidanceId = 1, // المخازن
+                AccountingGuidanceId = 16, // المخازن
                 IsActive = true,
                 Details = new List<DailyRestrictionDetail>
                 {
                     new DailyRestrictionDetail
                     {
                         // TODO: Replace with actual account ID for inventory
-                        AccountId = 13,
+                        AccountId = 406,
                         Debit = totalAmount,
                         Credit = totalAmount,
                         CostCenterId = null,
@@ -350,7 +303,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 To = store.Name,
                 RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber,
-
+                Number = permission.PermissionNumber
             };
 
             return ErrorResponseModel<PartialDailyRestrictionResponse>.Success(GenericErrors.AddSuccess, response);

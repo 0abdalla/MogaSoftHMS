@@ -16,7 +16,10 @@ using System.Data;
 
 namespace Hospital_MS.Services.HMS
 {
-    public class StaffService(IUnitOfWork unitOfWork, IFileService fileService, ISQLHelper sQLHelper, UserManager<ApplicationUser> userManager) : IStaffService
+    public class StaffService(IUnitOfWork unitOfWork,
+        IFileService fileService,
+        ISQLHelper sQLHelper,
+        UserManager<ApplicationUser> userManager) : IStaffService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IFileService _fileService = fileService;
@@ -317,5 +320,164 @@ namespace Hospital_MS.Services.HMS
             return ErrorResponseModel<string>.Success(GenericErrors.GetSuccess);
         }
 
+        public async Task<ErrorResponseModel<string>> InActiveStaffAsync(int id, CancellationToken cancellationToken = default)
+        {
+            using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var staff = await _unitOfWork.Repository<Staff>()
+                    .GetAll(x => x.Id == id)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (staff == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                staff.Status = StaffStatus.Inactive;
+                _unitOfWork.Repository<Staff>().Update(staff);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+                return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess, staff.Id.ToString());
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+
+        }
+
+        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, CreateStaffRequest request, CancellationToken cancellationToken = default)
+        {
+            using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+            try
+            {
+                var staff = await _unitOfWork.Repository<Staff>()
+                    .GetAll(x => x.Id == id)
+                    .Include(x => x.StaffAttachments)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (staff == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                if (!Enum.TryParse<StaffStatus>(request.Status, true, out var staffStatus))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
+
+                if (!Enum.TryParse<Gender>(request.Gender, true, out var gender))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidGender);
+
+                if (!Enum.TryParse<MaritalStatus>(request.MaritalStatus, true, out var maritalStatus))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidMaritalStatus);
+
+                // Update staff properties
+                staff.FullName = ArabicNormalizer.NormalizeArabic(request.FullName);
+                staff.Email = request.Email;
+                staff.PhoneNumber = request.PhoneNumber;
+                staff.HireDate = request.HireDate;
+                staff.NationalId = request.NationalId;
+                staff.MaritalStatus = maritalStatus;
+                staff.Gender = gender;
+                staff.Notes = request.Notes;
+                staff.Address = request.Address;
+                staff.Status = staffStatus;
+                staff.JobDepartmentId = request.JobDepartmentId;
+                staff.JobLevelId = request.JobLevelId;
+                staff.JobTitleId = request.JobTitleId;
+                staff.JobTypeId = request.JobTypeId;
+                staff.Code = request.Code;
+                staff.BranchId = request.BranchId;
+                staff.BasicSalary = request.BasicSalary;
+                staff.Tax = request.Tax;
+                staff.Insurance = request.Insurance;
+                staff.VacationDays = request.VacationDays;
+                staff.Allowances = request.Allowances;
+                staff.Rewards = request.Rewards;
+                staff.VariableSalary = request.VariableSalary;
+                staff.VisaCode = request.VisaCode;
+                staff.IsAuthorized = request.IsAuthorized;
+
+                // Handle attachments
+                if (staff.StaffAttachments != null && staff.StaffAttachments.Count > 0)
+                {
+                    _unitOfWork.Repository<StaffAttachments>().DeleteRange(staff.StaffAttachments);
+                }
+
+                var newAttachments = new List<StaffAttachments>();
+                foreach (var file in request.Files)
+                {
+                    if (file.Length > 0)
+                    {
+                        var fileUrl = await _fileService.UploadFileAsync(file, "staff");
+                        newAttachments.Add(new StaffAttachments
+                        {
+                            FileUrl = fileUrl,
+                            StaffId = staff.Id
+                        });
+                    }
+                }
+                await _unitOfWork.Repository<StaffAttachments>().AddRangeAsync(newAttachments, cancellationToken);
+
+                _unitOfWork.Repository<Staff>().Update(staff);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                // Handle user account 
+                if (request.IsAuthorized && !string.IsNullOrWhiteSpace(request.UserName))
+                {
+                    var user = await _userManager.FindByNameAsync(request.UserName);
+                    if (user != null)
+                    {
+                        user.Email = request.Email;
+                        user.FirstName = request.FullName;
+                        user.BranchId = request.BranchId;
+                        user.IsActive = true;
+
+                        var updateResult = await _userManager.UpdateAsync(user);
+                        if (!updateResult.Succeeded)
+                        {
+                            await transaction.RollbackAsync(cancellationToken);
+                            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, string.Join("; ", updateResult.Errors.Select(e => e.Description)));
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(request.Password))
+                        {
+                            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                            var passResult = await _userManager.ResetPasswordAsync(user, token, request.Password);
+                            if (!passResult.Succeeded)
+                            {
+                                await transaction.RollbackAsync(cancellationToken);
+                                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, string.Join("; ", passResult.Errors.Select(e => e.Description)));
+                            }
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(request.Password))
+                    {
+                        var newUser = new ApplicationUser
+                        {
+                            UserName = request.UserName,
+                            Email = request.Email,
+                            FirstName = request.FullName,
+                            BranchId = request.BranchId,
+                            IsActive = true,
+                        };
+                        var createResult = await _userManager.CreateAsync(newUser, request.Password);
+                        if (!createResult.Succeeded)
+                        {
+                            await transaction.RollbackAsync(cancellationToken);
+                            return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed, string.Join("; ", createResult.Errors.Select(e => e.Description)));
+                        }
+                        await _userManager.AddToRoleAsync(newUser, DefaultRoles.ReservationEmployee.Name);
+                    }
+                }
+
+                await transaction.CommitAsync(cancellationToken);
+
+                return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess, staff.Id.ToString());
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+        }
     }
 }

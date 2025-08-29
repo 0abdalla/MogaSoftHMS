@@ -423,4 +423,20 @@ export class FinancialService {
   postFiscalYear(fiscalYear:any){
     return this.http.post<any>(this.baseUrl + 'FiscalYears', fiscalYear);
   }
+  // 
+  getAccountsGuidances(pagingFilter: PagingFilterModel){
+    return this.http.get<PagedResponseModel<any>>(this.baseUrl + 'AccountingGuidance?currentPage=' + pagingFilter.currentPage + '&pageSize=' + pagingFilter.pageSize + '&filterList=' + pagingFilter.filterList);
+  }
+  getAccountsGuidancesById(id:number){
+    return this.http.get<any>(this.baseUrl + 'AccountingGuidance/' + id);
+  }
+  postAccountGuidance(accountGuidance:any){
+    return this.http.post<any>(this.baseUrl + 'AccountingGuidance', accountGuidance);
+  }
+  updateAccountGuidance(id:number,accountGuidance:any){
+    return this.http.put<any>(this.baseUrl + 'AccountingGuidance/' + id, accountGuidance);
+  }
+  deleteAccountGuidance(id:number){
+    return this.http.delete<any>(this.baseUrl + 'AccountingGuidance/' + id);
+  }
 }

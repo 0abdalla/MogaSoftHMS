@@ -36,13 +36,20 @@
                               </p>
                             </td>
                             <td>
-                              <button class="btn btn-warning mx-1" (click)="editOffer(order.id)">
+                              <button class="btn btn-warning mx-1" [disabled]="order.status === 'Approved' || order.status === 'Rejected'" (click)="editOffer(order.id)">
                                   <i class="fa fa-edit"></i>
                               </button>                          
-                              <button class="btn btn-danger mx-1" (click)="deleteOffer(order.id)">
+                              <button class="btn btn-danger mx-1" [disabled]="order.status === 'Approved' || order.status === 'Rejected'" (click)="deleteOffer(order.id)">
                                   <i class="fa fa-trash"></i>
                               </button>
                           </td>
+                          </tr>
+                        </tbody>
+                        <tbody *ngIf="offers.length === 0">
+                          <tr>
+                            <td colspan="6" class="text-center">
+                              <p class="text-muted">لا يوجد عروض أسعار</p>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
@@ -56,7 +63,7 @@
 
 
 
-<div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+<div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-xl modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header justify-content-center">
@@ -155,7 +162,8 @@
                   <div class="text-center">
                       <button type="submit" class="btn-blue px-4" [disabled]="offerForm.invalid">
                           {{ isEditMode ? 'حفظ التعديلات' : 'إضافة عرض سعر' }}
-                        </button>                          
+                        </button>  
+                        <button class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()" >خروج</button>                        
                   </div>
               </form>
           </div>

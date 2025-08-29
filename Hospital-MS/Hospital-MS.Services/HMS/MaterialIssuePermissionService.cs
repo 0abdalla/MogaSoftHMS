@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.DailyRestrictions;
 using Hospital_MS.Core.Contracts.MaterialIssuePermission;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Models.HR;
@@ -8,9 +9,10 @@ using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hospital_MS.Services.HMS;
-public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialIssuePermissionService
+public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestrictionService dailyRestrictionService) : IMaterialIssuePermissionService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IDailyRestrictionService _dailyRestrictionService = dailyRestrictionService;
 
     public async Task<ErrorResponseModel<MaterialIssuePermissionToReturnResponse>> CreateAsync(MaterialIssuePermissionRequest request, CancellationToken cancellationToken = default)
     {
@@ -52,16 +54,64 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
             await _unitOfWork.Repository<MaterialIssuePermission>().AddAsync(permission, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
+            decimal totalAmount = permission.Items.Sum(i => i.TotalPrice);
+
+            var dailyRestriction = new DailyRestriction
+            {
+                RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
+                RestrictionDate = DateOnly.FromDateTime(request.PermissionDate),
+                RestrictionTypeId = null,
+                Description = $"قيد إذن صرف مواد رقم {permission.PermissionNumber}",
+
+                // TODO: Set the correct AccountingGuidanceId
+                AccountingGuidanceId = 16,
+                IsActive = true,
+                Details = new List<DailyRestrictionDetail>
+                {
+                    new DailyRestrictionDetail
+                    {
+                        // TODO : Set the correct AccountId for store inventory
+                        AccountId = 406,
+                        Debit = totalAmount,
+                        Credit = totalAmount,
+                        CostCenterId = null,
+                        Note = $"صرف للادارة من إذن صرف مواد رقم {permission.PermissionNumber}",
+                        From = store.Name,
+                        To = department.Name,
+                    }
+
+                }
+            };
+
+            await _unitOfWork.Repository<DailyRestriction>().AddAsync(dailyRestriction, cancellationToken);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            // Link daily restriction to material issue permission
+            permission.DailyRestrictionId = dailyRestriction.Id;
+            _unitOfWork.Repository<MaterialIssuePermission>().Update(permission);
+            await _unitOfWork.CompleteAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
 
+            var dailyRestrictionResponse = new PartialDailyRestrictionResponse
+            {
+                Id = permission.Id,
+                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                Amount = totalAmount,
+                From = store.Name,
+                To = department.Name,
+                RestrictionDate = dailyRestriction.RestrictionDate,
+                RestrictionNumber = dailyRestriction.RestrictionNumber,
+                Number = permission.PermissionNumber
+            };
 
             var response = new MaterialIssuePermissionToReturnResponse
             {
                 Id = permission.Id,
                 Number = permission.PermissionNumber,
                 StoreName = store.Name,
-                JobDepartmentName = department.Name
+                JobDepartmentName = department.Name,
+                DailyRestriction = dailyRestrictionResponse
             };
 
             return ErrorResponseModel<MaterialIssuePermissionToReturnResponse>.Success(GenericErrors.AddSuccess, response);
@@ -157,12 +207,16 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 .Include(x => x.Store)
                 .Include(x => x.JobDepartment)
                 .Include(x => x.DisbursementRequest)
+                .Include(x => x.DailyRestriction)
+                    .ThenInclude(d => d.AccountingGuidance)
                 .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<MaterialIssuePermissionResponse>.Failure(GenericErrors.NotFound);
+
+            decimal totalAmount = permission.Items.Sum(i => i.TotalPrice);
 
             var response = new MaterialIssuePermissionResponse
             {
@@ -188,7 +242,19 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork) : IMaterialI
                 }).ToList(),
 
                 DisbursementRequestId = permission.DisbursementRequestId,
-                DisbursementRequestNumber = permission?.DisbursementRequest?.Number ?? ""
+                DisbursementRequestNumber = permission?.DisbursementRequest?.Number ?? "",
+
+                DailyRestriction = permission?.DailyRestriction == null ? new() : new PartialDailyRestrictionResponse
+                {
+                    Id = permission.DailyRestriction.Id,
+                    RestrictionNumber = permission.DailyRestriction.RestrictionNumber,
+                    RestrictionDate = permission.DailyRestriction.RestrictionDate,
+                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance.Name,
+                    Amount = totalAmount,
+                    From = permission?.Store.Name,
+                    To = permission?.JobDepartment?.Name,
+                    Number = permission?.PermissionNumber
+                }
             };
 
             return ErrorResponseModel<MaterialIssuePermissionResponse>.Success(GenericErrors.GetSuccess, response);

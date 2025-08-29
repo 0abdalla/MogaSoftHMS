@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Hospital_MS.Core.Models;
 
 public class Treasury : AuditableEntity
@@ -13,7 +11,7 @@ public class Treasury : AuditableEntity
     public int BranchId { get; set; }
     public Branch Branch { get; set; } = default!;
 
-    //public decimal OpeningBalance { get; set; }
+    public decimal OpeningBalance { get; set; }
     //public bool IsEnabled { get; set; } = true;
 
     //public DateOnly OpenedIn { get; set; }

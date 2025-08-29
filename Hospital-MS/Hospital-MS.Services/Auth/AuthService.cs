@@ -272,8 +272,8 @@ namespace Hospital_MS.Services.Auth
             var emailBody = EmailBodyBuilder.GenerateEmailBody("ForgetPassword",
                 new Dictionary<string, string>
                 {
-                { "{{name}}", user.FirstName ?? user.UserName ?? "User" },
-                { "{{action_url}}", resetUrl }
+                    { "{{name}}", user.FirstName ?? user.UserName ?? "User" },
+                    { "{{action_url}}", resetUrl }
                 }
             );
 

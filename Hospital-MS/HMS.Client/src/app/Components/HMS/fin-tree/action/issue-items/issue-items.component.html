@@ -112,7 +112,7 @@
 
 
 
-<div class="modal fade" id="addPermissionModal" tabindex="-1" aria-labelledby="addPermissionModalLabel" aria-hidden="true">
+<div class="modal fade" id="addPermissionModal" tabindex="-1" aria-labelledby="addPermissionModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
@@ -204,7 +204,7 @@
                                      >
                                      </ng-select>
                                   </div>
-                              
+<!--                               
                                   <div class="col-md-2">
                                     <label class="form-label">الوحدة</label>
                                     <select class="form-select shadow-none" formControlName="unit">
@@ -213,7 +213,7 @@
                                         <option value="كجم">كجم</option>
                                         <option value="قطعة">قطعة</option>
                                     </select>
-                                  </div>
+                                  </div> -->
 
                                   <div class="col-md-2">
                                     <label class="form-label">الكمية</label>
@@ -252,6 +252,7 @@
 
                     <div class="text-center">
                         <button type="submit" class="btn-blue px-5" [disabled]="addPermissionForm.invalid">إضافة إذن</button>
+                        <button class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()">خروج</button>
                     </div>
                 </form>
             </div>
@@ -264,121 +265,235 @@
 
 
 
-<div id="printablePermission" dir="rtl" class="border rounded shadow px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
-    <div class="d-flex justify-content-evenly align-items-center">
-        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <!-- <h4 style="font-weight: bold;">إذن صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4> -->
-        <h5 class="fw-bold mb-1"> إذن صرف <span class="text-primary"> {{ documentNumber }}</span></h5> 
-    </div>
-    <div class="row mt-3">
-        <div class="col-md-6 mb-2"><strong>التاريخ:</strong> {{ printedPermissionData?.permissionDate }}</div>
-        <div class="col-md-6 mb-2"><strong>رقم طلب الصرف:</strong> {{ printedPermissionData?.disbursementRequestNumber }}</div>
-        <div class="col-md-6 mb-2"><strong>صرف من:</strong> {{ storeName }}</div>
-        <div class="col-md-6 mb-2"><strong>صرف إلى:</strong> {{ depName }}</div>
-    </div>
-  
-    <table class="table table-bordered mt-3">
-      <thead>
-        <tr>
-          <th>م</th>
-          <th>الصنف</th>
-          <th>الكمية</th>
-          <th>الوحدة</th>
-          <th>السعر</th>
-          <th>الإجمالي</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of printedPermissionData?.items; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ printedPermissionData?.itemsNames[i] }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.unit }}</td>
-          <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
-          <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <div class="mt-3"><strong>ملاحظات:</strong> {{ printedPermissionData?.notes || '---' }}</div>
-  
-    <div class="row text-center mt-5">
-      <div class="col-md-6">
-        <p>أمين المخزن</p>
-        <p>-------------------</p>
-      </div>
-      <div class="col-md-6">
-        <p>المستلم</p>
-        <p>-------------------</p>
-      </div>
-    </div>
-    <hr class="my-4">
-    <div class="row text-center">
-        <div class="col-6">
-        <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+<div id="printablePermission" dir="rtl" class=" rounded shadow px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="border rounded p-2 mt-2">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <!-- <h4 style="font-weight: bold;">إذن صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4> -->
+            <h5 class="fw-bold mb-1"> إذن صرف <span class="text-primary"> {{ documentNumber }}</span></h5> 
         </div>
-        <div class="col-6">
-        <p><strong>التاريخ:</strong> {{ today }}</p>
+        <div class="row mt-3">
+            <div class="col-md-6 mb-2"><strong>التاريخ:</strong> {{ printedPermissionData?.restrictionDate }}</div>
+            <div class="col-md-6 mb-2"><strong>رقم طلب الصرف:</strong> {{ printedPermissionData?.disbursementRequestNumber }}</div>
+            <div class="col-md-6 mb-2"><strong>صرف من:</strong> {{ storeName }}</div>
+            <div class="col-md-6 mb-2"><strong>صرف إلى:</strong> {{ depName }}</div>
         </div>
+      
+        <table class="table table-bordered mt-3">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>الصنف</th>
+              <th>الكمية</th>
+              <th>الوحدة</th>
+              <th>السعر</th>
+              <th>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of printedPermissionData?.items; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ printedPermissionData?.itemsNames[i] }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.unit }}</td>
+              <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
+              <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
+            </tr>
+          </tbody>
+        </table>
+      
+        <div class="mt-3"><strong>ملاحظات:</strong> {{ printedPermissionData?.notes || '---' }}</div>
+      
+        <div class="row text-center mt-5">
+          <div class="col-md-6">
+            <p>أمين المخزن</p>
+            <p>-------------------</p>
+          </div>
+          <div class="col-md-6">
+            <p>المستلم</p>
+            <p>-------------------</p>
+          </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-6">
+            <p><strong>المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
+    <div style="page-break-before: always;"></div>
+    <div class="border rounded p-2 mt-2">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <h5 class="fw-bold mb-1"> قيد رقم  <span class="text-primary"> {{ printedPermissionData?.restrictionNumber }}</span></h5> 
+        </div>
+    <div class="container-fluid">
+        <div class="row mt-4" style="font-size: 16px;">
+            <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ printedPermissionData?.restrictionDate }}</p>
+            </div>
+            <div class="col-6">
+                <p><strong>التوجيه المحاسبي:</strong> {{ printedPermissionData?.accountingGuidanceName || '--' }}</p>
+            </div>              
+        </div>
+
+        <table class="table table-bordered mt-4">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>م</th>
+                    <th>التفاصيل</th>
+                    <th>القيمة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>من حــ\ {{ printedPermissionData?.from }}</td>
+                    <td>{{ printedPermissionData?.amount | number:'1.2-2' }} ج.م</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>إلى حــ\ {{ printedPermissionData?.to }}</td>
+                    <td>{{ printedPermissionData?.amount | number:'1.2-2' }} ج.م</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-12">
+                <p><strong>ملاحظات:</strong> {{ printedPermissionData?.notes || '-' }}</p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-6">
+            <p><strong>المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
     </div>
 </div>
 
 
-<div id="rePrintablePermission" dir="rtl" class="border rounded shadow px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
-    <div class="d-flex justify-content-evenly align-items-center">
-        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <!-- <h4 style="font-weight: bold;">إذن صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4> -->
-        <h5 class="fw-bold mb-1"> إذن صرف <span class="text-primary"> {{ dataForRePrint?.permissionNumber }}</span></h5> 
-    </div>
-    <div class="row mt-3">
-        <div class="col-md-6 mb-2"><strong>التاريخ:</strong> {{ dataForRePrint?.permissionDate }}</div>
-        <div class="col-md-6 mb-2"><strong>رقم طلب الصرف:</strong> {{ dataForRePrint?.disbursementRequestNumber }}</div>
-        <div class="col-md-6 mb-2"><strong>صرف من:</strong> {{ dataForRePrint?.storeName }}</div>
-        <div class="col-md-6 mb-2"><strong>صرف إلى:</strong> {{ dataForRePrint?.jobDepartmentName }}</div>
-    </div>
-  
-    <table class="table table-bordered mt-3">
-      <thead>
-        <tr>
-          <th>م</th>
-          <th>الصنف</th>
-          <th>الكمية</th>
-          <th>الوحدة</th>
-          <th>السعر</th>
-          <th>الإجمالي</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of dataForRePrint?.items; let i = index">
-          <td>{{ i + 1 }}</td>
-          <td>{{ dataForRePrint?.itemsNames[i] }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>{{ item.unit }}</td>
-          <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
-          <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
-        </tr>
-      </tbody>
-    </table>
-  
-    <div class="mt-3"><strong>ملاحظات:</strong> {{ dataForRePrint?.notes || '---' }}</div>
-  
-    <div class="row text-center mt-5">
-      <div class="col-md-6">
-        <p>أمين المخزن</p>
-        <p>-------------------</p>
-      </div>
-      <div class="col-md-6">
-        <p>المستلم</p>
-        <p>-------------------</p>
-      </div>
-    </div>
-    <hr class="my-4">
-    <div class="row text-center">
-        <div class="col-6">
-        <p><strong>اسم المستخدم:</strong> {{ username }}</p>
+<div id="rePrintablePermission" dir="rtl" class=" rounded shadow px-4 my-4 bg-white" style="max-width: 900px; margin: auto;">
+    <div class="border rounded p-2 mt-2">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <!-- <h4 style="font-weight: bold;">إذن صرف رقم <span class="text-primary">{{ documentNumber || '---' }}</span></h4> -->
+            <h5 class="fw-bold mb-1"> إذن صرف <span class="text-primary"> {{ dataForRePrint?.permissionNumber }}</span></h5> 
         </div>
-        <div class="col-6">
-        <p><strong>التاريخ:</strong> {{ today }}</p>
+        <div class="row mt-3">
+            <div class="col-md-6 mb-2"><strong>التاريخ:</strong> {{ dataForRePrint?.permissionDate }}</div>
+            <div class="col-md-6 mb-2"><strong>رقم طلب الصرف:</strong> {{ dataForRePrint?.disbursementRequestNumber }}</div>
+            <div class="col-md-6 mb-2"><strong>صرف من:</strong> {{ dataForRePrint?.storeName }}</div>
+            <div class="col-md-6 mb-2"><strong>صرف إلى:</strong> {{ dataForRePrint?.jobDepartmentName }}</div>
         </div>
+      
+        <table class="table table-bordered mt-3">
+          <thead>
+            <tr>
+              <th>م</th>
+              <th>الصنف</th>
+              <th>الكمية</th>
+              <th>الوحدة</th>
+              <th>السعر</th>
+              <th>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of dataForRePrint?.items; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ dataForRePrint?.itemsNames[i] }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>{{ item.unit }}</td>
+              <td>{{ item.unitPrice | number:'1.2-2' }} ج.م</td>
+              <td>{{ item.totalPrice | number:'1.2-2' }} ج.م</td>
+            </tr>
+          </tbody>
+        </table>
+      
+        <div class="mt-3"><strong>ملاحظات:</strong> {{ dataForRePrint?.notes || '---' }}</div>
+      
+        <div class="row text-center mt-5">
+          <div class="col-md-6">
+            <p>أمين المخزن</p>
+            <p>-------------------</p>
+          </div>
+          <div class="col-md-6">
+            <p>المستلم</p>
+            <p>-------------------</p>
+          </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-6">
+            <p><strong>المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
+    <div style="page-break-before: always;"></div>
+    <div class="border rounded p-2 mt-2">
+        <div class="d-flex justify-content-evenly align-items-center">
+            <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+            <h5 class="fw-bold mb-1"> قيد رقم  <span class="text-primary"> {{ dataForRePrint?.disbursementRequestNumber }}</span></h5> 
+        </div>
+    <div class="container-fluid">
+        <div class="row mt-4" style="font-size: 16px;">
+            <div class="col-6">
+                <p><strong>التاريخ:</strong> {{ dataForRePrint?.permissionDate }}</p>
+            </div>
+            <div class="col-6">
+                <p><strong>التوجيه المحاسبي:</strong> {{ dataForRePrint?.accountingGuidanceName || '--' }}</p>
+            </div>
+        </div>
+
+        <table class="table table-bordered mt-4">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>م</th>
+                    <th>التفاصيل</th>
+                    <th>القيمة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>من حــ\ {{ dataForRePrint?.from }}</td>
+                    <td>{{ dataForRePrint?.amount | number:'1.2-2' }} ج.م</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>إلى حــ\ {{ dataForRePrint?.to }}</td>
+                    <td>{{ dataForRePrint?.amount | number:'1.2-2' }} ج.م</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-12">
+                <p><strong>ملاحظات:</strong> {{ dataForRePrint?.notes || '-' }}</p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-6">
+            <p><strong>المستخدم:</strong> {{ username }}</p>
+            </div>
+            <div class="col-6">
+            <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+        </div>
+    </div>
     </div>
 </div>

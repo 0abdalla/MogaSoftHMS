@@ -39,12 +39,13 @@
                     <tr *ngFor="let room of rooms | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }"  style="cursor: pointer">
                         <td class="text-secondary">{{ room.id }}</td>
                         <td>
-                            <div class="d-flex align-items-center gap-2 justify-content-start">
+                            <!-- <div class="d-flex align-items-center gap-2 justify-content-start">
                                 <div class="avatar-circle">
                                     {{ (room.name?.split(' ')[1]?.charAt(0) || room.name?.charAt(0)) }}
                                 </div>
                                 <span class="fw-bold">{{ room.name }}</span>
-                            </div>
+                            </div> -->
+                            غرفة رقم {{room?.number}}
                         </td>
                         <td>
                             <button type="button" class="btn btn-primary mx-2" (click)="editRoom(room.id)">
@@ -96,7 +97,7 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="wardId">الطابق</label>
                                 <select class="form-control shadow-none" formControlName="wardId" id="wardId">
@@ -105,29 +106,29 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="number">رقم الغرفة</label>
                                 <input type="number" class="form-control shadow-none" formControlName="number" id="number">
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="type">نوع الغرفة</label>
-                                <select class="form-control shadow-none" formControlName="type" id="type">
+                                <select class="form-select shadow-none" formControlName="type" id="type">
                                     <option selected disabled value="">اختر نوع الغرفة</option>
-                                    <option value="عادية">عادية</option>
-                                    <option value="فندقية">فندقية</option>
+                                    <option value="Shared">عادية</option>
+                                    <option value="Private">فندقية</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="status">الحالة</label>
-                                <select class="form-control shadow-none" formControlName="status" id="status">
+                                <select class="form-select shadow-none" formControlName="status" id="status">
                                     <option selected disabled value="">اختر الحالة</option>
-                                    <option value="نشط">نشط</option>
-                                    <option value="غير نشط">غير نشط</option>
+                                    <option value="Active">نشط</option>
+                                    <option value="Inactive">غير نشط</option>
                                 </select>
                             </div>
                         </div>

@@ -23,7 +23,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             SupplierId = request.SupplierId,
             Description = request.Description,
             Status = PurchaseStatus.Pending,
-            PriceQuotationId = request.PriceQuotationId,
+            //PriceQuotationId = request.PriceQuotationId,
+            PurchaseRequestId = request.PurchaseRequestId,
             IsActive = true,
             Items = request.Items.Select(i => new PurchaseOrderItem
             {
@@ -57,7 +58,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         order.OrderDate = request.OrderDate;
         order.SupplierId = request.SupplierId;
         order.Description = request.Description;
-        order.PriceQuotationId = request.PriceQuotationId;
+        // order.PriceQuotationId = request.PriceQuotationId;
+        order.PurchaseRequestId = request.PurchaseRequestId;
 
 
         foreach (var item in order.Items)
@@ -85,7 +87,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         var order = await _unitOfWork.Repository<PurchaseOrder>()
             .GetAll()
             .Include(x => x.Supplier)
-            .Include(x => x.PriceQuotation)
+            //.Include(x => x.PriceQuotation)
+            .Include(x => x.PurchaseRequest)
             .Include(x => x.Items)
             .ThenInclude(i => i.Item).ThenInclude(i => i.Unit)
             .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
@@ -101,8 +104,10 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             OrderDate = order.OrderDate,
             SupplierId = order.SupplierId,
             SupplierName = order.Supplier.Name,
-            PriceQuotationId = order.PriceQuotationId,
-            PriceQuotationNumber = order.PriceQuotation?.QuotationNumber,
+            //PriceQuotationId = order.PriceQuotationId,
+            //PriceQuotationNumber = order.PriceQuotation?.QuotationNumber,
+            PurchaseRequestId = order.PurchaseRequestId,
+            PurchaseRequestNumber = order.PurchaseRequest?.RequestNumber,
             Description = order.Description,
             Status = order.Status.ToString(),
             Items = order.Items.Where(i => i.IsActive).Select(i => new PurchaseOrderItemResponse
@@ -125,7 +130,8 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
     {
         var query = _unitOfWork.Repository<PurchaseOrder>().GetAll()
             .Include(x => x.Supplier)
-            .Include(x => x.PriceQuotation)
+            //.Include(x => x.PriceQuotation)
+            .Include(x => x.PurchaseRequest)
             .Where(x => x.IsActive);
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
@@ -147,8 +153,11 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
                 Description = x.Description,
                 Status = x.Status.ToString(),
                 Items = new(),
-                PriceQuotationId = x.PriceQuotationId,
-                PriceQuotationNumber = x.PriceQuotation.QuotationNumber
+                //PriceQuotationId = x.PriceQuotationId,
+                //PriceQuotationNumber = x.PriceQuotation.QuotationNumber
+                PurchaseRequestId = x.PurchaseRequestId,
+                PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
+                SupplierId = x.SupplierId
             })
             .ToListAsync(cancellationToken);
 

@@ -28,6 +28,7 @@ import { YearFinSettingsComponent } from './action/year-fin-settings/year-fin-se
 import { IssueRequestComponent } from './action/issue-request/issue-request.component';
 import { UnitsComponent } from './inputs/units/units.component';
 import { authGuard } from '../../../Auth/auth.guard';
+import { AccountGuidanceComponent } from './inputs/account-guidance/account-guidance.component';
 
 const routes: Routes = [
   {path:"items" , component : ItemsComponent, canActivate: [authGuard], data: { pageName: 'Items' }},
@@ -60,7 +61,9 @@ const routes: Routes = [
   {path:'bank/discount-notice',component:DiscountNoticeComponent, canActivate: [authGuard], data: { pageName: 'DiscountNotice' }},
   {path:'restrictions',component:RestrictionsComponent, canActivate: [authGuard], data: { pageName: 'Restrictions' }},
   // 
-  {path:'year-fin-settings',component:YearFinSettingsComponent, canActivate: [authGuard], data: { pageName: 'YeaFinSettings' }}
+  {path:'year-fin-settings',component:YearFinSettingsComponent, canActivate: [authGuard], data: { pageName: 'YeaFinSettings' }},
+  // 
+  { path:"account-guidance", component: AccountGuidanceComponent, canActivate: [authGuard], data: { pageName: 'AccountGuidance' } },
 ];
 
 @NgModule({

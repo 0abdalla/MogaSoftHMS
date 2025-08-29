@@ -57,7 +57,8 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 DocumentNumber = notification.Id.ToString(),
                 RestrictionTypeId = null,
                 IsActive = true,
-                AccountingGuidanceId = 2,
+                // TODO : replace with the correct accounting guidance id
+                AccountingGuidanceId = 15,
                 RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =
@@ -141,6 +142,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 .GetAll(x => x.IsActive)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
+                .OrderByDescending(x => x.Id)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))

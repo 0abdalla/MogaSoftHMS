@@ -114,6 +114,7 @@ export class RoomsComponent {
             next: (res:any) => {
               this.getRooms();
               this.roomForm.reset();
+              console.log(res);
               if(res.isSuccess==true){
                 this.messageService.add({
                   severity: 'success',
@@ -153,7 +154,7 @@ export class RoomsComponent {
             modal.show();
           },
           error: (err) => {
-            console.error('فشل تحميل بيانات الخزنة:', err);
+            console.error('فشل تحميل بيانات الغرفة:', err);
           }
         });
       }

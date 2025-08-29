@@ -8,13 +8,13 @@
     <div class="card-body ">
         <div class="p-2">
             <form [formGroup]="formGroup" autocomplete="off">
-                <div class="row mb-3">
+                <!-- <div class="row mb-3">
                     <label class="form-label d-flex align-items-center gap-2">
                         اسم المجموعة
                         <span class="text-danger">*</span>
                     </label>
                     <app-general-selector formControlName="parentId" [data]="parentCostCenterSelectorData" [showSearch]="true" [placeholder]="'اسم المجموعة'"></app-general-selector>
-                </div>
+                </div> -->
                 <div class="row mb-3">
                     <label class="form-label d-flex align-items-center gap-2">
                         رمز مركز التكلفة
@@ -29,10 +29,10 @@
                 </div>
                 <hr class="my-4" />
                 <div class="row mb-3">
-                    <div class="col-sm-4 d-flex align-items-center">
+                    <!-- <div class="col-sm-4 d-flex align-items-center">
                         <label class="form-label d-flex align-items-center gap-2 me-2" for="isGroup">{{formGroup.get('isGroup')?.value ? 'مجموعة' : 'فردي'}}</label>
                         <input class="big-checkbox" formControlName="isGroup" type="checkbox" id="isGroup">
-                    </div>
+                    </div> -->
                     <div class="col-sm-4 d-flex align-items-center">
                         <label class="form-label d-flex align-items-center gap-2 me-2" for="isActive">{{formGroup.get('isActive')?.value ? 'نشط' : 'غير نشط'}}</label>
                         <input class="big-checkbox" formControlName="isActive" type="checkbox" id="isActive">

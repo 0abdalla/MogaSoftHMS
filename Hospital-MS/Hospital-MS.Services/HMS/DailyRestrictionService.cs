@@ -148,7 +148,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 RestrictionNumber = entity.RestrictionNumber,
                 RestrictionDate = entity.RestrictionDate,
                 RestrictionTypeId = entity.RestrictionTypeId,
-                RestrictionTypeName = entity.RestrictionType.Name,
+                RestrictionTypeName = entity.RestrictionType?.Name ?? null,
                 //LedgerNumber = entity.LedgerNumber,
                 Description = entity.Description,
                 Details = entity.Details.Select(d => new DailyRestrictionDetailResponse
@@ -188,15 +188,17 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
         try
         {
             var query = _unitOfWork.Repository<DailyRestriction>()
-                .GetAll()
+                .GetAll(x => x.IsActive)
+                .OrderByDescending(x => x.Id)
                 .Include(x => x.RestrictionType)
                 .Include(x => x.Details)
                     .ThenInclude(x => x.CostCenter)
                 .Include(x => x.Details)
                     .ThenInclude(x => x.Account)
                 .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy)
-                .Where(x => x.IsActive);
+                .Include(x => x.UpdatedBy).AsQueryable();
+
+
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {

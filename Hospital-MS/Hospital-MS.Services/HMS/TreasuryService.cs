@@ -62,7 +62,8 @@ public class TreasuryService : ITreasuryService
                 Name = request.Name,
                 BranchId = request.BranchId,
                 Currency = request.Currency,
-                IsActive = true
+                IsActive = true,
+                OpeningBalance = request.OpeningBalance,
             };
 
             await _unitOfWork.Repository<Treasury>().AddAsync(treasury, cancellationToken);
@@ -141,7 +142,8 @@ public class TreasuryService : ITreasuryService
                         CreatedBy = row.Field<string>("CreatedBy"),
                         CreatedOn = row.Field<DateTime>("CreatedOn")
                     },
-                    Movements = movementList
+                    Movements = movementList,
+                    OpeningBalance = row.Field<decimal>("OpeningBalance")
                 };
             }).ToList();
 
@@ -174,10 +176,11 @@ public class TreasuryService : ITreasuryService
                 Id = treasury.Id,
                 Code = treasury.Code,
                 Name = treasury.Name,
-                BranchId = treasury.BranchId,
-                BranchName = treasury.Branch.Name,
+                BranchId = treasury?.BranchId,
+                BranchName = treasury?.Branch?.Name,
                 Currency = treasury.Currency,
                 IsActive = treasury.IsActive,
+                OpeningBalance = treasury.OpeningBalance,
                 Audit = new AuditResponse
                 {
                     CreatedBy = treasury.CreatedBy.UserName,
@@ -218,7 +221,7 @@ public class TreasuryService : ITreasuryService
             treasury.Name = request.Name;
             treasury.BranchId = request.BranchId;
             treasury.Currency = request.Currency;
-
+            treasury.OpeningBalance = request.OpeningBalance;
 
             _unitOfWork.Repository<Treasury>().Update(treasury);
             await _unitOfWork.CompleteAsync(cancellationToken);

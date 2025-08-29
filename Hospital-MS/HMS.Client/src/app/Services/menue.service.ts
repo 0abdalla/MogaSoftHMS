@@ -209,6 +209,18 @@ export class MenueService {
           icon: 'fa-solid fa-circle',
           route: '/hms/reports/item-movement',
           pageName: 'ItemMovement'
+        },
+        {
+          displayName: 'حد الطلب',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/item-order-limit',
+          pageName: 'ItemOrderLimit'
+        },
+        {
+          displayName: 'تقييم المخزون',
+          icon: 'fa-solid fa-circle',
+          route: '/hms/reports/store-rate',
+          pageName: 'StoreRate'
         }
       ]
     },
@@ -344,6 +356,12 @@ export class MenueService {
               icon: 'fa-solid fa-circle',
               route: '/hms/settings/account-tree',
               pageName: 'AccountTree'
+            },
+            {
+              displayName: 'التوجيهات المحاسبية',
+              icon: 'fa-solid fa-circle',
+              route: '/hms/fin-tree/account-guidance',
+              pageName: 'AccountGuidance'
             },
             {
               displayName: 'الخزائن',

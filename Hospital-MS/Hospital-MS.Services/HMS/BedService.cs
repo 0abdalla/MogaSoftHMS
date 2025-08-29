@@ -6,11 +6,6 @@ using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -29,6 +24,9 @@ namespace Hospital_MS.Services.HMS
                 {
                     Number = request.Number,
                     RoomId = request.RoomId,
+                    DailyPrice = request.DailyPrice,
+
+
                 };
 
                 await _unitOfWork.Repository<Bed>().AddAsync(bed, cancellationToken);
@@ -45,9 +43,33 @@ namespace Hospital_MS.Services.HMS
 
         }
 
+        public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var bed = await _unitOfWork.Repository<Bed>()
+                    .GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                if (bed == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+                _unitOfWork.Repository<Bed>().Delete(bed);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
+
+        }
+
         public async Task<ErrorResponseModel<List<BedResponse>>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var beds = await _unitOfWork.Repository<Bed>().GetAll().Include(i => i.Room).ToListAsync();
+            var beds = await _unitOfWork.Repository<Bed>()
+                .GetAll()
+                .Include(i => i.Room)
+                .OrderByDescending(i => i.Id)
+                .ToListAsync(cancellationToken: cancellationToken);
 
             var result = beds.Select(x => new BedResponse
             {
@@ -60,6 +82,49 @@ namespace Hospital_MS.Services.HMS
             }).ToList();
 
             return ErrorResponseModel<List<BedResponse>>.Success(GenericErrors.GetSuccess, result);
+        }
+
+        public async Task<ErrorResponseModel<BedResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var bed = await _unitOfWork.Repository<Bed>()
+                .GetAll()
+                .Include(i => i.Room)
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+            if (bed == null)
+                return ErrorResponseModel<BedResponse>.Failure(GenericErrors.NotFound);
+            var result = new BedResponse
+            {
+                Id = bed.Id,
+                Number = bed.Number,
+                RoomId = bed.RoomId,
+                Status = bed.Status.ToString(),
+                RoomNumber = bed.Room.Number,
+            };
+            return ErrorResponseModel<BedResponse>.Success(GenericErrors.GetSuccess, result);
+        }
+
+        public async Task<ErrorResponseModel<string>> UpdateAsync(int id, CreateBedRequest request, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                if (!Enum.TryParse<BedStatus>(request.Status, true, out var bedStatus))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
+                var bed = await _unitOfWork.Repository<Bed>()
+                    .GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                if (bed == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+                bed.Number = request.Number;
+                bed.RoomId = request.RoomId;
+                bed.Status = bedStatus;
+                _unitOfWork.Repository<Bed>().Update(bed);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+                return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+            }
+            catch (Exception)
+            {
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
         }
     }
 }

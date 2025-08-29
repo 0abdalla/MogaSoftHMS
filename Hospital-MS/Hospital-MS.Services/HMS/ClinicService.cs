@@ -2,16 +2,10 @@
 using Hospital_MS.Core.Contracts.Clinics;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
-using Hospital_MS.Core.Services;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hospital_MS.Services.HMS
 {
@@ -47,7 +41,10 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<List<ClinicResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
 
-            var clinics = await _unitOfWork.Repository<Clinic>().GetAll().ToListAsync();
+            var clinics = await _unitOfWork.Repository<Clinic>()
+                .GetAll()
+                .OrderByDescending(i => i.Id)
+                .ToListAsync(cancellationToken);
 
             var clinicResponses = clinics.Select(c => new ClinicResponse
             {

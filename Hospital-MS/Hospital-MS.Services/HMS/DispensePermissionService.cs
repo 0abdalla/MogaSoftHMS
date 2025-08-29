@@ -89,7 +89,8 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 DocumentNumber = treasuryOperation.Id.ToString(),
                 RestrictionTypeId = null,
                 IsActive = true,
-                AccountingGuidanceId = 1,
+                // TODO : replace it
+                AccountingGuidanceId = 17,
                 RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =
@@ -176,6 +177,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 .Include(x => x.Account)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
+                .OrderByDescending(x => x.Id)
                 .Where(x => x.IsActive);
 
 

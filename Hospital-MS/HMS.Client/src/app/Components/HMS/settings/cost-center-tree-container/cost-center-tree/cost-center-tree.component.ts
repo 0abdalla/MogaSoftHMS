@@ -50,9 +50,8 @@ export class CostCenterTreeComponent {
   }
 
   loadData() {
-
     this.showLoader = true;
-    this.settingsService.GetCostCenterTreeHierarchicalData(this.SearchText).subscribe(data => {
+    this.settingsService.GetCostCenterTreeData(this.SearchText).subscribe(data => {
       this.showLoader = false;
       this.isSearchMode = true;
       this.CostCenterTreeData = data;

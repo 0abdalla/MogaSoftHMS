@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
         
       },
       error:(err) => {
-        this.message = 'اسم المستخدم أو كلمة المرور غير صحيحين';
+        this.message = 'المستخدم أو كلمة المرور غير صحيحين';
         console.log(err);
         
       }
@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         Swal.fire({
-          title: 'اسم المستخدم غير صحيح',
+          title: 'المستخدم غير صحيح',
           icon: 'error',
           showConfirmButton: false,
           timer: 2000

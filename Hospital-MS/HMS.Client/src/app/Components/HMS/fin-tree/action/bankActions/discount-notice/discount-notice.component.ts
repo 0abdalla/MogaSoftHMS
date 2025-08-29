@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { SettingService } from '../../../../../../Services/HMS/setting.service';
 import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 import html2pdf from 'html2pdf.js';
+import { MessageService } from 'primeng/api';
 declare var bootstrap:any;
 
 @Component({
@@ -48,7 +49,7 @@ export class DiscountNoticeComponent implements OnInit {
   
     return `${dateStr} - الساعة ${timeStr}`;
   }  
-  constructor(private fb:FormBuilder , private banksService:BanksService , private financialService:FinancialService , private settingsService : SettingService){
+  constructor(private fb:FormBuilder , private banksService:BanksService , private financialService:FinancialService , private settingsService : SettingService , private messageService : MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -105,21 +106,33 @@ export class DiscountNoticeComponent implements OnInit {
   
     if (this.isEditMode && this.currentAdditionNotificationId) {
       this.financialService.updateDebitNotification(this.currentAdditionNotificationId, formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getDiscountNotifications();
+          if(res.isSuccess){
+            this.messageService.add({ severity: 'success', summary: 'تم التعديل بنجاح' , detail: 'تم تعديل الإشعار بنجاح' });
+          }else{
+            this.messageService.add({ severity: 'error', summary: 'فشل التعديل' , detail: 'فشل تعديل الإشعار' });
+          }
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
+          this.messageService.add({ severity: 'error', summary: 'فشل التعديل' , detail: 'فشل تعديل الإشعار' });
         }
       });
     } else {
       this.financialService.addDebitNotification(formData).subscribe({
-        next: () => {
+        next: (res:any) => {
           this.getDiscountNotifications();
           this.discountNoticeGroup.reset();
+          if(res.isSuccess){
+            this.messageService.add({ severity: 'success', summary: 'تم الحفظ بنجاح' , detail: 'تم حفظ الإشعار بنجاح' });
+          }else{
+            this.messageService.add({ severity: 'error', summary: 'فشل الحفظ' , detail: 'فشل حفظ الإشعار' });
+          }
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
+          this.messageService.add({ severity: 'error', summary: 'فشل الحفظ' , detail: 'فشل حفظ الإشعار' });
         }
       });
     }
@@ -163,11 +176,17 @@ export class DiscountNoticeComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         this.financialService.deleteDebitNotification(id).subscribe({
-          next: () => {
+          next: (res:any) => {
             this.getDiscountNotifications();
+            if(res.isSuccess){
+              this.messageService.add({ severity: 'success', summary: 'تم الحذف بنجاح' , detail: 'تم حذف الإشعار بنجاح' });
+            }else{
+              this.messageService.add({ severity: 'error', summary: 'فشل الحذف' , detail: 'فشل حذف الإشعار' });
+            }
           },
           error: (err) => {
             console.error('فشل حذف إشعار إضافة:', err);
+            this.messageService.add({ severity: 'error', summary: 'فشل الحذف' });
           }
         });
       }
@@ -220,7 +239,8 @@ export class DiscountNoticeComponent implements OnInit {
     this.financialService.getDebitNotificationById(id).subscribe(res => {
       if (res?.isSuccess) {
         this.printedDiscount = res.results;
-  
+        console.log(this.printedDiscount);
+        
         setTimeout(() => {
           const element = document.getElementById('printableDiscount');
           const options = {
@@ -234,5 +254,10 @@ export class DiscountNoticeComponent implements OnInit {
         }, 300);
       }
     });
+  }
+  resetForm(){
+    this.discountNoticeGroup.reset();
+    this.isEditMode=false;
+    this.currentAdditionNotificationId=null;
   }
 }

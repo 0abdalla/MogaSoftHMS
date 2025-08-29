@@ -159,4 +159,9 @@ export class ProvidersComponent {
       this.pagingFilterModel.searchText = '';
     this.getProviders();
   }
+  resetForm(){
+    this.providerForm.reset();
+    this.isEditMode = false;
+    this.currentProviderId = null;
+  }
 }

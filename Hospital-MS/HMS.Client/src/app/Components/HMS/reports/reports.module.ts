@@ -9,6 +9,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { StoreMovementComponent } from './store-movement/store-movement.component';
 import { ItemMovementComponent } from './item-movement/item-movement.component';
+import { ItemOrderLimitComponent } from './item-order-limit/item-order-limit.component';
+import { StoreRateComponent } from './store-rate/store-rate.component';
 
 
 @NgModule({
@@ -17,7 +19,9 @@ import { ItemMovementComponent } from './item-movement/item-movement.component';
     FinReportsComponent,
     LedgerReportComponent,
     StoreMovementComponent,
-    ItemMovementComponent
+    ItemMovementComponent,
+    ItemOrderLimitComponent,
+    StoreRateComponent
   ],
   imports: [
     CommonModule,

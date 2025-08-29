@@ -24,7 +24,7 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
     costCenterNumber: '',
     nameAR: '',
     nameEN: '',
-    parentId: '',
+    // parentId: '',
     isPost: '',
     isActive: '',
     notes: '',
@@ -35,7 +35,7 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.initNewForm();
-    this.loadSelectors();
+    // this.loadSelectors();
 
   }
 
@@ -65,19 +65,19 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
       costCenterNumber: [null],
       nameAR: [null, [Validators.required]],
       nameEN: [null, [Validators.required]],
-      parentId: [null],
+      // parentId: [null],
       isPost: [false, [Validators.required]],
       isActive: [false, [Validators.required]],
-      isGroup: [false, [Validators.required]],
+      // isGroup: [false, [Validators.required]],
       notes: [null],
 
     });
 
-    this.formGroup.get('parentId').valueChanges.subscribe((parentId: number) => {
-      if (!this.isUpdate) {
-        this.generateCostCenterNumber(parentId ? parentId : 0);
-      }
-    });
+    // this.formGroup.get('parentId').valueChanges.subscribe((parentId: number) => {
+    //   if (!this.isUpdate) {
+    //     this.generateCostCenterNumber(parentId ? parentId : 0);
+    //   }
+    // });
   }
 
   saveCostCenter() {
@@ -93,7 +93,8 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
     this.settingService.CreateNewCostCenter(this.costCenterModel).subscribe(data => {
       if (data?.isSuccess) {
         this.formGroup?.reset();
-        this.loadSelectors();
+        this.generateCostCenterNumber();
+        // this.loadSelectors();
         this.dataUpdated.emit(true);
       }
       else {
@@ -114,7 +115,7 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
     this.settingService.UpdateCostCenterTree(this.costCenterModel.costCenterId, this.costCenterModel).subscribe(data => {
       if (data?.isSuccess) {
         this.initNewForm();
-        this.loadSelectors();
+        // this.loadSelectors();
         this.dataUpdated.emit(true);
       }
       else {
@@ -149,20 +150,15 @@ export class AddEditCostCenterTreeComponent implements OnInit, OnChanges {
       costCenterNumber: costCenterModel.costCenterNumber,
       nameAR: costCenterModel.nameAR,
       nameEN: costCenterModel.nameEN,
-      parentId: costCenterModel.parentId,
+      // parentId: costCenterModel.parentId,
       isPost: costCenterModel.isPost,
       isActive: costCenterModel.isActive,
-      isGroup: costCenterModel.isGroup
+      // isGroup: costCenterModel.isGroup
     });
   }
   loadSelectors() {
     this.settingService.GetCostCenterSelector(true).subscribe(data => {
       this.parentCostCenterSelectorData = data;
     });
-  }
-
-  getSelectedParentCostCenter(costCenter: CostCenterTreeModel) {
-    this.costCenterModel.parentId = costCenter.costCenterId;
-    this.costCenterModel.costLevel = costCenter.costLevel + 1;
   }
 }

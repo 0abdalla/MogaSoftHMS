@@ -24,9 +24,12 @@ namespace Hospital_MS.Services.Finance
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<List<CostCenterTree>> GetCostCenterTreeData(bool IsParent)
+        public async Task<List<CostCenterTree>> GetCostCenterTreeDataBySearch(string? SearchText)
         {
-            return await _unitOfWork.Repository<CostCenterTree>().GetAll().ToListAsync();
+            if (string.IsNullOrEmpty(SearchText))
+                return await _unitOfWork.Repository<CostCenterTree>().GetAll().ToListAsync();
+            else
+                return await _unitOfWork.Repository<CostCenterTree>().GetAll(i => i.NameAR.Contains(SearchText)).ToListAsync();
         }
 
         public List<CostCenterTreeModel> GetCostCenterTreeData(string SearchText)

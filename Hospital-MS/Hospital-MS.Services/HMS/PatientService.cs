@@ -169,7 +169,7 @@ namespace Hospital_MS.Services.HMS
             {
                 AppointmentId = a.Id,
                 AppointmentDate = a.AppointmentDate,
-                DoctorName = a.Doctor.FullName,
+                DoctorName = a.Doctor?.FullName,
                 ClinicName = a.Clinic?.Name,
                 MedicalServiceName = a.MedicalService?.Name,
                 Status = a.Status.ToString(),

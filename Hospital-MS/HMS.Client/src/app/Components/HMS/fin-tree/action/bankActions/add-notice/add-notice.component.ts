@@ -8,6 +8,7 @@ import { SettingService } from '../../../../../../Services/HMS/setting.service';
 import { todayDateValidator } from '../../../../../../validators/today-date.validator';
 export declare var bootstrap:any;
 import html2pdf from 'html2pdf.js';
+import { MessageService } from 'primeng/api';
 
 
 @Component({
@@ -51,7 +52,7 @@ export class AddNoticeComponent {
   
     return `${dateStr} - الساعة ${timeStr}`;
   }  
-  constructor(private fb:FormBuilder , private financialService:FinancialService , private banksService:BanksService , private settingsService : SettingService){
+  constructor(private fb:FormBuilder , private financialService:FinancialService , private banksService:BanksService , private settingsService : SettingService , private toastService : MessageService){
     this.filterForm=this.fb.group({
       SearchText:[],
       type:[''],
@@ -98,8 +99,13 @@ export class AddNoticeComponent {
   
     if (this.isEditMode && this.currentAdditionNotificationId) {
       this.financialService.updateAdditionNotification(this.currentAdditionNotificationId, formData).subscribe({
-        next: () => {
+        next: (res) => {
           this.getAdditionNotifications();
+          if(res.isSuccess){
+            this.toastService.add({ severity: 'success', summary: 'تم التعديل بنجاح', detail: 'تم تعديل الإشعار بنجاح' });
+          }else{
+            this.toastService.add({ severity: 'error', summary: 'فشل التعديل', detail: 'فشل تعديل الإشعار' });
+          }
         },
         error: (err) => {
           console.error('فشل التعديل:', err);
@@ -112,10 +118,16 @@ export class AddNoticeComponent {
           console.log(this.addNoticeGroup.value);
           console.log(res);
           this.restrictionData = res.results
-          // this.addNoticeGroup.reset();
+          this.addNoticeGroup.reset();
+          if(res.isSuccess){
+            this.toastService.add({ severity: 'success', summary: 'تم الحفظ بنجاح', detail: 'تم حفظ الإشعار بنجاح' });
+          }else{
+            this.toastService.add({ severity: 'error', summary: 'فشل الحفظ', detail: 'فشل حفظ الإشعار' });
+          }
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
+          this.toastService.add({ severity: 'error', summary: 'فشل الحفظ', detail: 'فشل حفظ الإشعار' });
         }
       });
     }
@@ -159,11 +171,17 @@ export class AddNoticeComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.financialService.deleteAdditionNotification(id).subscribe({
-          next: () => {
+          next: (res:any) => {
             this.getAdditionNotifications();
+            if(res.isSuccess){
+              this.toastService.add({ severity: 'success', summary: 'تم الحذف بنجاح', detail: 'تم حذف الإشعار بنجاح' });
+            }else{
+              this.toastService.add({ severity: 'error', summary: 'فشل الحذف', detail: 'فشل حذف الإشعار' });
+            }
           },
           error: (err) => {
             console.error('فشل حذف إشعار إضافة:', err);
+            this.toastService.add({ severity: 'error', summary: 'فشل الحذف', detail: 'فشل حذف الإشعار' });
           }
         });
       }
@@ -229,7 +247,8 @@ export class AddNoticeComponent {
     this.financialService.getAdditionNotificationsById(id).subscribe(res => {
       if (res?.isSuccess) {
         this.printedAddition = res.results;
-  
+        console.log(this.printedAddition);
+        
         setTimeout(() => {
           const element = document.getElementById('printableAddition');
           const options = {
@@ -244,5 +263,9 @@ export class AddNoticeComponent {
       }
     });
   }
-  
+  resetForm(){
+    this.addNoticeGroup.reset();
+    this.isEditMode=false;
+    this.currentAdditionNotificationId=null;
+  }
 }

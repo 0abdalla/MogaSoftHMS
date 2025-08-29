@@ -60,7 +60,7 @@
     </form>
 </main>
 
-<div class="modal fade" id="storeMovementReportModal" tabindex="-1" aria-hidden="true" dir="rtl">
+<div class="modal fade" id="storeMovementReportModal" tabindex="-1" aria-hidden="true" dir="rtl" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div #printSection>
@@ -146,8 +146,6 @@
                 </tbody>
               </table>
             </div>
-  
-            <!-- الإجماليات -->
             <div class="mt-4">
               <p><strong>إجمالي الكمية المستلمة:</strong> {{ itemMovementData.totalItemReceipts }}</p>
               <p><strong>إجمالي الكمية المنصرفة:</strong> {{ itemMovementData.totalItemIssues }}</p>
@@ -156,6 +154,7 @@
         </div>
         <div class="modal-footer">
           <button class="btn-blue" (click)="printReport()">طباعة</button>
+          <button type="button" class="btn-red" data-bs-dismiss="modal">خروج</button>
         </div>
       </div>
     </div>

@@ -56,7 +56,8 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 DocumentNumber = debitNotice.Id.ToString(),
                 RestrictionTypeId = null,
                 IsActive = true,
-                AccountingGuidanceId = 2,
+                // TODO : replace with the correct accounting guidance id for debit notice
+                AccountingGuidanceId = 15,
                 RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =
@@ -197,6 +198,9 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 .Include(x => x.Account)
                 .Include(x => x.DailyRestriction)
                     .ThenInclude(dr => dr.AccountingGuidance)
+
+                    .Include(x => x.DailyRestriction)
+                    .ThenInclude(dr => dr.Details)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync();
 
@@ -226,7 +230,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     AccountingGuidanceName = debitNotice.DailyRestriction?.AccountingGuidance?.Name,
-                    Amount = debitNotice.Amount,
+                    Amount = debitNotice.DailyRestriction.Details.Sum(x => x.Debit),
                     From = debitNotice.Account.NameAR,
                     To = debitNotice.Bank.Name,
                     Id = debitNotice?.DailyRestriction?.Id,

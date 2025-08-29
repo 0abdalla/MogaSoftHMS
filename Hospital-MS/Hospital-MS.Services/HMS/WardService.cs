@@ -55,7 +55,10 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<List<WardResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var wards = await _unitOfWork.Repository<Ward>().GetAll().ToListAsync(cancellationToken);
+            var wards = await _unitOfWork.Repository<Ward>()
+                .GetAll()
+                .OrderByDescending(i => i.Id)
+                .ToListAsync(cancellationToken);
 
             var response = wards.Select(ward => new WardResponse
             {

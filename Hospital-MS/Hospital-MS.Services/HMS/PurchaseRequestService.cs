@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Common.Consts;
+using Hospital_MS.Core.Contracts.PriceQuotation;
 using Hospital_MS.Core.Contracts.PurchaseRequests;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
@@ -131,8 +132,15 @@ namespace Hospital_MS.Services.HMS
             var pr = await _unitOfWork.Repository<PurchaseRequest>()
                 .GetAll()
                 .Include(x => x.Store)
+                .Include(x => x.PriceQuotation)
+                    .ThenInclude(p => p.Items)
+                        .ThenInclude(i => i.Item)
+                .Include(x => x.PriceQuotation)
+                    .ThenInclude(p => p.Supplier)
+                .Include(x => x.PriceQuotation)
+                    .ThenInclude(p => p.PurchaseRequest)
                 .Include(x => x.Items)
-                .ThenInclude(i => i.Item)
+                    .ThenInclude(i => i.Item)
                 .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
 
             if (pr == null)
@@ -156,7 +164,32 @@ namespace Hospital_MS.Services.HMS
                     ItemName = i.Item.NameAr,
                     Quantity = i.Quantity,
                     Notes = i.Notes
-                }).ToList()
+                }).ToList(),
+                PriceQuotation = pr.PriceQuotation != null
+                    ? new PriceQuotationResponse
+                    {
+                        Id = pr.PriceQuotation.Id,
+                        QuotationNumber = pr.PriceQuotation.QuotationNumber,
+                        QuotationDate = pr.PriceQuotation.QuotationDate,
+                        SupplierId = pr.PriceQuotation.SupplierId,
+                        SupplierName = pr.PriceQuotation.Supplier?.Name ?? string.Empty,
+                        Notes = pr.PriceQuotation.Notes,
+                        Status = pr.PriceQuotation.Status.ToString(),
+                        TotalAmount = pr.PriceQuotation.Items.Where(i => i.IsActive).Sum(i => i.Quantity * i.UnitPrice),
+                        PurchaseRequestId = pr.PriceQuotation.PurchaseRequestId,
+                        PurchaseRequestNumber = pr.PriceQuotation.PurchaseRequest?.RequestNumber ?? string.Empty,
+                        Items = pr.PriceQuotation.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                        {
+                            Id = i.ItemId,
+                            NameAr = i.Item.NameAr,
+                            Quantity = i.Quantity,
+                            UnitPrice = i.UnitPrice,
+                            Total = i.Quantity * i.UnitPrice,
+                            Notes = i.Notes,
+                            Unit = i.Item.Unit != null ? i.Item.Unit.Name : null
+                        }).ToList()
+                    }
+                    : null
             };
 
             return ErrorResponseModel<PurchaseRequestResponse>.Success(GenericErrors.GetSuccess, response);

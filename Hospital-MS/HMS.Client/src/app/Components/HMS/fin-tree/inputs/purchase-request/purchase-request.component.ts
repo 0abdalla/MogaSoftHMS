@@ -231,14 +231,17 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
             });
             // this.CloseModal();
             this.getpurchaseRequests();
+          this.generatePurchaseRequestPDF();
           } else {
             this.toastrService.add({
               severity: 'error',
               summary: 'فشل الإضافة',
               detail: `${res.message}`
             });
+            console.log(res);
+            console.log(formData);
+            
           }
-          this.generatePurchaseRequestPDF();
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
@@ -465,5 +468,12 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
     document.body.classList.remove('modal-open');
     document.body.style.overflow = '';
     document.body.style.paddingRight = '';
+  }
+  resetForm(){
+    this.purchaseRequestForm.reset();
+    this.items.clear();
+    this.items.push(this.createItemGroup());
+    this.isEditMode = false;
+    this.currentPurchaseRequestId = null;
   }
 }

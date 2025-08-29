@@ -325,4 +325,12 @@ export class IssueRequestComponent implements OnInit {
       element.style.display = 'none';
     });
   }
+  // 
+  resetForm(){
+    this.issuseRequestForm.reset();
+    this.isEditMode = false;
+    this.currentIssueId = null;
+    this.items.clear();
+    this.addItemRow();
+  }
 }

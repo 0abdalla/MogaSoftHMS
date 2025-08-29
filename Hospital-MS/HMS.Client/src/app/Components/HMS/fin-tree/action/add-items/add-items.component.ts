@@ -56,6 +56,7 @@ export class AddItemsComponent implements OnInit {
   };
   // 
   allItems: any[] = [];
+  allUnits:any[] = []
   suppliers:any[]=[];
   stores:any[]=[];
   purchaseRequests:any[]=[];
@@ -83,6 +84,7 @@ export class AddItemsComponent implements OnInit {
   ngOnInit(): void {
     this.getReceiptPermissions();
     this.getItems();
+    this.getUnits();
     this.getSuppliers();
     this.getStores();
     this.getPurchaseRequests();
@@ -182,6 +184,13 @@ export class AddItemsComponent implements OnInit {
       this.total=res.count;
     })
   }
+  getUnits(){
+    this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res:any)=>{
+      this.allUnits=res.results;
+      console.log('Units',this.allUnits);
+      this.total=res.count;
+    })
+  }
   getSuppliers(){
     this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res:any)=>{
       this.suppliers=res.results;
@@ -259,10 +268,13 @@ export class AddItemsComponent implements OnInit {
     } else {
       this.financialService.addReceiptPermission(formData).subscribe({
         next: (res: any) => {
-          this.addNumber = res.results.number;
-          console.log('Full Data:' , res);
-          console.log(this.addNumber);
           const formData = this.addPermissionForm.value;
+          console.log('Full Data:' , res);
+          console.log(formData);
+          
+          this.addNumber = res.results.number;
+          console.log(this.addNumber);
+          console.log(formData);
           if (!this.allItems?.length || !this.stores?.length || !this.suppliers?.length) {
             console.error('Required data not loaded');
             return;
@@ -305,10 +317,13 @@ export class AddItemsComponent implements OnInit {
               summary: 'فشل الإضافة',
               detail: `${res.message}`
             });
+          console.log(formData);
           }
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
+          console.log(formData);
+          
         }
       });
     }
@@ -542,5 +557,11 @@ export class AddItemsComponent implements OnInit {
     const backdrops = document.querySelectorAll('.modal-backdrop');
     backdrops.forEach(b => b.remove());
   }
-  
+  resetForm(){
+    this.addPermissionForm.reset();
+    this.items.clear();
+    this.items.push(this.createItemGroup());
+    this.isEditMode = false;
+    this.currentpurchaseOrderId = null;
+  }
 }

@@ -70,4 +70,8 @@ export class SettingService {
   DeleteCostCenterTree(costCenterId: number) {
     return this.http.get<any>(this.baseUrl + 'CostCenterTree/DeleteCostCenterTree?CostCenterId=' + costCenterId);
   }
+
+  GetCostCenterTreeData(SearchText: string) {
+    return this.http.get<any>(this.baseUrl + 'CostCenterTree/GetCostCenterTreeData?SearchText=' + SearchText);
+  }
 }

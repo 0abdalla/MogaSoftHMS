@@ -20,4 +20,7 @@ public class MaterialIssuePermission : AuditableEntity // اذن الصرف
     public int? DisbursementRequestId { get; set; }
     public DisbursementRequest? DisbursementRequest { get; set; } = default!;
     public ICollection<MaterialIssueItem> Items { get; set; } = new List<MaterialIssueItem>();
+
+    public DailyRestriction DailyRestriction { get; set; } = default!;
+    public int? DailyRestrictionId { get; set; }
 }

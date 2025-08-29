@@ -151,6 +151,7 @@ export class OffersComponent {
               summary: 'تم التعديل',
               detail: `${res.message}`
             });
+            // this.offerForm.reset();
           }else{
             this.toastrService.add({
               severity: 'error',
@@ -174,6 +175,8 @@ export class OffersComponent {
               summary: 'تمت الإضافة',
               detail: `${res.message}`
             });
+            // this.offerForm.reset();
+            
           }else{
             this.toastrService.add({
               severity: 'error',
@@ -397,5 +400,11 @@ export class OffersComponent {
       element.style.display = 'none';
     });
   }
-  
+  resetForm(){
+    this.offerForm.reset();
+    this.items.clear();
+    this.items.push(this.createItemGroup());
+    this.isEditMode = false;
+    this.currentOfferId = null;
+  }
 }

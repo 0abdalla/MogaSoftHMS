@@ -52,10 +52,12 @@ export class PurchaseOrderComponent {
   TitleList = ['المشتريات','أوامر توريد '];
   // 
   approvedPrices!:any;
+  purchaseRequests:any[]=[];
+
   constructor(private financialService : FinancialService , private fb : FormBuilder , private toastrService : MessageService , private cdr : ChangeDetectorRef){
     this.purchaseOrderForm=this.fb.group({
       orderDate:[new Date().toISOString()],
-      priceQuotationId:[null , Validators.required],
+      purchaseRequestId:[null,Validators.required],
       supplierId:[null,Validators.required],
       description:[''],
       items: this.fb.array([
@@ -89,9 +91,10 @@ export class PurchaseOrderComponent {
   
   ngOnInit(): void {
     this.getItems();
-    this.getpurchaseOrders();
     this.getSuppliers();
+    this.getPurchaseRequests();
     this.getPriceQutations();
+    this.getpurchaseOrders();
     // this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
     //   if (id) {
     //     this.financialService.getOffersById(id).subscribe((res: any) => {
@@ -124,11 +127,13 @@ export class PurchaseOrderComponent {
       this.setupQuotationSelectionListener();
     })
   }
+  purchaseRequestNumber!:any;
   setupQuotationSelectionListener() {
-    this.purchaseOrderForm.get('priceQuotationId')?.valueChanges.subscribe((id: number) => {
+    this.purchaseOrderForm.get('purchaseRequestId')?.valueChanges.subscribe((id: number) => {
       if (id) {
-        this.financialService.getOffersById(id).subscribe((res: any) => {
-          const price = res.results;
+        this.financialService.getPurchaseRequestsById(id).subscribe((res: any) => {
+          const price = res.results.priceQuotation;
+          this.purchaseRequestNumber = price.purchaseRequestNumber;
           console.log(price);
           this.purchaseOrderForm.patchValue({
             supplierId: price.supplierId,
@@ -157,7 +162,13 @@ export class PurchaseOrderComponent {
       console.log(this.allSuppliers);
     })
   }
-
+  getPurchaseRequests(){
+    this.financialService.getPurchaseRequests(this.pagingFilterModelSelect).subscribe((res : any)=>{
+      this.purchaseRequests = res.results;
+      this.total = res.totalCount;
+      console.log(this.purchaseRequests);
+    })
+  }
   getpurchaseOrders(){
     this.financialService.getPurchaseOrders(this.pagingFilterModelSelect).subscribe((res : any)=>{
       this.purchaseOrders = res.results;
@@ -206,24 +217,16 @@ export class PurchaseOrderComponent {
       });
     } else {
       this.financialService.addPurchaseOrder(formData).subscribe({
-        next: async(res:any) => {
-          this.purNumber = res.results
-          this.getpurchaseOrders();
-          // this.savedOrderData = res;
-          // const modal = new bootstrap.Modal(document.getElementById('confirmationModal')!);
-          // modal.show();
-          await this.onQuotationChange();
-          this.printOffers();
-          if(res.isSuccess === true){
+        next: (res: any) => {
+          if (res.isSuccess) {
+            this.purNumber = res.results;
+            this.buildStructuredTable();
+            console.log('Structured Table:', this.structuredTable);
+            console.log('Purchase Request Number:', this.purchaseRequestNumber);
+            this.printOffers();
             this.toastrService.add({
               severity: 'success',
-              summary: 'تم التعديل',
-              detail: `${res.message}`
-            });
-          }else{
-            this.toastrService.add({
-              severity: 'error',
-              summary: 'فشل التعديل',
+              summary: 'تم الحفظ',
               detail: `${res.message}`
             });
           }
@@ -231,7 +234,7 @@ export class PurchaseOrderComponent {
         error: (err) => {
           console.error('فشل الإضافة:', err);
         }
-      });      
+      });
     }
   }
   order!:any;
@@ -254,7 +257,7 @@ export class PurchaseOrderComponent {
           }));          
         });
         this.purchaseOrderForm.patchValue({
-          priceQuotationId: this.order.priceQuotationId,
+          purchaseRequestId: this.order.purchaseRequestId,
           supplierId: this.order.supplierId,
           notes: this.order.notes
         });
@@ -293,19 +296,17 @@ export class PurchaseOrderComponent {
   // 
   structuredTable: any[] = [];
   buildStructuredTable() {
-    const selected = this.selectedQuotation;
-    if (!selected || !selected.items) return;
-  
-    this.structuredTable = selected.items.map((item: any) => ({
-      nameAr: item.nameAr,
-      quantity: item.quantity,
+    const items = this.purchaseOrderForm.value.items || [];
+    this.structuredTable = items.map((item: any) => ({
+      nameAr: this.getItemNameById(item.itemId),
+      quantity: item.requestedQuantity,
       unitPrice: item.unitPrice,
-      totalPrice: item.unitPrice * item.quantity
+      totalPrice: item.totalPrice
     }));
   }
   onQuotationChange() {
     this.buildStructuredTable();
-  }
+  }  
   
   get selectedQuotation() {
     if (!this.approvedPrices || !Array.isArray(this.approvedPrices)) return null;
@@ -335,7 +336,7 @@ export class PurchaseOrderComponent {
     element.style.display = 'block';
     const opt = {
       margin: 0.5,
-      filename: 'أمر_شراء_رقم_ ' + this.purNumber + '.pdf',
+      filename: 'أمر_توريد_رقم_ ' + this.purNumber + '.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -364,7 +365,7 @@ export class PurchaseOrderComponent {
 
     this.purNumber = data.orderNumber;
     this.supplierNameForPrint = data.supplierName;
-    this.quotationRequestNumberForPrint = data.priceQuotationNumber;
+    this.quotationRequestNumberForPrint = data.purchaseRequestNumber;
     this.structuredTable = data.items.map((item: any) => ({
       nameAr: item.itemName,
       quantity: item.requestedQuantity,
@@ -386,7 +387,7 @@ export class PurchaseOrderComponent {
 
       html2pdf().set({
         margin: 0.5,
-        filename: `أمر_شراء_رقم_${this.purNumber}.pdf`,
+        filename: `أمر_توريد_رقم_${this.purNumber}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2 },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -402,6 +403,13 @@ export class PurchaseOrderComponent {
     console.error('فشل تحميل أمر الشراء للطباعة:', err);
     alert('حدث خطأ أثناء تحميل أمر الشراء.');
   });
-}
+  }
+  resetForm(){
+    this.purchaseOrderForm.reset();
+    this.items.clear();
+    this.items.push(this.createItemGroup());
+    this.isEditMode = false;
+    this.currentPurchaseRequestId = null;
+  }
 }
 
