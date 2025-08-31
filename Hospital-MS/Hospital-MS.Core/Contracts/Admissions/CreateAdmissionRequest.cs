@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Contracts.Admissions
+﻿namespace Hospital_MS.Core.Contracts.Admissions
 {
     public class CreateAdmissionRequest
     {
@@ -16,11 +10,11 @@ namespace Hospital_MS.Core.Contracts.Admissions
         public string PatientStatus { get; set; }
         public string PatientGender { get; set; }
 
-        public string? EmergencyPhone01 { get; set; } 
-        public string? EmergencyContact01 { get; set; } 
+        public string? EmergencyPhone01 { get; set; }
+        public string? EmergencyContact01 { get; set; }
 
-        public string? EmergencyPhone02 { get; set; } 
-        public string? EmergencyContact02 { get; set; } 
+        public string? EmergencyPhone02 { get; set; }
+        public string? EmergencyContact02 { get; set; }
 
         public int DepartmentId { get; set; }
         public int DoctorId { get; set; }
@@ -41,6 +35,6 @@ namespace Hospital_MS.Core.Contracts.Admissions
         public string? CompanionPhone { get; set; }
 
         public string? Notes { get; set; }
-
+        //public string? SurgeryType { get; set; }
     }
 }

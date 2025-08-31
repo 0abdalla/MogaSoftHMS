@@ -24,20 +24,6 @@ public class NotificationService(IUnitOfWork unitOfWork,
 
     public async Task CreateAndNotifyAsync(Notification notification, CancellationToken cancellationToken = default)
     {
-        //notification.CreatedAt = DateTime.UtcNow;
-        //notification.IsRead = false;
-        //await _unitOfWork.Repository<Notification>().AddAsync(notification, cancellationToken);
-
-        //try
-        //{
-        //    await _unitOfWork.CompleteAsync(cancellationToken);
-        //}
-        //catch (Exception ex)
-        //{
-
-        //    Console.WriteLine(ex.Message);
-        //}
-
         // Send Notifications To System Admins Group
         await _hubContext.Clients.Group("SystemAdmins").SendAsync("ReceiveNotification", new
         {
@@ -106,7 +92,8 @@ public class NotificationService(IUnitOfWork unitOfWork,
         };
         var body = EmailBodyBuilder.GenerateEmailBody("NewPurchaseRequest", templateModel);
 
-        await _emailService.SendEmailAsync("magdeleslams@gmail.com", subject, body);
+        await _emailService.SendEmailAsync("eslam.s.eltayar@gmail.com", subject, body);
+        //magdeleslams
 
         // TODO: Uncomment the following lines to send emails to all admin users
 

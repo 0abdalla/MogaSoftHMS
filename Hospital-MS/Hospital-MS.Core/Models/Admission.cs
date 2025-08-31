@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public DateTime AdmissionDate { get; set; } = DateTime.UtcNow;            
+        public DateTime AdmissionDate { get; set; } = DateTime.UtcNow;
 
 
         public string? HealthStatus { get; set; }
@@ -21,6 +21,8 @@
         public int DoctorId { get; set; }
         public int DepartmentId { get; set; }
         public int RoomId { get; set; }
+
+        //public string? surgeryType { get; set; }
 
         public Patient Patient { get; set; } = default!;
         public Bed Bed { get; set; } = default!;

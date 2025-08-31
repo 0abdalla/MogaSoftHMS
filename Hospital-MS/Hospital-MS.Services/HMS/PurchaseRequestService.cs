@@ -72,10 +72,10 @@ namespace Hospital_MS.Services.HMS
                 await _unitOfWork.Repository<Notification>().AddAsync(notification, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                if (!isAdmin)
-                {
-                    BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
-                }
+                //if (!isAdmin)
+                //{
+                BackgroundJob.Enqueue(() => _notificationService.SendNewPurchaseRequestNotification(purchaseRequest.Id));
+                //}
 
                 await _notificationService.CreateAndNotifyAsync(notification, cancellationToken);
 

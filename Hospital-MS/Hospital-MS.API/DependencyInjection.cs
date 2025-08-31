@@ -113,15 +113,25 @@ namespace Hospital_MS.API
             services.AddScoped<IPenaltyService, PenaltyService>();
             services.AddScoped<IStaffSalariesService, StaffSalariesService>();
             services.AddScoped<INotificationService, NotificationService>();
-            services.AddScoped<IEmailSender, EmailService>();
             services.AddScoped<IItemUnitService, ItemUnitService>();
 
 
             services.AddHttpContextAccessor();
+
             services.AddOptions<MailSettings>()
                     .BindConfiguration(nameof(MailSettings))
                     .ValidateDataAnnotations()
                     .ValidateOnStart();
+
+            // services.AddScoped<IEmailSender, EmailService>();
+
+
+            services.AddOptions<SendGridSettings>()
+                   .BindConfiguration(nameof(SendGridSettings))
+                   .ValidateDataAnnotations()
+                   .ValidateOnStart();
+
+            services.AddScoped<IEmailSender, SendGridEmailService>();
 
             services.AddHealthChecks()
             .AddSqlServer(name: "database", connectionString: connectionString)

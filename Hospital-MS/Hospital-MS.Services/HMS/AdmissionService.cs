@@ -167,6 +167,8 @@ namespace Hospital_MS.Services.HMS
                 CompanionPhone = admission.CompanionPhone,
                 CompanionNationalId = admission.CompanionNationalId,
                 Notes = admission.Notes,
+                //surgeryType = admission.surgeryType,
+
                 CreatedOn = admission.CreatedOn,
                 CreatedBy = $"{admission.CreatedBy?.FirstName} {admission.CreatedBy?.LastName}",
                 UpdatedOn = admission.UpdatedOn,

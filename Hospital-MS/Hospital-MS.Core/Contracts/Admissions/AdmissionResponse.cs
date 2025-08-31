@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Hospital_MS.Core.Contracts.Admissions
+﻿namespace Hospital_MS.Core.Contracts.Admissions
 {
     public class AdmissionResponse
     {
@@ -47,6 +41,7 @@ namespace Hospital_MS.Core.Contracts.Admissions
         public string? CompanionPhone { get; set; }
         public string? CompanionNationalId { get; set; }
         public string? Notes { get; set; }
+        //public string? surgeryType { get; set; }
 
         // Audit Information
         public DateTime CreatedOn { get; set; }

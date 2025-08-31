@@ -9,7 +9,7 @@ using MimeKit;
 namespace Hospital_MS.Services.Common;
 public class EmailService(IOptions<MailSettings> mailSettings, ILogger<EmailService> logger) : IEmailSender
 {
-    private readonly MailSettings _mailSettings = mailSettings.Value; 
+    private readonly MailSettings _mailSettings = mailSettings.Value;
     private readonly ILogger<EmailService> _logger = logger;
 
     public async Task SendEmailAsync(string email, string subject, string htmlMessage)
