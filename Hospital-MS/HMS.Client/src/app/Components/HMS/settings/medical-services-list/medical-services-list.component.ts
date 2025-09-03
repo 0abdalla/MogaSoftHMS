@@ -4,6 +4,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FilterModel, PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { MessageService } from 'primeng/api';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { AdmissionService } from '../../../../Services/HMS/admission.service';
 declare var bootstrap : any
 @Component({
   selector: 'app-medical-services-list',
@@ -34,7 +35,7 @@ export class MedicalServicesListComponent implements OnInit {
     { day: 'السبت', value: 'Saturday' }
   ];
   isFilter = true;
-  constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService) {
+  constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService , private admissionService : AdmissionService) {
     this.filterForm = this.fb.group({
       SearchText: [''],
     });
@@ -54,11 +55,13 @@ export class MedicalServicesListComponent implements OnInit {
       price: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.min(1)]],
       type: ['', Validators.required],
       weekDays: this.fb.array([this.createSchedule()]),
+      departmentId:['' , Validators.required]
     })
   }
 
   ngOnInit(): void {
     this.getServices();
+    this.getDeps();
   }
   get weekDays(): FormArray {
     return this.serviceForm.get('weekDays') as FormArray;
@@ -145,6 +148,17 @@ export class MedicalServicesListComponent implements OnInit {
       }
     });
   }  
+  deps!:any;
+  getDeps(){
+    this.admissionService.getDepartments().subscribe({
+      next:(res:any)=>{
+        this.deps = res.results
+        console.log('Deps : ' , this.deps);
+      },error:(err)=>{
+        console.log(err);
+      }
+    })
+  }
   // 
   applyFilters(filters: FilterModel[]) {
     this.pagingFilterModel.filterList = filters;
@@ -171,6 +185,7 @@ export class MedicalServicesListComponent implements OnInit {
           price: this.serviceDetails.price,
           type: this.serviceDetails.type,
           weekDays: this.serviceDetails.medicalServiceSchedules.map((schedule: any) => ({ weekDay: schedule.weekDay })),
+          departmentId: this.serviceDetails.departmentId
         });
       },
       error: (err) => {

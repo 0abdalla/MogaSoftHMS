@@ -79,108 +79,133 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-3" [ngClass]="patientForm.get('patientStatus')?.value === 'Surgery' ? 'col-lg-3' : 'col-lg-4'">
                                 <div class="mb-2">
-                                    <label class="form-label d-flex align-items-center gap-2">رقم الهاتف 
-                                  <span class="text-danger">*</span>
-                                </label>
-                                    <input type="text" class="form-control shadow-none" formControlName="patientPhone" placeholder="أدخل رقم الهاتف" autocomplete="off" />
-                                    <div *ngIf="patientForm.get('patientPhone')?.invalid && patientForm.get('patientPhone')?.touched" class="text-danger">
-                                        <ng-container *ngIf="patientForm.get('patientPhone')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
-                                        <ng-container *ngIf="patientForm.get('patientPhone')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
-                                    </div>
+                                  <label class="form-label d-flex align-items-center gap-2">رقم الهاتف 
+                                    <span class="text-danger">*</span>
+                                  </label>
+                                  <input type="text" class="form-control shadow-none" formControlName="patientPhone" placeholder="أدخل رقم الهاتف" autocomplete="off" />
+                                  <div *ngIf="patientForm.get('patientPhone')?.invalid && patientForm.get('patientPhone')?.touched" class="text-danger">
+                                    <ng-container *ngIf="patientForm.get('patientPhone')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
+                                    <ng-container *ngIf="patientForm.get('patientPhone')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
+                                  </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-4">
+                              </div>
+                              
+                              <div class="col-lg-3" [ngClass]="patientForm.get('patientStatus')?.value === 'Surgery' ? 'col-lg-3' : 'col-lg-4'">
                                 <div class="mb-2">
-                                    <label class="form-label d-flex align-items-center gap-2">محل الإقامة
-                                  <span class="text-danger">*</span>
-                                </label>
-                                    <input type="text" class="form-control shadow-none" formControlName="patientAddress" placeholder="أدخل محل الإقامة" autocomplete="off" />
-                                    <div *ngIf="patientForm.get('patientAddress')?.invalid && patientForm.get('patientAddress')?.touched" class="text-danger">
-                                        محل الإقامة مطلوب
-                                    </div>
+                                  <label class="form-label d-flex align-items-center gap-2">محل الإقامة
+                                    <span class="text-danger">*</span>
+                                  </label>
+                                  <input type="text" class="form-control shadow-none" formControlName="patientAddress" placeholder="أدخل محل الإقامة" autocomplete="off" />
+                                  <div *ngIf="patientForm.get('patientAddress')?.invalid && patientForm.get('patientAddress')?.touched" class="text-danger">
+                                    محل الإقامة مطلوب
+                                  </div>
                                 </div>
-                            </div>
-                            <div class="col-lg-4">
+                              </div>
+                              
+                              <div class="col-lg-3" [ngClass]="patientForm.get('patientStatus')?.value === 'Surgery' ? 'col-lg-3' : 'col-lg-4'">
                                 <div class="mb-2">
-                                    <label class="form-label d-flex align-items-center gap-2">الحالة
-                                  <span class="text-danger">*</span>
-                                </label>
-                                    <!-- <app-general-selector [data]="PatientStatus" formControlName="patientStatus"></app-general-selector> -->
-                                    <select class="form-select shadow-none" formControlName="patientStatus">
-                                        <option selected disabled value="">اختر الحالة</option>
-                                        <option *ngFor="let status of PatientStatus" [value]="status.value">{{status.name}}</option>
-                                    </select>
-                                    <div *ngIf="patientForm.get('patientStatus')?.invalid && patientForm.get('patientStatus')?.touched" class="text-danger">
-                                        الحالة مطلوبة
-                                    </div>
+                                  <label class="form-label d-flex align-items-center gap-2">الحالة
+                                    <span class="text-danger">*</span>
+                                  </label>
+                                  <select class="form-select shadow-none" formControlName="patientStatus">
+                                    <option selected disabled value="">اختر الحالة</option>
+                                    <option *ngFor="let status of PatientStatus" [value]="status.value">
+                                      {{status.name}}
+                                    </option>
+                                  </select>
+                                  <div *ngIf="patientForm.get('patientStatus')?.invalid && patientForm.get('patientStatus')?.touched" class="text-danger">
+                                    الحالة مطلوبة
+                                  </div>
                                 </div>
-                            </div>
+                              </div>
+                              
+                              <div class="col-lg-3" *ngIf="patientForm.get('patientStatus')?.value === 'Surgery'">
+                                <div class="mb-2">
+                                  <label class="form-label d-flex align-items-center gap-2">نوع العملية
+                                    <span class="text-danger">*</span>
+                                  </label>
+                                  <select class="form-select shadow-none" formControlName="medicalServiceId" (change)="onSelectSurgery($event)">
+                                    <option selected disabled value="">اختر نوع العملية</option>
+                                    <option *ngFor="let service of services" [value]="service.id">
+                                      {{service.name}}
+                                    </option>
+                                  </select>
+                                  <div *ngIf="patientForm.get('medicalServiceId')?.invalid && patientForm.get('medicalServiceId')?.touched" class="text-danger">
+                                    نوع العملية مطلوبة
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div class="col-lg-12 text-center mt-3" *ngIf="selectedSurgeryPrice">
+                                <h5>سعر العملية : <span>{{selectedSurgeryPrice}} جنيه</span></h5>
+                              </div>
+                              
                         </div>
                 </div>
             </div>
             <h4 class="mt-4 mb-3">🏥بيانات الأقامة</h4>
-      <div class="row mb-3">
-        <div class="col-lg-4">
-          <label for="admissionDate" class="form-label">تاريخ الدخول</label>
-          <input type="date" id="admissionDate" class="form-control shadow-none" value="{{currentDate}}" disabled />
-        </div>
-        <div class="col-lg-4">
-          <label for="departmentId" class="form-label">القسم</label>
-          <select id="departmentId" class="form-select shadow-none" formControlName="departmentId" (change)="onDepartmentChange()">
-            <option selected disabled value="">اختر القسم</option>
-            <option *ngFor="let department of departments" [value]="department.id">{{department.name}}</option>
-          </select>
-          <div *ngIf="patientForm.get('departmentId')?.invalid && patientForm.get('departmentId')?.touched" class="text-danger">
-            القسم مطلوب
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <label for="doctorId" class="form-label">الطبيب المسؤول</label>
-          <select id="doctorId" class="form-select shadow-none" formControlName="doctorId">
-            <option selected disabled value="">اختر الطبيب المسئول</option>
-            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{doctor.fullName}}</option>
-          </select>
-          <div *ngIf="patientForm.get('doctorId')?.invalid && patientForm.get('doctorId')?.touched" class="text-danger">
-            الطبيب المسؤول مطلوب
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <label for="roomType" class="form-label">نوع الغرفة</label>
-          <select id="roomType" class="form-select shadow-none" formControlName="roomType" (change)="onRoomTypeChange()">
-            <option selected disabled value="">اختر النوع</option>
-            <option value="Shared">عادية</option>
-            <option value="Private">فندقية</option>
-          </select>
-          <div *ngIf="patientForm.get('roomType')?.invalid && patientForm.get('roomType')?.touched" class="text-danger">
-            نوع الغرفة مطلوب
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <label for="roomId" class="form-label">رقم الغرفة</label>
-          <select id="roomId" class="form-select shadow-none" formControlName="roomId" (change)="onRoomChange()">
-            <option selected disabled value="">اختر الغرفة</option>
-            <option *ngFor="let room of filteredRooms" [value]="room.id">{{room.number}}</option>
-          </select>
-          <div *ngIf="patientForm.get('roomId')?.invalid && patientForm.get('roomId')?.touched" class="text-danger">
-            رقم الغرفة مطلوب
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <label for="bedId" class="form-label">رقم السرير</label>
-          <select id="bedId" class="form-select shadow-none" formControlName="bedId">
-            <option selected disabled value="">اختر السرير</option>
-            <option *ngFor="let bed of filteratedBeds" [value]="bed.id">{{bed.number}}</option>
-          </select>
-          <div *ngIf="patientForm.get('bedId')?.invalid && patientForm.get('bedId')?.touched" class="text-danger">
-            رقم السرير مطلوب
-          </div>
-        </div>
-        <div class="col-lg-12 text-center mt-3" *ngIf="selectedDailyPrice">
-          <h5>تكلفة الإقامة باليوم : <span> {{selectedDailyPrice}} جنيه</span></h5>
-        </div>
-      </div>
+                <div class="row mb-3">
+                    <div class="col-lg-4">
+                    <label for="admissionDate" class="form-label">تاريخ الدخول</label>
+                    <input type="date" id="admissionDate" class="form-control shadow-none" value="{{currentDate}}" disabled />
+                    </div>
+                    <div class="col-lg-4">
+                    <label for="departmentId" class="form-label">القسم</label>
+                    <select id="departmentId" class="form-select shadow-none" formControlName="departmentId" (change)="onDepartmentChange()">
+                        <option selected disabled value="">اختر القسم</option>
+                        <option *ngFor="let department of departments" [value]="department.id">{{department.name}}</option>
+                    </select>
+                    <div *ngIf="patientForm.get('departmentId')?.invalid && patientForm.get('departmentId')?.touched" class="text-danger">
+                        القسم مطلوب
+                    </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <label for="doctorId" class="form-label">الطبيب المسؤول</label>
+                    <select id="doctorId" class="form-select shadow-none" formControlName="doctorId">
+                        <option selected disabled value="">اختر الطبيب المسئول</option>
+                        <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">{{doctor.fullName}}</option>
+                    </select>
+                    <div *ngIf="patientForm.get('doctorId')?.invalid && patientForm.get('doctorId')?.touched" class="text-danger">
+                        الطبيب المسؤول مطلوب
+                    </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <label for="roomType" class="form-label">نوع الغرفة</label>
+                    <select id="roomType" class="form-select shadow-none" formControlName="roomType" (change)="onRoomTypeChange()">
+                        <option selected disabled value="">اختر النوع</option>
+                        <option value="Shared">عادية</option>
+                        <option value="Private">فندقية</option>
+                    </select>
+                    <div *ngIf="patientForm.get('roomType')?.invalid && patientForm.get('roomType')?.touched" class="text-danger">
+                        نوع الغرفة مطلوب
+                    </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <label for="roomId" class="form-label">رقم الغرفة</label>
+                    <select id="roomId" class="form-select shadow-none" formControlName="roomId" (change)="onRoomChange()">
+                        <option selected disabled value="">اختر الغرفة</option>
+                        <option *ngFor="let room of filteredRooms" [value]="room.id">{{room.number}}</option>
+                    </select>
+                    <div *ngIf="patientForm.get('roomId')?.invalid && patientForm.get('roomId')?.touched" class="text-danger">
+                        رقم الغرفة مطلوب
+                    </div>
+                    </div>
+                    <div class="col-lg-4">
+                    <label for="bedId" class="form-label">رقم السرير</label>
+                    <select id="bedId" class="form-select shadow-none" formControlName="bedId">
+                        <option selected disabled value="">اختر السرير</option>
+                        <option *ngFor="let bed of filteratedBeds" [value]="bed.id">{{bed.number}}</option>
+                    </select>
+                    <div *ngIf="patientForm.get('bedId')?.invalid && patientForm.get('bedId')?.touched" class="text-danger">
+                        رقم السرير مطلوب
+                    </div>
+                    </div>
+                    <div class="col-lg-12 text-center mt-3" *ngIf="selectedDailyPrice">
+                    <h5>تكلفة الإقامة باليوم : <span> {{selectedDailyPrice}} جنيه</span></h5>
+                    </div>
+                </div>
             <div class="inputs-wrapper border rounded bg-white mb-3">
                 <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50">
                     <h5 class="mb-0 fw-bold">

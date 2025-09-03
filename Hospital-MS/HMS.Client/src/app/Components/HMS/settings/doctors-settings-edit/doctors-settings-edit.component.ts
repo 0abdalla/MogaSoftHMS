@@ -101,6 +101,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
         weekDay: ['', Validators.required],
         startTime: ['', Validators.required],
         endTime: ['', Validators.required],
+        capacity: ['', Validators.required],
       })
     );
   }
@@ -159,6 +160,7 @@ export class DoctorsSettingsEditComponent implements OnInit {
             weekDay: [schedule.weekDay || '', Validators.required],
             startTime: [this.formatTime(schedule.startTime) || '', Validators.required],
             endTime: [this.formatTime(schedule.endTime) || '', Validators.required],
+            capacity: [schedule.capacity || '', Validators.required],
           })
         );
       });

@@ -9,6 +9,8 @@ import { SharedService } from '../../../../Services/shared.service';
 declare var bootstrap: any;
 
 import html2pdf from 'html2pdf.js';
+import Swal from 'sweetalert2';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-doctors-list',
   templateUrl: './doctors-list.component.html',
@@ -48,7 +50,7 @@ export class DoctorsListComponent implements OnInit {
   // 
   selectedDoctor!: any;
   isFilter = false;
-  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router, private sharedService: SharedService) {
+  constructor(private fb: FormBuilder, private doctorService: StaffService, private router: Router, private sharedService: SharedService , private messageService : MessageService) {
     this.filterForm = this.fb.group({
       Search: [null],
       Status: [''],
@@ -232,5 +234,40 @@ export class DoctorsListComponent implements OnInit {
       hour12: true
     }).format(date);
   }
-  
+  deleteDoctor(id: number) {
+    Swal.fire({
+      title: 'هل أنت متأكد؟',
+      text: 'هل تريد حذف هذا الطبيب؟',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'نعم، حذف',
+      cancelButtonText: 'إلغاء'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.doctorService.deleteDoctor(id).subscribe({
+          next: (res:any) => {
+            this.getDoctors();
+            if(res.isSuccess==true){
+              this.messageService.add({
+                severity: 'success',
+                summary: 'تم الحذف بنجاح',
+                detail: 'تم حذف الطبيب بنجاح',
+              });
+            }else{
+              this.messageService.add({
+                severity: 'error',
+                summary: 'فشل الحذف',
+                detail: 'فشل حذف الطبيب',
+              });
+            }
+          },
+          error: (err) => {
+            console.error('فشل الحذف:', err);
+          }
+        });
+      }
+    });
+  }
 }

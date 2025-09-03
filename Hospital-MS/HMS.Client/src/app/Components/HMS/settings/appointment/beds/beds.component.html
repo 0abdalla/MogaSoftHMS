@@ -82,7 +82,7 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addBedModalLabel">إضافة سرير</h5>
+                <h5 class="modal-title" id="addBedModalLabel">{{isEditMode ? 'تعديل السرير' : 'إضافة سرير'}}</h5>
             </div>
             <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
                 <form [formGroup]="bedForm" (ngSubmit)="addBed()">
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="col-lg-6 mt-2">
+                        <div class="col-lg-4 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="roomId">الغرفة</label>
                                 <select class="form-select shadow-none" formControlName="roomId" id="roomId">
@@ -106,31 +106,31 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6 mt-2">
+                        <div class="col-lg-4 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="number">رقم السرير</label>
                                 <input type="number" class="form-control shadow-none" formControlName="number" id="number">
                             </div>
                         </div>
-                        <div class="col-lg-6 mt-2">
+                        <div class="col-lg-4 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="status">الحالة</label>
                                 <select class="form-select shadow-none" formControlName="status" id="status">
                                     <option selected disabled value="">اختر الحالة</option>
                                     <option value="Available">متاح</option>
-                                    <option value="Occupied">محجوز</option>
+                                    <option value="NotAvailable">محجوز</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="col-lg-6 mt-2">
+                        <!-- <div class="col-lg-6 mt-2">
                             <div class="form-group">
                                 <label class="form-label" for="dailyPrice">سعر اليوم</label>
                                 <input type="number" class="form-control shadow-none" formControlName="dailyPrice" id="dailyPrice">
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="bedForm.invalid">إضافة السرير</button>
+                        <button type="submit" class="btn-blue" [disabled]="bedForm.invalid">{{isEditMode ? 'تعديل السرير' : 'إضافة سرير'}}</button>
                         <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
                     </div>
                 </form>

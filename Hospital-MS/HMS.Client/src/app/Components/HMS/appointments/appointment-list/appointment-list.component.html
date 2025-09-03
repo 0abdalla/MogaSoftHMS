@@ -157,36 +157,33 @@
                                     <table class="table table-card-table table-borderless table-hover bg-transparent m-0" *ngIf="selectedAppointment?.type !== 'طوارئ'">
                                         <thead>
                                             <tr>
-                                                <th>تاريخ الحجز</th>
-                                                <th>نوع الخدمة</th>
-                                                <th>الدكتور المختص</th>
-                                                <th>التكلفة</th>
+                                              <th>تاريخ الحجز</th>
+                                              <th>نوع الخدمة</th>
+                                              <th>الدكتور المختص</th>
+                                              <th>التكلفة</th>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            <ng-container>
-                                                <tr *ngFor="let item of selectedAppointment?.medicalServices">
-                                                    <td>{{ item.medicalServiceDate | date: 'dd/MM/yyyy' }}</td>
-                                                    <td>{{ item.medicalServiceName }}</td>
-                                                    <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
-                                                    <td *ngIf="item.medicalServiceType != 'General' || item.medicalServiceType != 'Surgery' || item.medicalServiceType != 'Consultation'">{{ '---' }}</td>
-                                                    <td>{{ item.medicalServicePrice }} جنيه</td>
-                                                </tr>
-                                                <tr *ngIf="selectedAppointment?.medicalServices?.length">
-                                                    <td></td>
-                                                    <td class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
-                                                    <td></td>
-                                                    <td class="fw-bold">{{ totalPrice }} جنيه</td>
-                                                </tr>
-                                            </ng-container>
-                                            <ng-container>
-                                                <tr *ngIf="!selectedAppointment?.medicalServices?.length">
-                                                    <td colspan="12" class="text-right">
-                                                        <app-empty-data [showEmptyData]="!selectedAppointment?.medicalServices?.length"></app-empty-data>
-                                                    </td>
-                                                </tr>
-                                            </ng-container>
-                                        </tbody>
+                                          </thead>
+                                          <tbody>
+                                            <tr *ngFor="let item of selectedAppointment?.medicalServices">
+                                              <td>{{ item.medicalServiceDate | date: 'dd/MM/yyyy' }}</td>
+                                              <td>{{ item.medicalServiceName }}</td>
+                                          
+                                              <!-- خلية واحدة: إذا النوع ضمن doctorTypes اعرض اسم الدكتور وإلا اعرض --- -->
+                                              <td>
+                                                {{ doctorTypes.includes(item.medicalServiceType) ? (item.doctorName || '---') : '---' }}
+                                              </td>
+                                          
+                                              <td>{{ item.medicalServicePrice }} جنيه</td>
+                                            </tr>
+                                          
+                                            <tr *ngIf="selectedAppointment?.medicalServices?.length">
+                                              <td></td>
+                                              <td class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
+                                              <td></td>
+                                              <td class="fw-bold">{{ totalPrice }} جنيه</td>
+                                            </tr>
+                                          </tbody>
+                                          
                                     </table>
                                 </div>
                             </div>

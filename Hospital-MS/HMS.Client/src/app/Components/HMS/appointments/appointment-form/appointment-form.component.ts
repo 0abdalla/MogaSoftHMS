@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 import { inject } from '@angular/core';
 import { todayDateValidator } from '../../../../validators/today-date.validator';
 declare var bootstrap: any;
-
+import html2pdf from 'html2pdf.js';
 
 @Component({
   selector: 'app-appointment-form',
@@ -32,7 +32,11 @@ declare var bootstrap: any;
   ],
 })
 export class AppointmentFormComponent implements OnInit {
-  @ViewChild('PrintInvioce', { static: false }) PrintInvoiceComponent: PrintInvoiceComponent;
+  // @ViewChild('PrintInvioce', { static: false }) PrintInvoiceComponent: PrintInvoiceComponent;
+  userName: any;
+    currentDate = new Date();
+    @ViewChild('printSection', { static: false }) printSectionRef: ElementRef;
+    invoiceData: any;
   // private router = inject(Router);
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
@@ -87,7 +91,7 @@ export class AppointmentFormComponent implements OnInit {
     private sharedService: SharedService,
     private router: Router,
     ) {
-
+      this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');    
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
@@ -375,74 +379,78 @@ export class AppointmentFormComponent implements OnInit {
   }
   
 
-  onSubmit() {
-    debugger;
-    if (this.reservationForm.invalid) {
-      this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
-      return;
-    }
+  // onSubmit() {
+  //   if (this.reservationForm.invalid) {
+  //     this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
+  //     return;
+  //   }
 
-    if (this.appointmentDetailsSelected.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
-      return;
-    }
+  //   if (this.appointmentDetailsSelected.length === 0) {
+  //     this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
+  //     return;
+  //   }
 
-    let validService = ['General', 'Consultation', 'Surgery'];
-    let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
-    const formData = this.reservationForm.value;
-    let medicalServices = [];
-    let appointmentTypes = [... new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
-    appointmentTypes.forEach(type => {
-      let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
-      let obj = {
-        medicalServiceIds: types.map(item => item.medicalServiceId),
-        appointmentDate: types[0].appointmentDate,
-        appointmentType: types[0].appointmentType,
-      }
+  //   let validService = ['General', 'Consultation', 'Surgery'];
+  //   let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
+  //   const formData = this.reservationForm.value;
+  //   let medicalServices = [];
+  //   let appointmentTypes = [... new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
+  //   appointmentTypes.forEach(type => {
+  //     let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
+  //     let obj = {
+  //       medicalServiceIds: types.map(item => item.medicalServiceId),
+  //       appointmentDate: types[0].appointmentDate,
+  //       appointmentType: types[0].appointmentType,
+  //     }
 
-      medicalServices.push(obj);
-    })
-    const payload = {
-      patientName: formData.patientName,
-      patientPhone: formData.patientPhone,
-      gender: formData.gender,
-      appointmentType: service?.appointmentType,
-      doctorId: service?.doctorId ? Number(service?.doctorId) : null,
-      insuranceCompanyId: formData.insuranceCompanyId || null,
-      insuranceCategoryId: formData.insuranceCategoryId || null,
-      insuranceNumber: formData.insuranceNumber || '',
-      paymentMethod: formData.paymentMethod,
-      emergencyLevel: formData.emergencyLevel,
-      companionName: formData.companionName,
-      companionNationalId: formData.companionNationalId,
-      companionPhone: formData.companionPhone,
-      medicalServices: medicalServices
-    };
+  //     medicalServices.push(obj);
+  //   })
+  //   const payload = {
+  //     patientName: formData.patientName,
+  //     patientPhone: formData.patientPhone,
+  //     gender: formData.gender,
+  //     appointmentType: service?.appointmentType,
+  //     doctorId: service?.doctorId ? Number(service?.doctorId) : null,
+  //     insuranceCompanyId: formData.insuranceCompanyId || null,
+  //     insuranceCategoryId: formData.insuranceCategoryId || null,
+  //     insuranceNumber: formData.insuranceNumber || '',
+  //     paymentMethod: formData.paymentMethod,
+  //     emergencyLevel: formData.emergencyLevel,
+  //     companionName: formData.companionName,
+  //     companionNationalId: formData.companionNationalId,
+  //     companionPhone: formData.companionPhone,
+  //     medicalServices: medicalServices
+  //   };
 
-    this.appointmentService.createAppointment(payload).subscribe({
-      next: (response) => {
-        console.log(response);
-
-        if (response.isSuccess) {
-          this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
-          this.submittedData = { ...formData };
-          this.printInvoiceData = this.createInvoiceObj(response.results);
-          this.PrintInvoiceComponent.invoiceData = this.printInvoiceData;
-          this.PrintInvoiceComponent.generatePdf();
-          this.showReceipt = true;
-          this.reservationForm.reset();
-        } else {
-          this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
-        }
-      },
-      error: (error) => {
-        console.error('Error creating appointment:', error);
-        console.error('Details:', formData);
-        const errorMessage = error.error?.message || 'حدث خطأ أثناء إنشاء الحجز';
-        this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: errorMessage });
-      }
-    });
-  }
+  //   this.appointmentService.createAppointment(payload).subscribe({
+  //     next: (response) => {
+  //       console.log(response);
+  //       console.log('Payload',payload);
+  //       console.log('Appointment Details Form',this.appointmentDetailsForm.value);
+  //       console.log('Reservation Form',this.reservationForm.value);
+  //       if (response.isSuccess) {
+  //         this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
+  //         this.submittedData = { ...formData };
+  //         this.printInvoiceData = this.createInvoiceObj(response.results);
+  //         this.PrintInvoiceComponent.invoiceData = this.printInvoiceData;
+  //         this.PrintInvoiceComponent.generatePdf();
+  //         this.showReceipt = true;
+  //         this.reservationForm.reset();
+  //       } else {
+  //         this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
+  //       }
+  //     },
+  //     error: (error) => {
+  //       console.error('Error creating appointment:', error);
+  //       console.error('Details:', formData);
+  //       console.log('Payload',payload);
+  //       console.log('Appointment Details Form',this.appointmentDetailsForm.value);
+  //       console.log('Reservation Form',this.reservationForm.value);
+  //       const errorMessage = error.error?.message || 'حدث خطأ أثناء إنشاء الحجز';
+  //       this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: errorMessage });
+  //     }
+  //   });
+  // }
 
   getStaff() {
     this.staffService.getDoctors(this.pagingFilterModel).subscribe({
@@ -538,25 +546,106 @@ export class AppointmentFormComponent implements OnInit {
     });
   }
 
-  createInvoiceObj(apiData: any): any {
-    const formData = this.submittedData;
 
-    return {
-      appointmentNumber: apiData.appointmentNumber || '--',
+  onSubmit() {
+    if (this.reservationForm.invalid) {
+      this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
+      return;
+    }
+  
+    if (this.appointmentDetailsSelected.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
+      return;
+    }
+  
+    let validService = ['General', 'Consultation', 'Surgery'];
+    let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
+    const formData = this.reservationForm.value;
+  
+    let medicalServices = [];
+    let appointmentTypes = [... new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
+    appointmentTypes.forEach(type => {
+      let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
+      let obj = {
+        medicalServiceIds: types.map(item => item.medicalServiceId),
+        appointmentDate: types[0].appointmentDate,
+        appointmentType: types[0].appointmentType,
+      }
+      medicalServices.push(obj);
+    });
+  
+    const payload = {
       patientName: formData.patientName,
       patientPhone: formData.patientPhone,
-      // appointmentType: formData.appointmentType,
-      medicalServiceName: apiData.medicalServiceName,
-      doctorName: this.getDoctorName(this.reservationForm.value.doctorId),
-      selectedServicePrice: formData.selectedServicePrice || 0,
-      appointmentDate: this.sharedService.getArabicDayAndTimeRange(this.reservationForm.value.appointmentDate),
-      insuranceCompany: formData.insuranceCompany,
-      insuranceNumber: formData.insuranceNumber,
-      insuranceCategory: formData.insuranceCategory,
-      hospitalPhone: '01000201499',
-      hospitalEmail: 'info@elnourelmohamady.com',
+      gender: formData.gender,
+      appointmentType: service?.appointmentType,
+      doctorId: service?.doctorId ? Number(service?.doctorId) : null,
+      insuranceCompanyId: formData.insuranceCompanyId || null,
+      insuranceCategoryId: formData.insuranceCategoryId || null,
+      insuranceNumber: formData.insuranceNumber || '',
+      paymentMethod: formData.paymentMethod,
+      emergencyLevel: formData.emergencyLevel,
+      companionName: formData.companionName,
+      companionNationalId: formData.companionNationalId,
+      companionPhone: formData.companionPhone,
+      medicalServices: medicalServices
     };
+  
+    this.appointmentService.createAppointment(payload).subscribe({
+      next: (response) => {
+        console.log('Response : ', response);
+      
+        if (response.isSuccess) {
+          this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
+          this.invoiceData = response.results;
+          this.generatePdf();
+          this.resetForms();
+        } else {
+          this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
+        }
+      },error: (error) => {
+        const errorMessage = error.error?.message || 'حدث خطأ أثناء إنشاء الحجز';
+        this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: errorMessage });
+      }
+    });
   }
+  // To-Do
+  createInvoiceObj(apiData: any): any[] {
+    if (!apiData) return [];
+  
+    const invoices = apiData.medicalServices.map((service: any) => {
+      return {
+        appointmentNumber: apiData.appointmentNumber || '--',
+        patientName: apiData.patientName || '',
+        patientPhone: apiData.patientPhone || '',
+        medicalServiceName: service.name,
+        doctorName: apiData.doctorName || '',
+        selectedServicePrice: service.price || 0,
+        appointmentDate: apiData.appointmentDate
+          ? this.sharedService.getArabicDayAndTimeRange(apiData.appointmentDate)
+          : '',
+        insuranceCompany: apiData.insuranceCompany || '',
+        insuranceNumber: apiData.insuranceNumber || '',
+        insuranceCategory: apiData.insuranceCategory || '',
+        hospitalPhone: '01000201499',
+        hospitalEmail: 'info@elnourelmohamady.com',
+      };
+    });
+  
+    return invoices;
+  }
+  
+  generatePdf() {
+    setTimeout(async () => {
+      for (let i = 0; i < this.invoiceData.length; i++) {
+        const element = document.getElementById('printSection-' + i);
+        if (element) {
+          await html2pdf().from(element).save(`invoice-${i + 1}.pdf`);
+        }
+      }
+    }, 500);
+  }
+  
   // 
   searchPatientByPhone(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -679,5 +768,34 @@ export class AppointmentFormComponent implements OnInit {
   removeRadiologyType(index: number) {
     this.radiologyTypesSelected.splice(index, 1);
   }
+  
+  resetForms() {
+  this.reservationForm = this.fb.group({
+    patientName: ['', Validators.required],
+    patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
+    gender: ['', Validators.required],
+    insuranceCompanyId: [null],
+    insuranceCategoryId: [null],
+    insuranceNumber: [''],
+    referred: ['no'],
+    referredClinic: [''],
+    paymentMethod: ['نقدي', Validators.required],
+    emergencyLevel: ['Normal'],
+    companionName: [''],
+    companionNationalId: [''],
+    companionPhone: [''],
+  });
 
+  this.appointmentDetailsForm = this.fb.group({
+    id: null,
+    appointmentDate: [new Date().toISOString().substring(0, 10), []],
+    appointmentType: ['', Validators.required],
+    medicalServiceId: ['', Validators.required],
+    medicalServiceName: null,
+    doctorId: [''],
+    price: null,
+    doctorName: null,
+  });
+  this.appointmentDetailsSelected = [];
+  }
 }

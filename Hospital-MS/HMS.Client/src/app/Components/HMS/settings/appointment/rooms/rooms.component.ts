@@ -30,6 +30,7 @@ export class RoomsComponent {
         number:['' , Validators.required ],
         type:['' , Validators.required ],
         status:['' , Validators.required ],
+        dailyPrice:['' , Validators.required ],
       })
     }
     ngOnInit(): void {
@@ -148,8 +149,9 @@ export class RoomsComponent {
               number: this.room.number,
               type: this.room.type,
               status: this.room.status,
+              dailyPrice: this.room.dailyPrice,
             });
-      
+            console.log(this.room);
             const modal = new bootstrap.Modal(document.getElementById('addRoomModal')!);
             modal.show();
           },

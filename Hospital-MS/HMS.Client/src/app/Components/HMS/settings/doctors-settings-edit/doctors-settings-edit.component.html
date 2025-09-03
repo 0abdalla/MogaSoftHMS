@@ -140,7 +140,7 @@
             <h4 class="mb-3">📅 جدول الحضور</h4>
             <div class="mb-3" formArrayName="DoctorSchedules">
                 <div *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i" class="row mb-2 align-items-end">
-                    <div class="col-lg-4">
+                    <div class="col-lg-2">
                         <label class="form-label">اليوم</label>
                         <select class="form-select shadow-none" formControlName="weekDay">
                     <option value="" disabled>اختر اليوم</option>
@@ -162,6 +162,13 @@
                         <input type="time" class="form-control shadow-none" formControlName="endTime" placeholder="اختر وقت الانتهاء" />
                         <div *ngIf="schedule.get('endTime')?.invalid && schedule.get('endTime')?.touched" class="text-danger">
                             وقت الانتهاء مطلوب
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <label class="form-label">السعة</label>
+                        <input type="number" class="form-control shadow-none" formControlName="capacity" placeholder="أدخل السعة" />
+                        <div *ngIf="schedule.get('capacity')?.invalid && schedule.get('capacity')?.touched" class="text-danger">
+                            السعة مطلوبة
                         </div>
                     </div>
                     <div class="col-lg-2">

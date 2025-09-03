@@ -31,6 +31,7 @@ import { FormDropdownModel } from '../../../../Models/Generics/FormDropdownModel
 })
 export class AppointmentListComponent implements OnInit {
   TitleList = ['المواعيد والحجز'];
+  doctorTypes = ['General', 'Surgery', 'Consultation', 'Radiology', 'Screening', 'Emergency'];
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
