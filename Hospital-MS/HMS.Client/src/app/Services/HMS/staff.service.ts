@@ -86,6 +86,9 @@ export class StaffService {
   putDoctor(doctor: any, id: number) {
     return this.http.put<any>(`${this.baseUrl}Doctors/${id}`, doctor);
   }
+  deleteDoctor(id:number){
+    return this.http.delete<any>(`${this.baseUrl}Doctors/${id}`);
+  }
   getDoctorsCount() {
     return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Doctors/counts`);
   }

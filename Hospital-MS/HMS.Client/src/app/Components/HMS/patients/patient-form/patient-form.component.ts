@@ -7,6 +7,7 @@ import { AdmissionService } from '../../../../Services/HMS/admission.service';
 import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { GeneralSelectorModel } from '../../../../Models/Generics/GeneralSelectorModel';
+import { AppointmentService } from '../../../../Services/HMS/appointment.service';
 
 @Component({
   selector: 'app-patient-form',
@@ -52,6 +53,7 @@ export class PatientFormComponent implements OnInit {
     private staffService: StaffService,
     private addmisionService: AdmissionService,
     private messageService: MessageService,
+    private appointmentService: AppointmentService,
     private insuranceService: InsuranceService
   ) {
     const minBirthDate = new Date(1920, 0, 1);
@@ -83,6 +85,8 @@ export class PatientFormComponent implements OnInit {
       companionNationalId: ['', [Validators.pattern(/^[0-9]{14}$/)]],
       companionPhone: ['', [Validators.pattern(/^01[0125][0-9]{8}$/)]],
       notes: [''],
+      // 
+      medicalServiceId: [''],
     });
 
     this.patientForm.get('hasCompanion')?.valueChanges.subscribe((value) => {
@@ -110,6 +114,7 @@ export class PatientFormComponent implements OnInit {
   
   ngOnInit(): void {
     this.loadAdmissionData();
+    this.getServices();
     this.currentDate = new Date().toISOString().split('T')[0];
   }
   loadAdmissionData() {
@@ -191,9 +196,10 @@ export class PatientFormComponent implements OnInit {
   }
   onRoomChange() {
     const selectedRoomId = this.patientForm.get('roomId')?.value;
-    const selectedRoom = this.rooms.find(room => room.id === +selectedRoomId);
+    const selectedRoom = this.rooms.find((room: any) => room.id === +selectedRoomId);
     console.log(selectedRoom);
     this.selectedDailyPrice = selectedRoom ? selectedRoom.dailyPrice : null;
+    console.log(this.selectedDailyPrice);
     if (selectedRoomId) {
       this.filteratedBeds = this.beds.filter((bed: any) => bed.roomId === +selectedRoomId);
       this.patientForm.get('bedId')?.enable();
@@ -337,5 +343,71 @@ export class PatientFormComponent implements OnInit {
     this.patientForm.get('insuranceCategoryId')?.updateValueAndValidity();
     this.patientForm.get('insuranceNumber')?.updateValueAndValidity();
   }
-  
+  // 
+  services!:any;
+  selectedSurgeryPrice: number | null = null;
+  getServices() {
+    this.appointmentService.getServices(
+      this.pagingFilterModel.currentPage,
+      this.pagingFilterModel.pageSize,
+      this.pagingFilterModel.searchText,
+      this.pagingFilterModel.filterList
+    ).subscribe({
+      next: (data) => {
+        this.services = data.results.map((service: any) => {
+          switch (service.type) {
+            case 'General':
+              service.serviceType = 'كشف';
+              break;
+            case 'Consultation':
+              service.serviceType = 'استشارة';
+              break;
+            case 'Screening':
+              service.serviceType = 'تحاليل';
+              break;
+            case 'MRI':
+              service.serviceType = 'أشعة رنين';
+              break;
+            case 'Panorama':
+              service.serviceType = 'أشعة بانوراما';
+              break;
+            case 'XRay':
+              service.serviceType = 'أشعة عادية';
+              break;
+            case 'CTScan':
+              service.serviceType = 'أشعة مقطعية';
+              break;
+            case 'Ultrasound':
+              service.serviceType = 'أشعة سونار';
+              break;
+            case 'Echo':
+              service.serviceType = 'أشعة إيكو';
+              break;
+            case 'Mammogram':
+              service.serviceType = 'أشعة ماموجرام';
+              break;
+            case 'Surgery':
+              service.serviceType = 'عمليات';
+              break;
+          }
+          return service;
+        });
+        this.services = this.services.filter(s => s.type === 'Surgery');
+        this.services.sort((a, b) => b.id - a.id);
+        this.services.forEach(item => {
+          item.days = item.medicalServiceSchedules
+            .map(schedule => schedule.weekDay)
+        });
+        console.log('Surgery Services: ', this.services);
+      },
+      error: (err) => {
+        this.services = [];
+      }
+    });
+  }  
+  onSelectSurgery(event: any) {
+    const serviceId = +event.target.value;
+    const selected = this.services.find(s => s.id === serviceId);
+    this.selectedSurgeryPrice = selected ? selected.price : null;
+  } 
 }

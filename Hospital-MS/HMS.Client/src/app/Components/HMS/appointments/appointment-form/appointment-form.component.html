@@ -297,3 +297,41 @@
         </div>
     </div>
 </div>
+
+
+<div *ngFor="let invoice of invoiceData; let i = index">
+    <div class="report-container" id="printSection">
+        <div class="report-title">
+          <h1>تذكرة الحجز</h1>
+          <p>رقم الحجز: {{ invoiceData?.appointmentNumber }}</p>
+        </div>
+      
+        <table>
+          <tr>
+            <td>اسم المريض: {{ invoiceData?.patientName }}</td>
+          </tr>
+          <tr>
+            <td>رقم الهاتف: {{ invoiceData?.patientPhone }}</td>
+          </tr>
+          <tr>
+            <td>اسم الطبيب: {{ invoiceData?.doctorName }}</td>
+          </tr>
+          <tr>
+            <td>ميعاد الحجز: {{ invoiceData?.appointmentDate | date:'yyyy-MM-dd HH:mm' }}</td>
+          </tr>
+          <tr>
+            <td>إجمالي التكلفة: {{ invoiceData?.totalPrice }} جنيه</td>
+          </tr>
+        </table>
+      
+        <h3>الخدمات الطبية</h3>
+        <table>
+          <tr *ngFor="let service of invoiceData?.medicalServices">
+            <td>{{ service.name }}</td>
+            <td>{{ service.price }} جنيه</td>
+          </tr>
+        </table>
+      </div>
+      
+  </div>
+  

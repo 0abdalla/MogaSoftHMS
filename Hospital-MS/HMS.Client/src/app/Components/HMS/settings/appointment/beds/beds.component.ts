@@ -29,7 +29,6 @@ export class BedsComponent {
         roomId : ['' , Validators.required],
         number:['' , Validators.required ],
         status:['' , Validators.required ],
-        dailyPrice:['' , Validators.required]
       })
     }
     ngOnInit(): void {
@@ -148,9 +147,9 @@ export class BedsComponent {
               roomId: this.bed.roomId,
               number: this.bed.number,
               status: this.bed.status,
-              dailyPrice: this.bed.dailyPrice,
             });
-      
+            console.log(this.bed);
+            
             const modal = new bootstrap.Modal(document.getElementById('addBedModal')!);
             modal.show();
           },

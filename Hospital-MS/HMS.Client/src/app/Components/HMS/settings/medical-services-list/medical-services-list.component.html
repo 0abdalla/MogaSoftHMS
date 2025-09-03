@@ -95,7 +95,7 @@
             <div class="modal-body">
                 <form [formGroup]="serviceForm" (ngSubmit)="addService()">
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم الخدمة</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name">
@@ -105,7 +105,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-label" for="price">السعر</label>
                                 <input type="number" class="form-control shadow-none" formControlName="price" id="price">
@@ -116,7 +116,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
+                            <label class="form-label" for="departentId">القسم الطبي</label>
+                            <select class="form-select shadow-none" formControlName="departmentId">
+                                <option value="" selected disabled>اختر القسم الطبي</option>
+                                <option *ngFor="let dep of deps" [value]="dep.id">{{dep.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-label" for="type">نوع الخدمة</label>
                                 <select class="form-select shadow-none" formControlName="type" id="type">
@@ -184,7 +191,7 @@
             <div class="modal-body">
                 <form [formGroup]="serviceForm" (ngSubmit)="editService()">
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم الخدمة</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name">
@@ -194,7 +201,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-label" for="price">السعر</label>
                                 <input type="number" class="form-control shadow-none" formControlName="price" id="price">
@@ -205,7 +212,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-4">
+                        <div class="col-lg-3">
+                            <label class="form-label" for="departentId">القسم الطبي</label>
+                            <select class="form-select shadow-none" formControlName="departmentId">
+                                <option value="" selected disabled>اختر القسم الطبي</option>
+                                <option *ngFor="let dep of deps" [value]="dep.id">{{dep.name}}</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label class="form-label" for="type">نوع الخدمة</label>
                                 <select class="form-select shadow-none" formControlName="type" id="type">

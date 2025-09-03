@@ -56,29 +56,39 @@
                             </thead>
                             <tbody>
                                 <ng-container>
-                                    <tr *ngFor="let doctor of doctors" (click)="openDoctorModal(doctor.id)" style="cursor: pointer">
-                                        <td>{{ doctor.id }}</td>
-                                        <td>
-                                            <div class="d-flex align-items-center gap-2 justify-content-start">
-                                                <div class="avatar-circle">{{ doctor?.fullName?.charAt(0) }}</div>
-                                                <span class="fw-bold">{{ doctor.fullName }}</span>
-                                            </div>
-                                        </td>
-                                        <td>{{ doctor?.department }}</td>
-                                        <td>{{ doctor.phone }}</td>
-                                        <td [ngClass]="{
-                                'text-success': doctor.status === 'متاح',
-                                'text-secondary': doctor.status == 'غير متاح'
-                              }">
-                                            {{ doctor.status }}
-                                        </td>
-                                        <!-- <td>{{ doctor.price ?? '---' }}</td> -->
-                                        <td>
-                                            <button class="btn btn-outline-warning" (click)="goToEditDoctor(doctor.id,$event)">
-                            <i class="fa-light fa-pen-to-square"></i>
-                          </button>
-                                        </td>
+                                    <tr *ngFor="let doctor of doctors" 
+                                        (click)="openDoctorModal(doctor.id)" 
+                                        style="cursor: pointer">
+
+                                    <td>{{ doctor.id }}</td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2 justify-content-start">
+                                        <div class="avatar-circle">{{ doctor?.fullName?.charAt(0) }}</div>
+                                        <span class="fw-bold">{{ doctor.fullName }}</span>
+                                        </div>
+                                    </td>
+                                    <td>{{ doctor?.department }}</td>
+                                    <td>{{ doctor.phone }}</td>
+                                    <td [ngClass]="{
+                                            'text-success': doctor.status === 'متاح',
+                                            'text-secondary': doctor.status == 'غير متاح'
+                                        }">
+                                        {{ doctor.status }}
+                                    </td>
+                                    
+                                    <td>
+                                        <button class="btn btn-warning mx-2" 
+                                                (click)="goToEditDoctor(doctor.id, $event); $event.stopPropagation()">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+
+                                        <button class="btn btn-danger mx-2" 
+                                                (click)="deleteDoctor(doctor.id); $event.stopPropagation()">
+                                        <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
                                     </tr>
+
                                 </ng-container>
                             </tbody>
                         </table>
