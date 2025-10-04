@@ -188,7 +188,11 @@
     </div>
 </main>
 
-<app-print-invoice #PrintInvioce style="display: none;"></app-print-invoice>
+
+<app-print-invoice
+  *ngIf="showInvoice"
+  [invoiceData]="invoiceData">
+</app-print-invoice>
 
 <div class="modal fade" id="AppointmentDetailsModal" tabindex="-1" aria-labelledby="AppointmentDetailsLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -235,7 +239,7 @@
                             <option selected disabled [value]="null">اختر الخدمة</option>
                             <option *ngFor="let service of filteredServices" [ngValue]="service.id">
                                 {{ service.name }}
-                            </option>                              
+                            </option>
                             <option *ngIf="filteredServices.length === 0" disabled>
                                 {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
                             </option>
@@ -305,7 +309,7 @@
           <h1>تذكرة الحجز</h1>
           <p>رقم الحجز: {{ invoiceData?.appointmentNumber }}</p>
         </div>
-      
+
         <table>
           <tr>
             <td>اسم المريض: {{ invoiceData?.patientName }}</td>
@@ -323,7 +327,7 @@
             <td>إجمالي التكلفة: {{ invoiceData?.totalPrice }} جنيه</td>
           </tr>
         </table>
-      
+
         <h3>الخدمات الطبية</h3>
         <table>
           <tr *ngFor="let service of invoiceData?.medicalServices">
@@ -332,6 +336,6 @@
           </tr>
         </table>
       </div>
-      
+
   </div>
-  
+

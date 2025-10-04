@@ -54,35 +54,34 @@
                     <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
                         <thead>
                             <tr>
-                                <th>الإسم</th>
-                                <th>العيادة الطبية</th>
-                                <th>الخدمة الطبية</th>
-                                <th>أشعة الجسم</th>
                                 <th>رقم الحجز</th>
+                                <th>الإسم</th>
+                                 <th>الخدمة الطبية</th>
+                                <th>العيادة الطبية</th>
+                                <th>حالة الحجز</th>
                             </tr>
                         </thead>
                         <tbody>
                             <ng-container>
                                 <tr *ngFor="let appointment of patients" [ngClass]="{'canceled-row': appointment.status === 'ملغي'}" (click)="openAppointmentModal(appointment.id)" data-bs-toggle="modal" data-bs-target="#bookingDetailsModal" style="cursor: pointer; background-color: red !important;">
-                                    <td>
+                                  <td class="text-secondary">{{ appointment.id }}</td>
+                                  <td>
                                         <div class="d-flex align-items-center gap-2 justify-content-start">
                                             <div class="avatar-circle">{{ appointment.patientName.charAt(0) }}</div>
                                             <span class="fw-bold">{{ appointment.patientName }}</span>
                                         </div>
                                     </td>
-                                    <td class="text-secondary fw-semibold">
-                                        <app-tag [tags]="appointment.medicalServiceName" [header]="'العيادة الطبية'" [showWithMore]="true"></app-tag>
-                                    </td>
-                                    <td>
+                                        <td>
                                         <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
                                             {{ appointment.type | medicalTypeToArabic }}
                                         </p>
                                     </td>
                                     <td class="text-secondary fw-semibold">
-                                        <app-tag [tags]="appointment.radiologyBodyTypeName" [header]="'أشعة الجسم'" [showWithMore]="true"></app-tag>
-                                    </td>
+                                        <app-tag [tags]="appointment.medicalServiceName" [header]="'العيادة الطبية'" [showWithMore]="true"></app-tag>
+                                        <td [ngStyle]="{'color': getStatusColor(appointment.status)}">
+                                          {{ appointment.status }}
+                                        </td>
 
-                                    <td class="text-secondary">{{ appointment.id }}</td>
                             </ng-container>
                         </tbody>
                     </table>
@@ -167,15 +166,15 @@
                                             <tr *ngFor="let item of selectedAppointment?.medicalServices">
                                               <td>{{ item.medicalServiceDate | date: 'dd/MM/yyyy' }}</td>
                                               <td>{{ item.medicalServiceName }}</td>
-                                          
+
                                               <!-- خلية واحدة: إذا النوع ضمن doctorTypes اعرض اسم الدكتور وإلا اعرض --- -->
                                               <td>
                                                 {{ doctorTypes.includes(item.medicalServiceType) ? (item.doctorName || '---') : '---' }}
                                               </td>
-                                          
+
                                               <td>{{ item.medicalServicePrice }} جنيه</td>
                                             </tr>
-                                          
+
                                             <tr *ngIf="selectedAppointment?.medicalServices?.length">
                                               <td></td>
                                               <td class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
@@ -183,7 +182,7 @@
                                               <td class="fw-bold">{{ totalPrice }} جنيه</td>
                                             </tr>
                                           </tbody>
-                                          
+
                                     </table>
                                 </div>
                             </div>
@@ -252,15 +251,24 @@
 </div>
 
 <div class="modal fade" id="updateEmergencyModal" tabindex="-1" role="dialog" aria-labelledby="updateEmergencyModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
         <div class="modal-content">
             <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
             <div class="modal-header justify-content-between align-items-center">
                 <h5 class="modal-title" id="updateEmergencyModalLabel">تحديث الحالة</h5>
-                <button type="button" class="btn btn-secondary" (click)="backToMainModal('updateEmergencyModal')">رجوع</button>
+                <!-- <button type="button" class="btn btn-secondary" (click)="backToMainModal('updateEmergencyModal')">رجوع</button> -->
             </div>
             <div class="modal-body">
+                              <div *ngIf="selectedAppointment">
+                    <strong class="strong">الاسم:</strong> <span class="span"> {{ selectedAppointment.patientName }}</span>
+                    <br>
+                    <strong class="strong">رقم المريض:</strong> <span class="span"> {{ selectedAppointment.patientId }}</span>
+                </div>
                 <form [formGroup]="updateEmergencyForm" (ngSubmit)="onSubmit()">
+                                      <div class="mb-3">
+                        <strong class="strong">الحالة الحالية:</strong>
+                        <span class="span"> {{ selectedAppointment?.status }}</span>
+                    </div>
                     <div class="form-group mb-3">
                         <label class="form-label">الحالة النهائية</label>
                         <select class="form-select shadow-none" formControlName="newStatus">
@@ -280,7 +288,11 @@
                         <textarea class="form-control shadow-none" formControlName="notes"></textarea>
                     </div>
 
-                    <button type="submit" [disabled]="updateEmergencyForm.invalid" class="btn-blue">حفظ التحديث</button>
+                    <!-- <button type="submit" [disabled]="updateEmergencyForm.invalid" class="btn-blue">حفظ التحديث</button> -->
+                        <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn-blue" [disabled]="updateEmergencyForm.invalid">حفظ التغييرات</button>
+                        <button type="button" class="btn-red mx-2" (click)="backToMainModal('updateEmergencyModal')">رجوع</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -539,12 +551,12 @@
             <select id="shiftSelect" class="form-select" [(ngModel)]="selectedShiftId">
                 <option [ngValue]="null">اختر حركة الشيفت</option>
                 <option *ngFor="let shift of shifts" [ngValue]="shift.id">
-                    {{ getDayName(shift.closedAt) }} - 
-                    {{ shift.closedAt | date:'dd/MM/yyyy' }} - 
-                    {{ shift.openedAt  }} - {{ shift.closedAt  }} - 
+                    {{ getDayName(shift.closedAt) }} -
+                    {{ shift.closedAt | date:'dd/MM/yyyy' }} -
+                    {{ shift.openedAt  }} - {{ shift.closedAt  }} -
                     {{ shift.closedBy }}
                 </option>
-            </select>              
+            </select>
         </div>
         <div class="text-center">
             <button type="button" class="btn-blue" (click)="openShiftReport()">عرض</button>

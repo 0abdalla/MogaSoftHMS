@@ -27,7 +27,7 @@ export class PatientFormComponent implements OnInit {
     filterList: []
   };
   patientForm: FormGroup;
-  // 
+  //
   doctors!: any[];
   filteredDoctors!: any[];
   departments!: any;
@@ -39,13 +39,13 @@ export class PatientFormComponent implements OnInit {
   insuranceCompanies!: any;
   insuranceCategories!: any;
   patients!: any;
-  // 
+  //
   showSecondContact = false;
-  // 
+  //
   currentDate!: any
-  // 
+  //
   selectedDailyPrice: number | null = null;
-  // 
+  //
   showAdditionalInfo:boolean = false;
 
   constructor(
@@ -85,7 +85,7 @@ export class PatientFormComponent implements OnInit {
       companionNationalId: ['', [Validators.pattern(/^[0-9]{14}$/)]],
       companionPhone: ['', [Validators.pattern(/^01[0125][0-9]{8}$/)]],
       notes: [''],
-      // 
+      //
       medicalServiceId: [''],
     });
 
@@ -111,7 +111,7 @@ export class PatientFormComponent implements OnInit {
     this.showSecondContact = false;
     this.updateSecondContactValidators(); // disable required
   }
-  
+
   ngOnInit(): void {
     this.loadAdmissionData();
     this.getServices();
@@ -147,14 +147,14 @@ export class PatientFormComponent implements OnInit {
     console.log(this.patientForm.valid);
     console.log(this.patientForm.errors);
     console.log(this.patientForm.status);
-    console.log(this.patientForm); 
+    console.log(this.patientForm);
     Object.keys(this.patientForm.controls).forEach(controlName => {
       const control = this.patientForm.get(controlName);
       if (control?.invalid) {
         console.warn(`Invalid Control: ${controlName}`, control.errors);
       }
     });
-    
+
     if (this.patientForm.valid) {
       this.addmisionService.addAdmision(this.patientForm.value).subscribe({
         next: (res:any) => {
@@ -210,7 +210,7 @@ export class PatientFormComponent implements OnInit {
     this.patientForm.get('bedId')?.setValue('');
   }
 
-  // 
+  //
   updateCompanionValidators(hasCompanion: boolean): void {
     const companionName = this.patientForm.get('companionName');
     const companionNationalId = this.patientForm.get('companionNationalId');
@@ -245,7 +245,7 @@ export class PatientFormComponent implements OnInit {
     emergencyPhone02?.updateValueAndValidity();
     emergencyContact02?.updateValueAndValidity();
   }
-  
+
   minDateValidator(minDate: Date): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } | null => {
       if (!control.value) {
@@ -270,7 +270,7 @@ export class PatientFormComponent implements OnInit {
       return null;
     };
   }
-  // 
+  //
   searchPatientByPhone(event: Event) {
     const input = event.target as HTMLInputElement;
     const phoneNumber = input.value.trim();
@@ -343,7 +343,7 @@ export class PatientFormComponent implements OnInit {
     this.patientForm.get('insuranceCategoryId')?.updateValueAndValidity();
     this.patientForm.get('insuranceNumber')?.updateValueAndValidity();
   }
-  // 
+  //
   services!:any;
   selectedSurgeryPrice: number | null = null;
   getServices() {
@@ -404,10 +404,10 @@ export class PatientFormComponent implements OnInit {
         this.services = [];
       }
     });
-  }  
+  }
   onSelectSurgery(event: any) {
     const serviceId = +event.target.value;
     const selected = this.services.find(s => s.id === serviceId);
     this.selectedSurgeryPrice = selected ? selected.price : null;
-  } 
+  }
 }

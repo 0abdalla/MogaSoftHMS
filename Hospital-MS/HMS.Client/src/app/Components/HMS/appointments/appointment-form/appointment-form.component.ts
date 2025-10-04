@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { AppointmentService } from '../../../../Services/HMS/appointment.service';
@@ -36,7 +36,10 @@ export class AppointmentFormComponent implements OnInit {
   userName: any;
     currentDate = new Date();
     @ViewChild('printSection', { static: false }) printSectionRef: ElementRef;
+    @ViewChild(PrintInvoiceComponent) printInvoiceComponent!: PrintInvoiceComponent;
+    // invoiceData: any;
     invoiceData: any;
+    showInvoice = false;
   // private router = inject(Router);
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
@@ -53,21 +56,21 @@ export class AppointmentFormComponent implements OnInit {
   filteredServices: any[] = [];
   reservationForm: FormGroup;
   appointmentDetailsForm: FormGroup;
-  // 
+  //
   insuranceCompanies!: any;
   departments!: any;
   patients!: any;
-  // 
-  // 
+  //
+  //
   radiologyTypes: string[] = [];
-  // 
+  //
   showReceipt: boolean = false;
   submittedData: any = {};
   printInvoiceData: any = {};
-  // 
+  //
   insuranceCategories!: any;
   appointmentType = '';
-  // 
+  //
   selectedServicePrice!: number | null;
   showServicePrice: boolean = false;
   filteredDoctorsByService: any[] = [];
@@ -78,7 +81,7 @@ export class AppointmentFormComponent implements OnInit {
   IsScreening: boolean = false;
   IsRadiology: boolean = false;
   IsGeneral: boolean = false;
-  // 
+  //
   showAdditionalInfo: boolean = false;
   totalPrice = 0;
   constructor(
@@ -90,8 +93,9 @@ export class AppointmentFormComponent implements OnInit {
     private admissionService: AdmissionService,
     private sharedService: SharedService,
     private router: Router,
+    private cdr: ChangeDetectorRef
     ) {
-      this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');    
+      this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
@@ -286,40 +290,40 @@ export class AppointmentFormComponent implements OnInit {
       this.filteredServices = [];
       return;
     }
-  
+
     const dayOfWeek = this.selectedDate
       ? new Date(this.selectedDate).toLocaleDateString('en-US', { weekday: 'long' })
       : null;
-  
+
     const formType = this.appointmentDetailsForm.get('appointmentType')?.value;
-  
+
     this.filteredServices = this.services.filter(service => {
       const matchesType = formType
         ? service.type?.toLowerCase() === formType.toLowerCase()
         : true;
-  
+
       const matchesDay = dayOfWeek
         ? (service.medicalServiceSchedules?.length > 0 &&
            service.medicalServiceSchedules.some((s: any) =>
              s.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
            ))
         : true;
-  
+
       return matchesType && matchesDay;
     });
-  
+
     console.log("Filtered Services (final):", this.filteredServices);
   }
-  
+
 
   filterDoctorsByDay() {
     if (!this.selectedDate || !this.doctors.length) {
       this.filteredDoctors = [];
       return;
     }
-  
+
     const dayOfWeek = this.getEnglishDayOfWeek(this.selectedDate);
-  
+
     this.filteredDoctors = this.doctors.filter(doctor => {
       if (!doctor.doctorSchedules || !doctor.doctorSchedules.length) {
         return false;
@@ -328,10 +332,10 @@ export class AppointmentFormComponent implements OnInit {
         schedule.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
       );
     });
-  
+
     console.log("Filtered Doctors:", this.filteredDoctors);
   }
-  
+
 
   getArabicDayOfWeek(date: Date): string {
     const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -369,15 +373,15 @@ export class AppointmentFormComponent implements OnInit {
 
   onServiceSelected() {
     const selectedId = Number(this.appointmentDetailsForm.get('medicalServiceId')?.value);
-  
+
     const selectedService = this.filteredServices.find(
       (s: any) => s.id === selectedId
     );
-  
+
     this.SelectedService = selectedService;
     console.log("Selected Service:", selectedService);
   }
-  
+
 
   // onSubmit() {
   //   if (this.reservationForm.invalid) {
@@ -462,7 +466,7 @@ export class AppointmentFormComponent implements OnInit {
       }
     });
   }
-  // 
+  //
   loadPatients() {
     this.admissionService.getAddmision(this.pagingFilterModel).subscribe({
       next: (data) => {
@@ -513,11 +517,11 @@ export class AppointmentFormComponent implements OnInit {
       }
     });
   }
-  // 
+  //
   get selectedAppointmentType() {
     return this.reservationForm.get('appointmentType')?.value;
   }
-  // 
+  //
   getClinicName(medicalServiceId: string): string {
     const clinic = this.clinics.find((c: any) => c.id === +medicalServiceId);
     return clinic ? clinic.name : 'غير محدد';
@@ -535,7 +539,7 @@ export class AppointmentFormComponent implements OnInit {
     this.showReceipt = false;
     this.submittedData = {};
   }
-  // 
+  //
   getInsuranceCompanies() {
     this.insuranceService.getAllInsurances().subscribe({
       next: (data) => {
@@ -547,33 +551,60 @@ export class AppointmentFormComponent implements OnInit {
   }
 
 
-  onSubmit() {
-    if (this.reservationForm.invalid) {
-      this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
-      return;
-    }
-  
-    if (this.appointmentDetailsSelected.length === 0) {
-      this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
-      return;
-    }
-  
-    let validService = ['General', 'Consultation', 'Surgery'];
-    let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
-    const formData = this.reservationForm.value;
-  
-    let medicalServices = [];
-    let appointmentTypes = [... new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
-    appointmentTypes.forEach(type => {
-      let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
-      let obj = {
-        medicalServiceIds: types.map(item => item.medicalServiceId),
-        appointmentDate: types[0].appointmentDate,
-        appointmentType: types[0].appointmentType,
-      }
-      medicalServices.push(obj);
-    });
-  
+ onSubmit() {
+  if (this.reservationForm.invalid) {
+    this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
+    return;
+  }
+
+  if (this.appointmentDetailsSelected.length === 0) {
+    this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
+    return;
+  }
+
+  let validService = ['General', 'Consultation', 'Surgery'];
+  let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
+  const formData = this.reservationForm.value;
+
+  let medicalServices = [];
+  let appointmentTypes = [...new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
+
+  appointmentTypes.forEach(type => {
+    let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
+    let obj = {
+      medicalServiceIds: types.map(item => item.medicalServiceId),
+      appointmentDate: types[0].appointmentDate,
+      appointmentType: types[0].appointmentType,
+    };
+    medicalServices.push(obj);
+  });
+
+   this.invoiceData = {
+    patientName: this.reservationForm.value.patientName,
+    patientPhone: this.reservationForm.value.patientPhone,
+    gender: this.reservationForm.value.gender,
+    insuranceCompanyId: this.reservationForm.value.insuranceCompanyId,
+    insuranceCategoryId: this.reservationForm.value.insuranceCategoryId,
+    insuranceNumber: this.reservationForm.value.insuranceNumber,
+    referred: this.reservationForm.value.referred,
+    referredClinic: this.reservationForm.value.referredClinic,
+    paymentMethod: this.reservationForm.value.paymentMethod,
+    emergencyLevel: this.reservationForm.value.emergencyLevel,
+    companionName: this.reservationForm.value.companionName,
+    companionNationalId: this.reservationForm.value.companionNationalId,
+    companionPhone: this.reservationForm.value.companionPhone,
+    medicalServiceName: this.appointmentDetailsSelected?.[0]?.medicalServiceName || '',
+    doctorName: this.appointmentDetailsSelected?.[0]?.doctorName || '',
+    appointmentDate: this.appointmentDetailsSelected?.[0]?.appointmentDate || '',
+    selectedServicePrice: this.appointmentDetailsSelected?.[0]?.price || 0,
+  };
+
+  this.showInvoice = true;
+
+  this.cdr.detectChanges();
+
+
+
     const payload = {
       patientName: formData.patientName,
       patientPhone: formData.patientPhone,
@@ -590,11 +621,11 @@ export class AppointmentFormComponent implements OnInit {
       companionPhone: formData.companionPhone,
       medicalServices: medicalServices
     };
-  
+
     this.appointmentService.createAppointment(payload).subscribe({
       next: (response) => {
         console.log('Response : ', response);
-      
+
         if (response.isSuccess) {
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
           this.invoiceData = response.results;
@@ -612,7 +643,7 @@ export class AppointmentFormComponent implements OnInit {
   // To-Do
   createInvoiceObj(apiData: any): any[] {
     if (!apiData) return [];
-  
+
     const invoices = apiData.medicalServices.map((service: any) => {
       return {
         appointmentNumber: apiData.appointmentNumber || '--',
@@ -631,10 +662,10 @@ export class AppointmentFormComponent implements OnInit {
         hospitalEmail: 'info@elnourelmohamady.com',
       };
     });
-  
+
     return invoices;
   }
-  
+
   generatePdf() {
     setTimeout(async () => {
       for (let i = 0; i < this.invoiceData.length; i++) {
@@ -645,8 +676,8 @@ export class AppointmentFormComponent implements OnInit {
       }
     }, 500);
   }
-  
-  // 
+
+  //
   searchPatientByPhone(event: Event) {
     const input = event.target as HTMLInputElement;
     const phoneNumber = input.value.trim();
@@ -689,11 +720,11 @@ export class AppointmentFormComponent implements OnInit {
       });
     }
   }
-  // 
+  //
   onDoctorSelected() {
     const doctorId = this.reservationForm.get('doctorId')?.value;
   }
-  // 
+  //
   private filterDoctors(): void {
     const selectedServiceId = this.reservationForm.get('medicalServiceId')?.value;
 
@@ -727,7 +758,7 @@ export class AppointmentFormComponent implements OnInit {
     ];
     return days[new Date(date).getDay()];
   }
-  
+
 
   // private filterServices(): void {
   //   const selectedType = this.appointmentDetailsForm.get('appointmentType')?.value;
@@ -768,7 +799,7 @@ export class AppointmentFormComponent implements OnInit {
   removeRadiologyType(index: number) {
     this.radiologyTypesSelected.splice(index, 1);
   }
-  
+
   resetForms() {
   this.reservationForm = this.fb.group({
     patientName: ['', Validators.required],
@@ -798,4 +829,13 @@ export class AppointmentFormComponent implements OnInit {
   });
   this.appointmentDetailsSelected = [];
   }
+
+ downloadPDF() {
+    if (this.printInvoiceComponent) {
+      this.printInvoiceComponent.downloadPDF();
+    } else {
+      console.error('PrintInvoiceComponent not found!');
+    }
+  }
+
 }

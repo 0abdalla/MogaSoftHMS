@@ -45,9 +45,9 @@ export class AppointmentListComponent implements OnInit {
   filterForm!: FormGroup;
   updateEmergencyForm!: FormGroup
   total = 0;
-  // 
+  //
   selectedAppointment: any;
-  // 
+  //
   clinics!: any;
   AppointmentTypes: FormDropdownModel[] = [
     { name: 'كشف', value: 'General' },
@@ -66,15 +66,15 @@ export class AppointmentListComponent implements OnInit {
       month: 'long',
       day: 'numeric'
     });
-  
+
     const timeStr = date.toLocaleTimeString('ar-EG', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
     });
-  
+
     return `${dateStr} - الساعة ${timeStr}`;
-  } 
+  }
   constructor(private appointmentService: AppointmentService, private fb: FormBuilder, private messageService: MessageService,
     private sharedService: SharedService, private cdr: ChangeDetectorRef) { }
   ngOnInit() {
@@ -141,9 +141,9 @@ export class AppointmentListComponent implements OnInit {
   // ==================================================================
   exportToPDF() {
     const pdfDiv = document.getElementById('printablePDFContent');
-  
+
     if (!pdfDiv) return;
-  
+
     const opt = {
       margin: 0.5,
       filename: 'تفاصيل حجز رقم ' + this.selectedAppointment.id + '.pdf',
@@ -151,16 +151,16 @@ export class AppointmentListComponent implements OnInit {
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
     };
-  
+
     const clonedDiv = pdfDiv.cloneNode(true) as HTMLElement;
     clonedDiv.style.display = 'block';
     document.body.appendChild(clonedDiv);
-  
+
     html2pdf().set(opt).from(clonedDiv).save().then(() => {
       document.body.removeChild(clonedDiv);
     });
   }
-  
+
   getPatients() {
     this.appointmentService.getAllAppointments(this.pagingFilterModel).subscribe({
       next: (data) => {
@@ -298,7 +298,7 @@ export class AppointmentListComponent implements OnInit {
     };
     return map[type] || type;
   }
-  // 
+  //
   deleteAppointment(id: number) {
     this.appointmentService.deleteAppointment(id).subscribe({
       next: (data) => {
@@ -313,7 +313,7 @@ export class AppointmentListComponent implements OnInit {
       }
     });
   }
-  // 
+  //
   displayCashMovement = false;
   cashMovementData: any[] = [];
   ashMovementData = [
@@ -357,7 +357,7 @@ export class AppointmentListComponent implements OnInit {
   showCashMovementModal() {
     this.displayCashMovement = true;
   }
-  // 
+  //
   medicalServices: any[];
   totalAmountForShift: any;
   closedBy: any;
@@ -386,7 +386,7 @@ export class AppointmentListComponent implements OnInit {
       if (result.isConfirmed) {
         this.appointmentService.closeShift().subscribe(res => {
           console.log(res);
-          
+
           if (res?.isSuccess) {
             const data = res.results;
             this.medicalServices = data.medicalServices;
@@ -417,14 +417,14 @@ export class AppointmentListComponent implements OnInit {
     };
     html2pdf().set(opt).from(element).save();
   }
-  // 
+  //
   backToMainModal(currentModalId: string, mainModalId: string = 'bookingDetailsModal') {
     const currentModalEl = document.getElementById(currentModalId);
     const mainModalEl = document.getElementById(mainModalId);
-  
+
     const currentModal = bootstrap.Modal.getInstance(currentModalEl!);
     const mainModal = new bootstrap.Modal(mainModalEl!);
-  
+
     if (currentModal) {
       currentModal.hide();
       setTimeout(() => {
@@ -433,8 +433,8 @@ export class AppointmentListComponent implements OnInit {
         mainModal.show();
       }, 100);
     }
-  }  
-  // 
+  }
+  //
   selectedShiftId: number | null = null;
   openChooseShiftModal() {
     this.getAllShifts();
@@ -448,7 +448,7 @@ export class AppointmentListComponent implements OnInit {
       Swal.fire('تنبيه', 'من فضلك اختر شيفت أولاً', 'warning');
       return;
     }
-  
+
     this.appointmentService.getShiftById(this.selectedShiftId).subscribe({
       next: (res: any) => {
         if (res?.isSuccess) {
@@ -476,5 +476,16 @@ export class AppointmentListComponent implements OnInit {
     const date = new Date(dateString);
     const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     return days[date.getDay()];
-  }  
+  }
+  getStatusColor(status: string): string {
+  switch (status) {
+    case 'ملغي':
+      return '#ff4d4f';
+    case 'مكتمل':
+      return '#52c41a';
+    default:
+      return '#000';
+  }
+}
+
 }

@@ -81,7 +81,7 @@
                             </div>
                             <div class="col-lg-3" [ngClass]="patientForm.get('patientStatus')?.value === 'Surgery' ? 'col-lg-3' : 'col-lg-4'">
                                 <div class="mb-2">
-                                  <label class="form-label d-flex align-items-center gap-2">رقم الهاتف 
+                                  <label class="form-label d-flex align-items-center gap-2">رقم الهاتف
                                     <span class="text-danger">*</span>
                                   </label>
                                   <input type="text" class="form-control shadow-none" formControlName="patientPhone" placeholder="أدخل رقم الهاتف" autocomplete="off" />
@@ -91,7 +91,7 @@
                                   </div>
                                 </div>
                               </div>
-                              
+
                               <div class="col-lg-3" [ngClass]="patientForm.get('patientStatus')?.value === 'Surgery' ? 'col-lg-3' : 'col-lg-4'">
                                 <div class="mb-2">
                                   <label class="form-label d-flex align-items-center gap-2">محل الإقامة
@@ -103,7 +103,7 @@
                                   </div>
                                 </div>
                               </div>
-                              
+
                               <div class="col-lg-3" [ngClass]="patientForm.get('patientStatus')?.value === 'Surgery' ? 'col-lg-3' : 'col-lg-4'">
                                 <div class="mb-2">
                                   <label class="form-label d-flex align-items-center gap-2">الحالة
@@ -120,7 +120,7 @@
                                   </div>
                                 </div>
                               </div>
-                              
+
                               <div class="col-lg-3" *ngIf="patientForm.get('patientStatus')?.value === 'Surgery'">
                                 <div class="mb-2">
                                   <label class="form-label d-flex align-items-center gap-2">نوع العملية
@@ -137,11 +137,11 @@
                                   </div>
                                 </div>
                               </div>
-                              
+
                               <div class="col-lg-12 text-center mt-3" *ngIf="selectedSurgeryPrice">
                                 <h5>سعر العملية : <span>{{selectedSurgeryPrice}} جنيه</span></h5>
                               </div>
-                              
+
                         </div>
                 </div>
             </div>

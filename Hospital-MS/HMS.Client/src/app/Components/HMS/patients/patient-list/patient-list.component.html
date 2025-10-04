@@ -70,7 +70,7 @@
                                             {{ patient.patientStatus }}
                                         </p>
                                     </td>
-                                    
+
                                     <!-- <td>
                                 <div class="w-100 d-flex align-items-center justify-content-center">
                                     <button class="button-table-action btn-edit d-flex align-items-center justify-content-center gap-2 me-2">
@@ -139,7 +139,7 @@
                     </div>
                 </div>
 
-                
+
                 <div *ngIf="admissionDetails?.patientStatus !== 'عيادات خارجية'">
                     <hr>
                     <h4 class="mb-3 ">🏥بيانات الإقامة</h4>
@@ -248,12 +248,12 @@
                     <button class="btn col-12 btn-outline-info" data-bs-toggle="modal" data-bs-target="#medicalHistoryModal">التاريخ الطبي</button>
                 </div>
                 <div class="col-2">
-                    <button 
-                        class="btn col-12 btn-outline-primary" 
+                    <button
+                        class="btn col-12 btn-outline-primary"
                         (click)="goToAppointments(admissionDetails)">
                         ترتيب مواعيد
                     </button>
-                </div>                  
+                </div>
                 <!-- <div class="col-2">
                     <button class="btn col-12 btn-outline-success">إنشاء فاتورة</button>
                 </div> -->
@@ -285,11 +285,12 @@
                 <form [formGroup]="statusForm" (ngSubmit)="updateStatus()">
                     <div class="mb-3">
                         <strong class="strong">الحالة الحالية:</strong>
-                        <span class="span"> {{ admissionDetails?.patientStatus }}</span>
+                        <span class="span"> {{ mapStatusToArabic(admissionDetails?.patientStatus) }}</span>
                     </div>
                     <div class="mb-3">
                         <label for="statusSelect" class="form-label">الحالة الجديدة</label>
                         <select id="statusSelect" class="form-select shadow-none" formControlName="newStatus">
+                          <option value="">اختار الحالة</option>
                             <option *ngFor="let status of patientStatuses" [value]="status.value">
                                 {{ status.name }}
                             </option>

@@ -4,7 +4,7 @@ import { AppointmentService } from '../../../../Services/HMS/appointment.service
 import { StaffService } from '../../../../Services/HMS/staff.service';
 import { InsuranceService } from '../../../../Services/HMS/insurance.service';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { MessageService } from 'primeng/api';
 
@@ -25,6 +25,8 @@ import { MessageService } from 'primeng/api';
     ],
 })
 export class AppointmentEditComponent {
+  selectedAppointment: any;
+  totalPrice: number = 0;
   appointmentId!:number;
   pagingFilterModel: PagingFilterModel = {
       searchText: '',
@@ -43,7 +45,8 @@ export class AppointmentEditComponent {
   insuranceCompanies!:any[];
   insuranceCategories!:any[];
   selectedAppointmentType!:string;
-  constructor(private fb:FormBuilder , private appointmentService : AppointmentService , private staffService : StaffService , private insuranceService : InsuranceService , private activ : ActivatedRoute , private messageService : MessageService){
+
+  constructor(private fb:FormBuilder , private appointmentService : AppointmentService , private staffService : StaffService , private insuranceService : InsuranceService , private activ : ActivatedRoute , private router: Router , private route: ActivatedRoute,private messageService : MessageService){
     this.activ.params.subscribe((params: any) => {
       this.appointmentId = params.id;
     });
@@ -83,10 +86,10 @@ export class AppointmentEditComponent {
 
 
 
-  
+
   this.reservationForm.get('medicalServiceId')?.valueChanges.subscribe((medicalServiceId) => {
     if (medicalServiceId) {
-      this.filteredDoctors = this.doctors.filter((doc: any) => 
+      this.filteredDoctors = this.doctors.filter((doc: any) =>
         doc.medicalServiceId === +medicalServiceId || doc.medicalServiceId === null
       );
       this.reservationForm.get('doctorId')?.enable();
@@ -95,7 +98,7 @@ export class AppointmentEditComponent {
       this.reservationForm.get('doctorId')?.disable();
     }
     this.reservationForm.get('doctorId')?.reset();
-    
+
     const selectedService = this.filteredServices.find(
       (service: any) => service.serviceId == medicalServiceId
     );
@@ -111,13 +114,50 @@ export class AppointmentEditComponent {
       const selectedCompany = this.insuranceCompanies.find(company => company.id === +companyId);
       this.insuranceCategories = selectedCompany?.insuranceCategories || [];
     });
-  
+
   }
   ngOnInit(): void {
     this.getServices();
     this.getStaff();
     this.getInsuranceCompanies();
+    const appointmentId = this.route.snapshot.paramMap.get('id');
+    if (appointmentId) {
+      this.loadAppointment(appointmentId);
+    }
   }
+
+  loadAppointment(id: string) {
+    this.appointmentService.getAppointmentById(+id).subscribe({
+      next: (res: any) => {
+        // بيانات الحجز موجودة داخل res.results
+        this.selectedAppointment = res.results;
+
+        console.log('Appointment loaded: ', this.selectedAppointment);
+
+        // حساب إجمالي التكلفة
+        if (this.selectedAppointment?.medicalServices?.length) {
+          this.totalPrice = this.selectedAppointment.medicalServices
+            .reduce((sum: number, item: any) => sum + (item.medicalServicePrice || 0), 0);
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load appointment', err);
+      }
+    });
+  }
+
+
+  deleteAppointment(id: string) {
+      this.appointmentService.deleteAppointment(+id).subscribe({
+        next: () => {
+          this.router.navigate(['/hms/appointments/list']); // إعادة توجيه بعد الحذف
+        },
+        error: (err) => {
+          console.error('فشل حذف الحجز', err);
+        }
+      });
+  }
+
 
   onAppointmentTypeChange() {
     this.showServicePrice = false;
@@ -151,7 +191,7 @@ export class AppointmentEditComponent {
       this.filteredServices = [];
     }
   }
-  
+
   onServiceSelected() {
     const selectedServiceId = this.reservationForm.get('medicalServiceId')?.value;
 
@@ -165,7 +205,7 @@ export class AppointmentEditComponent {
       this.reservationForm.get('doctorId')?.reset();
       this.selectedServicePrice = selectedService ? selectedService.price : null;
       this.showServicePrice = true;
-      
+
     } else {
       this.filteredDoctorsByService = [];
       this.selectedServicePrice = null;
@@ -206,7 +246,7 @@ export class AppointmentEditComponent {
       }
     });
   }
-  
+
   getAppointmentById() {
     this.appointmentService.getAppointmentById(this.appointmentId).subscribe((res: any) => {
       const appointmentData = res.results;
@@ -215,7 +255,7 @@ export class AppointmentEditComponent {
       }
       this.reservationForm.get('medicalServiceId')?.enable();
       this.reservationForm.get('doctorId')?.enable();
-  
+
       const formData = {
         patientName: appointmentData.patientName,
         patientPhone: appointmentData.patientPhone,
@@ -235,10 +275,10 @@ export class AppointmentEditComponent {
       this.selectedAppointmentType = formData.appointmentType;
       this.selectedServicePrice = appointmentData.medicalServicePrice;
       this.showServicePrice = !!appointmentData.medicalServicePrice;
-  
+
     });
   }
-  
+
   private mapAppointmentType(apiType: string): string {
     const typeMap: {[key: string]: string} = {
       'كشف': 'General',
@@ -249,7 +289,7 @@ export class AppointmentEditComponent {
     };
     return typeMap[apiType];
   }
-  
+
   private mapPaymentMethod(apiPaymentMethod: string): string {
     const paymentMap: {[key: string]: string} = {
       'Cash': 'نقدي',

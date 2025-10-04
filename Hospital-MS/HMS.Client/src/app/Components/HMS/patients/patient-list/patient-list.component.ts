@@ -11,81 +11,94 @@ declare var bootstrap :any;
 @Component({
   selector: 'app-patient-list',
   templateUrl: './patient-list.component.html',
-  styleUrl: './patient-list.component.css'
+  styleUrl: './patient-list.component.css',
 })
 export class PatientListComponent {
   TitleList = ['المرضى'];
   filterForm!: FormGroup;
   statusForm!: FormGroup;
   isFilter = true;
-  // 
+  //
   patients!: any[];
-  patientStatuses!: any[]
+  patientStatuses!: any[];
   filteredPatients!: any[];
-  // 
+  //
   admissionDetails: any;
-  // 
+  //
   pageSize = 8;
   currentPage = 1;
   total = 0;
   fixed = Math.ceil(this.total / this.pageSize);
-  // 
+  //
   private destroy$ = new Subject<void>();
-  // 
+  //
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
     pageSize: 16,
     filterType: '',
     filterItems: [],
-    filterList: []
+    filterList: [],
   };
   pagedResponseModel: PagedResponseModel<any> = {};
-  // 
+  //
   medicalHistory!: any;
-  constructor(private admissionService: AdmissionService, private fb: FormBuilder, private messageService: MessageService, private sharedService: SharedService , private router : Router) {
+  constructor(
+    private admissionService: AdmissionService,
+    private fb: FormBuilder,
+    private messageService: MessageService,
+    private sharedService: SharedService,
+    private router: Router
+  ) {
     this.filterForm = this.fb.group({
       Search: [''],
       Status: [''],
       FromDate: [''],
-      ToDate: ['']
+      ToDate: [''],
     });
     this.statusForm = this.fb.group({
       newStatus: ['', Validators.required],
-      notes: ['']
+      notes: [''],
     });
   }
 
   ngOnInit(): void {
     this.loadPatients();
     this.getCounts();
-    this.filterForm.get('Search').valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    ).subscribe((searchText) => {
-      this.pagingFilterModel.searchText = searchText;
-      this.pagingFilterModel.currentPage = 1;
-      this.loadPatients();
-    });
-    this.filterForm.get('Status').valueChanges.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((status) => {
-      if (status) {
-        this.pagingFilterModel.filterList = [{
-          categoryName: 'Status',
-          itemId: status,
-          itemKey: 'PatientStatus',
-          itemValue: status,
-          isChecked: true,
-          filterType: 'PatientStatus'
-        }];
-      } else {
-        this.pagingFilterModel.filterList = [];
-      }
-      this.pagingFilterModel.currentPage = 1;
-      this.loadPatients();
-    });
+    this.filterForm
+      .get('Search')
+      .valueChanges.pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((searchText) => {
+        this.pagingFilterModel.searchText = searchText;
+        this.pagingFilterModel.currentPage = 1;
+        this.loadPatients();
+      });
+    this.filterForm
+      .get('Status')
+      .valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((status) => {
+        if (status) {
+          this.pagingFilterModel.filterList = [
+            {
+              categoryName: 'Status',
+              itemId: status,
+              itemKey: 'PatientStatus',
+              itemValue: status,
+              isChecked: true,
+              filterType: 'PatientStatus',
+            },
+          ];
+        } else {
+          this.pagingFilterModel.filterList = [];
+        }
+        this.pagingFilterModel.currentPage = 1;
+        this.loadPatients();
+      });
+    console.log(this.admissionDetails);
   }
 
   ngOnDestroy(): void {
@@ -100,7 +113,7 @@ export class PatientListComponent {
       pageSize: this.pagingFilterModel.pageSize,
       filterList: this.pagingFilterModel.filterList,
       filterType: this.pagingFilterModel.filterType,
-      filterItems: this.pagingFilterModel.filterItems
+      filterItems: this.pagingFilterModel.filterItems,
     };
     this.admissionService.getAddmision(requestModel).subscribe({
       next: (data) => {
@@ -140,7 +153,6 @@ export class PatientListComponent {
     });
   }
 
-
   getCounts() {
     this.admissionService.getCounts().subscribe({
       next: (data) => {
@@ -155,7 +167,7 @@ export class PatientListComponent {
             count: statusCounts['CriticalCondition'] || 0,
             color: 'linear-gradient(237.82deg, #F12B43 30.69%, #FCD5D9 105.5%)',
             back: '#F12B43',
-            img: '../../../../../assets/vendors/imgs/Vector 2.png'
+            img: '../../../../../assets/vendors/imgs/Vector 2.png',
           },
           {
             name: 'عمليات',
@@ -163,15 +175,16 @@ export class PatientListComponent {
             count: statusCounts['Surgery'] || 0,
             color: 'linear-gradient(236.62deg, #6A4C93 30.14%, #A98ECD 83.62%)',
             back: '#6A4C93',
-            img: '../../../../../assets/vendors/imgs/purble.png'
+            img: '../../../../../assets/vendors/imgs/purble.png',
           },
           {
             name: 'تم علاجه',
             value: 'Treated',
             count: statusCounts['Treated'] || 0,
-            color: 'linear-gradient(227.58deg, #06A561 26.13%, #C4F8E2 115.78%)',
+            color:
+              'linear-gradient(227.58deg, #06A561 26.13%, #C4F8E2 115.78%)',
             back: '#06A561',
-            img: '../../../../../assets/vendors/imgs/green.png'
+            img: '../../../../../assets/vendors/imgs/green.png',
           },
           {
             name: 'إقامة',
@@ -179,7 +192,7 @@ export class PatientListComponent {
             count: statusCounts['Staying'] || 0,
             color: 'linear-gradient(248.13deg, #3A86FF 35.68%, #87BFFF 99.61%)',
             back: '#3A86FF',
-            img: '../../../../../assets/vendors/imgs/blue.png'
+            img: '../../../../../assets/vendors/imgs/blue.png',
           },
           {
             name: 'عيادات خارجية',
@@ -187,7 +200,7 @@ export class PatientListComponent {
             count: statusCounts['Outpatient'] || 0,
             color: 'linear-gradient(243.59deg, #00ACCE 33.41%, #7EDDF0 96.19%)',
             back: '#00ACCE',
-            img: '../../../../../assets/vendors/imgs/bluee.png'
+            img: '../../../../../assets/vendors/imgs/bluee.png',
           },
           {
             name: 'حضانات الأطفال',
@@ -195,7 +208,7 @@ export class PatientListComponent {
             count: statusCounts['Archived'] || 0,
             color: 'linear-gradient(236.62deg, #6C757D 30.14%, #ADB5BD 83.62%)',
             back: '#6C757D',
-            img: '../../../../../assets/vendors/imgs/grey.png'
+            img: '../../../../../assets/vendors/imgs/grey.png',
           },
         ];
       },
@@ -212,16 +225,20 @@ export class PatientListComponent {
   filterChecked(filters: FilterModel[]) {
     this.pagingFilterModel.currentPage = 1;
     this.pagingFilterModel.filterList = filters;
-    if (filters.some(i => i.categoryName == 'SearchText'))
-      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
-    else
-      this.pagingFilterModel.searchText = '';
+    if (filters.some((i) => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(
+        (i) => i.categoryName == 'SearchText'
+      )?.itemValue;
+    else this.pagingFilterModel.searchText = '';
     this.loadPatients();
   }
 
   ApplyCardFilter(item: any) {
     this.pagingFilterModel.currentPage = 1;
-    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList('Status', item.value);
+    this.pagingFilterModel.filterList = this.sharedService.CreateFilterList(
+      'Status',
+      item.value
+    );
     this.loadPatients();
   }
 
@@ -232,7 +249,7 @@ export class PatientListComponent {
       searchText: '',
       currentPage: 1,
       pageSize: 16,
-      filterList: []
+      filterList: [],
     };
     this.loadPatients();
   }
@@ -248,16 +265,25 @@ export class PatientListComponent {
     this.getAdmissionById(id);
   }
   getAdmissionById(id: number) {
-    this.admissionService.getPatientById(id).subscribe({
+    this.admissionService.getAddmisionById(id).subscribe({
       next: (res) => {
         this.admissionDetails = res.results;
+
+        this.admissionDetails.patientStatusArabic = this.mapStatusToArabic(
+          this.admissionDetails.patientStatus
+        );
+
         this.getMedicalHistory(id);
         console.log(this.admissionDetails);
       },
       error: (err) => {
         console.error('Failed to fetch admission data', err);
-        this.messageService.add({ severity: 'error', summary: 'فشل التحميل', detail: 'حدث خطأ أثناء تحميل البيانات' });
-      }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'فشل التحميل',
+          detail: 'حدث خطأ أثناء تحميل البيانات',
+        });
+      },
     });
   }
   getMedicalHistory(id: number) {
@@ -267,34 +293,65 @@ export class PatientListComponent {
       },
       error: (err) => {
         console.error('Failed to fetch medical history', err);
-        this.messageService.add({ severity: 'error', summary: 'فشل التحميل', detail: 'حدث خطأ أثناء تحميل البيانات' });
-      }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'فشل التحميل',
+          detail: 'حدث خطأ أثناء تحميل البيانات',
+        });
+      },
     });
   }
   mapTypeToArabic(type: string): string {
     switch (type) {
-      case 'General': return 'كشف';
-      case 'Consultation': return 'إستشارة';
-      case 'Radiology': return 'أشعة';
-      case 'Screening': return 'تحاليل';
-      case 'Surgery': return 'عمليات';
-      case 'Emergency': return 'طوارئ';
-      case 'CriticalCondition': return 'حالة حرجة';
-      case 'Treated': return 'تم علاجه';
-      case 'Archived': return 'أرشيف';
-      case 'Surgery': return 'عمليات';
-      default: return type;
+      case 'General':
+        return 'كشف';
+      case 'Consultation':
+        return 'إستشارة';
+      case 'Radiology':
+        return 'أشعة';
+      case 'Screening':
+        return 'تحاليل';
+      case 'Surgery':
+        return 'عمليات';
+      case 'Emergency':
+        return 'طوارئ';
+      case 'CriticalCondition':
+        return 'حالة حرجة';
+      case 'Treated':
+        return 'تم علاجه';
+      case 'Archived':
+        return 'أرشيف';
+      case 'Surgery':
+        return 'عمليات';
+      default:
+        return type;
     }
   }
 
   mapStatusToArabic(status: string): string {
     switch (status) {
-      case 'Pending': return 'قيد الانتظار';
-      case 'Completed': return 'مكتمل';
-      case 'Cancelled': return 'ملغي';
-      case 'Staying': return 'إقامة';
-      case 'IntensiveCare' : return 'عناية مركزة'
-      default: return status;
+      case 'Pending':
+        return 'قيد الانتظار';
+      case 'Completed':
+        return 'مكتمل';
+      case 'Cancelled':
+        return 'ملغي';
+      case 'Staying':
+        return 'إقامة';
+      case 'IntensiveCare':
+        return 'عناية مركزة';
+      case 'Treated':
+        return 'تم علاجه';
+      case 'CriticalCondition':
+        return 'رعاية مركزة';
+      case 'Archived':
+        return 'حضانات الأطفال';
+      case 'Surgery':
+        return 'عمليات';
+      case 'Outpatient':
+        return 'عيادات خارجية';
+      default:
+        return status;
     }
   }
 
@@ -302,26 +359,35 @@ export class PatientListComponent {
     this.pagingFilterModel.currentPage = page.page;
     this.loadPatients();
   }
-  // 
+  //
   openStatusUpdateModal() {
     this.statusForm.reset();
-    if (this.admissionDetails?.patientStatus) {
-      this.statusForm.patchValue({ newStatus: this.admissionDetails.patientStatus });
-    }
+    this.statusForm.reset({ newStatus: '' });
   }
+
   updateStatus() {
     if (this.statusForm.valid) {
-      this.admissionService.updateAdmision(this.admissionDetails.patientId, this.statusForm.value).subscribe({
-        next: (res) => {
-          this.messageService.add({ severity: 'success', summary: 'تم التحديث', detail: 'تم التحديث بنجاح' });
-          this.loadPatients();
-          this.statusForm.reset();
-        },
-        error: (err) => {
-          console.error('Failed to update status', err);
-          this.messageService.add({ severity: 'error', summary: 'فشل التحديث', detail: 'حدث خطأ أثناء التحديث' });
-        }
-      });
+      this.admissionService
+        .updateAdmision(this.admissionDetails.patientId, this.statusForm.value)
+        .subscribe({
+          next: (res) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'تم التحديث',
+              detail: 'تم التحديث بنجاح',
+            });
+            this.loadPatients();
+            this.statusForm.reset();
+          },
+          error: (err) => {
+            console.error('Failed to update status', err);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'فشل التحديث',
+              detail: 'حدث خطأ أثناء التحديث',
+            });
+          },
+        });
     }
   }
   getAge(dateOfBirth: string): number {
@@ -336,39 +402,44 @@ export class PatientListComponent {
 
     return age;
   }
-  // 
+  //
   filterByStatus(statusValue: string) {
     this.filterForm.patchValue({ Status: statusValue });
     this.currentPage = 1;
     this.loadPatients();
   }
-  // 
-  backToMainModal(currentModalId: string, mainModalId: string = 'inpatientDetailsModal') {
+  //
+  backToMainModal(
+    currentModalId: string,
+    mainModalId: string = 'inpatientDetailsModal'
+  ) {
     const currentModalEl = document.getElementById(currentModalId);
     const mainModalEl = document.getElementById(mainModalId);
-  
+
     const currentModal = bootstrap.Modal.getInstance(currentModalEl!);
     const mainModal = new bootstrap.Modal(mainModalEl!);
-  
+
     if (currentModal) {
       currentModal.hide();
       setTimeout(() => {
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        document
+          .querySelectorAll('.modal-backdrop')
+          .forEach((el) => el.remove());
         document.body.classList.add('modal-open');
         mainModal.show();
       }, 100);
     }
-  }  
-  // 
+  }
+  //
   goToAppointments(patient: any) {
     this.router.navigate(['/hms/appointments/add'], {
       state: {
         patientData: {
           patientName: patient?.patientName,
           patientPhone: patient?.phone,
-          gender: patient?.patientGender === 'ذكر' ? 'Male' : 'Female'
-        }
-      }
-    });    
+          gender: patient?.patientGender === 'ذكر' ? 'Male' : 'Female',
+        },
+      },
+    });
   }
 }

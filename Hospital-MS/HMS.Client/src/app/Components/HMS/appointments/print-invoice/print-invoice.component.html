@@ -1,4 +1,4 @@
-<div class="report-container" #printSection>
+<div class="report-container" id="printSection" #printSection>
     <div class="report-title">
         <div class="header-info">
             <div class="logo-area">
@@ -16,11 +16,11 @@
 
     <table class="patient-info">
         <tr>
-            <td>اسم المريض : <strong>{{invoiceData?.patientName}}</strong></td>
+            <td>اسم المريض : <strong>{{invoiceData?.patientName }}</strong></td>
         </tr>
         <tr>
             <td>رقم الهاتف : <strong> {{invoiceData?.patientPhone}}</strong></td>
-        </tr> 
+        </tr>
         <!-- <tr>
             <td>نوع الخدمة : <strong> {{invoiceData?.appointmentType}}</strong></td>
         </tr>  -->
@@ -54,30 +54,30 @@
                 <small>الهاتف: {{invoiceData?.hospitalPhone || '01000201499'}}</small>
             </div>
         </div>
-    
+
         <div class="col-lg-6">
             <div class="email-info">
                 <small>البريد الالكتروني: {{invoiceData?.hospitalEmail || 'info@elnourelmohamady.com'}}</small>
             </div>
         </div>
-    
+
         <div class="col-lg-6">
             <div class="user-info">
                 <small>المستخدم : {{userName}}</small>
             </div>
         </div>
-    
+
         <div class="col-lg-6">
             <div class="date-info">
                 <small>تاريخ الطباعة : {{ currentDate | date:'yyyy-MM-dd HH:mm:ss' }}</small>
             </div>
         </div>
-        
+
     </div>
     <hr />
     <div class="receipt-footer">
         <p>شكرًا لإختياركم خدماتنا</p>
+         <button type="submit" class="btn-blue col-2" (click)="downloadPDF()">طباعة</button>
     </div>
-
     <!-- <div class="page-number">1</div> -->
 </div>

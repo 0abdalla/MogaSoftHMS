@@ -7,7 +7,7 @@ namespace Hospital_MS.Core.Enums
         [EnumMember(Value = "أرشيف")]
         Archived,
 
-        [EnumMember(Value = "معالج")]
+        [EnumMember(Value = "تم علاجه")]
         Treated,
 
         [EnumMember(Value = "حالة حرجة")]

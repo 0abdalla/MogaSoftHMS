@@ -11,7 +11,7 @@ describe('AppointmentEditComponent', () => {
       declarations: [AppointmentEditComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(AppointmentEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
