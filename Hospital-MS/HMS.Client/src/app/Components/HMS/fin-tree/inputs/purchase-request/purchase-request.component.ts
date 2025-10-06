@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 export declare var bootstrap: any;
 import html2pdf from 'html2pdf.js';
-import { todayDateValidator } from '../../../../../validators/today-date.validator';
+import { exactTodayValidator, todayDateValidator } from '../../../../../validators/today-date.validator';
 import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-purchase-request',
@@ -27,7 +27,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
     searchText: ''
   };
   total: number = 0;
-  // 
+  //
   purchaseRequestForm!: FormGroup;
   itemForm!: FormGroup;
   isEditMode: boolean = false;
@@ -38,7 +38,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
   units: any[] = []
   TitleList = ['المشتريات', 'طلبات شراء'];
   isFilter: boolean = true;
-  // 
+  //
   userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName')
   get today(): string {
     const date = new Date();
@@ -59,7 +59,8 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
   }
   constructor(private financialService: FinancialService, private fb: FormBuilder, private toastrService: MessageService) {
     this.purchaseRequestForm = this.fb.group({
-      requestDate: [new Date().toISOString().substring(0, 10), [todayDateValidator]],
+      // requestDate: [new Date().toISOString().substring(0, 10), [todayDateValidator]],
+      requestDate: ['', [Validators.required, exactTodayValidator]],
       purpose: [null, Validators.required],
       storeId: [null, Validators.required],
       notes: [null],
@@ -240,7 +241,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
             });
             console.log(res);
             console.log(formData);
-            
+
           }
         },
         error: (err) => {
@@ -296,7 +297,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  // 
+  //
   getStatusName(type: string): string {
     const map: { [key: string]: string } = {
       Approved: 'تم الموافقة',
@@ -313,7 +314,7 @@ export class PurchaseRequestComponent implements OnInit, AfterViewInit {
     };
     return map[type] || '#000000';
   }
-  // 
+  //
   getItemName(itemId: number | string): string {
     const item = this.allItems?.find(i => i.id == itemId);
     return item ? item.nameAr : '—';

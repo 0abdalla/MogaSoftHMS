@@ -166,6 +166,7 @@ export class AppointmentListComponent implements OnInit {
       next: (data) => {
         debugger;
         this.patients = data.results;
+        console.log('Patients : ', this.patients);
         this.total = data.totalCount;
         this.cdr.detectChanges();
       },

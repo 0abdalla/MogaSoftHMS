@@ -11,7 +11,7 @@ import { MessageService } from 'primeng/api';
 import { PagingFilterModel } from '../../../../Models/Generics/PagingFilterModel';
 import { Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { todayDateValidator } from '../../../../validators/today-date.validator';
+import { notOldDayValidator, todayDateValidator } from '../../../../validators/today-date.validator';
 declare var bootstrap: any;
 import html2pdf from 'html2pdf.js';
 
@@ -32,14 +32,14 @@ import html2pdf from 'html2pdf.js';
   ],
 })
 export class AppointmentFormComponent implements OnInit {
-  // @ViewChild('PrintInvioce', { static: false }) PrintInvoiceComponent: PrintInvoiceComponent;
   userName: any;
-    currentDate = new Date();
-    @ViewChild('printSection', { static: false }) printSectionRef: ElementRef;
-    @ViewChild(PrintInvoiceComponent) printInvoiceComponent!: PrintInvoiceComponent;
-    // invoiceData: any;
-    invoiceData: any;
-    showInvoice = false;
+  currentDate = new Date();
+  @ViewChild('printSection', { static: false }) printSectionRef: ElementRef;
+  @ViewChild('printInvoiceComponent') printInvoiceComponent: any;
+
+  // invoiceData: any;
+  invoiceData: any;
+  showInvoice = false;
   // private router = inject(Router);
   pagingFilterModel: PagingFilterModel = {
     searchText: '',
@@ -84,6 +84,7 @@ export class AppointmentFormComponent implements OnInit {
   //
   showAdditionalInfo: boolean = false;
   totalPrice = 0;
+
   constructor(
     private fb: FormBuilder,
     private appointmentService: AppointmentService,
@@ -94,8 +95,8 @@ export class AppointmentFormComponent implements OnInit {
     private sharedService: SharedService,
     private router: Router,
     private cdr: ChangeDetectorRef
-    ) {
-      this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');
+  ) {
+    this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');
     this.reservationForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
@@ -113,7 +114,8 @@ export class AppointmentFormComponent implements OnInit {
     });
     this.appointmentDetailsForm = this.fb.group({
       id: null,
-      appointmentDate: [new Date().toISOString().substring(0, 10), []],
+      // appointmentDate: [new Date().toISOString().substring(0, 10), []],
+      appointmentDate: ['', [Validators.required, notOldDayValidator]],
       appointmentType: ['', Validators.required],
       medicalServiceId: ['', Validators.required],
       medicalServiceName: null,
@@ -250,7 +252,7 @@ export class AppointmentFormComponent implements OnInit {
           appointmentType: formData.appointmentType,
           medicalServiceId: item.id,
           medicalServiceName: item.name,
-          price: service.price || 0,
+          price: this.selectedServicePrice || 0,
           doctorId: null,
           doctorName: null,
         }
@@ -304,9 +306,9 @@ export class AppointmentFormComponent implements OnInit {
 
       const matchesDay = dayOfWeek
         ? (service.medicalServiceSchedules?.length > 0 &&
-           service.medicalServiceSchedules.some((s: any) =>
-             s.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
-           ))
+          service.medicalServiceSchedules.some((s: any) =>
+            s.weekDay.toLowerCase() === dayOfWeek.toLowerCase()
+          ))
         : true;
 
       return matchesType && matchesDay;
@@ -351,7 +353,7 @@ export class AppointmentFormComponent implements OnInit {
     if (navState?.patientData) {
       this.reservationForm.patchValue(navState.patientData);
       console.log('PatientData from state:', navState.patientData);
-    }else{
+    } else {
       console.log('No patient data found in state');
     }
   }
@@ -460,7 +462,7 @@ export class AppointmentFormComponent implements OnInit {
     this.staffService.getDoctors(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.doctors = data.results;
-        console.log("Doctors: " , this.doctors);
+        console.log("Doctors: ", this.doctors);
       },
       error: (err) => {
       }
@@ -510,7 +512,7 @@ export class AppointmentFormComponent implements OnInit {
     this.appointmentService.getServices(1, 100, '', filterParams).subscribe({
       next: (data) => {
         this.services = data.results || [];
-        console.log('Services: ',this.services);
+        console.log('Services: ', this.services);
       },
       error: (err) => {
         this.services = [];
@@ -551,59 +553,32 @@ export class AppointmentFormComponent implements OnInit {
   }
 
 
- onSubmit() {
-  if (this.reservationForm.invalid) {
-    this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
-    return;
-  }
+  onSubmit() {
+    if (this.reservationForm.invalid) {
+      this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
+      return;
+    }
 
-  if (this.appointmentDetailsSelected.length === 0) {
-    this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
-    return;
-  }
+    if (this.appointmentDetailsSelected.length === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
+      return;
+    }
 
-  let validService = ['General', 'Consultation', 'Surgery'];
-  let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
-  const formData = this.reservationForm.value;
+    let validService = ['General', 'Consultation', 'Surgery'];
+    let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
+    const formData = this.reservationForm.value;
 
-  let medicalServices = [];
-  let appointmentTypes = [...new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
-
-  appointmentTypes.forEach(type => {
-    let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
-    let obj = {
-      medicalServiceIds: types.map(item => item.medicalServiceId),
-      appointmentDate: types[0].appointmentDate,
-      appointmentType: types[0].appointmentType,
-    };
-    medicalServices.push(obj);
-  });
-
-   this.invoiceData = {
-    patientName: this.reservationForm.value.patientName,
-    patientPhone: this.reservationForm.value.patientPhone,
-    gender: this.reservationForm.value.gender,
-    insuranceCompanyId: this.reservationForm.value.insuranceCompanyId,
-    insuranceCategoryId: this.reservationForm.value.insuranceCategoryId,
-    insuranceNumber: this.reservationForm.value.insuranceNumber,
-    referred: this.reservationForm.value.referred,
-    referredClinic: this.reservationForm.value.referredClinic,
-    paymentMethod: this.reservationForm.value.paymentMethod,
-    emergencyLevel: this.reservationForm.value.emergencyLevel,
-    companionName: this.reservationForm.value.companionName,
-    companionNationalId: this.reservationForm.value.companionNationalId,
-    companionPhone: this.reservationForm.value.companionPhone,
-    medicalServiceName: this.appointmentDetailsSelected?.[0]?.medicalServiceName || '',
-    doctorName: this.appointmentDetailsSelected?.[0]?.doctorName || '',
-    appointmentDate: this.appointmentDetailsSelected?.[0]?.appointmentDate || '',
-    selectedServicePrice: this.appointmentDetailsSelected?.[0]?.price || 0,
-  };
-
-  this.showInvoice = true;
-
-  this.cdr.detectChanges();
-
-
+    let medicalServices = [];
+    let appointmentTypes = [... new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
+    appointmentTypes.forEach(type => {
+      let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
+      let obj = {
+        medicalServiceIds: types.map(item => item.medicalServiceId),
+        appointmentDate: types[0].appointmentDate,
+        appointmentType: types[0].appointmentType,
+      }
+      medicalServices.push(obj);
+    });
 
     const payload = {
       patientName: formData.patientName,
@@ -624,12 +599,21 @@ export class AppointmentFormComponent implements OnInit {
 
     this.appointmentService.createAppointment(payload).subscribe({
       next: (response) => {
-        console.log('Response : ', response);
-
         if (response.isSuccess) {
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
-          this.invoiceData = response.results;
-          this.generatePdf();
+          this.invoiceData = response.results || {
+            appointmentNumber: 1,
+            patientName: formData.patientName,
+            patientPhone: formData.patientPhone,
+            medicalServiceName: this.appointmentDetailsSelected[0]?.medicalServiceName,
+            appointmentDate: this.appointmentDetailsSelected[0]?.appointmentDate,
+            selectedServicePrice: this.totalPrice,
+            hospitalPhone: '01000201499',
+            hospitalEmail: 'info@elnourelmohamady.com'
+          };
+
+          this.generatePdf()
+
           this.resetForms();
         } else {
           this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
@@ -666,18 +650,24 @@ export class AppointmentFormComponent implements OnInit {
     return invoices;
   }
 
-  generatePdf() {
-    setTimeout(async () => {
-      for (let i = 0; i < this.invoiceData.length; i++) {
-        const element = document.getElementById('printSection-' + i);
-        if (element) {
-          await html2pdf().from(element).save(`invoice-${i + 1}.pdf`);
-        }
-      }
-    }, 500);
+generatePdf() {
+  const element = document.getElementById('printSection');
+  if (!element) {
+    return;
   }
 
-  //
+  const opt = {
+    margin: 0,
+    filename: `invoice.pdf`,
+    image: { type: 'jpeg' as const, quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' as const }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+
+
   searchPatientByPhone(event: Event) {
     const input = event.target as HTMLInputElement;
     const phoneNumber = input.value.trim();
@@ -801,41 +791,33 @@ export class AppointmentFormComponent implements OnInit {
   }
 
   resetForms() {
-  this.reservationForm = this.fb.group({
-    patientName: ['', Validators.required],
-    patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
-    gender: ['', Validators.required],
-    insuranceCompanyId: [null],
-    insuranceCategoryId: [null],
-    insuranceNumber: [''],
-    referred: ['no'],
-    referredClinic: [''],
-    paymentMethod: ['نقدي', Validators.required],
-    emergencyLevel: ['Normal'],
-    companionName: [''],
-    companionNationalId: [''],
-    companionPhone: [''],
-  });
+    this.reservationForm = this.fb.group({
+      patientName: ['', Validators.required],
+      patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
+      gender: ['', Validators.required],
+      insuranceCompanyId: [null],
+      insuranceCategoryId: [null],
+      insuranceNumber: [''],
+      referred: ['no'],
+      referredClinic: [''],
+      paymentMethod: ['نقدي', Validators.required],
+      emergencyLevel: ['Normal'],
+      companionName: [''],
+      companionNationalId: [''],
+      companionPhone: [''],
+    });
 
-  this.appointmentDetailsForm = this.fb.group({
-    id: null,
-    appointmentDate: [new Date().toISOString().substring(0, 10), []],
-    appointmentType: ['', Validators.required],
-    medicalServiceId: ['', Validators.required],
-    medicalServiceName: null,
-    doctorId: [''],
-    price: null,
-    doctorName: null,
-  });
-  this.appointmentDetailsSelected = [];
-  }
-
- downloadPDF() {
-    if (this.printInvoiceComponent) {
-      this.printInvoiceComponent.downloadPDF();
-    } else {
-      console.error('PrintInvoiceComponent not found!');
-    }
+    this.appointmentDetailsForm = this.fb.group({
+      id: null,
+      appointmentDate: [new Date().toISOString().substring(0, 10), []],
+      appointmentType: ['', Validators.required],
+      medicalServiceId: ['', Validators.required],
+      medicalServiceName: null,
+      doctorId: [''],
+      price: null,
+      doctorName: null,
+    });
+    this.appointmentDetailsSelected = [];
   }
 
 }

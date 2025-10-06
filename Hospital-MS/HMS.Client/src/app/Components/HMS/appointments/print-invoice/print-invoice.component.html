@@ -1,83 +1,84 @@
-<div class="report-container" id="printSection" #printSection>
+<div class="d-none">
+  <div class="report-container" id="printSection" #printSection>
     <div class="report-title">
-        <div class="header-info">
-            <div class="logo-area">
-                <img src="assets/vendors/imgs/logo.png">
-            </div>
-            <div>
-                <h1>تذكرة الحجز</h1>
-                <p>اسم المستشفي : النور المحمدي</p>
-            </div>
+      <div class="header-info">
+        <div class="logo-area">
+          <img src="assets/vendors/imgs/logo.png">
         </div>
-        <div class="booking-number">
-            <span>رقم الحجز : {{invoiceData?.appointmentNumber || '1'}}</span>
+        <div>
+          <h1>تذكرة الحجز</h1>
+          <p>اسم المستشفي : النور المحمدي</p>
         </div>
+      </div>
+      <div class="booking-number">
+        <span>رقم الحجز : {{invoiceData?.appointmentNumber || '1'}}</span>
+      </div>
     </div>
 
     <table class="patient-info">
-        <tr>
-            <td>اسم المريض : <strong>{{invoiceData?.patientName }}</strong></td>
-        </tr>
-        <tr>
-            <td>رقم الهاتف : <strong> {{invoiceData?.patientPhone}}</strong></td>
-        </tr>
-        <!-- <tr>
+      <tr>
+        <td>اسم المريض : <strong>{{invoiceData?.patientName }}</strong></td>
+      </tr>
+      <tr>
+        <td>رقم الهاتف : <strong> {{invoiceData?.patientPhone}}</strong></td>
+      </tr>
+      <!-- <tr>
             <td>نوع الخدمة : <strong> {{invoiceData?.appointmentType}}</strong></td>
         </tr>  -->
-        <tr>
-            <td>الخدمة الطبية : <strong> {{invoiceData?.medicalServiceName}}</strong></td>
-        </tr>
-        <tr *ngIf="invoiceData?.doctorName">
-            <td>اسم الطبيب : <strong> {{invoiceData?.doctorName}}</strong></td>
-        </tr>
-        <tr>
-            <td>ميعاد الحجز : <strong> {{invoiceData?.appointmentDate}}</strong></td>
-        </tr>
-        <tr>
-            <td>تكلفة الحجز : <strong> {{invoiceData?.selectedServicePrice || '0'}} جنيه</strong></td>
-        </tr>
-        <tr *ngIf="invoiceData?.insuranceCompanyId">
-            <td>شركة التأمين : <strong> {{invoiceData?.insuranceCompany || 'لا يوجد'}}</strong></td>
-        </tr>
-        <tr *ngIf="invoiceData?.insuranceCompanyId">
-            <td>الرقم التأميني : <strong> {{invoiceData?.insuranceNumber || 'لا يوجد'}}</strong></td>
-        </tr>
-        <tr *ngIf="invoiceData?.insuranceCategoryId">
-            <td>الفئة : <strong> {{invoiceData?.insuranceCategory || 'لا يوجد'}}</strong></td>
-        </tr>
+      <tr>
+        <td>الخدمة الطبية : <strong> {{invoiceData?.medicalServiceName}}</strong></td>
+      </tr>
+      <tr *ngIf="invoiceData?.doctorName">
+        <td>اسم الطبيب : <strong> {{invoiceData?.doctorName}}</strong></td>
+      </tr>
+      <tr>
+        <td>ميعاد الحجز : <strong> {{invoiceData?.appointmentDate}}</strong></td>
+      </tr>
+      <tr>
+        <td>تكلفة الحجز : <strong> {{invoiceData?.selectedServicePrice || '0'}} جنيه</strong></td>
+      </tr>
+      <tr *ngIf="invoiceData?.insuranceCompanyId">
+        <td>شركة التأمين : <strong> {{invoiceData?.insuranceCompany || 'لا يوجد'}}</strong></td>
+      </tr>
+      <tr *ngIf="invoiceData?.insuranceCompanyId">
+        <td>الرقم التأميني : <strong> {{invoiceData?.insuranceNumber || 'لا يوجد'}}</strong></td>
+      </tr>
+      <tr *ngIf="invoiceData?.insuranceCategoryId">
+        <td>الفئة : <strong> {{invoiceData?.insuranceCategory || 'لا يوجد'}}</strong></td>
+      </tr>
     </table>
     <hr>
 
     <div class="row">
-        <div class="col-lg-6">
-            <div class="phone-info">
-                <small>الهاتف: {{invoiceData?.hospitalPhone || '01000201499'}}</small>
-            </div>
+      <div class="col-lg-6">
+        <div class="phone-info">
+          <small>الهاتف: {{invoiceData?.hospitalPhone || '01000201499'}}</small>
         </div>
+      </div>
 
-        <div class="col-lg-6">
-            <div class="email-info">
-                <small>البريد الالكتروني: {{invoiceData?.hospitalEmail || 'info@elnourelmohamady.com'}}</small>
-            </div>
+      <div class="col-lg-6">
+        <div class="email-info">
+          <small>البريد الالكتروني: {{invoiceData?.hospitalEmail || 'info@elnourelmohamady.com'}}</small>
         </div>
+      </div>
 
-        <div class="col-lg-6">
-            <div class="user-info">
-                <small>المستخدم : {{userName}}</small>
-            </div>
+      <div class="col-lg-6">
+        <div class="user-info">
+          <small>المستخدم : {{userName}}</small>
         </div>
+      </div>
 
-        <div class="col-lg-6">
-            <div class="date-info">
-                <small>تاريخ الطباعة : {{ currentDate | date:'yyyy-MM-dd HH:mm:ss' }}</small>
-            </div>
+      <div class="col-lg-6">
+        <div class="date-info">
+          <small>تاريخ الطباعة : {{ currentDate | date:'yyyy-MM-dd HH:mm:ss' }}</small>
         </div>
+      </div>
 
     </div>
     <hr />
     <div class="receipt-footer">
-        <p>شكرًا لإختياركم خدماتنا</p>
-         <button type="submit" class="btn-blue col-2" (click)="downloadPDF()">طباعة</button>
+      <p>شكرًا لإختياركم خدماتنا</p>
     </div>
     <!-- <div class="page-number">1</div> -->
+  </div>
 </div>
