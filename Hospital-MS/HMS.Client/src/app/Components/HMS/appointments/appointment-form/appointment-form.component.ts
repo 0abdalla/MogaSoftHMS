@@ -601,16 +601,9 @@ export class AppointmentFormComponent implements OnInit {
       next: (response) => {
         if (response.isSuccess) {
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
-          this.invoiceData = response.results || {
-            appointmentNumber: 1,
-            patientName: formData.patientName,
-            patientPhone: formData.patientPhone,
-            medicalServiceName: this.appointmentDetailsSelected[0]?.medicalServiceName,
-            appointmentDate: this.appointmentDetailsSelected[0]?.appointmentDate,
-            selectedServicePrice: this.totalPrice,
-            hospitalPhone: '01000201499',
-            hospitalEmail: 'info@elnourelmohamady.com'
-          };
+          this.invoiceData = response.results;
+          this.invoiceData.medicalServiceName= this.appointmentDetailsSelected[0]?.medicalServiceName,
+          this.invoiceData.selectedServicePrice= this.totalPrice,
 
           this.generatePdf()
 

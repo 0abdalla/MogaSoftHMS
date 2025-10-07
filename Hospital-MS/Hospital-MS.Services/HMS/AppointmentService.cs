@@ -36,6 +36,7 @@ namespace Hospital_MS.Services.HMS
                         .FirstOrDefaultAsync(cancellationToken);
 
                 Patient patient;
+                var response = new AppointmentToReturnResponse();
 
                 if (existingPatient != null)
                 {
@@ -132,7 +133,7 @@ namespace Hospital_MS.Services.HMS
                         .Include(a => a.MedicalService)
                         .FirstOrDefaultAsync(cancellationToken);
 
-                    var response = new AppointmentToReturnResponse
+                    response = new AppointmentToReturnResponse
                     {
                         AppointmentNumber = createdAppointment?.AppointmentNumber ?? 0,
                         MedicalServiceName = createdAppointment?.MedicalService?.Name,
@@ -141,7 +142,7 @@ namespace Hospital_MS.Services.HMS
 
                 await transaction.CommitAsync(cancellationToken);
 
-                return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess);
+                return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess, response);
 
             }
             catch (Exception)
@@ -641,6 +642,7 @@ namespace Hospital_MS.Services.HMS
                         .FirstOrDefaultAsync(cancellationToken);
 
                 Patient patient;
+                var response = new AppointmentToReturnResponse();
 
                 if (existingPatient != null)
                 {
@@ -735,10 +737,18 @@ namespace Hospital_MS.Services.HMS
                     var createdAppointment = await _unitOfWork.Repository<Appointment>()
                         .GetAll(a => a.Id == appointment.Id)
                         .Include(a => a.MedicalService)
+                        .Include(a => a.Patient)
+                        .Include(a=> a.Doctor)
                         .FirstOrDefaultAsync(cancellationToken);
 
-                    var response = new AppointmentToReturnResponse
+                    response = new AppointmentToReturnResponse
+
                     {
+                        
+                        PatientName = createdAppointment?.Patient?.FullName,
+                        PatientPhone = createdAppointment?.Patient?.Phone,
+                        AppointmentDate = createdAppointment?.AppointmentDate,
+                        DoctorName = createdAppointment?.Doctor?.FullName,
                         AppointmentNumber = createdAppointment?.AppointmentNumber ?? 0,
                         MedicalServiceName = createdAppointment?.MedicalService?.Name,
                     };
@@ -746,7 +756,7 @@ namespace Hospital_MS.Services.HMS
 
                 await transaction.CommitAsync(cancellationToken);
 
-                return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess);
+                return ErrorResponseModel<AppointmentToReturnResponse>.Success(GenericErrors.AddSuccess, response);
 
             }
             catch (Exception)
