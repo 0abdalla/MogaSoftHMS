@@ -15,6 +15,7 @@ import { notOldDayValidator, todayDateValidator } from '../../../../validators/t
 declare var bootstrap: any;
 import html2pdf from 'html2pdf.js';
 
+
 @Component({
   selector: 'app-appointment-form',
   templateUrl: './appointment-form.component.html',
@@ -39,6 +40,7 @@ export class AppointmentFormComponent implements OnInit {
 
   // invoiceData: any;
   invoiceData: any;
+  appointmentsSelected:any;
   showInvoice = false;
   // private router = inject(Router);
   pagingFilterModel: PagingFilterModel = {
@@ -604,8 +606,14 @@ export class AppointmentFormComponent implements OnInit {
           this.invoiceData = response.results;
           this.invoiceData.medicalServiceName= this.appointmentDetailsSelected[0]?.medicalServiceName,
           this.invoiceData.selectedServicePrice= this.totalPrice,
+          this.appointmentsSelected =this.appointmentDetailsSelected
 
-          this.generatePdf()
+
+
+          this.cdr.detectChanges();
+          setTimeout(() => {
+            this.generatePdf();
+          }, 200);
 
           this.resetForms();
         } else {

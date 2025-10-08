@@ -10,6 +10,7 @@ import html2canvas from 'html2canvas';
 export class PrintInvoiceComponent {
   @ViewChild('printSection', { static: false }) printSectionRef!: ElementRef;
   @Input() invoiceData: any;
+  @Input() appointmentsSelected: any;
   userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');
   currentDate = new Date();
 

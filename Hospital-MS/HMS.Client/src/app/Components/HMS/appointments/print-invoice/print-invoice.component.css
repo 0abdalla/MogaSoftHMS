@@ -18,6 +18,15 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
 }
+.ticket {
+  page-break-after: always;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+.ticket:last-child {
+  page-break-after: auto;
+}
 
 .report-title {
     text-align: center;
