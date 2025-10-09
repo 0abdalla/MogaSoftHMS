@@ -1,9 +1,7 @@
-
+<div class="d-none">
   <div class="report-container" id="printSection" #printSection>
     <!-- تكرار كل تذكرة -->
     <div *ngFor="let appointment of appointmentsSelected; let i = index" class="ticket">
-
-      <div class="page-number">صفحة {{ i + 1 }}</div>
 
       <div class="report-title">
         <div class="header-info">
@@ -16,7 +14,7 @@
           </div>
         </div>
         <div class="booking-number">
-          <span>رقم الحجز : {{ appointment.id || invoiceData?.appointmentNumber || '1' }}</span>
+          <span>رقم الحجز : {{ invoiceData?.appointmentNumber || '1' }}</span>
         </div>
       </div>
 
@@ -87,3 +85,4 @@
 
     </div>
   </div>
+</div>

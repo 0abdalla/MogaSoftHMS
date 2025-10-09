@@ -96,7 +96,6 @@ export class AppointmentFormComponent implements OnInit {
     private admissionService: AdmissionService,
     private sharedService: SharedService,
     private router: Router,
-    private cdr: ChangeDetectorRef
   ) {
     this.userName = sessionStorage.getItem('firstName') + ' ' + sessionStorage.getItem('lastName');
     this.reservationForm = this.fb.group({
@@ -608,12 +607,7 @@ export class AppointmentFormComponent implements OnInit {
           this.invoiceData.selectedServicePrice= this.totalPrice,
           this.appointmentsSelected =this.appointmentDetailsSelected
 
-
-
-          this.cdr.detectChanges();
-          setTimeout(() => {
             this.generatePdf();
-          }, 200);
 
           this.resetForms();
         } else {
