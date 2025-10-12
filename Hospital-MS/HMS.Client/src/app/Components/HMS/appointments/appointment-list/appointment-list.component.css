@@ -193,9 +193,21 @@ td {
   }
 }
 @media (max-width: 576px) {
+  .btn-parent {
+  gap: 0px !important;
+  }
   .btn-list-text,
   .btn-close-text {
     font-size: 67%;
   }
 }
+
+@media (max-width: 992px) {
+  .card {
+  margin: 1%;
+  }
+}
+
+
+
 
