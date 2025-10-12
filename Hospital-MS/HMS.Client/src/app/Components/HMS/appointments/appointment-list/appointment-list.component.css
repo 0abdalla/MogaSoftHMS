@@ -182,4 +182,20 @@ td {
   #printablePDFContent th, #printablePDFContent td {
     padding: 8px;
   }
-  
+
+@media (max-width: 668px) {
+  .btn-parent {
+    gap: 0px !important;
+  }
+  .btn-list-text,
+  .btn-close-text {
+    font-size: 80%;
+  }
+}
+@media (max-width: 576px) {
+  .btn-list-text,
+  .btn-close-text {
+    font-size: 67%;
+  }
+}
+

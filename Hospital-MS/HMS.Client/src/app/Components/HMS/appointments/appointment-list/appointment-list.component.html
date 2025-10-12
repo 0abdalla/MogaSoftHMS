@@ -19,18 +19,18 @@
         <div class="table-card border radius-10 overflow-hidden shadow-sm">
             <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
                 <div class="col-md-8 mb-2">
-                    <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex align-items-center gap-2 btn-parent">
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/appointments/add">
                             <i class="fas fa-plus-circle"></i>
                             <span>إضافة حجز</span>
                         </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="confirmShiftClose()">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3 " (click)="confirmShiftClose()">
                             <i class="fas fa-close"></i>
-                            <span>إغلاق حركة الشيفت</span>
+                            <span class="btn-close-text">إغلاق حركة الشيفت</span>
                         </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openChooseShiftModal()">
+                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3 " (click)="openChooseShiftModal()">
                             <i class="fas fa-list"></i>
-                            <span>عرض حركة الشيفت</span>
+                            <span class="btn-list-text">عرض حركة الشيفت</span>
                         </button>
                         <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
                             <i class="uil uil-filter"></i>

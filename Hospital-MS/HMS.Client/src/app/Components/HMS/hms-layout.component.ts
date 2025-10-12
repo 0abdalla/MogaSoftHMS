@@ -14,6 +14,6 @@ export class HmsLayoutComponent {
   }
 
   constructor() {
-   
+
   }
 }
