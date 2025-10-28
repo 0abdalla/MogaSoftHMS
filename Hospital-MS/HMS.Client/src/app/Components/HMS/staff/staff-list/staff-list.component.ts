@@ -208,8 +208,8 @@ export class StaffListComponent implements OnInit, OnDestroy {
         const insuranceAmount = employee.basicSalary * (employee.insurance / 100);
         const taxAmount = employee.basicSalary * (employee.tax / 100);
         employee.deductions = insuranceAmount + taxAmount;
-        employee.netSalary = employee.basicSalary 
-                            + (employee.allowances || 0) 
+        employee.netSalary = employee.basicSalary
+                            + (employee.allowances || 0)
                             - employee.deductions;
         this.selectedEmployee = employee;
         console.log(this.selectedEmployee);
@@ -219,7 +219,7 @@ export class StaffListComponent implements OnInit, OnDestroy {
       }
     });
   }
-  
+
 
   mapType(type: string): string | undefined {
     const typeMap: { [key: string]: string } = {
