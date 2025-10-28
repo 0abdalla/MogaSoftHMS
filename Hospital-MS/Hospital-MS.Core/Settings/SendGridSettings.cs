@@ -3,7 +3,6 @@
 namespace Hospital_MS.Core.Settings;
 public class SendGridSettings
 {
-    [Required]
     public string ApiKey { get; set; }
 
     [Required, EmailAddress]
