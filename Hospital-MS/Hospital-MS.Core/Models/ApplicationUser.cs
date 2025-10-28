@@ -1,7 +1,4 @@
-﻿
-
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace Hospital_MS.Core.Models
 {

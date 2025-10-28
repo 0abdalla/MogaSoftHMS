@@ -36,5 +36,7 @@
 
         public string? Notes { get; set; }
         //public string? SurgeryType { get; set; }
+        public int? MedicalServiceId { get; set; }
+
     }
 }

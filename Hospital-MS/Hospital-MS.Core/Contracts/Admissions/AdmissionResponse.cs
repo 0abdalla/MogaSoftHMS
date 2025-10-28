@@ -35,6 +35,9 @@
         public string? HealthStatus { get; set; }
         public string? InitialDiagnosis { get; set; }
 
+        public int? MedicalServiceId { get; set; }
+        public string? MedicalServiceName { get; set; }
+
         // Additional Information
         public bool HasCompanion { get; set; }
         public string? CompanionName { get; set; }

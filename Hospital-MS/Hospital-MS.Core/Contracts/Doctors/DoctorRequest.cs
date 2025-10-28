@@ -1,6 +1,4 @@
-﻿using Hospital_MS.Core.Enums;
-using Hospital_MS.Core.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Hospital_MS.Core.Contracts.Doctors
 {
@@ -24,7 +22,7 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public IFormFile? Photo { get; set; }
         //public bool IsActive { get; set; }
 
-        public List<int> MedicalServiceIds { get; set; } = []; 
+        //public List<int> MedicalServiceIds { get; set; } = []; 
         public List<DoctorScheduleRequest>? DoctorSchedules { get; set; } = [];
     }
 }

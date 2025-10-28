@@ -32,6 +32,8 @@ namespace Hospital_MS.Services.HMS
                     Name = request.Name,
                     Price = request.Price,
                     Type = request.Type,
+
+                    DepartmentId = request.DepartmentId
                 };
 
                 await _unitOfWork.Repository<MedicalService>().AddAsync(medicalService, cancellationToken);
@@ -128,6 +130,7 @@ namespace Hospital_MS.Services.HMS
                     Name = row.Field<string>("ServiceName") ?? string.Empty,
                     Price = row.Field<decimal?>("Price") ?? 0,
                     Type = row.Field<string>("ServiceType") ?? string.Empty,
+                    DepartmentId = row.Field<int?>("DepartmentId"),
                     MedicalServiceSchedules = JsonConvert.DeserializeObject<List<MedicalServiceScheduleResponse>>(row.Field<string>("MedicalServiceSchedules") ?? "[]"),
                     RadiologyBodyTypes = JsonConvert.DeserializeObject<List<RadiologyBodyTypeResponse>>(row.Field<string>("RadiologyBodyTypes") ?? "[]")
                 }).ToList();
@@ -162,6 +165,8 @@ namespace Hospital_MS.Services.HMS
             medicalService.Name = request.Name;
             medicalService.Price = request.Price;
             medicalService.Type = request.Type;
+
+            medicalService.DepartmentId = request.DepartmentId;
 
             _unitOfWork.Repository<MedicalService>().Update(medicalService);
 

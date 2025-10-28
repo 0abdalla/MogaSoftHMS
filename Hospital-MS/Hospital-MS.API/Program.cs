@@ -2,6 +2,7 @@ using Hangfire;
 using HealthChecks.UI.Client;
 using Hospital_MS.API;
 using Hospital_MS.Core.Hubs;
+using Hospital_MS.Core.Settings;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -9,9 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDependencies(builder.Configuration);
 
-builder.Services.AddOpenApi();
+//builder.Services.AddOpenApi();
 
 builder.Services.AddSignalR();
+
+builder.Services.Configure<SendGridSettings>(
+    builder.Configuration.GetSection("SendGridSettings"));
 
 var app = builder.Build();
 

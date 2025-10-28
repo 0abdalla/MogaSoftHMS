@@ -24,9 +24,7 @@ namespace Hospital_MS.Services.HMS
                 {
                     Number = request.Number,
                     RoomId = request.RoomId,
-                    DailyPrice = request.DailyPrice,
-
-
+                    //DailyPrice = request.DailyPrice,
                 };
 
                 await _unitOfWork.Repository<Bed>().AddAsync(bed, cancellationToken);

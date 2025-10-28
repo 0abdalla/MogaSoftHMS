@@ -45,5 +45,12 @@ namespace Hospital_MS.API.Controllers
             var result = await _doctorService.UpdateAsync(id, request, cancellationToken);
             return Ok(result);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
+        {
+            var result = await _doctorService.DeleteAsync(id, cancellationToken);
+            return Ok(result);
+        }
     }
 }

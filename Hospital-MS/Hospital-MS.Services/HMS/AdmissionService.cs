@@ -91,6 +91,12 @@ namespace Hospital_MS.Services.HMS
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
+                int? medicalServiceId = null;
+                if (patientStatus == PatientStatus.Surgery && request.MedicalServiceId.HasValue)
+                {
+                    medicalServiceId = request.MedicalServiceId;
+                }
+
                 var admission = new Admission
                 {
                     PatientId = patient.Id,
@@ -105,6 +111,8 @@ namespace Hospital_MS.Services.HMS
                     HasCompanion = request.HasCompanion,
                     InitialDiagnosis = request.InitialDiagnosis,
                     Notes = request.Notes,
+
+                    MedicalServiceId = medicalServiceId
                 };
 
                 await _unitOfWork.Repository<Admission>().AddAsync(admission, cancellationToken);
@@ -133,6 +141,7 @@ namespace Hospital_MS.Services.HMS
                 .Include(x => x.Patient)
                 .Include(x => x.Bed)
                 .Include(x => x.Room)
+                .Include(x => x.MedicalService)
                 .Include(x => x.Doctor)
                 .Include(x => x.Department)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -167,6 +176,8 @@ namespace Hospital_MS.Services.HMS
                 CompanionPhone = admission.CompanionPhone,
                 CompanionNationalId = admission.CompanionNationalId,
                 Notes = admission.Notes,
+                MedicalServiceId = admission.MedicalServiceId,
+                MedicalServiceName = admission?.MedicalService?.Name,
                 //surgeryType = admission.surgeryType,
 
                 CreatedOn = admission.CreatedOn,

@@ -7,6 +7,8 @@
         public string Type { get; set; }
         public string? RadiologyBodyTypeName { get; set; }
         public List<string> WeekDays { get; set; } = [];
+
+        public int? DepartmentId { get; set; }
     }
 
     public class RadiologyBodyTypeRequest

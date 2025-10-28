@@ -65,18 +65,38 @@ namespace Hospital_MS.Services.HMS
                 await _unitOfWork.Repository<Doctor>().AddAsync(doctor, cancellationToken);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                if (request.MedicalServiceIds != null && request.MedicalServiceIds.Count != 0)
+                // Get all medical services in the doctor's department and assign them
+                if (doctor.DepartmentId.HasValue)
                 {
-                    var doctorMedicalServices = request.MedicalServiceIds.Select(serviceId => new DoctorMedicalService
+                    var departmentMedicalServices = await _unitOfWork.Repository<MedicalService>()
+                        .GetAll(x => x.DepartmentId == doctor.DepartmentId)
+                        .ToListAsync(cancellationToken);
+
+                    if (departmentMedicalServices.Count > 0)
                     {
-                        DoctorId = doctor.Id,
-                        MedicalServiceId = serviceId
+                        var doctorMedicalServices = departmentMedicalServices.Select(ms => new DoctorMedicalService
+                        {
+                            DoctorId = doctor.Id,
+                            MedicalServiceId = ms.Id
+                        }).ToList();
 
-                    }).ToList();
-
-                    await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(doctorMedicalServices, cancellationToken);
-                    await _unitOfWork.CompleteAsync(cancellationToken);
+                        await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(doctorMedicalServices, cancellationToken);
+                        await _unitOfWork.CompleteAsync(cancellationToken);
+                    }
                 }
+
+                //if (request.MedicalServiceIds != null && request.MedicalServiceIds.Count != 0)
+                //{
+                //    var doctorMedicalServices = request.MedicalServiceIds.Select(serviceId => new DoctorMedicalService
+                //    {
+                //        DoctorId = doctor.Id,
+                //        MedicalServiceId = serviceId
+
+                //    }).ToList();
+
+                //    await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(doctorMedicalServices, cancellationToken);
+                //    await _unitOfWork.CompleteAsync(cancellationToken);
+                //}
 
                 if (request.DoctorSchedules is not null && request.DoctorSchedules.Count > 0)
                 {
@@ -112,9 +132,53 @@ namespace Hospital_MS.Services.HMS
 
         }
 
-        public Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> DeleteAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var doctor = await _unitOfWork.Repository<Doctor>()
+                    .GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                if (doctor == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                var doctorMedicalServices = await _unitOfWork.Repository<DoctorMedicalService>()
+                    .GetAll()
+                    .Where(dms => dms.DoctorId == id)
+                    .ToListAsync(cancellationToken);
+
+                var doctorSchedules = await _unitOfWork.Repository<DoctorSchedule>()
+                    .GetAll()
+                    .Where(ds => ds.DoctorId == id)
+                    .ToListAsync(cancellationToken);
+
+                if (doctorSchedules.Count > 0)
+                    _unitOfWork.Repository<DoctorSchedule>().DeleteRange(doctorSchedules);
+
+                if (doctorMedicalServices.Count > 0)
+                    _unitOfWork.Repository<DoctorMedicalService>().DeleteRange(doctorMedicalServices);
+
+
+                if (!string.IsNullOrEmpty(doctor.PhotoUrl))
+                {
+                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "doctors", doctor.PhotoUrl);
+                    if (File.Exists(imagePath))
+                        File.Delete(imagePath);
+                }
+
+                _unitOfWork.Repository<Doctor>().Delete(doctor);
+                await _unitOfWork.CompleteAsync(cancellationToken);
+
+                await transaction.CommitAsync(cancellationToken);
+
+                return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
+            }
         }
 
         public async Task<PagedResponseModel<List<AllDoctorsResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
@@ -307,7 +371,8 @@ namespace Hospital_MS.Services.HMS
                             DoctorId = doctor.Id,
                             WeekDay = schedule.WeekDay,
                             StartTime = schedule.StartTime,
-                            EndTime = schedule.EndTime
+                            EndTime = schedule.EndTime,
+                            Capacity = schedule.Capacity,
                         })
                         .ToList();
 
@@ -316,29 +381,57 @@ namespace Hospital_MS.Services.HMS
                 }
 
 
-
+                // Always delete old DoctorMedicalServices
                 var existingMedicalServices = await _unitOfWork.Repository<DoctorMedicalService>()
                     .GetAll()
                     .Where(ds => ds.DoctorId == doctor.Id)
                     .ToListAsync(cancellationToken);
 
                 _unitOfWork.Repository<DoctorMedicalService>().DeleteRange(existingMedicalServices);
-
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                if (request.MedicalServiceIds is not null && request.MedicalServiceIds.Count > 0)
+                // If department changed, assign all medical services in the new department
+                if (doctor.DepartmentId.HasValue)
                 {
-                    var newMedicalServices = request.MedicalServiceIds
-                        .Select(Id => new DoctorMedicalService
+                    var departmentMedicalServices = await _unitOfWork.Repository<MedicalService>()
+                        .GetAll(x => x.DepartmentId == doctor.DepartmentId)
+                        .ToListAsync(cancellationToken);
+
+                    if (departmentMedicalServices.Count > 0)
+                    {
+                        var doctorMedicalServices = departmentMedicalServices.Select(ms => new DoctorMedicalService
                         {
                             DoctorId = doctor.Id,
-                            MedicalServiceId = Id
-                        })
-                        .ToList();
+                            MedicalServiceId = ms.Id
+                        }).ToList();
 
-                    await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(newMedicalServices, cancellationToken);
-                    await _unitOfWork.CompleteAsync(cancellationToken);
+                        await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(doctorMedicalServices, cancellationToken);
+                        await _unitOfWork.CompleteAsync(cancellationToken);
+                    }
                 }
+
+                //var existingMedicalServices = await _unitOfWork.Repository<DoctorMedicalService>()
+                //    .GetAll()
+                //    .Where(ds => ds.DoctorId == doctor.Id)
+                //    .ToListAsync(cancellationToken);
+
+                //_unitOfWork.Repository<DoctorMedicalService>().DeleteRange(existingMedicalServices);
+
+                //await _unitOfWork.CompleteAsync(cancellationToken);
+
+                //if (request.MedicalServiceIds is not null && request.MedicalServiceIds.Count > 0)
+                //{
+                //    var newMedicalServices = request.MedicalServiceIds
+                //        .Select(Id => new DoctorMedicalService
+                //        {
+                //            DoctorId = doctor.Id,
+                //            MedicalServiceId = Id
+                //        })
+                //        .ToList();
+
+                //    await _unitOfWork.Repository<DoctorMedicalService>().AddRangeAsync(newMedicalServices, cancellationToken);
+                //    await _unitOfWork.CompleteAsync(cancellationToken);
+                //}
 
                 await transaction.CommitAsync(cancellationToken);
             }

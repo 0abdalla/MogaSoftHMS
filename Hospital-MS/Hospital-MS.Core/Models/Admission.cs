@@ -21,6 +21,7 @@
         public int DoctorId { get; set; }
         public int DepartmentId { get; set; }
         public int RoomId { get; set; }
+        public int? MedicalServiceId { get; set; }
 
         //public string? surgeryType { get; set; }
 
@@ -29,5 +30,7 @@
         public Room Room { get; set; } = default!;
         public Doctor Doctor { get; set; } = default!;
         public Department Department { get; set; } = default!;
+        public MedicalService? MedicalService { get; set; }
+
     }
 }

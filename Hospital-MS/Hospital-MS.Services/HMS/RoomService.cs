@@ -21,7 +21,7 @@ namespace Hospital_MS.Services.HMS
                 if (!Enum.TryParse<RoomType>(request.Type, true, out var roomType))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
-                if (!Enum.TryParse<RoomStatus>(request.Type, true, out var roomStatus))
+                if (!Enum.TryParse<RoomStatus>(request.Status, true, out var roomStatus))
                     return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
 
                 var room = new Room
