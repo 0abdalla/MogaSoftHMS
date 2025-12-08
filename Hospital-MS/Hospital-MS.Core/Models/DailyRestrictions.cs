@@ -9,7 +9,6 @@ public class DailyRestriction : AuditableEntity // قيد يومية
     //public string? LedgerNumber { get; set; }                     // رقم الدفتر
     public string? Description { get; set; }
     public string? DocumentNumber { get; set; }
-    public bool IsActive { get; set; } = true;
 
     public int? AccountingGuidanceId { get; set; }
     public AccountingGuidance? AccountingGuidance { get; set; } = default!;

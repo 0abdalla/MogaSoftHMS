@@ -9,5 +9,6 @@ public class ItemGroupResponse
     public int? MainGroupId { get; set; }
     public string? MainGroupName { get; set; }
 
+    public bool? IsDeleted { get; set; }
     public AuditResponse Audit { get; set; } = new();
 }

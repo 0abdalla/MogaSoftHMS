@@ -15,5 +15,4 @@ public class Bank : AuditableEntity
     public string? AccountNumber { get; set; }
     public string Currency { get; set; } = string.Empty;
     public decimal InitialBalance { get; set; } = 0;    
-    public bool IsActive { get; set; } = true;
 }

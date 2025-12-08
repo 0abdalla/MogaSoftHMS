@@ -19,5 +19,4 @@ public class PurchaseOrderItem : AuditableEntity
     public decimal Total => Quantity * UnitPrice;
 
     public decimal? TotalPrice { get; set; }
-    public bool IsActive { get; set; } = true;
 }

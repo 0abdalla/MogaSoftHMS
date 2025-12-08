@@ -29,7 +29,5 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
         builder.Property(s => s.Email)
             .HasMaxLength(100);
 
-        builder.Property(s => s.IsActive)
-            .HasDefaultValue(true);
     }
 }

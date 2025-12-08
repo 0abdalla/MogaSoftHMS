@@ -17,7 +17,7 @@ public class ItemUnitService(IUnitOfWork unitOfWork) : IItemUnitService
         try
         {
             var existingUnit = await _unitOfWork.Repository<ItemUnit>()
-                .AnyAsync(x => (x.Name == request.Name) && x.IsActive,
+                .AnyAsync(x => (x.Name == request.Name),
                          cancellationToken);
 
             if (existingUnit)
@@ -46,13 +46,15 @@ public class ItemUnitService(IUnitOfWork unitOfWork) : IItemUnitService
             var itemUnit = await _unitOfWork.Repository<ItemUnit>()
                 .GetByIdAsync(id, cancellationToken);
 
-            if (itemUnit == null || !itemUnit.IsActive)
+            if (itemUnit == null )
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            itemUnit.IsActive = false;
+
+            itemUnit.IsDeleted = !itemUnit.IsDeleted;
 
             _unitOfWork.Repository<ItemUnit>().Update(itemUnit);
             await _unitOfWork.CompleteAsync(cancellationToken);
+
             return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, itemUnit.Id.ToString());
         }
         catch (Exception)
@@ -61,6 +63,7 @@ public class ItemUnitService(IUnitOfWork unitOfWork) : IItemUnitService
         }
     }
 
+
     public async Task<PagedResponseModel<List<ItemUnitResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
     {
         try
@@ -68,8 +71,7 @@ public class ItemUnitService(IUnitOfWork unitOfWork) : IItemUnitService
             var query = _unitOfWork.Repository<ItemUnit>()
                 .GetAll()
                 .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy)
-                .Where(x => x.IsActive);
+                .Include(x => x.UpdatedBy);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
@@ -109,7 +111,7 @@ public class ItemUnitService(IUnitOfWork unitOfWork) : IItemUnitService
                             .Include(x => x.UpdatedBy)
                             .FirstOrDefaultAsync(cancellationToken);
 
-            if (itemUnit == null || !itemUnit.IsActive)
+            if (itemUnit == null )
                 return ErrorResponseModel<ItemUnitResponse>.Failure(GenericErrors.NotFound);
 
             var response = new ItemUnitResponse
@@ -139,11 +141,11 @@ public class ItemUnitService(IUnitOfWork unitOfWork) : IItemUnitService
             var itemUnit = await _unitOfWork.Repository<ItemUnit>()
                 .GetByIdAsync(id, cancellationToken);
 
-            if (itemUnit == null || !itemUnit.IsActive)
+            if (itemUnit == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
             var existingUnit = await _unitOfWork.Repository<ItemUnit>()
-                .AnyAsync(x => (x.Name == request.Name) && x.Id != id && x.IsActive, cancellationToken);
+                .AnyAsync(x => (x.Name == request.Name) && x.Id != id , cancellationToken);
             if (existingUnit)
                 return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
 

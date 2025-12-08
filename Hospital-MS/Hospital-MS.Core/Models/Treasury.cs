@@ -6,7 +6,6 @@ public class Treasury : AuditableEntity
     public string Code { get; set; } = default!;
     public string Name { get; set; } = default!;
     public string Currency { get; set; } = default!;
-    public bool IsActive { get; set; } = true;
 
     public int BranchId { get; set; }
     public Branch Branch { get; set; } = default!;

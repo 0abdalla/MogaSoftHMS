@@ -35,7 +35,6 @@ namespace Hospital_MS.Services.HMS
                 var insuranceCompany = new InsuranceCompany
                 {
                     Name = request.Name,
-                    IsActive = true,
                     Email = request.Email,
                     Phone = request.Phone,
                     Code = request.Code,
@@ -54,7 +53,6 @@ namespace Hospital_MS.Services.HMS
                         {
                             Name = insuranceCategory.Name,
                             InsuranceCompanyId = insuranceCompany.Id,
-                            IsActive = true,
                             Rate = insuranceCategory.Rate
                         };
 
@@ -82,7 +80,7 @@ namespace Hospital_MS.Services.HMS
             if (insurance is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            insurance.IsActive = false;
+            insurance.IsDeleted = !insurance.IsDeleted;
 
             _unitOfWork.Repository<InsuranceCompany>().Update(insurance);
 
@@ -118,7 +116,6 @@ namespace Hospital_MS.Services.HMS
                 ContractEndDate = insurance.ContractEndDate,
                 Email = insurance.Email,
                 Phone = insurance.Phone,
-                IsActive = insurance.IsActive
 
             }).ToList().AsReadOnly();
 
@@ -168,7 +165,6 @@ namespace Hospital_MS.Services.HMS
                 ContractEndDate = insurance.ContractEndDate,
                 Email = insurance.Email,
                 Phone = insurance.Phone,
-                IsActive = insurance.IsActive,
 
                 CreatedOn = insurance.CreatedOn,
                 CreatedBy = $"{insurance.CreatedBy?.FirstName} {insurance.CreatedBy?.LastName}",
@@ -218,7 +214,6 @@ namespace Hospital_MS.Services.HMS
                         Name = categoryRequest.Name,
                         Rate = categoryRequest.Rate,
                         InsuranceCompanyId = insurance.Id,
-                        IsActive = true
                     };
                     await _unitOfWork.Repository<InsuranceCategory>().AddAsync(newCategory, cancellationToken);
                 }

@@ -12,6 +12,8 @@
         public string? PatientPhone { get; set; }
         public List<MedicalServiceResponse> MedicalServices { get; set; } = new();
 
+        public bool? IsDeleted { get; set; }
+
     }
 
     public class MedicalServiceResponse

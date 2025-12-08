@@ -7,4 +7,6 @@ public class PartialMovementResponse
     public bool IsClosed { get; set; }
     public int TreasuryNumber { get; set; }
     public bool IsReEnabled { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

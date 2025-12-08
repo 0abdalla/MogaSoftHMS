@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Common
 {
-    public class EmployeeAdvanceModel
+    public class EmployeeAdvanceModel : AuditableEntity
     {
         public int? StaffAdvanceId { get; set; }
         public int? EmployeeId { get; set; }
@@ -27,9 +28,5 @@ namespace Hospital_MS.Core.Common
         public double? TotalRemaining { get; set; }
         public int? TotalCount { get; set; }
         public string? BranchName { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
     }
 }

@@ -14,5 +14,4 @@ public class PurchaseRequestItem : AuditableEntity
     public Item Item { get; set; } = null!;
     public decimal Quantity { get; set; }
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
 }

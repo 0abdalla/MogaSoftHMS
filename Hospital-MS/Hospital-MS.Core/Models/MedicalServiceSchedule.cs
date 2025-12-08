@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models
 {
-    public class MedicalServiceSchedule
+    public class MedicalServiceSchedule : AuditableEntity
     {
         public int Id { get; set; }
         [MaxLength(50)]

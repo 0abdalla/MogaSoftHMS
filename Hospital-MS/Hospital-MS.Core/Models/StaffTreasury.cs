@@ -13,5 +13,4 @@ public class StaffTreasury : AuditableEntity
     public int TreasuryId { get; set; }
     public Treasury Treasury { get; set; } = default!;
 
-    public bool IsActive { get; set; } = true;
 }

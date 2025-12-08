@@ -15,4 +15,6 @@ public class DailyRestrictionDetailResponse
     public int? CostCenterId { get; set; }
     public string? CostCenterName { get; set; }
     public string? Note { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

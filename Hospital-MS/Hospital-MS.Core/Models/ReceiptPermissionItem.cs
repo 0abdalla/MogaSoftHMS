@@ -9,7 +9,6 @@ public class ReceiptPermissionItem : AuditableEntity
     public decimal UnitPrice { get; set; }
     public decimal TotalPrice { get; set; }
     public DateTime? ExpiryDate { get; set; }
-    public bool IsActive { get; set; } = true;
 
     public ReceiptPermission? ReceiptPermission { get; set; } = default!;
     public int? ReceiptPermissionId { get; set; }

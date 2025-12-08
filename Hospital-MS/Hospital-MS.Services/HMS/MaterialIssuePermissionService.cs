@@ -37,7 +37,6 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                 StoreId = request.StoreId,
                 JobDepartmentId = request.JobDepartmentId,
                 Notes = request.Notes,
-                IsActive = true,
                 Items = request.Items.Select(i => new MaterialIssueItem
                 {
                     ItemId = i.ItemId,
@@ -45,7 +44,6 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
                     TotalPrice = i.TotalPrice,
-                    IsActive = true
                 }).ToList(),
 
                 DisbursementRequestId = request.DisbursementRequestId
@@ -65,7 +63,6 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
 
                 // TODO: Set the correct AccountingGuidanceId
                 AccountingGuidanceId = 16,
-                IsActive = true,
                 Details = new List<DailyRestrictionDetail>
                 {
                     new DailyRestrictionDetail
@@ -131,7 +128,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
             var permission = await _unitOfWork.Repository<MaterialIssuePermission>()
                 .GetAll()
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -144,7 +141,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
             permission.DisbursementRequestId = request.DisbursementRequestId;
 
             foreach (var item in permission.Items)
-                item.IsActive = false;
+                item.IsDeleted = false;
 
             permission.Items = request.Items.Select(i => new MaterialIssueItem
             {
@@ -153,7 +150,6 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
                 TotalPrice = i.TotalPrice,
-                IsActive = true
             }).ToList();
 
             _unitOfWork.Repository<MaterialIssuePermission>().Update(permission);
@@ -176,12 +172,13 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
             var permission = await _unitOfWork.Repository<MaterialIssuePermission>()
                 .GetAll()
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            permission.IsActive = false;
+            permission.IsDeleted = !permission.IsDeleted;
+
             //foreach (var item in permission.Items)
             //    item.IsActive = false;
 
@@ -211,7 +208,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                     .ThenInclude(d => d.AccountingGuidance)
                 .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<MaterialIssuePermissionResponse>.Failure(GenericErrors.NotFound);
@@ -231,7 +228,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                 JobDepartmentId = permission.JobDepartmentId,
                 JobDepartmentName = permission.JobDepartment?.Name,
                 Notes = permission.Notes,
-                Items = permission.Items.Where(i => i.IsActive).Select(i => new MaterialIssueItemResponse
+                Items = permission.Items.Select(i => new MaterialIssueItemResponse
                 {
                     ItemId = i.ItemId,
                     ItemName = i.Item.NameAr,
@@ -275,7 +272,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                 .Include(x => x.JobDepartment)
                 .Include(x => x.DisbursementRequest)
                 .Include(x => x.Items)
-                .Where(x => x.IsActive);
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
@@ -303,7 +300,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                     JobDepartmentId = x.JobDepartmentId,
                     JobDepartmentName = x.JobDepartment.Name,
                     Notes = x.Notes,
-                    Items = x.Items.Where(i => i.IsActive).Select(i => new MaterialIssueItemResponse
+                    Items = x.Items.Select(i => new MaterialIssueItemResponse
                     {
                         ItemId = i.ItemId,
                         ItemName = i.Item.NameAr,

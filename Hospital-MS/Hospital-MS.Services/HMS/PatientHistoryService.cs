@@ -54,13 +54,16 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
+                var medicalHistory = await _unitOfWork.Repository<PatientMedicalHistory>()
+                    .GetAll(i => i.Id == id)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-                if (medicalHistory is not { })
+                if (medicalHistory == null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-                _unitOfWork.Repository<PatientMedicalHistory>().Delete(medicalHistory);
+                medicalHistory.IsDeleted = !medicalHistory.IsDeleted;
 
+                _unitOfWork.Repository<PatientMedicalHistory>().Update(medicalHistory);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
@@ -69,8 +72,8 @@ namespace Hospital_MS.Services.HMS
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
-
         }
+
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {

@@ -1,184 +1,308 @@
 <main id="list-offers">
-    <div class="container-fluid">
-      <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-      <p-toast position="top-left"></p-toast>
-        <div class="row">
-            <div class="col-md-6">
-                <button class="btn-blue " data-bs-toggle="modal" data-bs-target="#addOfferModal">إضافة عرض سعر</button>
-                <button class="btn-red mx-2" data-bs-toggle="modal" data-bs-target="#selectRequestModal">تفريغ العروض</button>
-            </div>
-            <div class="col-md-6 " *ngIf="total > 0 && offers.length > 16">
-                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-            </div>
+  <div class="container-fluid">
+    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+    <p-toast position="top-left"></p-toast>
+    <div class="row">
+      <div class="col-md-6">
+        <button
+          class="btn-blue"
+          data-bs-toggle="modal"
+          data-bs-target="#addOfferModal"
+        >
+          إضافة عرض سعر
+        </button>
+        <button
+          class="btn-red mx-2"
+          data-bs-toggle="modal"
+          data-bs-target="#selectRequestModal"
+        >
+          تفريغ العروض
+        </button>
+      </div>
+      <div class="col-md-6" *ngIf="total > 0 && offers.length > 16">
+        <app-pagination
+          (pageChanged)="onPageChange($event)"
+          [currentPage]="pagingFilterModel.currentPage"
+          [pageSize]="pagingFilterModel.pageSize"
+          [totalCount]="total"
+        ></app-pagination>
+      </div>
 
-            <div class="col-12 mt-3">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                          <tr>
-                            <th>رقم العرض</th>
-                            <th>طلب الشراء</th>
-                            <th>تاريخ العرض</th>
-                            <th>اسم المورد</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr *ngFor="let order of offers">
-                            <td>{{ order.quotationNumber }}</td>
-                            <td>{{ order.purchaseRequestNumber || '-' }}</td>
-                            <td>{{ order.quotationDate | date: 'yyyy-MM-dd – HH:mm' }}</td>
-                            <td>{{ order.supplierName }}</td>
-                            <td>
-                              <p class="text-white status-pill fw-bold" *ngIf="order.status" [ngStyle]="{ backgroundColor: getStatusColor(order.status) }">
-                                  {{ getStatusName(order.status) }}
-                              </p>
-                            </td>
-                            <td>
-                              <button class="btn btn-warning mx-1" [disabled]="order.status === 'Approved' || order.status === 'Rejected'" (click)="editOffer(order.id)">
-                                  <i class="fa fa-edit"></i>
-                              </button>                          
-                              <button class="btn btn-danger mx-1" [disabled]="order.status === 'Approved' || order.status === 'Rejected'" (click)="deleteOffer(order.id)">
-                                  <i class="fa fa-trash"></i>
-                              </button>
-                          </td>
-                          </tr>
-                        </tbody>
-                        <tbody *ngIf="offers.length === 0">
-                          <tr>
-                            <td colspan="6" class="text-center">
-                              <p class="text-muted">لا يوجد عروض أسعار</p>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                </div>
-            </div>
+      <div class="col-12 mt-3">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>رقم العرض</th>
+                <th>طلب الشراء</th>
+                <th>تاريخ العرض</th>
+                <th>اسم المورد</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let order of offers">
+                <td>{{ order.quotationNumber }}</td>
+                <td>{{ order.purchaseRequestNumber || "-" }}</td>
+                <td>{{ order.quotationDate | date : "yyyy-MM-dd – HH:mm" }}</td>
+                <td>{{ order.supplierName }}</td>
+                <td>
+                  <p
+                    class="text-white status-pill fw-bold"
+                    *ngIf="order.status"
+                    [ngStyle]="{
+                      backgroundColor: getStatusColor(order.status)
+                    }"
+                  >
+                    {{ getStatusName(order.status) }}
+                  </p>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-warning mx-1"
+                    [disabled]="
+                      order.status === 'Approved' || order.status === 'Rejected'
+                    "
+                    (click)="editOffer(order.id)"
+                  >
+                    <i class="fa fa-edit"></i>
+                  </button>
+                  <button
+                    class="btn btn-danger mx-1"
+                    [disabled]="
+                      order.status === 'Approved' || order.status === 'Rejected'
+                    "
+                    (click)="deleteOffer(order.id)"
+                  >
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+            <tbody *ngIf="offers.length === 0">
+              <tr>
+                <td colspan="6" class="text-center">
+                  <p class="text-muted">لا يوجد عروض أسعار</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+      </div>
     </div>
+  </div>
 </main>
 
-
-
-
-
-<div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+<div
+  class="modal fade"
+  id="addOfferModal"
+  tabindex="-1"
+  aria-labelledby="addOfferModalLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
   <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header justify-content-center">
-              <h5 class="modal-title" id="addOfferModalLabel">
-                  {{ isEditMode ? 'تعديل عرض سعر' : 'إضافة عرض سعر' }}
-              </h5>                  
-          </div>
-          <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-              <form [formGroup]="offerForm" (ngSubmit)="addOffer()">
-                  <div class="row p-3">
-
-                      <div class="col-md-6">
-                          <div class="form-group">
-                              <label class="form-label">رقم طلب الشراء</label>
-                              
-                              <ng-select
-                              [items]="allPurchaseRequests"
-                              bindLabel="requestNumber"
-                              bindValue="id"
-                              placeholder="اختر طلب الشراء"
-                              formControlName="purchaseRequestId"
-                              class="text-end shadow-none w-100"
-                              [searchable]="true"
-                            >
-                            </ng-select>
-                          </div>
-                      </div>
-
-                      <div class="col-md-6">
-                          <div class="form-group">
-                              <label class="form-label">اسم المورد</label>
-                              <ng-select
-                              [items]="allSuppliers"
-                              bindLabel="name"
-                              bindValue="id"
-                              placeholder="اختر المورد"
-                              formControlName="supplierId"
-                              class="text-end shadow-none w-100"
-                              [searchable]="true"
-                            >
-                            </ng-select>
-                          </div>
-                      </div>
-
-                      <div class="col-md-12 mt-3">
-                          <div class="form-group">
-                              <label class="form-label">ملاحظات</label>
-                              <input type="text" formControlName="notes" class="form-control shadow-none text-end">
-                          </div>
-                      </div>
-                  </div>
-                  <div class="row p-3 mb-3">
-                    <div formArrayName="items">
-                      <div class="row mb-3" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-                        <div class="col-md-3">
-                          <label class="form-label">الصنف</label>
-                          <select class="form-select shadow-none" formControlName="itemId">
-                            <option disabled selected value="">اختر الصنف</option>
-                            <option *ngFor="let i of allItems" [value]="i.id">{{ i.nameAr }}</option>
-                          </select>
-                        </div>
-                    
-
-                        <div class="col-md-2">
-                          <label class="form-label">الكمية</label>
-                          <input type="number" class="form-control shadow-none" formControlName="quantity">
-                        </div>
-
-                        <div class="col-md-2">
-                          <label class="form-label">السعر</label>
-                          <input type="number" class="form-control shadow-none" formControlName="unitPrice">
-                        </div>
-
-                        <div class="col-md-3">
-                          <label class="form-label">ملاحظات</label>
-                          <input type="text" formControlName="notes" class="form-control shadow-none text-end">
-                        </div>
-                    
-                    
-                        <div class="col-md-1 d-flex align-items-end">
-                          <button type="button" class="btn btn-danger" (click)="removeItemRow(i)" *ngIf="items.length > 1">
-                            <i class="fa fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    
-                      <div class="text-start mb-3">
-                        <button type="button" class="btn btn-success" (click)="addItemRow()">
-                          <i class="fa fa-plus"></i> إضافة صنف
-                        </button>
-                      </div>
-                    </div>
-                    
-                  </div>
-
-                  <div class="text-center">
-                      <button type="submit" class="btn-blue px-4" [disabled]="offerForm.invalid">
-                          {{ isEditMode ? 'حفظ التعديلات' : 'إضافة عرض سعر' }}
-                        </button>  
-                        <button class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetForm()" >خروج</button>                        
-                  </div>
-              </form>
-          </div>
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="addOfferModalLabel">
+          {{ isEditMode ? "تعديل عرض سعر" : "إضافة عرض سعر" }}
+        </h5>
       </div>
+      <div
+        class="modal-body"
+        style="
+          background-image: url('assets/vendors/imgs/pattern.png');
+          background-size: cover;
+        "
+      >
+        <form [formGroup]="offerForm" (ngSubmit)="addOffer()">
+          <div class="row p-3">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label"
+                  >رقم طلب الشراء<span class="text-danger">*</span></label
+                >
+
+                <ng-select
+                  [items]="allPurchaseRequests"
+                  bindLabel="requestNumber"
+                  bindValue="id"
+                  placeholder="اختر طلب الشراء"
+                  formControlName="purchaseRequestId"
+                  class="text-end shadow-none w-100"
+                  [searchable]="true"
+                >
+                </ng-select>
+                <div
+                  *ngIf="
+                    offerForm.get('purchaseRequestId')?.invalid &&
+                    offerForm.get('purchaseRequestId')?.touched
+                  "
+                  class="text-danger"
+                >
+                  طلب الشراء مطلوب
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label"
+                  >اسم المورد<span class="text-danger">*</span></label
+                >
+                <ng-select
+                  [items]="allSuppliers"
+                  bindLabel="name"
+                  bindValue="id"
+                  placeholder="اختر المورد"
+                  formControlName="supplierId"
+                  class="text-end shadow-none w-100"
+                  [searchable]="true"
+                >
+                </ng-select>
+                <div
+                  *ngIf="
+                    offerForm.get('supplierId')?.invalid &&
+                    offerForm.get('supplierId')?.touched
+                  "
+                  class="text-danger"
+                >
+                  المورد مطلوب
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-12 mt-3">
+              <div class="form-group">
+                <label class="form-label">ملاحظات</label>
+                <input
+                  type="text"
+                  formControlName="notes"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row p-3 mb-3">
+            <div formArrayName="items">
+              <div
+                class="row mb-3"
+                *ngFor="let item of items.controls; let i = index"
+                [formGroupName]="i"
+              >
+                <div class="col-md-3">
+                  <label class="form-label"
+                    >الصنف<span class="text-danger">*</span></label
+                  >
+                  <select
+                    class="form-select shadow-none"
+                    formControlName="itemId"
+                  >
+                    <option disabled selected value="">اختر الصنف</option>
+                    <option *ngFor="let i of allItems" [value]="i.id">
+                      {{ i.nameAr }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label"
+                    >الكمية<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="number"
+                    class="form-control shadow-none"
+                    formControlName="quantity"
+                  />
+                </div>
+
+                <div class="col-md-2">
+                  <label class="form-label"
+                    >السعر<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="number"
+                    class="form-control shadow-none"
+                    formControlName="unitPrice"
+                  />
+                </div>
+
+                <div class="col-md-3">
+                  <label class="form-label">ملاحظات</label>
+                  <input
+                    type="text"
+                    formControlName="notes"
+                    class="form-control shadow-none text-end"
+                  />
+                </div>
+
+                <div class="col-md-1 d-flex align-items-end">
+                  <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="removeItemRow(i)"
+                    *ngIf="items.length > 1"
+                  >
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="text-start mb-3">
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  (click)="addItemRow()"
+                >
+                  <i class="fa fa-plus"></i> إضافة صنف
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button
+              type="submit"
+              class="btn-blue px-4"
+              [disabled]="offerForm.invalid"
+            >
+              {{ isEditMode ? "حفظ التعديلات" : "إضافة عرض سعر" }}
+            </button>
+            <button
+              class="btn-red mx-2"
+              data-bs-dismiss="modal"
+              (click)="resetForm()"
+            >
+              خروج
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
 
-
-<div class="modal fade" id="selectRequestModal" tabindex="-1" aria-labelledby="selectRequestModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="selectRequestModal"
+  tabindex="-1"
+  aria-labelledby="selectRequestModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered modal-md">
-    <div class="modal-content" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
+    <div
+      class="modal-content"
+      style="
+        background-image: url('assets/vendors/imgs/pattern.png');
+        background-size: cover;
+      "
+    >
       <div class="modal-header justify-content-center">
         <h5 class="modal-title" id="selectRequestModalLabel">
           اختيار طلب الشراء
-        </h5>                  
+        </h5>
       </div>
       <div class="modal-body">
         <form [formGroup]="requestForm">
@@ -198,7 +322,14 @@
         </form>
       </div>
       <div class="text-center pb-3">
-        <button type="button" class="btn-blue" [disabled]="requestForm.invalid" (click)="loadQuotationsByRequestId(requestForm.value.purchaseRequestId)">
+        <button
+          type="button"
+          class="btn-blue"
+          [disabled]="requestForm.invalid"
+          (click)="
+            loadQuotationsByRequestId(requestForm.value.purchaseRequestId)
+          "
+        >
           التالي
         </button>
       </div>
@@ -206,79 +337,103 @@
   </div>
 </div>
 
-
-<div class="modal fade" id="requestDetailsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered">
-    <div class="modal-content" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-      <div class="modal-header justify-content-between align-items-center ">
-        <h5 class="modal-title" id="requestDetailsModalLabel">
-          تفريغ العروض
-        </h5> 
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div
+  class="modal fade"
+  id="requestDetailsModal"
+  tabindex="-1"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div
+    class="modal-dialog modal-xl modal-dialog-scrollable modal-dialog-centered"
+  >
+    <div
+      class="modal-content"
+      style="
+        background-image: url('assets/vendors/imgs/pattern.png');
+        background-size: cover;
+      "
+    >
+      <div class="modal-header justify-content-between align-items-center">
+        <h5 class="modal-title" id="requestDetailsModalLabel">تفريغ العروض</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>اسم الصنف</th>
+                <th>الكمية</th>
+                <th *ngFor="let supplier of supplierNames">
+                  المورد: {{ supplier }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of structuredTable; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ row.nameAr }}</td>
+                <td>
+                  {{ row[supplierNames[0]]?.quantity || 0 }}
+                </td>
+                <td *ngFor="let supplier of supplierNames">
+                  {{
+                    row[supplier]?.unitPrice
+                      ? row[supplier].unitPrice + " ج.م"
+                      : "-"
+                  }}
+                </td>
+              </tr>
+            </tbody>
+            <tfoot class="table-light fw-bold">
+              <tr>
+                <td colspan="3">الإجمالي</td>
+                <td *ngFor="let supplier of supplierNames">
+                  {{ getTotalForSupplier(supplier) }} ج.م
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
-          <div class="table-responsive">
-            <table class="table table-hover">
-              <thead class="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>اسم الصنف</th>
-                  <th>الكمية</th>
-                  <th *ngFor="let supplier of supplierNames">المورد: {{ supplier }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of structuredTable; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>{{ row.nameAr }}</td>
-                  <td>
-                    {{ row[supplierNames[0]]?.quantity || 0 }}
-                  </td>
-                  <td *ngFor="let supplier of supplierNames">
-                    {{ row[supplier]?.unitPrice ? row[supplier].unitPrice + ' ج.م' : '-' }}
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot class="table-light fw-bold">
-                <tr>
-                  <td colspan="3">الإجمالي</td>
-                  <td *ngFor="let supplier of supplierNames">
-                    {{ getTotalForSupplier(supplier) }} ج.م
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-  
-          <div class="text-center mt-3">
-            <h5>تم الترسية على المورد : 
-              <span class="text-success">{{ getWinningSupplier() }}</span>
-            </h5>
-          </div>
-
+        <div class="text-center mt-3">
+          <h5>
+            تم الترسية على المورد :
+            <span class="text-success">{{ getWinningSupplier() }}</span>
+          </h5>
+        </div>
       </div>
       <div class="modal-footer justify-content-center">
-        <button type="button" class="btn-blue" (click)="postPrice()">إتمام الترسية</button>
-        <button type="button" class="btn btn-secondary" (click)="printOffers()">طباعة</button>
-
+        <button type="button" class="btn-blue" (click)="postPrice()">
+          إتمام الترسية
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="printOffers()">
+          طباعة
+        </button>
       </div>
     </div>
   </div>
 </div>
 
-
-
-
-
-
 <div id="printableOffers" dir="rtl" class="p-4 border rounded">
-
   <div class="d-flex justify-content-around align-items-center mb-4">
-    <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
+    <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px" />
     <div class="text-center">
-      <h5 class="fw-bold mb-1"> كشف تفريغ عطائات طلب أسعار  <span class="text-primary"> {{ purNumber }}</span> عن توريدات</h5>
-      <div><strong>التاريخ:</strong> {{ quotationDate | date: 'yyyy-MM-dd' }}</div>
+      <h5 class="fw-bold mb-1">
+        كشف تفريغ عطائات طلب أسعار
+        <span class="text-primary"> {{ purNumber }}</span> عن توريدات
+      </h5>
+      <div>
+        <strong>التاريخ:</strong> {{ quotationDate | date : "yyyy-MM-dd" }}
+      </div>
     </div>
   </div>
 
@@ -298,7 +453,9 @@
           <td>{{ row.nameAr }}</td>
           <td>{{ row[supplierNames[0]]?.quantity || 0 }}</td>
           <td *ngFor="let supplier of supplierNames">
-            {{ row[supplier]?.unitPrice ? row[supplier].unitPrice + ' ج.م' : '-' }}
+            {{
+              row[supplier]?.unitPrice ? row[supplier].unitPrice + " ج.م" : "-"
+            }}
           </td>
         </tr>
       </tbody>
@@ -314,13 +471,16 @@
   </div>
 
   <div class="text-center mb-4">
-    <h5>تم الترسية على المورد: <span class="text-success">{{ getWinningSupplier() }}</span></h5>
+    <h5>
+      تم الترسية على المورد:
+      <span class="text-success">{{ getWinningSupplier() }}</span>
+    </h5>
   </div>
 
   <div class="mt-5">
     <strong>ملاحظات لجنة البت في الإعتماد:</strong>
-    <div style="border: 1px dashed #aaa; padding: 30px 15px; margin-top: 10px;">
-    </div>
+    <div
+      style="border: 1px dashed #aaa; padding: 30px 15px; margin-top: 10px"
+    ></div>
   </div>
-
 </div>

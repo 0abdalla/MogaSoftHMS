@@ -38,20 +38,25 @@ namespace Hospital_MS.Services.HMS
             try
             {
                 var ward = await _unitOfWork.Repository<Ward>().GetByIdAsync(id, cancellationToken);
+
                 if (ward == null)
                 {
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
                 }
-                _unitOfWork.Repository<Ward>().Delete(ward);
+
+                ward.IsDeleted = !ward.IsDeleted; 
+                _unitOfWork.Repository<Ward>().Update(ward);
+
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
             catch (Exception)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
-
         }
+
 
         public async Task<ErrorResponseModel<List<WardResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {

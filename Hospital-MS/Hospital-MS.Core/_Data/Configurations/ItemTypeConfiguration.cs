@@ -23,8 +23,6 @@ public class ItemTypeConfiguration : IEntityTypeConfiguration<ItemType>
         builder.Property(x => x.NameEn)
             .HasMaxLength(100);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
 
         builder.HasIndex(x => x.NameAr).IsUnique();
         builder.HasIndex(x => x.NameEn);

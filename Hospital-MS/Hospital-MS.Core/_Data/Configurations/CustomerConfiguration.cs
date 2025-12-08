@@ -72,9 +72,6 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .HasPrecision(18, 2)
             .HasDefaultValue(0);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
-
         // Indexes
         builder.HasIndex(x => x.Code).IsUnique();
         builder.HasIndex(x => x.Phone);

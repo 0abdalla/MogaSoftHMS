@@ -14,8 +14,6 @@ public class Store : AuditableEntity // مخزن
     public string? Location { get; set; } 
     public string? ContactNumber { get; set; } 
     public string? Email { get; set; } 
-    public bool IsActive { get; set; } = true;
-
     public int? TypeId { get; set; }
     public StoreType? Type { get; set; } = default!;
     public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new HashSet<PurchaseOrder>();

@@ -26,7 +26,6 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 //LedgerNumber = request.LedgerNumber,
                 Description = request.Description,
                 AccountingGuidanceId = request.AccountingGuidanceId,
-                IsActive = true,
                 Details = request.Details.Select(d => new DailyRestrictionDetail
                 {
                     AccountId = d.AccountId,
@@ -58,7 +57,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             var entity = await _unitOfWork.Repository<DailyRestriction>()
                 .GetAll()
                 .Include(x => x.Details)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (entity == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -106,12 +105,12 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             var entity = await _unitOfWork.Repository<DailyRestriction>()
                 .GetAll()
                 .Include(x => x.Details)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (entity == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            entity.IsActive = false;
+            entity.IsDeleted = !entity.IsDeleted;
             _unitOfWork.Repository<DailyRestriction>().Update(entity);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -137,7 +136,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .Include(x => x.AccountingGuidance)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (entity == null)
                 return ErrorResponseModel<DailyRestrictionResponse>.Failure(GenericErrors.NotFound);
@@ -188,8 +187,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
         try
         {
             var query = _unitOfWork.Repository<DailyRestriction>()
-                .GetAll(x => x.IsActive)
-                .OrderByDescending(x => x.Id)
+                .GetAll()
                 .Include(x => x.RestrictionType)
                 .Include(x => x.Details)
                     .ThenInclude(x => x.CostCenter)
@@ -316,13 +314,12 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 return ErrorResponseModel<List<AccountReportResponse>>.Failure(GenericErrors.NotFound);
 
             decimal openingBalance = await _unitOfWork.Repository<DailyRestrictionDetail>()
-                .GetAll(x => x.AccountId == accountId && x.DailyRestriction.IsActive && x.DailyRestriction.RestrictionDate < fromDate)
+                .GetAll(x => x.AccountId == accountId  && x.DailyRestriction.RestrictionDate < fromDate)
                 .SumAsync(x => x.Debit - x.Credit, cancellationToken);
 
 
             var details = await _unitOfWork.Repository<DailyRestrictionDetail>()
                 .GetAll(x => x.AccountId == accountId
-                    && x.DailyRestriction.IsActive
                     && x.DailyRestriction.RestrictionDate >= fromDate
                     && x.DailyRestriction.RestrictionDate <= toDate)
                 .Include(x => x.DailyRestriction)

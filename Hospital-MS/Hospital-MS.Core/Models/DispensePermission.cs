@@ -12,7 +12,6 @@ public class DispensePermission : AuditableEntity
     public int? CostCenterId { get; set; }
     public int? AccountId { get; set; }
 
-    public bool IsActive { get; set; } = true;
 
     public CostCenterTree? CostCenter { get; set; }
     public AccountTree? Account { get; set; }

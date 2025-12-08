@@ -20,7 +20,6 @@ public class RestrictionTypeService(IUnitOfWork unitOfWork) : IRestrictionTypeSe
             {
                 Name = request.Name,
                 Description = request.Description,
-                IsActive = true
             };
             await _unitOfWork.Repository<RestrictionType>().AddAsync(entity, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -61,7 +60,8 @@ public class RestrictionTypeService(IUnitOfWork unitOfWork) : IRestrictionTypeSe
             if (entity == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            entity.IsActive = false;
+            entity.IsDeleted = !entity.IsDeleted;
+
             _unitOfWork.Repository<RestrictionType>().Update(entity);
             await _unitOfWork.CompleteAsync(cancellationToken);
             return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, entity.Id.ToString());
@@ -78,13 +78,12 @@ public class RestrictionTypeService(IUnitOfWork unitOfWork) : IRestrictionTypeSe
         {
             var entity = await _unitOfWork.Repository<RestrictionType>()
                 .GetAll()
-                .Where(x => x.Id == id && x.IsActive)
+                .Where(x => x.Id == id )
                 .Select(x => new RestrictionTypeResponse
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
-                    IsActive = x.IsActive
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -104,8 +103,7 @@ public class RestrictionTypeService(IUnitOfWork unitOfWork) : IRestrictionTypeSe
         try
         {
             var query = _unitOfWork.Repository<RestrictionType>()
-                .GetAll()
-                .Where(x => x.IsActive);
+                .GetAll();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.Name.Contains(filter.SearchText));
@@ -121,7 +119,6 @@ public class RestrictionTypeService(IUnitOfWork unitOfWork) : IRestrictionTypeSe
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
-                    IsActive = x.IsActive
                 })
                 .ToListAsync(cancellationToken);
 

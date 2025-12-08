@@ -20,4 +20,6 @@ public class PriceQuotationResponse
     public string PurchaseRequestNumber { get; set; } 
 
     public List<PriceQuotationItemResponse> Items { get; set; } = [];
+
+    public bool? IsDeleted { get; set; }
 }

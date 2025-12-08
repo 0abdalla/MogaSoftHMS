@@ -44,7 +44,6 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
             .HasPrecision(18, 2)
             .HasDefaultValue(0);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
+
     }
 }

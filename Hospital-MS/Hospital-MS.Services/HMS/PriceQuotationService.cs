@@ -44,7 +44,6 @@ public class PriceQuotationService : IPriceQuotationService
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
                     Notes = i.Notes,
-                    IsActive = true
                 }).ToList()
             };
 
@@ -68,7 +67,7 @@ public class PriceQuotationService : IPriceQuotationService
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
-            quotation.IsActive = false;
+            quotation.IsDeleted = !quotation.IsDeleted;
             _unitOfWork.Repository<PriceQuotation>().Update(quotation);
             await _unitOfWork.CompleteAsync(cancellationToken);
             return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, id.ToString());
@@ -88,7 +87,7 @@ public class PriceQuotationService : IPriceQuotationService
                   .Include(x => x.Supplier)
                   .Include(x => x.Items)
                   .Include(x => x.PurchaseRequest)
-                  .Where(x => x.IsActive && x.Status == QuotationStatus.Approved);
+                  .Where(x =>  x.Status == QuotationStatus.Approved);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
@@ -106,7 +105,7 @@ public class PriceQuotationService : IPriceQuotationService
                       TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
                       PurchaseRequestId = x.PurchaseRequestId,
                       PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
-                      Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                      Items = x.Items.Select(i => new PriceQuotationItemResponse
                       {
                           Id = i.Id,
                           NameAr = i.Item.NameAr,
@@ -138,7 +137,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
                 .Include(x => x.PurchaseRequest)
-                .Where(x => x.IsActive);
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
@@ -165,7 +164,7 @@ public class PriceQuotationService : IPriceQuotationService
                     TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
                     PurchaseRequestId = x.PurchaseRequestId,
                     PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
-                    Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                    Items = x.Items.Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
                         NameAr = i.Item.NameAr,
@@ -198,7 +197,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .Include(x => x.Items)
                 .ThenInclude(i => i.Item).ThenInclude(i => i.Unit)
                 .Include(x => x.PurchaseRequest)
-                .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId);
+                .Where(x =>  x.PurchaseRequestId == purchaseRequestId);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
@@ -216,7 +215,7 @@ public class PriceQuotationService : IPriceQuotationService
                     TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
                     PurchaseRequestId = x.PurchaseRequestId,
                     PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
-                    Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                    Items = x.Items.Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
                         NameAr = i.Item.NameAr,
@@ -247,7 +246,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .Include(x => x.Supplier)
                 .Include(x => x.Items)
                 .Include(x => x.PurchaseRequest)
-                .Where(x => x.Id == id && x.IsActive)
+                .Where(x => x.Id == id )
                 .Select(x => new PriceQuotationResponse
                 {
                     Id = x.Id,
@@ -260,7 +259,7 @@ public class PriceQuotationService : IPriceQuotationService
                     TotalAmount = x.Items.Sum(i => i.Quantity * i.UnitPrice),
                     PurchaseRequestId = x.PurchaseRequestId,
                     PurchaseRequestNumber = x.PurchaseRequest.RequestNumber,
-                    Items = x.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                    Items = x.Items.Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.ItemId,
                         NameAr = i.Item.NameAr,
@@ -290,7 +289,7 @@ public class PriceQuotationService : IPriceQuotationService
             var quotations = await _unitOfWork.Repository<PriceQuotation>()
                 .GetAll()
                 .Include(x => x.Items)
-                .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId)
+                .Where(x => x.PurchaseRequestId == purchaseRequestId)
                 .ToListAsync(cancellationToken);
 
             if (quotations.Count == 0)
@@ -301,7 +300,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .Select(q => new
                 {
                     Quotation = q,
-                    TotalAmount = q.Items.Where(i => i.IsActive).Sum(i => i.Quantity * i.UnitPrice)
+                    TotalAmount = q.Items.Sum(i => i.Quantity * i.UnitPrice)
                 })
                 .ToList();
 
@@ -332,7 +331,7 @@ public class PriceQuotationService : IPriceQuotationService
             var quotations = await _unitOfWork.Repository<PriceQuotation>()
                 .GetAll()
                 .Include(x => x.Items)
-                .Where(x => x.IsActive && x.PurchaseRequestId == purchaseRequestId)
+                .Where(x => x.PurchaseRequestId == purchaseRequestId)
                 .ToListAsync(cancellationToken);
 
             if (quotations.Count == 0)
@@ -342,7 +341,7 @@ public class PriceQuotationService : IPriceQuotationService
                 .Select(q => new
                 {
                     Quotation = q,
-                    TotalAmount = q.Items.Where(i => i.IsActive).Sum(i => i.Quantity * i.UnitPrice)
+                    TotalAmount = q.Items.Sum(i => i.Quantity * i.UnitPrice)
                 })
                 .ToList();
 
@@ -382,7 +381,7 @@ public class PriceQuotationService : IPriceQuotationService
         try
         {
             var quotation = await _unitOfWork.Repository<PriceQuotation>().GetByIdAsync(id, cancellationToken);
-            if (quotation == null || !quotation.IsActive)
+            if (quotation == null )
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
@@ -411,7 +410,6 @@ public class PriceQuotationService : IPriceQuotationService
                     Quantity = item.Quantity,
                     UnitPrice = item.UnitPrice,
                     Notes = item.Notes,
-                    IsActive = true
                 });
             }
             _unitOfWork.Repository<PriceQuotation>().Update(quotation);

@@ -22,15 +22,15 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
             var permission = await _unitOfWork.Repository<ReceiptPermission>()
                 .GetAll()
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            permission.IsActive = false;
             foreach (var item in permission.Items)
-                item.IsActive = false;
+                item.IsDeleted = !item.IsDeleted;
 
+            permission.IsDeleted =! permission.IsDeleted;
             _unitOfWork.Repository<ReceiptPermission>().Update(permission);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -48,20 +48,27 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
         {
             var query = _unitOfWork.Repository<ReceiptPermission>()
                 .GetAll()
+                .AsQueryable();
+
+            query = query
                 .Include(x => x.Store)
                 .Include(x => x.Supplier)
-                .Include(x => x.Items)
+                .Include(x => x.Items);
+
+            var queryWithPO = query
                 .Include(x => x.PurchaseOrder)
-                .Where(x => x.IsActive);
+                .AsQueryable();
+
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
-                query = query.Where(x =>
+                queryWithPO = queryWithPO.Where(x =>
                     x.PermissionNumber.Contains(filter.SearchText) ||
                     x.Notes.Contains(filter.SearchText));
             }
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount = await queryWithPO.CountAsync(cancellationToken);
+
 
             var list = await query
                 .OrderByDescending(x => x.Id)
@@ -81,7 +88,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     SupplierName = x.Supplier.Name,
                     PurchaseOrderId = x.PurchaseOrderId,
                     PurchaseOrderNumber = x.PurchaseOrder.OrderNumber,
-                    Items = x.Items.Where(i => i.IsActive).Select(i => new ReceiptPermissionItemResponse
+                    Items = x.Items.Select(i => new ReceiptPermissionItemResponse
                     {
                         ItemId = i.ItemId,
                         ItemName = i.Item.NameAr,
@@ -117,7 +124,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     .ThenInclude(i => i.Item.Unit)
                 .Include(x => x.DailyRestriction)
                     .ThenInclude(d => d.AccountingGuidance)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<ReceiptPermissionResponse>.Failure(GenericErrors.NotFound);
@@ -138,7 +145,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 Status = permission.Status.ToString(),
                 PurchaseOrderId = permission.PurchaseOrderId,
                 PurchaseOrderNumber = permission.PurchaseOrder.OrderNumber,
-                Items = permission.Items.Where(i => i.IsActive).Select(i => new ReceiptPermissionItemResponse
+                Items = permission.Items.Select(i => new ReceiptPermissionItemResponse
                 {
                     ItemId = i.ItemId,
                     ItemName = i.Item.NameAr,
@@ -178,7 +185,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
             var permission = await _unitOfWork.Repository<ReceiptPermission>()
                 .GetAll()
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (permission == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -188,7 +195,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
             permission.Notes = request.Notes;
 
             foreach (var item in permission.Items)
-                item.IsActive = false;
+                item.IsDeleted = false;
 
             permission.Items = request.Items.Select(i => new ReceiptPermissionItem
             {
@@ -197,7 +204,6 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
                 TotalPrice = i.TotalPrice,
-                IsActive = true
 
             }).ToList();
 
@@ -250,7 +256,6 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
                     TotalPrice = i.TotalPrice,
-                    IsActive = true
                 }).ToList()
             };
 
@@ -267,7 +272,6 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 RestrictionTypeId = null,
                 Description = $"قيد إذن استلام رقم {permission.PermissionNumber}",
                 AccountingGuidanceId = 16, // المخازن
-                IsActive = true,
                 Details = new List<DailyRestrictionDetail>
                 {
                     new DailyRestrictionDetail

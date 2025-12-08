@@ -10,5 +10,7 @@
 
         public int WardId { get; set; }
         public string WardName { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

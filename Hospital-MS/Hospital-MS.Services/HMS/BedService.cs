@@ -48,18 +48,23 @@ namespace Hospital_MS.Services.HMS
                 var bed = await _unitOfWork.Repository<Bed>()
                     .GetAll()
                     .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
                 if (bed == null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
-                _unitOfWork.Repository<Bed>().Delete(bed);
+
+                bed.IsDeleted = !bed.IsDeleted;
+
+                _unitOfWork.Repository<Bed>().Update(bed);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
             catch (Exception)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
-
         }
+
 
         public async Task<ErrorResponseModel<List<BedResponse>>> GetAllAsync(CancellationToken cancellationToken)
         {

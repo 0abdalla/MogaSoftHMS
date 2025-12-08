@@ -10,7 +10,6 @@
         public DateOnly ContractStartDate { get; set; }
         public DateOnly ContractEndDate { get; set; }
 
-        public bool IsActive { get; set; } = true;
 
         public ICollection<Patient> Patients { get; set; } = new HashSet<Patient>();
         public ICollection<InsuranceCategory> Categories { get; set; } = new HashSet<InsuranceCategory>();

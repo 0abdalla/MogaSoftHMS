@@ -32,7 +32,6 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
                 AccountNumber = request.AccountNumber,
                 InitialBalance = request.InitialBalance,
                 Currency = request.Currency,
-                IsActive = true
             };
             await _unitOfWork.Repository<Bank>().AddAsync(bank, cancellationToken);
 
@@ -59,7 +58,7 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            bank.IsActive = false;
+            bank.IsDeleted = !bank.IsDeleted;
 
             _unitOfWork.Repository<Bank>().Update(bank);
 
@@ -101,7 +100,7 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
         try
         {
             var bank = await _unitOfWork.Repository<Bank>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync();
@@ -115,7 +114,6 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
             {
                 Id = bank.Id,
                 Name = bank.Name,
-                IsActive = bank.IsActive,
                 Code = bank.Code,
                 AccountNumber = bank.AccountNumber,
                 InitialBalance = bank.InitialBalance,
@@ -143,7 +141,7 @@ public class BankService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IBankSe
         try
         {
             var bank = _unitOfWork.Repository<Bank>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .FirstOrDefault();
 
             if (bank == null)

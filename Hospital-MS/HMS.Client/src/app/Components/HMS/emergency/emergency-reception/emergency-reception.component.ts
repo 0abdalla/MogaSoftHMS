@@ -24,14 +24,14 @@ export class EmergencyReceptionComponent {
   emergencyForm: FormGroup;
   TitleList = ['الطوارئ والإستقبال'];
   insuranceCompanies: any;
-  showAdditionalInfo:boolean = false;
-  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private messageService: MessageService , private insuranceService: InsuranceService) {
+  showAdditionalInfo: boolean = false;
+  constructor(private fb: FormBuilder, private appointmentService: AppointmentService, private messageService: MessageService, private insuranceService: InsuranceService) {
     this.emergencyForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       emergencyLevel: ['', Validators.required],
       companionName: ['', Validators.required],
-      appointmentDate:[new Date().toISOString().substring(0, 10)],
+      appointmentDate: [new Date().toISOString().substring(0, 10)],
       appointmentType: ['Emergency'],
       gender: ['', Validators.required],
       companionNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
@@ -73,5 +73,9 @@ export class EmergencyReceptionComponent {
         console.log(this.emergencyForm.value);
       }
     })
+  }
+
+  additionalData() {
+    this.showAdditionalInfo = !this.showAdditionalInfo
   }
 }

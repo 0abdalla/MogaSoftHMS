@@ -16,7 +16,5 @@ public class ItemUnitsConfiguration : IEntityTypeConfiguration<ItemUnit>
             .IsRequired()
             .HasMaxLength(150);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
     }
 }

@@ -44,7 +44,6 @@ namespace Hospital_MS.Services.Finance
                                             NameAR = x.NameAR,
                                             ParentId = x.ParentId,
                                             CostLevel = x.CostLevel,
-                                            IsActive = x.IsActive,
                                             IsLocked = x.IsLocked,
                                             IsParent = x.IsParent,
                                             IsExpences = x.IsExpences,
@@ -108,14 +107,13 @@ namespace Hospital_MS.Services.Finance
                 CostCenterTree tbl = new CostCenterTree();
                 var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.CostCenterId == Model.ParentId).FirstOrDefault();
 
-                tbl.CreatedDate = DateTime.Now;
-                tbl.CreatedBy = string.Empty;
+                tbl.CreatedOn = DateTime.Now;
+                tbl.CreatedById = string.Empty;
                 tbl.CostCenterNumber = GenerateCostCenterNumber(Model.ParentId);
                 tbl.ParentId = Model.ParentId;
                 tbl.CostLevel = parent != null ? parent.CostLevel + 1 : 1;
                 tbl.NameAR = Model.NameAR;
                 tbl.NameEN = Model.NameAR;
-                tbl.IsActive = Model.IsActive;
                 tbl.IsLocked = Model.IsLocked;
                 tbl.IsParent = tbl.CostLevel == 1 ? true : false;
                 tbl.IsPost = Model.IsPost;
@@ -164,13 +162,13 @@ namespace Hospital_MS.Services.Finance
                     var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.CostCenterId == Model.ParentId).FirstOrDefault();
 
 
-                    entity.ModifiedDate = DateTime.Now;
-                    entity.CreatedBy = string.Empty;
+                    entity.UpdatedOn = DateTime.Now;
+                    entity.CreatedById = string.Empty;
                     entity.ParentId = Model.ParentId;
                     entity.CostLevel = parent != null ? parent.CostLevel + 1 : 1;
                     entity.NameAR = Model.NameAR;
                     entity.NameEN = Model.NameAR;
-                    entity.IsActive = Model.IsActive;
+                    entity.IsDeleted = Model.IsDeleted;
                     entity.IsLocked = Model.IsLocked;
                     entity.IsParent = entity.CostLevel == 1 ? true : false;
                     entity.IsPost = Model.IsPost;

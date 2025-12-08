@@ -15,4 +15,7 @@ public class PurchaseRequestResponse
     public List<PurchaseRequestItemResponse> Items { get; set; } = [];
 
     public PriceQuotationResponse? PriceQuotation { get; set; }
+
+
+    public bool? IsDeleted { get; set; }
 }

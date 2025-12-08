@@ -22,7 +22,6 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public int? SpecialtyId { get; set; }
         public int? DepartmentId { get; set; }
         public DateOnly StartDate { get; set; }
-        public bool IsActive { get; set; }
         public string? PhotoUrl { get; set; }
 
         public string Specialty { get; set; }
@@ -39,9 +38,11 @@ namespace Hospital_MS.Core.Contracts.Doctors
         public List<DoctorMedicalServiceResponse> DoctorMedicalServices { get; set; } = [];
 
         // Audit properties
-        public DateTime CreatedAt { get; set; }
-        public string CreatedBy { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public string? CreatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

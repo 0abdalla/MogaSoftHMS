@@ -50,7 +50,7 @@ public class MainGroupService(IUnitOfWork unitOfWork) : IMainGroupService
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            mainGroup.IsActive = false;
+            mainGroup.IsDeleted = !mainGroup.IsDeleted;
 
             _unitOfWork.Repository<MainGroup>().Update(mainGroup);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -70,7 +70,7 @@ public class MainGroupService(IUnitOfWork unitOfWork) : IMainGroupService
         {
             var query = _unitOfWork.Repository<MainGroup>()
                 .GetAll()
-                .Where(x => x.IsActive);
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
@@ -105,7 +105,7 @@ public class MainGroupService(IUnitOfWork unitOfWork) : IMainGroupService
         try
         {
             var mainGroup = await _unitOfWork.Repository<MainGroup>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id )
                 .Include(x=> x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -143,7 +143,7 @@ public class MainGroupService(IUnitOfWork unitOfWork) : IMainGroupService
         try
         {
             var mainGroup = await _unitOfWork.Repository<MainGroup>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (mainGroup == null)

@@ -78,7 +78,7 @@ namespace Hospital_MS.Services.HMS
                 vacation.VacationTypeId = model.VacationTypeId;
                 vacation.Period = (model.ToDate - model.FromDate).Days;
                 vacation.Notes = model.Notes;
-                vacation.CreatedDate = DateTime.Now;
+                vacation.CreatedOn = DateTime.Now;
                 vacation.CreatedBy = model.CreatedBy;
 
                 await _unitOfWork.Repository<Vacation>().AddAsync(vacation, cancellationToken);
@@ -106,8 +106,8 @@ namespace Hospital_MS.Services.HMS
                     vacation.LastDayWork = model.LastDayWork;
                     vacation.Period = (model.ToDate - model.FromDate).Days;
                     vacation.Notes = model.Notes;
-                    vacation.ModifiedDate = DateTime.Now;
-                    vacation.ModifiedBy = model.ModifiedBy;
+                    vacation.UpdatedOn = DateTime.Now;
+                    vacation.UpdatedBy = model.UpdatedBy;
 
                     await _unitOfWork.CompleteAsync();
 
@@ -127,21 +127,26 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var Vacation = await _unitOfWork.Repository<Vacation>().GetByIdAsync(VacationId);
-                if (Vacation != null)
+                var vacation = await _unitOfWork.Repository<Vacation>().GetByIdAsync(VacationId);
+
+                if (vacation == null)
                 {
-                    _unitOfWork.Repository<Vacation>().Delete(Vacation);
-                    await _unitOfWork.CompleteAsync();
-                    return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
-                }
-                else
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+                }
+
+                vacation.IsDeleted = !vacation.IsDeleted;
+
+                _unitOfWork.Repository<Vacation>().Update(vacation);
+                await _unitOfWork.CompleteAsync();
+
+                return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
+
 
 
         public async Task<ErrorResponseModel<string>> ApproveEmployeeVacation(int VacationId, int EmployeeId, bool ApproveStatus)
@@ -153,8 +158,8 @@ namespace Hospital_MS.Services.HMS
                 if (vacation != null)
                 {
                     vacation.WorkflowStatusId = ApproveStatus ? (int)HRWorkflowStatus.Approved : (int)HRWorkflowStatus.Rejected; ;
-                    vacation.ModifiedBy = string.Empty;
-                    vacation.ModifiedDate = DateTime.Now;
+                    vacation.UpdatedById = string.Empty;
+                    vacation.UpdatedOn = DateTime.Now;
 
                     await _unitOfWork.CompleteAsync();
                     return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);

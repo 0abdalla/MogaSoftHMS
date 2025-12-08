@@ -30,7 +30,5 @@ public class DebitNoticeConfiguration : IEntityTypeConfiguration<DebitNotice>
         builder.Property(x => x.Notes)
             .HasMaxLength(500);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
     }
 }

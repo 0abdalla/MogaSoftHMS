@@ -8,5 +8,5 @@ public class AccountingGuidance : AuditableEntity // التوجيه المحاس
     public int Id { get; set; }
     [MaxLength(250)]
     public string Name { get; set; } = string.Empty;
-    public bool IsActive { get; set; } = true; 
+
 }

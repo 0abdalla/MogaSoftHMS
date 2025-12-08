@@ -28,6 +28,8 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public int TotalCount { get; set; }
         public string? MedicalServiceName { get; set; }
         public string? RadiologyBodyTypeName { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 
     public class AppointmentsGroupResponseModel
@@ -44,12 +46,14 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public int AppointmentNumber { get; set; }
         public DateTime CreatedOn { get; set; }
         public DateTime? UpdatedOn { get; set; }
-        public string CreatedBy { get; set; }
-        public string UpdatedBy { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
         public string PatientPhone { get; set; }
         public int ClinicId { get; set; }
         public string ClinicName { get; set; }
         public string MedicalServiceName { get; set; }
         public string RadiologyBodyTypeName { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

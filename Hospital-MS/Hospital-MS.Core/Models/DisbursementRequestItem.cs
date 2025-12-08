@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models;
-public class DisbursementRequestItem
+public class DisbursementRequestItem : AuditableEntity
 {
     public int Id { get; set; }
     public int Quantity { get; set; }

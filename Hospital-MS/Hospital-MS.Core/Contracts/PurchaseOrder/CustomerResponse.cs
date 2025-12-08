@@ -26,6 +26,5 @@ public class CustomerResponse
     public string PaymentMethod { get; set; }
     public string PaymentResponsible { get; set; }
     public decimal CreditLimit { get; set; }
-    public bool IsActive { get; set; }
     public AuditResponse Audit { get; set; }
 }

@@ -8,4 +8,6 @@ public class AppointmentTypeCountsResponse
     public int SurgeryAppointments { get; set; }
     public int ScreeningAppointments { get; set; }
     public int RadiologyAppointments { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

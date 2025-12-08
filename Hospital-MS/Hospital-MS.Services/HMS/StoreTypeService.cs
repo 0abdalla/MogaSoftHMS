@@ -19,7 +19,6 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
             var storeType = new StoreType
             {
                 Name = request.Name,
-                IsActive = true
             };
 
             await _unitOfWork.Repository<StoreType>().AddAsync(storeType, cancellationToken);
@@ -39,8 +38,10 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
         {
             var query = _unitOfWork.Repository<StoreType>()
                 .GetAll()
-                .OrderByDescending(x => x.Id)
-                .Where(x => x.IsActive);
+                .AsQueryable();  
+
+            query = query.OrderByDescending(x => x.Id); 
+
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.Name.Contains(filter.SearchText));
@@ -55,7 +56,6 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    IsActive = x.IsActive
                 })
                 .ToListAsync(cancellationToken);
 
@@ -73,12 +73,11 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
         {
             var storeType = await _unitOfWork.Repository<StoreType>()
                 .GetAll()
-                .Where(x => x.Id == id && x.IsActive)
+                .Where(x => x.Id == id )
                 .Select(x => new StoreTypeResponse
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    IsActive = x.IsActive
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -126,7 +125,7 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
             if (storeType == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            storeType.IsActive = false;
+            storeType.IsDeleted = !storeType.IsDeleted;
 
             _unitOfWork.Repository<StoreType>().Update(storeType);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -138,4 +137,5 @@ public class StoreTypeService(IUnitOfWork unitOfWork) : IStoreTypeService
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
+
 }

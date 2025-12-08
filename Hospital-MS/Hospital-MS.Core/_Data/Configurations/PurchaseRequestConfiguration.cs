@@ -12,7 +12,6 @@ public class PurchaseRequestConfiguration : IEntityTypeConfiguration<PurchaseReq
         builder.Property(x => x.Purpose).HasMaxLength(500);
         builder.Property(x => x.Notes).HasMaxLength(500);
         builder.Property(x => x.Status).IsRequired();
-        builder.Property(x => x.IsActive).HasDefaultValue(true);
         builder.HasOne(x => x.Store).WithMany().HasForeignKey(x => x.StoreId);
 
         // PriceQuotation

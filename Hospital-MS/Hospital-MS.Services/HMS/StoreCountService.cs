@@ -183,7 +183,7 @@ public class StoreCountService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : I
             if (count is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            count.IsActive = false;
+            count.IsDeleted = !count.IsDeleted;
 
             _unitOfWork.Repository<StoreCount>().Update(count);
 
@@ -199,4 +199,5 @@ public class StoreCountService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : I
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
+
 }

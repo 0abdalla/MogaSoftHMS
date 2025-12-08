@@ -13,6 +13,8 @@ public class DebitNoticeResponse
     public string? CheckNumber { get; set; }
     public decimal Amount { get; set; }
     public string? Notes { get; set; }
+
+    public bool? IsDeleted { get; set; }
     public AuditResponse Audit { get; set; } = new();
 
     public PartialDailyRestrictionResponse DailyRestriction { get; set; } = new();

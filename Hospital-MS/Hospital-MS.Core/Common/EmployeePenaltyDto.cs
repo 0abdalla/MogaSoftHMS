@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Common
 {
-    public class EmployeePenaltyDto
+    public class EmployeePenaltyDto : AuditableEntity
     {
         public int? PenaltyId { get; set; }
         public int? EmployeeId { get; set; }
@@ -24,9 +25,5 @@ namespace Hospital_MS.Core.Common
         public string? WorkflowStatusNameAR { get; set; }
         public int? WorkflowStatusId { get; set; } = (int)HRWorkflowStatus.Pending; public int? TotalCount { get; set; }
         public string? BranchName { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
     }
 }

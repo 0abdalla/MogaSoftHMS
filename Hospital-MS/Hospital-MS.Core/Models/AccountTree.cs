@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models
 {
     [Table("AccountTrees", Schema = "Finance")]
-    public class AccountTree
+    public class AccountTree : AuditableEntity
+
     {
         [Key]
         public int AccountId { get; set; }
@@ -25,7 +26,6 @@ namespace Hospital_MS.Core.Models
         public int? CostCenterId { get; set; }
         public string? AccountNature { get; set; }
         public string? FName { get; set; }
-        public bool? IsActive { get; set; }
         public bool? IsLocked { get; set; }
         public bool? IsDisToCostCenter { get; set; }
         public bool? IsPost { get; set; }
@@ -36,9 +36,5 @@ namespace Hospital_MS.Core.Models
         public int? AccumulatedDepreciationId { get; set; }
         public double? PreCredit { get; set; }
         public double? PreDebit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
     }
 }

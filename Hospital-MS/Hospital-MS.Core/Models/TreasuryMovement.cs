@@ -10,7 +10,6 @@ public class TreasuryMovement : AuditableEntity // حركة الخزينة
     public decimal OpeningBalance { get; set; } = 0M;
     public DateOnly OpenedIn { get; set; }
     public DateOnly? ClosedIn { get; set; }
-    public bool IsActive { get; set; } = true;
     public bool IsClosed { get; set; } = false;
     public decimal TotalCredits { get; set; }
     public decimal TotalDebits { get; set; }

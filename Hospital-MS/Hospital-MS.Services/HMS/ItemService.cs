@@ -22,7 +22,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
         {
             var existingItem = await _unitOfWork.Repository<Item>()
                 .GetAll()
-                .FirstOrDefaultAsync(x => x.NameAr == request.NameAr && x.NameEn == request.NameEn && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.NameAr == request.NameAr && x.NameEn == request.NameEn , cancellationToken);
 
             if (existingItem != null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
@@ -42,7 +42,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 PriceAfterTax = request.Price + (request.Price * request.SalesTax / 100),
                 HasBarcode = request.HasBarcode,
                 TypeId = request.TypeId,
-                IsActive = true
+
             };
 
             await _unitOfWork.Repository<Item>().AddAsync(item, cancellationToken);
@@ -88,11 +88,11 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 HasBarcode = row.Field<bool>("HasBarcode"),
                 TypeId = row.Field<int?>("TypeId"),
                 TypeName = row.Field<string>("TypeName"),
-                IsActive = row.Field<bool>("IsActive"),
                 Audit = new AuditResponse
                 {
                     CreatedBy = row.Field<string>("CreatedBy") ?? string.Empty,
-                    CreatedOn = row.Field<DateTime>("CreatedOn")
+                    CreatedOn = row.Field<DateTime>("CreatedOn"),
+                    IsDeleted = row.Field<bool>("IsDeleted"),
                 }
             }).ToList();
 
@@ -122,7 +122,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 .Include(x => x.Unit)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (item == null)
                 return ErrorResponseModel<ItemResponse>.Failure(GenericErrors.NotFound);
@@ -146,7 +146,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 HasBarcode = item.HasBarcode,
                 TypeId = item.TypeId,
                 TypeName = item.Type?.NameAr,
-                IsActive = item.IsActive,
+
                 Audit = new AuditResponse
                 {
                     CreatedOn = item.CreatedOn,
@@ -207,7 +207,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             if (item == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            item.IsActive = false;
+            item.IsDeleted = !item.IsDeleted;
             _unitOfWork.Repository<Item>().Update(item);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -224,7 +224,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
         try
         {
             var item = await _unitOfWork.Repository<Item>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id )
                 .Include(x => x.Unit)
                 .Include(x => x.Group)
                 .ThenInclude(g => g.MainGroup)
@@ -235,7 +235,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var store = await
                 _unitOfWork.Repository<Store>()
-                .GetAll(x => x.Id == request.StoreId && x.IsActive)
+                .GetAll(x => x.Id == request.StoreId )
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (store == null)
@@ -247,7 +247,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var itemReceiptPermissions = await _unitOfWork.Repository<ReceiptPermissionItem>()
                 .GetAll(x => x.ReceiptPermission.StoreId == request.StoreId
-                            && x.IsActive
                             && x.ItemId == id
                             && x.ReceiptPermission.PermissionDate >= fromDate
                             && x.ReceiptPermission.PermissionDate <= toDate)
@@ -258,7 +257,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var itemMaterialIssues = await _unitOfWork.Repository<MaterialIssueItem>()
                 .GetAll(x => x.MaterialIssuePermission.StoreId == request.StoreId
-                            && x.IsActive
                             && x.ItemId == id
                             && x.MaterialIssuePermission.PermissionDate >= fromDate
                             && x.MaterialIssuePermission.PermissionDate <= toDate)
@@ -268,14 +266,12 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var previousReceipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
                 .GetAll(x => x.ReceiptPermission.StoreId == request.StoreId
-                             && x.IsActive
                              && x.ItemId == id
                              && x.ReceiptPermission.PermissionDate < fromDate)
                 .ToListAsync(cancellationToken);
 
             var previousIssues = await _unitOfWork.Repository<MaterialIssueItem>()
                 .GetAll(x => x.MaterialIssuePermission.StoreId == request.StoreId
-                             && x.IsActive
                              && x.ItemId == id
                              && x.MaterialIssuePermission.PermissionDate < fromDate)
                 .ToListAsync(cancellationToken);
@@ -344,7 +340,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
         try
         {
             var item = await _unitOfWork.Repository<Item>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .Include(x => x.Unit)
                 .Include(x => x.Group).ThenInclude(g => g.MainGroup)
                 .AsNoTracking()
@@ -354,7 +350,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 return ErrorResponseModel<ItemMovementResult>.Failure(GenericErrors.NotFound);
 
             var store = await _unitOfWork.Repository<Store>()
-                .GetAll(x => x.Id == request.StoreId && x.IsActive)
+                .GetAll(x => x.Id == request.StoreId)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -366,7 +362,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var receiptItems = await _unitOfWork.Repository<ReceiptPermissionItem>()
                 .GetAll(x => x.ItemId == id &&
-                             x.IsActive &&
                              x.ReceiptPermission.StoreId == request.StoreId &&
                              x.ReceiptPermission.PermissionDate >= fromDate &&
                              x.ReceiptPermission.PermissionDate <= toDate)
@@ -376,7 +371,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var issueItems = await _unitOfWork.Repository<MaterialIssueItem>()
                 .GetAll(x => x.ItemId == id &&
-                             x.IsActive &&
                              x.MaterialIssuePermission.StoreId == request.StoreId &&
                              x.MaterialIssuePermission.PermissionDate >= fromDate &&
                              x.MaterialIssuePermission.PermissionDate <= toDate)
@@ -386,7 +380,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var previousReceiptsValue = await _unitOfWork.Repository<ReceiptPermissionItem>()
                 .GetAll(x => x.ItemId == id &&
-                             x.IsActive &&
                              x.ReceiptPermission.StoreId == request.StoreId &&
                              x.ReceiptPermission.PermissionDate < fromDate)
                 .AsNoTracking()
@@ -394,7 +387,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
 
             var previousIssuesValue = await _unitOfWork.Repository<MaterialIssueItem>()
                 .GetAll(x => x.ItemId == id &&
-                             x.IsActive &&
                              x.MaterialIssuePermission.StoreId == request.StoreId &&
                              x.MaterialIssuePermission.PermissionDate < fromDate)
                 .AsNoTracking()

@@ -1,6 +1,6 @@
 ﻿namespace Hospital_MS.Core.Models
 {
-    public class MedicalService
+    public class MedicalService : AuditableEntity
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;

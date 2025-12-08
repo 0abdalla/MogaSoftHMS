@@ -15,7 +15,5 @@ public class ItemGroupConfiguration : IEntityTypeConfiguration<ItemGroup>
         builder.Property(x => x.Name)
             .HasMaxLength(100);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
     }
 }

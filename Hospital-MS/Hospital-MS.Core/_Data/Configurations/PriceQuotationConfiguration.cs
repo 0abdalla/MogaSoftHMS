@@ -18,8 +18,6 @@ public class PriceQuotationConfiguration : IEntityTypeConfiguration<PriceQuotati
         builder.Property(x => x.Notes)
             .HasMaxLength(500);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
 
         builder.HasOne(x => x.Supplier)
             .WithMany()

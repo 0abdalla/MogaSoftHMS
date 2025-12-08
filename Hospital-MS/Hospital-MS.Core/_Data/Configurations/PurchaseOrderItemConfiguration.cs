@@ -15,7 +15,6 @@ public class PurchaseOrderItemConfiguration : IEntityTypeConfiguration<PurchaseO
         builder.ToTable("PurchaseOrderItems", schema: "finance");
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Unit).HasMaxLength(50);
-        builder.Property(x => x.IsActive).HasDefaultValue(true);
         builder.HasOne(x => x.PurchaseOrder).WithMany(x => x.Items).HasForeignKey(x => x.PurchaseOrderId);
         builder.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId);
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Contracts.AccountTree
 {
-    public class AccountTreeModel
+    public class AccountTreeModel : AuditableEntity
     {
         public int? AccountId { get; set; }
         public int? CostCenterId { get; set; }
@@ -22,15 +22,10 @@ namespace Hospital_MS.Core.Contracts.AccountTree
         public double? PreCredit { get; set; }
         public double? PreDebit { get; set; }
         public bool? IsSelected { get; set; }
-        public bool? IsActive { get; set; }
         public bool? IsGroup { get; set; }
         public bool? IsReadOnly { get; set; }
         public bool? IsDisToCostCenter { get; set; }
         public bool? IsParent { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
         public List<AccountTreeModel> Children { get; set; } = new List<AccountTreeModel>();
     }
 }

@@ -166,12 +166,18 @@ namespace Hospital_MS.Services.HMS
             var jobTitle = await _unitOfWork.Repository<JobTitle>()
                 .GetAll(x => x.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
-            if (jobTitle is null)
+
+            if (jobTitle == null)
                 return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+
             try
             {
-                _unitOfWork.Repository<JobTitle>().Delete(jobTitle);
+
+                jobTitle.IsDeleted = !jobTitle.IsDeleted;
+
+                _unitOfWork.Repository<JobTitle>().Update(jobTitle);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
                 return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess);
             }
             catch (Exception)
@@ -179,5 +185,6 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
             }
         }
+
     }
 }

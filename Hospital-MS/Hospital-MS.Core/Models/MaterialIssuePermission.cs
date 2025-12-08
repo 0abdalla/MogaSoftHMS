@@ -12,7 +12,6 @@ public class MaterialIssuePermission : AuditableEntity // اذن الصرف
     //public int BranchId { get; set; }
     // public Branch Branch { get; set; }
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
 
     public int? JobDepartmentId { get; set; }
     public JobDepartment? JobDepartment { get; set; } = default!;

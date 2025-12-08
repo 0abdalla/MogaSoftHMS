@@ -14,6 +14,8 @@ namespace Hospital_MS.Core.Contracts.Beds
         public string Status { get; set; }
 
         public int RoomId { get; set; }
-        public int RoomNumber { get; set; } 
+        public int RoomNumber { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

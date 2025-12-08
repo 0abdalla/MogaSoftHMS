@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models
 {
     [Table("CostCenterTree", Schema = "Finance")]
-    public class CostCenterTree
+    public class CostCenterTree : AuditableEntity
     {
         [Key]
         public int CostCenterId { get; set; }
@@ -25,9 +25,6 @@ namespace Hospital_MS.Core.Models
         public int? IsExpences { get; set; }
         public bool? IsGroup { get; set; }
         public int? DisplayOrder { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
+
     }
 }

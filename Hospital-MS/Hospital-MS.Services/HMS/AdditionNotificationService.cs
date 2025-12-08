@@ -30,7 +30,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.NotFound);
 
             var bank = await _unitOfWork.Repository<Bank>()
-                .GetAll(x => x.Id == request.BankId && x.IsActive)
+                .GetAll(x => x.Id == request.BankId )
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (bank == null)
@@ -56,7 +56,6 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = notification.Id.ToString(),
                 RestrictionTypeId = null,
-                IsActive = true,
                 // TODO : replace with the correct accounting guidance id
                 AccountingGuidanceId = 15,
                 RestrictionDate = request.Date,
@@ -121,7 +120,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            notification.IsActive = false;
+            notification.IsDeleted = !notification.IsDeleted;
 
             _unitOfWork.Repository<AdditionNotice>().Update(notification);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -139,11 +138,14 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
         try
         {
             var query = _unitOfWork.Repository<AdditionNotice>()
-                .GetAll(x => x.IsActive)
+                .GetAll()         
+                .AsQueryable();  
+
+            
+            query = query
                 .Include(x => x.Bank)
-                .Include(x => x.Account)
-                .OrderByDescending(x => x.Id)
-                .AsQueryable();
+                .Include(x => x.Account);
+
 
             if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))
             {
@@ -224,7 +226,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
         try
         {
             var notification = await _unitOfWork.Repository<AdditionNotice>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
                 .Include(x => x.DailyRestriction)

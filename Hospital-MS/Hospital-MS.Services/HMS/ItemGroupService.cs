@@ -21,7 +21,6 @@ public class ItemGroupService(IUnitOfWork unitOfWork) : IItemGroupService
             {
                 Name = request.Name,
                 MainGroupId = request.MainGroupId,
-                IsActive = true
             };
             await _unitOfWork.Repository<ItemGroup>().AddAsync(entity, cancellationToken);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -62,7 +61,7 @@ public class ItemGroupService(IUnitOfWork unitOfWork) : IItemGroupService
             if (entity == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            entity.IsActive = false;
+            entity.IsDeleted = !entity.IsDeleted;
             _unitOfWork.Repository<ItemGroup>().Update(entity);
             await _unitOfWork.CompleteAsync(cancellationToken);
             return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, entity.Id.ToString());
@@ -78,7 +77,7 @@ public class ItemGroupService(IUnitOfWork unitOfWork) : IItemGroupService
         try
         {
             var entity = await _unitOfWork.Repository<ItemGroup>()
-                .GetAll(x => x.IsActive && x.Id == id)
+                .GetAll(x => x.Id == id)
                 .Include(x => x.MainGroup)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
@@ -114,7 +113,7 @@ public class ItemGroupService(IUnitOfWork unitOfWork) : IItemGroupService
         try
         {
             var query = _unitOfWork.Repository<ItemGroup>()
-                .GetAll(x => x.IsActive)
+                .GetAll()
                 .Include(x => x.MainGroup).AsQueryable();
 
 

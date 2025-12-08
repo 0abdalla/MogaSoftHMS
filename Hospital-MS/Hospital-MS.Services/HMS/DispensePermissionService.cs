@@ -88,7 +88,6 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = treasuryOperation.Id.ToString(),
                 RestrictionTypeId = null,
-                IsActive = true,
                 // TODO : replace it
                 AccountingGuidanceId = 17,
                 RestrictionDate = request.Date,
@@ -150,7 +149,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             if (permission is null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            permission.IsActive = false;
+            permission.IsDeleted = !permission.IsDeleted;
 
             _unitOfWork.Repository<DispensePermission>().Update(permission);
 
@@ -178,7 +177,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
                 .OrderByDescending(x => x.Id)
-                .Where(x => x.IsActive);
+                .AsQueryable();
 
 
             if (!string.IsNullOrEmpty(filter.SearchText))

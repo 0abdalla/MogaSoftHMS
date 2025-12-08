@@ -12,7 +12,6 @@ public class DisbursementResponse
     public string Number { get; set; }
     public DateOnly Date { get; set; }
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
     public string Status { get; set; }
     public int? JobDepartmentId { get; set; }
     public string? JobDepartmentName { get; set; }

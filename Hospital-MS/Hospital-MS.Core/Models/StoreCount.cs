@@ -11,7 +11,6 @@ public class StoreCount : AuditableEntity // الجرد
     public int StoreId { get; set; }
     public Store Store { get; set; } = default!;
 
-    public bool IsActive { get; set; } = true;
     public DateOnly FromDate { get; set; }
     public DateOnly ToDate { get; set; }
 }

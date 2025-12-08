@@ -27,7 +27,6 @@ public class BranchService : IBranchService
                 Location = request.Location,
                 ContactNumber = request.ContactNumber,
                 Email = request.Email,
-                IsActive = true
             };
 
             await _unitOfWork.Repository<Branch>().AddAsync(branch, cancellationToken);
@@ -73,7 +72,7 @@ public class BranchService : IBranchService
             if (branch == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            branch.IsActive = false;
+            branch.IsDeleted = !branch.IsDeleted;
             _unitOfWork.Repository<Branch>().Update(branch);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -91,7 +90,7 @@ public class BranchService : IBranchService
         {
             var branch = await _unitOfWork.Repository<Branch>()
                 .GetAll()
-                .Where(x => x.Id == id && x.IsActive)
+                .Where(x => x.Id == id)
                 .Select(x => new BranchResponse
                 {
                     Id = x.Id,
@@ -99,7 +98,6 @@ public class BranchService : IBranchService
                     Location = x.Location,
                     ContactNumber = x.ContactNumber,
                     Email = x.Email,
-                    IsActive = x.IsActive
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -118,10 +116,12 @@ public class BranchService : IBranchService
     {
         try
         {
-            var query = _unitOfWork.Repository<Branch>()
-                .GetAll()
-                .OrderByDescending(x => x.Id)
-                .Where(x => x.IsActive);
+            var query = (IQueryable<Branch>)_unitOfWork.Repository<Branch>()
+                        .GetAll()
+                        .AsQueryable();
+
+            query = query
+                .OrderByDescending(x => x.Id);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.Name.Contains(filter.SearchText));
@@ -139,7 +139,6 @@ public class BranchService : IBranchService
                     Location = x.Location,
                     ContactNumber = x.ContactNumber,
                     Email = x.Email,
-                    IsActive = x.IsActive
                 })
                 .ToListAsync(cancellationToken);
 

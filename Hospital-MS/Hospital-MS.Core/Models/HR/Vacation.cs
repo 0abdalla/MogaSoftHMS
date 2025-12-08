@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models.HR
 {
     [Table("Vacations", Schema = "dbo")]
-    public class Vacation
+    public class Vacation : AuditableEntity
     {
         public int VacationId { get; set; }
         public int StaffId { get; set; }
@@ -22,9 +22,6 @@ namespace Hospital_MS.Core.Models.HR
         public DateTime? RequestDate { get; set; }
         public DateTime? LastJoinDate { get; set; }
         public string? Notes { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
+
     }
 }

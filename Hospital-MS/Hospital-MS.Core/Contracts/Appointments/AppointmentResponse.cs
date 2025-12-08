@@ -19,8 +19,8 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public int? ClinicId { get; set; }
         public string? ClinicName { get; set; } 
         public string Status { get; set; } 
-        public DateTime CreatedOn { get; set; }
-        public string CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime? UpdatedOn { get; set; }
         public string? PaymentMethod { get; set; } 
@@ -33,6 +33,8 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public int AppointmentNumber { get; set; }
 
         public List<MedicalServicesModel> MedicalServices { get; set; }
+
+        public bool? IsDeleted { get; set; }
 
     }
 

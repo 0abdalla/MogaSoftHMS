@@ -18,7 +18,7 @@ public class FiscalYearService(IUnitOfWork unitOfWork) : IFiscalYearService
         try
         {
             var overlap = await _unitOfWork.Repository<FiscalYear>()
-                .GetAll(x => x.IsActive &&
+                .GetAll(x => 
                     (x.StartDate <= request.EndDate && x.EndDate >= request.StartDate))
                 .AnyAsync(cancellationToken);
 
@@ -48,7 +48,7 @@ public class FiscalYearService(IUnitOfWork unitOfWork) : IFiscalYearService
         {
             var query = _unitOfWork.Repository<FiscalYear>()
                 .GetAll()
-                .Where(x => x.IsActive);
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
             {
@@ -84,7 +84,7 @@ public class FiscalYearService(IUnitOfWork unitOfWork) : IFiscalYearService
         {
             var entity = await _unitOfWork.Repository<FiscalYear>()
                 .GetAll()
-                .Where(x => x.Id == id && x.IsActive)
+                .Where(x => x.Id == id )
                 .Select(x => new FiscalYearResponse
                 {
                     Id = x.Id,

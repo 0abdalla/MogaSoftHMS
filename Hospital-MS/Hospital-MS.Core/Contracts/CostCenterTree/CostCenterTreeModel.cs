@@ -14,7 +14,6 @@ namespace Hospital_MS.Core.Contracts.CostCenterTree
         public string? NameEN { get; set; }
         public int? ParentId { get; set; }
         public int? CostLevel { get; set; }
-        public bool? IsActive { get; set; }
         public bool? IsLocked { get; set; }
         public bool? IsParent { get; set; }
         public bool? IsPost { get; set; }
@@ -22,6 +21,8 @@ namespace Hospital_MS.Core.Contracts.CostCenterTree
         public bool? IsGroup { get; set; }
         public int? DisplayOrder { get; set; }
         public bool IsSelected { get; set; }
+
+        public bool? IsDeleted { get; set; }
         public List<CostCenterTreeModel> Children { get; set; } = new List<CostCenterTreeModel>();
     }
 }

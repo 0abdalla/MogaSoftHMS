@@ -8,11 +8,10 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models.HR
 {
     [Table("VacationTypes", Schema = "dbo")]
-    public class VacationType
+    public class VacationType : AuditableEntity
     {
         public int VacationTypeId { get; set; }
         public string NameEN { get; set; }
         public string NameAR { get; set; }
-        public bool IsActive { get; set; }
     }
 }

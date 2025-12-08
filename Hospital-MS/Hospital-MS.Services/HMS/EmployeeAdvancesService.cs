@@ -54,7 +54,7 @@ namespace Hospital_MS.Services.HMS
                     Notes = model.Notes,
                     WorkflowStatusId = model.WorkflowStatusId,
                     CreatedBy = model.CreatedBy,
-                    CreatedDate = DateTime.Now
+                    CreatedOn = DateTime.Now
                 };
 
                 var AdvanceNumber = await _unitOfWork.Repository<EmployeeAdvance>().MaxAsync(i => (int?)i.AdvanceNumber) ?? 0;
@@ -86,8 +86,8 @@ namespace Hospital_MS.Services.HMS
                     advance.PaymentAmount = model.PaymentAmount.Value;
                     advance.Notes = model.Notes;
                     advance.WorkflowStatusId = model.WorkflowStatusId;
-                    advance.ModifiedBy = model.ModifiedBy;
-                    advance.ModifiedDate = DateTime.Now;
+                    advance.UpdatedById = model.UpdatedById;
+                    advance.UpdatedOn = DateTime.Now;
 
                     await _unitOfWork.CompleteAsync();
 
@@ -113,8 +113,8 @@ namespace Hospital_MS.Services.HMS
                 if (advance != null)
                 {
                     advance.WorkflowStatusId = IsApproved ? (int)HRWorkflowStatus.Approved : (int)HRWorkflowStatus.Rejected;
-                    advance.ModifiedBy = string.Empty;
-                    advance.ModifiedDate = DateTime.Now;
+                    advance.UpdatedById = string.Empty;
+                    advance.UpdatedOn = DateTime.Now;
                     await _unitOfWork.CompleteAsync();
                     return ErrorResponseModel<string>.Success(GenericErrors.StatusChangedSuccess);
                 }
@@ -129,25 +129,26 @@ namespace Hospital_MS.Services.HMS
         }
         public async Task<ErrorResponseModel<string>> DeleteEmployeeAdvance(int EmployeeAdvanceId)
         {
-
             try
             {
                 var advance = await _unitOfWork.Repository<EmployeeAdvance>().GetByIdAsync(EmployeeAdvanceId);
-                if (advance != null)
-                {
-                    _unitOfWork.Repository<EmployeeAdvance>().Delete(advance);
-                    await _unitOfWork.CompleteAsync();
-                    return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
-                }
-                else
+
+                if (advance == null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                advance.IsDeleted = !advance.IsDeleted;
+
+                _unitOfWork.Repository<EmployeeAdvance>().Update(advance);
+                await _unitOfWork.CompleteAsync();
+
+                return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
-
         }
+
 
         public List<SelectorDataModel> GetAdvanceTypesSelector()
         {

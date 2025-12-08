@@ -25,7 +25,6 @@ namespace Hospital_MS.Core.Models
         public int? SpecialtyId { get; set; }
         public int? DepartmentId { get; set; }
         public DateOnly StartDate { get; set; }
-        public bool IsActive { get; set; } = true;
         public string? Notes { get; set; }
         public string? PhotoUrl { get; set; }
         //public int? MedicalServiceId { get; set; }

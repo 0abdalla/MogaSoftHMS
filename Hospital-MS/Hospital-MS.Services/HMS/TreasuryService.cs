@@ -3,6 +3,7 @@ using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Treasuries;
 using Hospital_MS.Core.Enums;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Core.Models.HR;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
@@ -62,7 +63,6 @@ public class TreasuryService : ITreasuryService
                 Name = request.Name,
                 BranchId = request.BranchId,
                 Currency = request.Currency,
-                IsActive = true,
                 OpeningBalance = request.OpeningBalance,
             };
 
@@ -99,7 +99,7 @@ public class TreasuryService : ITreasuryService
 
 
             var movements = await _unitOfWork.Repository<TreasuryMovement>()
-                .GetAll(x => treasuryIds.Contains(x.TreasuryId) && x.IsActive)
+                .GetAll(x => treasuryIds.Contains(x.TreasuryId))
                 .Select(x => new
                 {
                     x.TreasuryId,
@@ -136,11 +136,11 @@ public class TreasuryService : ITreasuryService
                     BranchId = row.Field<int>("BranchId"),
                     BranchName = row.Field<string>("BranchName"),
                     Currency = row.Field<string>("Currency"),
-                    IsActive = row.Field<bool>("IsActive"),
                     Audit = new AuditResponse
                     {
                         CreatedBy = row.Field<string>("CreatedBy"),
-                        CreatedOn = row.Field<DateTime>("CreatedOn")
+                        CreatedOn = row.Field<DateTime>("CreatedOn"),
+                        IsDeleted = row.Field<bool>("IsDeleted"),
                     },
                     Movements = movementList,
                     OpeningBalance = row.Field<decimal>("OpeningBalance")
@@ -166,7 +166,7 @@ public class TreasuryService : ITreasuryService
                 .Include(x => x.Branch)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (treasury == null)
                 return ErrorResponseModel<TreasuryResponse>.Failure(GenericErrors.NotFound);
@@ -179,7 +179,6 @@ public class TreasuryService : ITreasuryService
                 BranchId = treasury?.BranchId,
                 BranchName = treasury?.Branch?.Name,
                 Currency = treasury.Currency,
-                IsActive = treasury.IsActive,
                 OpeningBalance = treasury.OpeningBalance,
                 Audit = new AuditResponse
                 {
@@ -243,7 +242,8 @@ public class TreasuryService : ITreasuryService
             if (treasury == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            treasury.IsActive = false;
+            treasury.IsDeleted = !treasury.IsDeleted;
+
 
             _unitOfWork.Repository<Treasury>().Update(treasury);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -260,7 +260,7 @@ public class TreasuryService : ITreasuryService
     {
 
         var treasuries = await _unitOfWork.Repository<TreasuryMovement>()
-            .GetAll(x => x.IsActive && !x.IsClosed)
+            .GetAll(x => !x.IsClosed)
             .Include(x => x.Treasury)
             .Select(x => new TreasuryMovementResponse
             {
@@ -279,7 +279,7 @@ public class TreasuryService : ITreasuryService
     public async Task<ErrorResponseModel<List<TreasuryMovementResponse>>> GetDisabledTreasuriesMovementsAsync(CancellationToken cancellationToken = default)
     {
         var treasuries = await _unitOfWork.Repository<TreasuryMovement>()
-            .GetAll(x => x.IsActive && x.IsClosed)
+            .GetAll(x =>  x.IsClosed)
             .Include(x => x.Treasury)
             .Select(x => new TreasuryMovementResponse
             {
@@ -326,7 +326,7 @@ public class TreasuryService : ITreasuryService
         {
             var transactionsQuery = _unitOfWork.Repository<TreasuryOperation>()
                 .GetAll()
-                .Where(t => t.TreasuryId == treasuryId && t.IsActive);
+                .Where(t => t.TreasuryId == treasuryId );
 
 
             var previousBalance = await transactionsQuery
@@ -388,13 +388,13 @@ public class TreasuryService : ITreasuryService
             var treasury = await _unitOfWork.Repository<Treasury>()
                 .GetAll()
                 .Include(x => x.Branch)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (treasury == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound, "الخزينه غير موجوده");
 
             var treasuryMovement = await _unitOfWork.Repository<TreasuryMovement>()
-                .GetAll(x => x.TreasuryId == id && x.IsActive && !x.IsClosed)
+                .GetAll(x => x.TreasuryId == id  && !x.IsClosed)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -404,7 +404,7 @@ public class TreasuryService : ITreasuryService
 
             // حساب الرصيد الحالي
             var operations = await _unitOfWork.Repository<TreasuryOperation>()
-                .GetAll(t => t.TreasuryId == id && t.IsActive)
+                .GetAll(t => t.TreasuryId == id )
                 .ToListAsync(cancellationToken);
 
             var newBalance = treasuryMovement.OpeningBalance + operations.Sum(t =>
@@ -457,7 +457,7 @@ public class TreasuryService : ITreasuryService
     {
 
         var movements = _unitOfWork.Repository<TreasuryMovement>()
-            .GetAll(x => x.IsActive)
+            .GetAll()
             .Include(x => x.Treasury)
             .AsQueryable();
 
@@ -483,7 +483,7 @@ public class TreasuryService : ITreasuryService
             var movement = await _unitOfWork.Repository<TreasuryMovement>()
                 .GetAll()
                 .Include(x => x.Treasury)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (movement == null)
                 return ErrorResponseModel<TreasuryMovementDetailsResponse>.Failure(GenericErrors.NotFound);
@@ -493,7 +493,7 @@ public class TreasuryService : ITreasuryService
 
             // Get all operations for this movement
             var operations = await _unitOfWork.Repository<TreasuryOperation>()
-                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive)
+                .GetAll(t => t.TreasuryId == movement.TreasuryId )
                 .Where(t => t.Date >= fromDate && t.Date <= toDate)
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.DocumentNumber)
@@ -502,7 +502,7 @@ public class TreasuryService : ITreasuryService
 
             // Previous balance before movement
             var previousBalance = await _unitOfWork.Repository<TreasuryOperation>()
-                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive && t.Date < fromDate)
+                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.Date < fromDate)
                 .SumAsync(t => t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount, cancellationToken);
 
             // Receipts (Credits)
@@ -564,7 +564,7 @@ public class TreasuryService : ITreasuryService
                 .Include(x => x.Treasury)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (movement == null)
                 return ErrorResponseModel<TreasuryMovementResponse>.Failure(GenericErrors.NotFound);
@@ -592,7 +592,7 @@ public class TreasuryService : ITreasuryService
 
             // pervious balance will be the balance of pervious movement 
             var previousBalance = await _unitOfWork.Repository<TreasuryMovement>()
-                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.IsActive && t.Id < movement.Id)
+                .GetAll(t => t.TreasuryId == movement.TreasuryId && t.Id < movement.Id)
                 .OrderByDescending(t => t.Id)
                 .Select(t => t.Balance)
                 .FirstOrDefaultAsync(cancellationToken);

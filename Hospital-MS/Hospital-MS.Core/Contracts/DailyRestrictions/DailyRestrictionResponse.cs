@@ -14,6 +14,8 @@ public class DailyRestrictionResponse
 
     //public string? LedgerNumber { get; set; }
     public string? Description { get; set; }
+
+    public bool? IsDeleted { get; set; }
     public List<DailyRestrictionDetailResponse> Details { get; set; } = [];
     public AuditResponse Audit { get; set; } = new();
 }

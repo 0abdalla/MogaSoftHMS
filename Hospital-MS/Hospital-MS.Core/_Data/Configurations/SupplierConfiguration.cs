@@ -60,9 +60,6 @@ namespace Hospital_MS.Core._Data.Configurations
             builder.Property(s => s.Notes)
                 .HasMaxLength(500);
    
-            builder.Property(s => s.IsActive)
-                .IsRequired()
-                .HasDefaultValue(true);
 
             // Indexes
             builder.HasIndex(s => s.AccountCode)

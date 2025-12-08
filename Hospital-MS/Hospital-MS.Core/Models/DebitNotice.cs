@@ -8,7 +8,6 @@ public class DebitNotice : AuditableEntity // اشعار خصم
     public string? CheckNumber { get; set; }
     public decimal Amount { get; set; }
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
 
     public Bank Bank { get; set; } = default!;
     public AccountTree Account { get; set; } = default!;

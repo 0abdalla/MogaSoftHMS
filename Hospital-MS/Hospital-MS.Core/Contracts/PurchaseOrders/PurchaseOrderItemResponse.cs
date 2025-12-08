@@ -15,4 +15,6 @@ public class PurchaseOrderItemResponse
     public decimal UnitPrice { get; set; }
     public decimal Total { get; set; }
     public decimal? TotalPrice { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

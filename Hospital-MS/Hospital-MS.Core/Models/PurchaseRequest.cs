@@ -12,8 +12,6 @@ public class PurchaseRequest : AuditableEntity
     public Store Store { get; set; } = null!;
     public PurchaseStatus Status { get; set; } = PurchaseStatus.Pending;
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
-
 
     public int? PriceQuotationId { get; set; }
     public PriceQuotation? PriceQuotation { get; set; }

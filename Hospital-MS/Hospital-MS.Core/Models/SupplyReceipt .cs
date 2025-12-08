@@ -8,7 +8,6 @@ public class SupplyReceipt : AuditableEntity // ايصال التوريد
     public decimal Amount { get; set; }
     public string? Description { get; set; }
     public int? CostCenterId { get; set; }
-    public bool IsActive { get; set; } = true;
 
     public int? AccountId { get; set; }
     public AccountTree? Account { get; set; }

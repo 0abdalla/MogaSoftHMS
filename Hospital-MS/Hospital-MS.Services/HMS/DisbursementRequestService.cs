@@ -105,7 +105,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            disbursementRequest.IsActive = false;
+            disbursementRequest.IsDeleted = !disbursementRequest.IsDeleted;
 
             _unitOfWork.Repository<DisbursementRequest>().Update(disbursementRequest);
 
@@ -131,7 +131,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             .Include(x => x.Items)
                 .ThenInclude(i => i.Item)
                 .ThenInclude(x => x.Unit)
-            .Where(x => x.IsActive && x.Status == PurchaseStatus.Approved);
+            .Where(x =>  x.Status == PurchaseStatus.Approved);
 
         var totalCount = await query.CountAsync(cancellationToken);
         var disbursementRequests = await query
@@ -172,7 +172,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 .ThenInclude(i => i.Item)
                 .ThenInclude(x => x.Unit)
             .OrderByDescending(x => x.Id)
-            .Where(x => x.IsActive);
+            .AsQueryable();
 
         if (!string.IsNullOrEmpty(filter.SearchText))
         {

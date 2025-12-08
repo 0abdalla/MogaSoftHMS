@@ -12,4 +12,6 @@ public class PurchaseRequestItemResponse
     public string ItemName { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
     public string? Notes { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

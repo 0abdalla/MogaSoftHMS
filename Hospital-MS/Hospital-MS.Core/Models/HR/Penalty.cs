@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models.HR
 {
     [Table("Penalties", Schema = "dbo")]
-    public class Penalty
+    public class Penalty : AuditableEntity
     {
         public int PenaltyId { get; set; }
         public int StaffId { get; set; }
@@ -20,9 +20,6 @@ namespace Hospital_MS.Core.Models.HR
         public double TotalDeduction { get; set; }
         public string Reason { get; set; }
         public int? WorkflowStatusId { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
+
     }
 }

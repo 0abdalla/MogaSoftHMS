@@ -55,12 +55,17 @@ namespace Hospital_MS.Services.HMS
             var jobLevel = await _unitOfWork.Repository<JobLevel>()
                 .GetAll(x => x.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
-            if (jobLevel is null)
+
+            if (jobLevel == null)
                 return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+
             try
             {
-                _unitOfWork.Repository<JobLevel>().Delete(jobLevel);
+                jobLevel.IsDeleted = !jobLevel.IsDeleted;
+
+                _unitOfWork.Repository<JobLevel>().Update(jobLevel);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
                 return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess);
             }
             catch (Exception)
@@ -68,6 +73,7 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
             }
         }
+
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {

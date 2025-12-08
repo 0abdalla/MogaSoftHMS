@@ -37,9 +37,9 @@ namespace Hospital_MS.Services.HMS
                             Reason = penalty.Reason,
                             WorkflowStatusId = penalty.WorkflowStatusId,
                             CreatedBy = penalty.CreatedBy,
-                            CreatedDate = penalty.CreatedDate,
-                            ModifiedBy = penalty.ModifiedBy,
-                            ModifiedDate = penalty.ModifiedDate,
+                            CreatedOn = penalty.CreatedOn,
+                            UpdatedBy = penalty.UpdatedBy,
+                            UpdatedOn = penalty.UpdatedOn,
                             PenaltyType = penaltyType.NameEN,
                         };
             int totalCount = query.Count();
@@ -74,9 +74,9 @@ namespace Hospital_MS.Services.HMS
                             Reason = penalty.Reason,
                             WorkflowStatusId = penalty.WorkflowStatusId,
                             CreatedBy = penalty.CreatedBy,
-                            CreatedDate = penalty.CreatedDate,
-                            ModifiedBy = penalty.ModifiedBy,
-                            ModifiedDate = penalty.ModifiedDate,
+                            CreatedOn = penalty.CreatedOn,
+                            UpdatedBy = penalty.UpdatedBy,
+                            UpdatedOn = penalty.UpdatedOn,
                             PenaltyType = penaltyType.NameEN,
                         };
             int totalCount = query.Count();
@@ -108,7 +108,7 @@ namespace Hospital_MS.Services.HMS
                 penalty.Reason = model.Reason;
                 penalty.WorkflowStatusId = (int)HRWorkflowStatus.Approved;
                 penalty.CreatedBy = model.CreatedBy;
-                penalty.CreatedDate = DateTime.Now;
+                penalty.CreatedOn = DateTime.Now;
 
                 await _unitOfWork.Repository<Penalty>().AddAsync(penalty, cancellationToken);
                 await _unitOfWork.CompleteAsync();
@@ -138,8 +138,8 @@ namespace Hospital_MS.Services.HMS
                     penalty.DeductionAmount = model.DeductionAmount;
                     penalty.Reason = model.Reason;
                     penalty.WorkflowStatusId = model.WorkflowStatusId;
-                    penalty.ModifiedBy = model.ModifiedBy;
-                    penalty.ModifiedDate = DateTime.Now;
+                    penalty.UpdatedBy = model.UpdatedBy;
+                    penalty.UpdatedOn = DateTime.Now;
 
                     await _unitOfWork.CompleteAsync();
 
@@ -159,25 +159,25 @@ namespace Hospital_MS.Services.HMS
 
         public async Task<ErrorResponseModel<string>> DeleteEmployeePenalty(int PenaltyId)
         {
-
             try
             {
                 var penalty = await _unitOfWork.Repository<Penalty>().GetByIdAsync(PenaltyId);
-                if (penalty != null)
-                {
-                    _unitOfWork.Repository<Penalty>().Delete(penalty);
-                    _unitOfWork.CompleteAsync();
-                    return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
-                }
-                else
+                if (penalty == null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                penalty.IsDeleted = !penalty.IsDeleted;
+
+                _unitOfWork.Repository<Penalty>().Update(penalty);
+                await _unitOfWork.CompleteAsync();
+
+                return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
-
         }
+
 
         public async Task<ContractDetail> GetEmployeeContractDetails(int EmployeeId)
         {

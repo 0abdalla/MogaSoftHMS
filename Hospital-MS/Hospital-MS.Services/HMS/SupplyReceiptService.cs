@@ -24,7 +24,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
         try
         {
             var treasury = await _unitOfWork.Repository<Treasury>()
-                .GetAll(x => x.Id == request.TreasuryId && x.IsActive)
+                .GetAll(x => x.Id == request.TreasuryId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (treasury == null)
@@ -86,7 +86,6 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = treasuryOperation.Id.ToString(),
                 RestrictionTypeId = null,
-                IsActive = true,
                 AccountingGuidanceId = 1, // المخازن
                 RestrictionDate = request.Date,
                 Description = request.Description,
@@ -151,7 +150,9 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            supplyReceipt.IsActive = false;
+            supplyReceipt.IsDeleted = !supplyReceipt.IsDeleted;
+
+
 
             _unitOfWork.Repository<SupplyReceipt>().Update(supplyReceipt);
 

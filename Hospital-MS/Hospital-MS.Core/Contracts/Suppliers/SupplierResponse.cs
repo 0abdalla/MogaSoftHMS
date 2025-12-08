@@ -23,6 +23,5 @@ public class SupplierResponse
     public string Email { get; set; }
     public string? Website { get; set; }
     public string? Notes { get; set; }
-    public bool IsActive { get; set; }
     public AuditResponse Audit { get; set; }
 }

@@ -19,8 +19,6 @@ public class BranchConfiguration : IEntityTypeConfiguration<Branch>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
 
         builder.Property(x => x.Location)
             .HasMaxLength(200);

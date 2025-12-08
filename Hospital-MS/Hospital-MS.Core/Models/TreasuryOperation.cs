@@ -10,7 +10,6 @@ public class TreasuryOperation
     public string? Description { get; set; }
     public string? ReceivedFrom { get; set; } // استلمت من السيد
     public decimal Amount { get; set; } // الوارد
-    public bool IsActive { get; set; } = true;
 
     public int? AccountId { get; set; }
     public TransactionType TransactionType { get; set; }

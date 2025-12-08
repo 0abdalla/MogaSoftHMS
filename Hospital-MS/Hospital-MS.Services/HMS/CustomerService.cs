@@ -51,7 +51,6 @@ public class CustomerService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : ICu
                 PaymentMethod = request.PaymentMethod,
                 PaymentResponsible = request.PaymentResponsible,
                 CreditLimit = request.CreditLimit,
-                IsActive = true
             };
 
             await _unitOfWork.Repository<Customer>().AddAsync(customer, cancellationToken);
@@ -98,11 +97,11 @@ public class CustomerService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : ICu
                 PaymentMethod = row.Field<string>("PaymentMethod"),
                 PaymentResponsible = row.Field<string>("PaymentResponsible"),
                 CreditLimit = row.Field<decimal>("CreditLimit"),
-                IsActive = row.Field<bool>("IsActive"),
                 Audit = new AuditResponse
                 {
                     CreatedBy = row.Field<string>("CreatedBy"),
                     CreatedOn = row.Field<DateTime>("CreatedOn"),
+                    IsDeleted = row.Field<bool>("IsDeleted"),
                 }
             }).ToList();
 
@@ -124,7 +123,7 @@ public class CustomerService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : ICu
                 .GetAll()
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (customer == null)
                 return ErrorResponseModel<CustomerResponse>.Failure(GenericErrors.NotFound);
@@ -149,7 +148,7 @@ public class CustomerService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : ICu
                 PaymentMethod = customer.PaymentMethod,
                 PaymentResponsible = customer.PaymentResponsible,
                 CreditLimit = customer.CreditLimit,
-                IsActive = customer.IsActive,
+
                 Audit = new AuditResponse
                 {
                     CreatedBy = customer.CreatedBy.UserName,
@@ -220,7 +219,7 @@ public class CustomerService(IUnitOfWork unitOfWork, ISQLHelper sqlHelper) : ICu
             if (customer == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            customer.IsActive = false;
+            customer.IsDeleted = !customer.IsDeleted;
             _unitOfWork.Repository<Customer>().Update(customer);
             await _unitOfWork.CompleteAsync(cancellationToken);
 

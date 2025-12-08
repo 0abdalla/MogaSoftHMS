@@ -1,166 +1,310 @@
 <main id="add-reservation" @fadeIn>
-    <div class="container-fluid">
-        <div class="card search-patient p-2 col-6 m-auto text-center">
-            <h5 class="text-center">بحث عن مريض موجود</h5>
-            <div class="col-6 m-auto mt-2">
-                <div class="input-group">
-                    <input type="search" class="form-control shadow-none" placeholder="ابحث برقم الهاتف لتعبئة البيانات تلقائيًا .." (input)="searchPatientByPhone($event)" maxlength="11" />
-                    <span class="input-group-text">
-            <svg width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85a1.007 1.007 0 0 0-.115-.098zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+  <div class="container-fluid">
+    <div class="card search-patient p-2 col-6 m-auto text-center">
+      <h5 class="text-center">بحث عن مريض موجود</h5>
+      <div class="col-6 m-auto mt-2">
+        <div class="input-group">
+          <input
+            type="search"
+            class="form-control shadow-none"
+            placeholder="ابحث برقم الهاتف لتعبئة البيانات تلقائيًا .."
+            (input)="searchPatientByPhone($event)"
+            maxlength="11"
+          />
+          <span class="input-group-text">
+            <svg
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-search"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85a1.007 1.007 0 0 0-.115-.098zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+              />
             </svg>
           </span>
-                </div>
-            </div>
         </div>
-        <form [formGroup]="reservationForm" class="form p-2" (ngSubmit)="onSubmit()">
-            <p-toast position="top-left"></p-toast>
-            <h4>👤بيانات المريض</h4>
-            <div class="row mb-3">
-                <div class="col-lg-4">
-                    <label for="patientName" class="form-label">إسم المريض</label>
-                    <input type="text" id="patientName" class="form-control shadow-none" placeholder="أدخل إسم المريض" formControlName="patientName">
-                    <div *ngIf="reservationForm.get('patientName')?.invalid && reservationForm.get('patientName')?.touched" class="text-danger">
-                        اسم المريض مطلوب
-                    </div>
-                </div>
+      </div>
+    </div>
+    <form
+      [formGroup]="reservationForm"
+      class="form p-2"
+      (ngSubmit)="onSubmit()"
+    >
+      <p-toast position="top-left"></p-toast>
+      <h4>👤بيانات المريض</h4>
+      <div class="row mb-3">
+        <div class="col-lg-4">
+          <label for="patientName" class="form-label"
+            >إسم المريض<span class="text-danger">*</span></label
+          >
+          <input
+            type="text"
+            id="patientName"
+            class="form-control shadow-none"
+            placeholder="أدخل إسم المريض"
+            formControlName="patientName"
+          />
+          <div
+            *ngIf="
+              reservationForm.get('patientName')?.invalid &&
+              reservationForm.get('patientName')?.touched
+            "
+            class="text-danger"
+          >
+            اسم المريض مطلوب
+          </div>
+        </div>
 
-                <div class="col-lg-4">
-                    <label for="patientPhone" class="form-label">رقم الهاتف </label>
-                    <input type="text" id="patientPhone" class="form-control shadow-none" placeholder="أدخل رقم الهاتف " formControlName="patientPhone">
-                    <div *ngIf="reservationForm.get('patientPhone')?.invalid && reservationForm.get('patientPhone')?.touched" class="text-danger">
-                        <ng-container *ngIf="reservationForm.get('patientPhone')?.errors?.['required']">رقم الهاتف مطلوب</ng-container>
-                        <ng-container *ngIf="reservationForm.get('patientPhone')?.errors?.['pattern']">رقم الهاتف غير صحيح</ng-container>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <label for="gender" class="form-label">النوع</label>
-                    <select id="gender" class="form-select shadow-none" formControlName="gender">
+        <div class="col-lg-4">
+          <label for="patientPhone" class="form-label"
+            >رقم الهاتف<span class="text-danger">*</span>
+          </label>
+          <input
+            type="text"
+            id="patientPhone"
+            class="form-control shadow-none"
+            placeholder="أدخل رقم الهاتف "
+            formControlName="patientPhone"
+          />
+          <div
+            *ngIf="
+              reservationForm.get('patientPhone')?.invalid &&
+              reservationForm.get('patientPhone')?.touched
+            "
+            class="text-danger"
+          >
+            <ng-container
+              *ngIf="reservationForm.get('patientPhone')?.errors?.['required']"
+              >رقم الهاتف مطلوب</ng-container
+            >
+            <ng-container
+              *ngIf="reservationForm.get('patientPhone')?.errors?.['pattern']"
+              >رقم الهاتف غير صحيح</ng-container
+            >
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="gender" class="form-label"
+            >النوع<span class="text-danger">*</span></label
+          >
+          <select
+            id="gender"
+            class="form-select shadow-none"
+            formControlName="gender"
+          >
             <option selected disabled value="">اختر النوع</option>
             <option value="Male">ذكر</option>
             <option value="Female">انثى</option>
           </select>
-                    <div *ngIf="reservationForm.get('gender')?.invalid && reservationForm.get('gender')?.touched" class="text-danger">
-                        النوع مطلوب
-                    </div>
-                </div>
+          <div
+            *ngIf="
+              reservationForm.get('gender')?.invalid &&
+              reservationForm.get('gender')?.touched
+            "
+            class="text-danger"
+          >
+            النوع مطلوب
+          </div>
+        </div>
+      </div>
+      <hr />
 
-
-            </div>
-            <hr>
-
-            <h4>🏥بيانات الحجز</h4>
-            <div class="row mb-3">
-                <div class="col-md-8 mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="openAppointmentDetailsModal(null)">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>إضافة</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="p-3 bg-white">
-                    <div class="table-responsive shadow-sm radius-10">
-                        <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
-                            <thead>
-                                <tr>
-                                    <th>تاريخ الحجز</th>
-                                    <th>نوع الحجز</th>
-                                    <th>نوع الخدمة</th>
-                                    <th>الدكتور المختص</th>
-                                    <th>التكلفة</th>
-                                    <th>الإجراءات</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container>
-                                    <tr *ngFor="let item of appointmentDetailsSelected; let i = index">
-                                        <td>{{ item.appointmentDate | date: 'dd/MM/yyyy' }}</td>
-                                        <td>{{ item.appointmentType | medicalTypeToArabic }}</td>
-                                        <td>{{ item.medicalServiceName }}</td>
-                                        <td>{{ item.doctorName ?? '---' }}</td>
-                                        <td>{{ item.price }} جنيه</td>
-                                        <td class="d-flex gap-2">
-                                            <!-- <button type="button" class="btn btn-primary" (click)="openAppointmentDetailsModal(item)">
+      <h4>🏥بيانات الحجز</h4>
+      <div class="row mb-3">
+        <div class="col-md-8 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <button
+              type="button"
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              (click)="openAppointmentDetailsModal(null)"
+            >
+              <i class="fas fa-plus-circle"></i>
+              <span>إضافة</span>
+            </button>
+          </div>
+        </div>
+        <div class="p-3 bg-white">
+          <div class="table-responsive shadow-sm radius-10">
+            <table
+              class="table table-card-table table-borderless table-hover bg-transparent m-0"
+            >
+              <thead>
+                <tr>
+                  <th>تاريخ الحجز</th>
+                  <th>نوع الحجز</th>
+                  <th>نوع الخدمة</th>
+                  <th>الدكتور المختص</th>
+                  <th>التكلفة</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container>
+                  <tr
+                    *ngFor="
+                      let item of appointmentDetailsSelected;
+                      let i = index
+                    "
+                  >
+                    <td>{{ item.appointmentDate | date : "dd/MM/yyyy" }}</td>
+                    <td>{{ item.appointmentType | medicalTypeToArabic }}</td>
+                    <td>{{ item.medicalServiceName }}</td>
+                    <td>{{ item.doctorName ?? "---" }}</td>
+                    <td>{{ item.price }} جنيه</td>
+                    <td class="d-flex gap-2">
+                      <!-- <button type="button" class="btn btn-primary" (click)="openAppointmentDetailsModal(item)">
                                                 <i class="fas fa-edit"></i>
                                             </button> -->
-                                            <button type="button" class="btn btn-danger" (click)="deleteAppointment(i)">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr *ngIf="appointmentDetailsSelected?.length">
-                                        <td></td>
-                                        <td colspan="2" class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
-                                        <td></td>
-                                        <td class="fw-bold">{{ totalPrice }} جنيه</td>
-                                        <td></td>
-                                    </tr>
-                                </ng-container>
-                                <ng-container>
-                                    <tr *ngIf="!appointmentDetailsSelected?.length">
-                                        <td colspan="12" class="text-right">
-                                            <app-empty-data [showEmptyData]="!appointmentDetailsSelected?.length"></app-empty-data>
-                                        </td>
-                                    </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <hr>
-            <div class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50 px-3">
-                <h5 class="mb-0 fw-bold">
-                    <span>📋بيانات إضافية</span>
-                </h5>
-                <button type="button" class="btn-blue" (click)="showAdditionalInfo = !showAdditionalInfo">
-                {{ showAdditionalInfo ? 'إخفاء' : 'إظهار' }}
-            </button>
-            </div>
-            <div class="row mb-3" *ngIf="showAdditionalInfo">
-                <div class="col-lg-4">
-                    <label for="insuranceCompanyId" class="form-label">شركة التأمين</label>
-                    <select id="insuranceCompanyId" class="form-select shadow-none" formControlName="insuranceCompanyId">
+                      <button
+                        type="button"
+                        class="btn btn-danger"
+                        (click)="deleteAppointment(i)"
+                      >
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="appointmentDetailsSelected?.length">
+                    <td></td>
+                    <td colspan="2" class="text-end fw-bold">
+                      إجمالي تكلفة الخدمة
+                    </td>
+                    <td></td>
+                    <td class="fw-bold">{{ totalPrice }} جنيه</td>
+                    <td></td>
+                  </tr>
+                </ng-container>
+                <ng-container>
+                  <tr *ngIf="!appointmentDetailsSelected?.length">
+                    <td colspan="12" class="text-right">
+                      <app-empty-data
+                        [showEmptyData]="!appointmentDetailsSelected?.length"
+                      ></app-empty-data>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div
+        class="card-header border-bottom bg-gray d-flex align-items-center justify-content-between hh-50 px-3"
+      >
+        <h5 class="mb-0 fw-bold">
+          <span>📋بيانات إضافية</span>
+        </h5>
+        <button
+          type="button"
+          class="btn-blue"
+          (click)="showAdditionalInfo = !showAdditionalInfo"
+        >
+          {{ showAdditionalInfo ? "إخفاء" : "إظهار" }}
+        </button>
+      </div>
+      <div class="row mb-3" *ngIf="showAdditionalInfo">
+        <div class="col-lg-4">
+          <label for="insuranceCompanyId" class="form-label"
+            >شركة التأمين</label
+          >
+          <select
+            id="insuranceCompanyId"
+            class="form-select shadow-none"
+            formControlName="insuranceCompanyId"
+          >
             <option selected disabled value="">اختر شركة التأمين</option>
-            <option *ngFor="let insuranceCompany of insuranceCompanies" [value]="insuranceCompany.id">{{ insuranceCompany.name }}</option>
+            <option
+              *ngFor="let insuranceCompany of insuranceCompanies"
+              [value]="insuranceCompany.id"
+            >
+              {{ insuranceCompany.name }}
+            </option>
           </select>
-                </div>
-                <div class="col-lg-4">
-                    <label for="insuranceCategoryId" class="form-label">فئة التأمين</label>
-                    <select id="insuranceCategoryId" class="form-select shadow-none" formControlName="insuranceCategoryId">
-                    <option selected disabled value="">اختر فئة التأمين</option>
-                    <option *ngFor="let insuranceCategory of insuranceCategories" [value]="insuranceCategory.id">{{insuranceCategory.name}}</option>
-                  </select>
-                    <div *ngIf="reservationForm.get('insuranceCategoryId')?.invalid && reservationForm.get('insuranceCategoryId')?.touched" class="text-danger">
-                        فئة التأمين مطلوبة
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <label for="insuranceNumber" class="form-label">رقم التأمين</label>
-                    <input type="text" id="insuranceNumber" class="form-control shadow-none" formControlName="insuranceNumber" placeholder="أدخل رقم التأمين" pattern="[0-9]*">
-                </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="insuranceCategoryId" class="form-label"
+            >فئة التأمين<span class="text-danger">*</span></label
+          >
+          <select
+            id="insuranceCategoryId"
+            class="form-select shadow-none"
+            formControlName="insuranceCategoryId"
+          >
+            <option selected disabled value="">اختر فئة التأمين</option>
+            <option
+              *ngFor="let insuranceCategory of insuranceCategories"
+              [value]="insuranceCategory.id"
+            >
+              {{ insuranceCategory.name }}
+            </option>
+          </select>
+          <div
+            *ngIf="
+              reservationForm.get('insuranceCategoryId')?.invalid &&
+              reservationForm.get('insuranceCategoryId')?.touched
+            "
+            class="text-danger"
+          >
+            فئة التأمين مطلوبة
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <label for="insuranceNumber" class="form-label">رقم التأمين</label>
+          <input
+            type="text"
+            id="insuranceNumber"
+            class="form-control shadow-none"
+            formControlName="insuranceNumber"
+            placeholder="أدخل رقم التأمين"
+            pattern="[0-9]*"
+          />
+        </div>
 
-                <div class="col-lg-4 mt-3">
-                    <label class="form-label">تم تحويله؟</label>
-                    <div class="form-check">
-                        <input type="radio" id="referredYes" class="form-check-input shadow-none" formControlName="referred" value="yes">
-                        <label for="referredYes" class="form-check-label">نعم</label>
-                    </div>
-                    <div class="form-check">
-                        <input type="radio" id="referredNo" class="form-check-input shadow-none" formControlName="referred" value="no">
-                        <label for="referredNo" class="form-check-label">لا</label>
-                    </div>
-                </div>
-                <div class="col-lg-4 mt-3" *ngIf="reservationForm.get('referred')?.value === 'yes'">
-                    <label for="referredClinic" class="form-label">العيادة المحول منها</label>
-                    <select [disabled]="!reservationForm.get('referred')?.value" id="referredClinic" class="form-select shadow-none" formControlName="referredClinic">
+        <div class="col-lg-4 mt-3">
+          <label class="form-label">تم تحويله؟</label>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="referredYes"
+              class="form-check-input shadow-none"
+              formControlName="referred"
+              value="yes"
+            />
+            <label for="referredYes" class="form-check-label">نعم</label>
+          </div>
+          <div class="form-check">
+            <input
+              type="radio"
+              id="referredNo"
+              class="form-check-input shadow-none"
+              formControlName="referred"
+              value="no"
+            />
+            <label for="referredNo" class="form-check-label">لا</label>
+          </div>
+        </div>
+        <div
+          class="col-lg-4 mt-3"
+          *ngIf="reservationForm.get('referred')?.value === 'yes'"
+        >
+          <label for="referredClinic" class="form-label"
+            >العيادة المحول منها</label
+          >
+          <select
+            [disabled]="!reservationForm.get('referred')?.value"
+            id="referredClinic"
+            class="form-select shadow-none"
+            formControlName="referredClinic"
+          >
             <option selected disabled value="">اختر العيادة</option>
             <option value="عيادة العظام">عيادة العظام</option>
             <option value="عيادة الباطنة">عيادة الباطنة</option>
           </select>
-                </div>
-                <!-- <div class="col-lg-4 mt-3">
+        </div>
+        <!-- <div class="col-lg-4 mt-3">
           <label class="form-label">حاصل على تطعيم؟</label>
           <div class="form-check">
             <input type="radio" id="vaccinatedYes" class="form-check-input shadow-none" formControlName="vaccinated" value="yes">
@@ -171,134 +315,257 @@
             <label for="vaccinatedNo" class="form-check-label">لا</label>
           </div>
         </div> -->
-                <div class="col-lg-4 mt-3">
-                    <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
-                    <select id="paymentMethod" class="form-select shadow-none" formControlName="paymentMethod">
-                    <option selected disabled value="">اختر وسيلة الدفع</option>
-                    <option value="نقدي">نقدي</option>
-                    <option value="تحويل لحظي">تحويل لحظي</option>
+        <div class="col-lg-4 mt-3">
+          <label for="paymentMethod" class="form-label">وسيلة الدفع</label>
+          <select
+            id="paymentMethod"
+            class="form-select shadow-none"
+            formControlName="paymentMethod"
+          >
+            <option selected disabled value="">اختر وسيلة الدفع</option>
+            <option value="نقدي">نقدي</option>
+            <option value="تحويل لحظي">تحويل لحظي</option>
           </select>
-                </div>
-            </div>
-            <div class="row justify-content-center gap-2 px-3">
-                <button type="submit" [disabled]="!reservationForm.valid" class="btn-blue col-2">إضافة</button>
-                <button type="reset" class="btn-outline-blue col-2">الغاء</button>
-            </div>
-        </form>
-    </div>
+        </div>
+      </div>
+      <div class="row justify-content-center gap-2 px-3">
+        <button
+          type="submit"
+          [disabled]="!reservationForm.valid"
+          class="btn-blue col-2"
+        >
+          إضافة
+        </button>
+        <button type="reset" class="btn-outline-blue col-2">الغاء</button>
+      </div>
+    </form>
+  </div>
 </main>
 
+<div
+  class="modal fade"
+  id="AppointmentDetailsModal"
+  tabindex="-1"
+  aria-labelledby="AppointmentDetailsLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+  >
+    <div class="modal-content">
+      <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="AppointmentDetailsLabel">إضافة بيانات</h5>
+      </div>
+      <div class="modal-body p-4">
+        <form
+          [formGroup]="appointmentDetailsForm"
+          (ngSubmit)="AddAppointmentDetails()"
+        >
+          <div class="mb-3">
+            <label for="app-date" class="form-label"
+              >تاريخ الحجز<span class="text-danger">*</span></label
+            >
+            <input
+              id="app-date"
+              type="date"
+              formControlName="appointmentDate"
+              class="form-control shadow-none"
+              (change)="onDayChange()"
+            />
 
-<div class="modal fade" id="AppointmentDetailsModal" tabindex="-1" aria-labelledby="AppointmentDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
-            <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="AppointmentDetailsLabel">إضافة بيانات</h5>
-            </div>
-            <div class="modal-body p-4">
-                <form [formGroup]="appointmentDetailsForm" (ngSubmit)="AddAppointmentDetails()">
-                    <div class="mb-3">
-                      <label for="app-date" class="form-label">تاريخ الحجز</label>
-                      <input id="app-date" type="date" formControlName="appointmentDate" class="form-control shadow-none"
-                        (change)="onDayChange()">
-
-                      <div *ngIf="appointmentDetailsForm.get('appointmentDate')?.invalid
+            <div
+              *ngIf="appointmentDetailsForm.get('appointmentDate')?.invalid
                                                       && appointmentDetailsForm.get('appointmentDate')?.touched
                                                       && appointmentDetailsForm.get('appointmentDate')?.errors?.['notToday']"
-                        class="text-danger">
-                        تاريخ الحجز يجب أن يكون اليوم أو لاحقًا
-                      </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="clinic-type" class="form-label">نوع الحجز</label>
-                        <select id="clinic-type" class="form-select shadow-none" formControlName="appointmentType" (change)="onAppointmentTypeChange()">
-                            <option selected disabled [value]="null">اختر نوع الحجز</option>
-                            <option value="General">كشف</option>
-                            <option value="Consultation">استشارة</option>
-                            <option value="Surgery">عمليات</option>
-                            <option value="Screening">تحاليل</option>
-                            <option value="MRI">أشعة رنين</option>
-                            <option value="Panorama">أشعة بانوراما</option>
-                            <option value="XRay">أشعة عادية</option>
-                            <option value="CTScan">أشعة مقطعية</option>
-                            <option value="Ultrasound">أشعة سونار</option>
-                            <option value="Echo">أشعة إيكو</option>
-                            <option value="Mammogram">أشعة ماموجرام</option>                        </select>
-                        <div *ngIf="appointmentDetailsForm.get('appointmentType')?.invalid && appointmentDetailsForm.get('appointmentType')?.touched" class="text-danger">
-                            نوع الحجز مطلوب
-                        </div>
-                    </div>
-
-                    <div class="mb-3" *ngIf="IsGeneral">
-                        <label for="clinic" class="form-label">
-                            الخدمة الطبية
-                        </label>
-                        <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" (change)="onServiceSelected()">
-                            <option selected disabled [value]="null">اختر الخدمة</option>
-                            <option *ngFor="let service of filteredServices" [ngValue]="service.id">
-                                {{ service.name }}
-                            </option>
-                            <option *ngIf="filteredServices.length === 0" disabled>
-                                {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
-                            </option>
-                        </select>
-                        <div *ngIf="appointmentDetailsForm.get('medicalServiceId')?.invalid && appointmentDetailsForm.get('medicalServiceId')?.touched" class="text-danger">
-                            الخدمة الطبية مطلوبة
-                        </div>
-                    </div>
-
-                    <div class="mb-3" *ngIf="appointmentDetailsForm.get('appointmentType')?.value && IsGeneral">
-                        <label for="clinic-doctor" class="form-label">الدكتور المختص</label>
-                        <select id="clinic-doctor" class="form-select shadow-none" formControlName="doctorId" (change)="onDoctorSelected()">
-                            <option selected disabled [value]="null">اختر الدكتور المختص</option>
-                            <option *ngFor="let doctor of filteredDoctors" [value]="doctor.id">
-                            {{ doctor.fullName }}
-                            </option>
-                            <option *ngIf="filteredDoctors.length === 0" disabled>
-                            {{ selectedDate ? 'لا يوجد أطباء متاحين في اليوم المحدد' : 'لا يوجد أطباء متاحين لهذه الخدمة' }}
-                            </option>
-                        </select>
-                        <div *ngIf="appointmentDetailsForm.get('doctorId')?.invalid && appointmentDetailsForm.get('doctorId')?.touched" class="text-danger">
-                            الدكتور المختص مطلوب
-                        </div>
-                    </div>
-
-                    <div class="mb-3" *ngIf="IsScreening || IsRadiology">
-                        <label for="clinic" class="form-label">
-                            {{IsScreening ? 'نوع التحليل': 'نوع الأشعة'}}
-                        </label>
-                        <select id="clinic" class="form-select shadow-none" formControlName="medicalServiceId" (change)="onServiceSelected()">
-                        <option selected disabled [value]="null">اختر الخدمة</option>
-                        <option *ngFor="let service of filteredServices" [value]="service.id">
-                        {{ service.name }}
-                        </option>
-                        <option *ngIf="filteredServices.length === 0" disabled>
-                        {{ selectedDate ? 'لا توجد خدمات متاحة في اليوم المحدد' : 'لا توجد خدمات متاحة للنوع المحدد' }}
-                        </option>
-                    </select>
-                        <div class="min-width-200 max-width-500 small-scroll overflow-auto p-2">
-                            <span class="badge round min-width-60 badge-muted me-1 mb-1" *ngFor="let item of radiologyTypesSelected;let i = index">
-                            {{ item.name }}
-                            <i class="fas fa-times ms-1 cursor-pointer"
-                          (click)="removeRadiologyType(i)"
-                          title="حذف"
-                          style="font-size: 0.8rem;"></i>
-                          </span>
-                        </div>
-                        <div *ngIf="appointmentDetailsForm.get('medicalServiceId')?.invalid && appointmentDetailsForm.get('medicalServiceId')?.touched" class="text-danger">
-                            {{ IsScreening ? 'نوع التحليل مطلوب' : 'نوع الأشعة مطلوبة' }}
-                        </div>
-                    </div>
-
-
-                    <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn-blue" [disabled]="appointmentDetailsForm.invalid">حفظ التغييرات</button>
-                    </div>
-                </form>
+              class="text-danger"
+            >
+              تاريخ الحجز يجب أن يكون اليوم أو لاحقًا
             </div>
-        </div>
+          </div>
+          <div class="mb-3">
+            <label for="clinic-type" class="form-label"
+              >نوع الحجز<span class="text-danger">*</span></label
+            >
+            <select
+              id="clinic-type"
+              class="form-select shadow-none"
+              formControlName="appointmentType"
+              (change)="onAppointmentTypeChange()"
+            >
+              <option selected disabled [value]="null">اختر نوع الحجز</option>
+              <option value="General">كشف</option>
+              <option value="Consultation">استشارة</option>
+              <option value="Surgery">عمليات</option>
+              <option value="Screening">تحاليل</option>
+              <option value="MRI">أشعة رنين</option>
+              <option value="Panorama">أشعة بانوراما</option>
+              <option value="XRay">أشعة عادية</option>
+              <option value="CTScan">أشعة مقطعية</option>
+              <option value="Ultrasound">أشعة سونار</option>
+              <option value="Echo">أشعة إيكو</option>
+              <option value="Mammogram">أشعة ماموجرام</option>
+            </select>
+            <div
+              *ngIf="
+                appointmentDetailsForm.get('appointmentType')?.invalid &&
+                appointmentDetailsForm.get('appointmentType')?.touched
+              "
+              class="text-danger"
+            >
+              نوع الحجز مطلوب
+            </div>
+          </div>
+
+          <div class="mb-3" *ngIf="IsGeneral">
+            <label for="clinic" class="form-label">
+              الخدمة الطبية<span class="text-danger">*</span>
+            </label>
+            <select
+              id="clinic"
+              class="form-select shadow-none"
+              formControlName="medicalServiceId"
+              (change)="onServiceSelected()"
+            >
+              <option selected disabled [value]="null">اختر الخدمة</option>
+              <option
+                *ngFor="let service of filteredServices"
+                [ngValue]="service.id"
+              >
+                {{ service.name }}
+              </option>
+              <option *ngIf="filteredServices.length === 0" disabled>
+                {{
+                  selectedDate
+                    ? "لا توجد خدمات متاحة في اليوم المحدد"
+                    : "لا توجد خدمات متاحة للنوع المحدد"
+                }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                appointmentDetailsForm.get('medicalServiceId')?.invalid &&
+                appointmentDetailsForm.get('medicalServiceId')?.touched
+              "
+              class="text-danger"
+            >
+              الخدمة الطبية مطلوبة
+            </div>
+          </div>
+
+          <div
+            class="mb-3"
+            *ngIf="
+              appointmentDetailsForm.get('appointmentType')?.value && IsGeneral
+            "
+          >
+            <label for="clinic-doctor" class="form-label"
+              >الدكتور المختص<span class="text-danger">*</span></label
+            >
+            <select
+              id="clinic-doctor"
+              class="form-select shadow-none"
+              formControlName="doctorId"
+              (change)="onDoctorSelected()"
+            >
+              <option selected disabled [value]="null">
+                اختر الدكتور المختص
+              </option>
+              <option
+                *ngFor="let doctor of filteredDoctors"
+                [value]="doctor.id"
+              >
+                {{ doctor.fullName }}
+              </option>
+              <option *ngIf="filteredDoctors.length === 0" disabled>
+                {{
+                  selectedDate
+                    ? "لا يوجد أطباء متاحين في اليوم المحدد"
+                    : "لا يوجد أطباء متاحين لهذه الخدمة"
+                }}
+              </option>
+            </select>
+            <div
+              *ngIf="
+                appointmentDetailsForm.get('doctorId')?.invalid &&
+                appointmentDetailsForm.get('doctorId')?.touched
+              "
+              class="text-danger"
+            >
+              الدكتور المختص مطلوب
+            </div>
+          </div>
+
+          <div class="mb-3" *ngIf="IsScreening || IsRadiology">
+            <label for="clinic" class="form-label">
+              {{ IsScreening ? "نوع التحليل" : "نوع الأشعة"
+              }}<span class="text-danger">*</span>
+            </label>
+            <select
+              id="clinic"
+              class="form-select shadow-none"
+              formControlName="medicalServiceId"
+              (change)="onServiceSelected()"
+            >
+              <option selected disabled [value]="null">اختر الخدمة</option>
+              <option
+                *ngFor="let service of filteredServices"
+                [value]="service.id"
+              >
+                {{ service.name }}
+              </option>
+              <option *ngIf="filteredServices.length === 0" disabled>
+                {{
+                  selectedDate
+                    ? "لا توجد خدمات متاحة في اليوم المحدد"
+                    : "لا توجد خدمات متاحة للنوع المحدد"
+                }}
+              </option>
+            </select>
+            <div
+              class="min-width-200 max-width-500 small-scroll overflow-auto p-2"
+            >
+              <span
+                class="badge round min-width-60 badge-muted me-1 mb-1"
+                *ngFor="let item of radiologyTypesSelected; let i = index"
+              >
+                {{ item.name }}
+                <i
+                  class="fas fa-times ms-1 cursor-pointer"
+                  (click)="removeRadiologyType(i)"
+                  title="حذف"
+                  style="font-size: 0.8rem"
+                ></i>
+              </span>
+            </div>
+            <div
+              *ngIf="
+                appointmentDetailsForm.get('medicalServiceId')?.invalid &&
+                appointmentDetailsForm.get('medicalServiceId')?.touched
+              "
+              class="text-danger"
+            >
+              {{ IsScreening ? "نوع التحليل مطلوب" : "نوع الأشعة مطلوبة" }}
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center">
+            <button
+              type="submit"
+              class="btn-blue"
+              [disabled]="appointmentDetailsForm.invalid"
+            >
+              حفظ التغييرات
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
-<app-print-invoice #printInvoice [invoiceData]="invoiceData" [appointmentsSelected]="appointmentsSelected"></app-print-invoice>
+<app-print-invoice
+  #printInvoice
+  [invoiceData]="invoiceData"
+  [appointmentsSelected]="appointmentsSelected"
+></app-print-invoice>

@@ -18,7 +18,6 @@ public class PurchaseOrderConfiguration : IEntityTypeConfiguration<PurchaseOrder
         builder.Property(x => x.ReferenceNumber).HasMaxLength(50);
         builder.Property(x => x.Description).HasMaxLength(500);
         builder.Property(x => x.Status).IsRequired();
-        builder.Property(x => x.IsActive).HasDefaultValue(true);
         builder.HasOne(x => x.Supplier).WithMany().HasForeignKey(x => x.SupplierId);
     }
 }

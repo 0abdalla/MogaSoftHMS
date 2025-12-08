@@ -14,7 +14,8 @@ public class BankResponse
     public string? AccountNumber { get; set; }
     public string Currency { get; set; }
     public decimal InitialBalance { get; set; }
-    public bool IsActive { get; set; }
+
+    public bool? IsDeleted { get; set; }
 
     public AuditResponse Audit { get; set; }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models
 {
-    public class MedicalServiceDetail
+    public class MedicalServiceDetail : AuditableEntity
     {
         public int Id { get; set; }
         public int AppointmentId { get; set; }

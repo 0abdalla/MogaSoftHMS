@@ -9,7 +9,8 @@ namespace Hospital_MS.Core.Contracts.Stores
         public string? ContactNumber { get; set; }
         public string? Email { get; set; }
         public int? StoreTypeId { get; set; }
-        public string? StoreTypeName { get; set; } 
-        public bool IsActive { get; set; }
+        public string? StoreTypeName { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

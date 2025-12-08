@@ -12,7 +12,6 @@ public class Branch : AuditableEntity
     public string? Location { get; set; }
     public string? ContactNumber { get; set; }
     public string? Email { get; set; } 
-    public bool IsActive { get; set; } = true;
     // Navigation properties
     public ICollection<Treasury> Treasuries { get; set; } = new List<Treasury>();
 }

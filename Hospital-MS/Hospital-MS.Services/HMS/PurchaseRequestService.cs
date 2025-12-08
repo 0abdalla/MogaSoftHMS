@@ -46,13 +46,11 @@ namespace Hospital_MS.Services.HMS
                     StoreId = request.StoreId,
                     Notes = request.Notes,
                     Status = isAdmin ? PurchaseStatus.Approved : PurchaseStatus.Pending,
-                    IsActive = true,
                     Items = request.Items.Select(i => new PurchaseRequestItem
                     {
                         ItemId = i.ItemId,
                         Quantity = i.Quantity,
                         Notes = i.Notes,
-                        IsActive = true
                     }).ToList()
                 };
 
@@ -94,7 +92,7 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<string>> UpdateAsync(int id, PurchaseRequestRequest request, CancellationToken cancellationToken = default)
         {
             var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .Include(x => x.Items)
                 .FirstOrDefaultAsync(cancellationToken);
 
@@ -118,7 +116,6 @@ namespace Hospital_MS.Services.HMS
                 ItemId = i.ItemId,
                 Quantity = i.Quantity,
                 Notes = i.Notes,
-                IsActive = true
             }).ToList();
 
             _unitOfWork.Repository<PurchaseRequest>().Update(purchaseRequest);
@@ -141,7 +138,7 @@ namespace Hospital_MS.Services.HMS
                     .ThenInclude(p => p.PurchaseRequest)
                 .Include(x => x.Items)
                     .ThenInclude(i => i.Item)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (pr == null)
                 return ErrorResponseModel<PurchaseRequestResponse>.Failure(GenericErrors.NotFound);
@@ -157,7 +154,7 @@ namespace Hospital_MS.Services.HMS
                 StoreName = pr.Store.Name,
                 Status = pr.Status.ToString(),
                 Notes = pr.Notes,
-                Items = pr.Items.Where(i => i.IsActive).Select(i => new PurchaseRequestItemResponse
+                Items = pr.Items.Select(i => new PurchaseRequestItemResponse
                 {
                     Id = i.Id,
                     ItemId = i.ItemId,
@@ -175,10 +172,10 @@ namespace Hospital_MS.Services.HMS
                         SupplierName = pr.PriceQuotation.Supplier?.Name ?? string.Empty,
                         Notes = pr.PriceQuotation.Notes,
                         Status = pr.PriceQuotation.Status.ToString(),
-                        TotalAmount = pr.PriceQuotation.Items.Where(i => i.IsActive).Sum(i => i.Quantity * i.UnitPrice),
+                        TotalAmount = pr.PriceQuotation.Items.Sum(i => i.Quantity * i.UnitPrice),
                         PurchaseRequestId = pr.PriceQuotation.PurchaseRequestId,
                         PurchaseRequestNumber = pr.PriceQuotation.PurchaseRequest?.RequestNumber ?? string.Empty,
-                        Items = pr.PriceQuotation.Items.Where(i => i.IsActive).Select(i => new PriceQuotationItemResponse
+                        Items = pr.PriceQuotation.Items.Select(i => new PriceQuotationItemResponse
                         {
                             Id = i.ItemId,
                             NameAr = i.Item.NameAr,
@@ -199,7 +196,7 @@ namespace Hospital_MS.Services.HMS
         {
             var query = _unitOfWork.Repository<PurchaseRequest>().GetAll()
                 .Include(x => x.Store)
-                .Where(x => x.IsActive);
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.RequestNumber.Contains(filter.SearchText) || x.Purpose.Contains(filter.SearchText));
@@ -232,15 +229,15 @@ namespace Hospital_MS.Services.HMS
             var pr = await _unitOfWork.Repository<PurchaseRequest>()
                 .GetAll()
                 .Include(x => x.Items)
-                .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
             if (pr == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            pr.IsActive = false;
             foreach (var item in pr.Items)
-                item.IsActive = false;
+                item.IsDeleted = !item.IsDeleted;
 
+            pr.IsDeleted = !pr.IsDeleted;
             _unitOfWork.Repository<PurchaseRequest>().Update(pr);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -250,7 +247,7 @@ namespace Hospital_MS.Services.HMS
         public async Task<ErrorResponseModel<string>> ApprovePurchaseRequestAsync(int id, CancellationToken cancellationToken = default)
         {
             var purchaseRequest = await _unitOfWork.Repository<PurchaseRequest>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id )
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (purchaseRequest == null)
@@ -269,7 +266,7 @@ namespace Hospital_MS.Services.HMS
         {
             var query = _unitOfWork.Repository<PurchaseRequest>().GetAll()
                 .Include(x => x.Store)
-                .Where(x => x.IsActive && x.Status == PurchaseStatus.Approved);
+                .Where(x => x.Status == PurchaseStatus.Approved);
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.RequestNumber.Contains(filter.SearchText) || x.Purpose.Contains(filter.SearchText));

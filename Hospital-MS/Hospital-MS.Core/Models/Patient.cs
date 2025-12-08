@@ -19,7 +19,6 @@ namespace Hospital_MS.Core.Models
         public string? EmergencyPhone02 { get; set; } 
         public string? EmergencyContact02 { get; set; } 
 
-        public bool IsActive { get; set; } = true;
         public string? Notes { get; set; }
         public Gender? Gender { get; set; }
         public PatientStatus? Status { get; set; }

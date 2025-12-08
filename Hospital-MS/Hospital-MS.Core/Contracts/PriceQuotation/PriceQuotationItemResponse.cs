@@ -8,4 +8,6 @@ public class PriceQuotationItemResponse
     public string? Unit { get; set; }
     public decimal Total { get; set; }
     public string? Notes { get; set; }
+
+    public bool? IsDeleted { get; set; }
 }

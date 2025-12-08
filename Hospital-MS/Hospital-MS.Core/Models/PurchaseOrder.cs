@@ -11,7 +11,6 @@ public class PurchaseOrder : AuditableEntity
     public Supplier Supplier { get; set; } = null!;
     public string? Description { get; set; }
     public PurchaseStatus Status { get; set; } = PurchaseStatus.Pending;
-    public bool IsActive { get; set; } = true;
 
     //public int? PriceQuotationId { get; set; }
     //public PriceQuotation? PriceQuotation { get; set; }

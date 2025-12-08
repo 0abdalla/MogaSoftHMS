@@ -18,9 +18,11 @@ namespace Hospital_MS.Core.Contracts.Patients
         public string PatientGender { get; set; }
 
         // Audit Information
-        public DateTime CreatedOn { get; set; }
-        public string CreatedBy { get; set; } = string.Empty;
+        public DateTime? CreatedOn { get; set; }
+        public string? CreatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedOn { get; set; }
         public string? UpdatedBy { get; set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }

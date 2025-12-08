@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Models
 {
-    public class StaffAttachments
+    public class StaffAttachments : AuditableEntity
     {
         public int Id { get; set; }
         public string FileUrl { get; set; } = string.Empty;

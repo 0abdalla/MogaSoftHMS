@@ -16,7 +16,6 @@ public class Item : AuditableEntity // الصنف
     public decimal PriceAfterTax { get; set; }
     public bool HasBarcode { get; set; }
     public int? TypeId { get; set; }
-    public bool IsActive { get; set; } = true;
     public bool IsGroupHead { get; set; }
 
     public ItemGroup? Group { get; set; } = default!;

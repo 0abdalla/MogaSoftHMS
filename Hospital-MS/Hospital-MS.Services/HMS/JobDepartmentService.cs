@@ -54,20 +54,25 @@ namespace Hospital_MS.Services.HMS
             var jobDepartment = await _unitOfWork.Repository<JobDepartment>()
                 .GetAll(x => x.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
-            if (jobDepartment is null)
+
+            if (jobDepartment == null)
                 return ErrorResponseModel<bool>.Failure(GenericErrors.NotFound);
+
             try
             {
-                _unitOfWork.Repository<JobDepartment>().Delete(jobDepartment);
+                jobDepartment.IsDeleted = !jobDepartment.IsDeleted;
+
+                _unitOfWork.Repository<JobDepartment>().Update(jobDepartment);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
                 return ErrorResponseModel<bool>.Success(GenericErrors.GetSuccess, true);
             }
             catch (Exception)
             {
                 return ErrorResponseModel<bool>.Failure(GenericErrors.TransFailed);
             }
-
         }
+
 
         public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {

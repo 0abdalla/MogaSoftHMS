@@ -13,7 +13,6 @@ public class ReceiptPermission : AuditableEntity
     public int PurchaseOrderId { get; set; }
     public PurchasePermissionStatus Status { get; set; } = PurchasePermissionStatus.Active;
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
 
     public Supplier Supplier { get; set; } = default!;
     public Store Store { get; set; } = default!;

@@ -49,23 +49,16 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var attachment = await _unitOfWork.Repository<PatientAttachment>().GetAll(i => i.Id == id).FirstOrDefaultAsync();
+                var attachment = await _unitOfWork.Repository<PatientAttachment>()
+                    .GetAll(i => i.Id == id)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-                if (attachment is not { })
+                if (attachment == null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-                if (attachment.AttachmentUrl.Length > 0)
-                {
-                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "patients", attachment.AttachmentUrl);
+                attachment.IsDeleted = !attachment.IsDeleted;
 
-                    filePath = $"wwwroot{filePath}";
-
-                    if (File.Exists(filePath))
-                        File.Delete(filePath);
-                }
-
-                _unitOfWork.Repository<PatientAttachment>().Delete(attachment);
-
+                _unitOfWork.Repository<PatientAttachment>().Update(attachment);
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
@@ -75,6 +68,7 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
+
 
         public async Task<ErrorResponseModel<List<PatientAttachmentResponse>>> GetAllAsync(int patientId, CancellationToken cancellationToken = default)
         {

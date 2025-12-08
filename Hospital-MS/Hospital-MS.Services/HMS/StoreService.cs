@@ -26,7 +26,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             Name = request.Name,
             Code = request.Code,
             TypeId = request.StoreTypeId,
-            IsActive = true
         };
 
         await _unitOfWork.Repository<Store>().AddAsync(store, cancellationToken);
@@ -39,7 +38,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var store = await _unitOfWork.Repository<Store>()
             .GetAll()
             .Include(x => x.Type)
-            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (store == null)
             return ErrorResponseModel<StoreResponse>.Failure(GenericErrors.NotFound);
@@ -54,7 +53,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             Email = store.Email,
             StoreTypeId = store.TypeId,
             StoreTypeName = store.Type?.Name,
-            IsActive = store.IsActive
         };
 
         return ErrorResponseModel<StoreResponse>.Success(GenericErrors.GetSuccess, response);
@@ -62,16 +60,24 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
 
     public async Task<PagedResponseModel<List<StoreResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
     {
-        var query = _unitOfWork.Repository<Store>()
+        var baseQuery = (IQueryable<Store>)_unitOfWork.Repository<Store>()
             .GetAll()
-            .Include(x => x.Type)
-            .OrderByDescending(x => x.Id)
-            .Where(x => x.IsActive);
+            .AsQueryable();
+
+        var includedQuery = baseQuery
+            .Include(x => x.Type);
+
+
+        IOrderedQueryable<Store> query = includedQuery.OrderByDescending(x => x.Id);
+
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
         {
-            query = query.Where(x => x.Name.Contains(filter.SearchText) || x.Code.Contains(filter.SearchText));
+            query = (IOrderedQueryable<Store>)query
+                .Where(x => x.Name.Contains(filter.SearchText) || x.Code.Contains(filter.SearchText));
         }
+
+
 
         var totalCount = await query.CountAsync(cancellationToken);
 
@@ -89,7 +95,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                 Email = x.Email,
                 StoreTypeId = x.TypeId,
                 StoreTypeName = x.Type.Name,
-                IsActive = x.IsActive
             })
             .ToListAsync(cancellationToken);
 
@@ -126,19 +131,21 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         if (store == null)
             return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-        store.IsActive = false;
+        store.IsDeleted = !store.IsDeleted;
+
         _unitOfWork.Repository<Store>().Update(store);
         await _unitOfWork.CompleteAsync(cancellationToken);
 
         return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess, store.Id.ToString());
     }
 
+
     public async Task<ErrorResponseModel<List<StoreMovementResponse>>> GetStoreMovementsAsync(int storeId, GetStoresMovementsRequest request, CancellationToken cancellationToken = default)
     {
         var store = await _unitOfWork.Repository<Store>()
                 .GetAll()
                 .Include(x => x.Type)
-                .FirstOrDefaultAsync(x => x.Id == storeId && x.IsActive, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Id == storeId , cancellationToken);
 
         if (store == null)
             return ErrorResponseModel<List<StoreMovementResponse>>.Failure(GenericErrors.NotFound);
@@ -179,7 +186,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var allItemIds = receiptItemIds.Union(issueItemIds).Distinct().ToList();
 
         var itemsQuery = _unitOfWork.Repository<Item>()
-                .GetAll(x => allItemIds.Contains(x.Id) && x.IsActive)
+                .GetAll(x => allItemIds.Contains(x.Id))
                 .Include(x => x.Group)
                 .ThenInclude(g => g.MainGroup)
                 .AsQueryable();
@@ -267,7 +274,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var storeItemIds = await _unitOfWork.Repository<ReceiptPermissionItem>()
             .GetAll(x =>
                 x.ReceiptPermission.StoreId == storeId &&
-                x.IsActive &&
                 x.ReceiptPermission.PermissionDate >= fromDate &&
                 x.ReceiptPermission.PermissionDate <= toDate)
             .Select(x => x.ItemId)
@@ -275,7 +281,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                 _unitOfWork.Repository<MaterialIssueItem>()
                 .GetAll(x =>
                     x.MaterialIssuePermission.StoreId == storeId &&
-                    x.IsActive &&
                     x.MaterialIssuePermission.PermissionDate >= fromDate &&
                     x.MaterialIssuePermission.PermissionDate <= toDate)
                 .Select(x => x.ItemId)
@@ -288,7 +293,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
 
         // Get only the items linked to this store
         var items = await _unitOfWork.Repository<Item>()
-            .GetAll(x => x.IsActive && storeItemIds.Contains(x.Id) && x.GroupId != null)
+            .GetAll(x =>  storeItemIds.Contains(x.Id) && x.GroupId != null)
             .Include(x => x.Group)
                 .ThenInclude(g => g.MainGroup)
             .ToListAsync(cancellationToken);
@@ -297,7 +302,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
             .GetAll(x =>
                 x.ReceiptPermission.StoreId == storeId &&
-                x.IsActive &&
                 storeItemIds.Contains(x.ItemId) &&
                 x.ReceiptPermission.PermissionDate >= fromDate &&
                 x.ReceiptPermission.PermissionDate <= toDate)
@@ -308,7 +312,6 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var issues = await _unitOfWork.Repository<MaterialIssueItem>()
             .GetAll(x =>
                 x.MaterialIssuePermission.StoreId == storeId &&
-                x.IsActive &&
                 storeItemIds.Contains(x.ItemId) &&
                 x.MaterialIssuePermission.PermissionDate >= fromDate &&
                 x.MaterialIssuePermission.PermissionDate <= toDate)
@@ -376,11 +379,11 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             return ErrorResponseModel<List<MainGroupResponseV2>>.Failure(GenericErrors.NotFound);
 
         var storeItemIds = await _unitOfWork.Repository<ReceiptPermissionItem>()
-            .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.IsActive)
+            .GetAll(x => x.ReceiptPermission.StoreId == storeId )
             .Select(x => x.ItemId)
             .Union(
                 _unitOfWork.Repository<MaterialIssueItem>()
-                .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && x.IsActive)
+                .GetAll(x => x.MaterialIssuePermission.StoreId == storeId)
                 .Select(x => x.ItemId)
             )
             .Distinct()
@@ -390,18 +393,18 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             return ErrorResponseModel<List<MainGroupResponseV2>>.Success(GenericErrors.GetSuccess, new List<MainGroupResponseV2>());
 
         var items = await _unitOfWork.Repository<Item>()
-            .GetAll(x => x.IsActive && storeItemIds.Contains(x.Id) && x.GroupId != null)
+            .GetAll(x => storeItemIds.Contains(x.Id) && x.GroupId != null)
             .Include(x => x.Group)
                 .ThenInclude(g => g.MainGroup)
             .ToListAsync(cancellationToken);
 
         var receipts = await _unitOfWork.Repository<ReceiptPermissionItem>()
-            .GetAll(x => x.ReceiptPermission.StoreId == storeId && x.IsActive && storeItemIds.Contains(x.ItemId))
+            .GetAll(x => x.ReceiptPermission.StoreId == storeId  && storeItemIds.Contains(x.ItemId))
             .Include(x => x.ReceiptPermission)
             .ToListAsync(cancellationToken);
 
         var issues = await _unitOfWork.Repository<MaterialIssueItem>()
-            .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && x.IsActive && storeItemIds.Contains(x.ItemId))
+            .GetAll(x => x.MaterialIssuePermission.StoreId == storeId && storeItemIds.Contains(x.ItemId))
             .Include(x => x.MaterialIssuePermission)
             .ToListAsync(cancellationToken);
 

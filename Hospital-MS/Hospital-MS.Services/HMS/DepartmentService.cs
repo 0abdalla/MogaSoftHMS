@@ -39,14 +39,17 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var department = await _unitOfWork.Repository<Department>().GetByIdAsync(id, cancellationToken);
-                if (department == null)
-                {
-                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
-                }
+                var department = await _unitOfWork.Repository<Department>()
+                    .GetByIdAsync(id, cancellationToken);
 
-                _unitOfWork.Repository<Department>().Delete(department);
+                if (department == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                department.IsDeleted = !department.IsDeleted;
+
+                _unitOfWork.Repository<Department>().Update(department);
                 await _unitOfWork.CompleteAsync(cancellationToken);
+
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
             catch (Exception)
@@ -54,6 +57,7 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
+
 
         public async Task<ErrorResponseModel<List<DepartmentResponse>>> GetAllAsync(CancellationToken cancellationToken = default)
         {

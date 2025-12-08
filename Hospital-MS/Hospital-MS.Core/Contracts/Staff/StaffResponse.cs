@@ -49,6 +49,10 @@ namespace Hospital_MS.Core.Contracts.Staff
 
         public bool IsAuthorized { get; set; }
 
+        public bool? IsActive { get; set; }
+
+        public bool? IsDeleted { get; set; }
+
         public AuditResponse Audit { get; set; }
 
     }

@@ -140,6 +140,7 @@ namespace Hospital_MS.Services.HMS
                 var doctor = await _unitOfWork.Repository<Doctor>()
                     .GetAll()
                     .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
                 if (doctor == null)
                     return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
@@ -153,23 +154,25 @@ namespace Hospital_MS.Services.HMS
                     .Where(ds => ds.DoctorId == id)
                     .ToListAsync(cancellationToken);
 
-                if (doctorSchedules.Count > 0)
-                    _unitOfWork.Repository<DoctorSchedule>().DeleteRange(doctorSchedules);
-
-                if (doctorMedicalServices.Count > 0)
-                    _unitOfWork.Repository<DoctorMedicalService>().DeleteRange(doctorMedicalServices);
-
-
-                if (!string.IsNullOrEmpty(doctor.PhotoUrl))
+                foreach (var schedule in doctorSchedules)
                 {
-                    var imagePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "doctors", doctor.PhotoUrl);
-                    if (File.Exists(imagePath))
-                        File.Delete(imagePath);
+
+                    schedule.IsDeleted = !schedule.IsDeleted;
+                    _unitOfWork.Repository<DoctorSchedule>().Update(schedule);
                 }
 
-                _unitOfWork.Repository<Doctor>().Delete(doctor);
-                await _unitOfWork.CompleteAsync(cancellationToken);
+                foreach (var service in doctorMedicalServices)
+                {
 
+                    service.IsDeleted = !service.IsDeleted;
+                    _unitOfWork.Repository<DoctorMedicalService>().Update(service);
+                }
+
+
+                doctor.IsDeleted = !doctor.IsDeleted;
+                _unitOfWork.Repository<Doctor>().Update(doctor);
+
+                await _unitOfWork.CompleteAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
 
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
@@ -180,6 +183,8 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
+
+
 
         public async Task<PagedResponseModel<List<AllDoctorsResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
         {
@@ -239,7 +244,6 @@ namespace Hospital_MS.Services.HMS
                 Id = doctor.Id,
                 FullName = doctor.FullName,
                 DateOfBirth = doctor.DateOfBirth,
-                IsActive = doctor.IsActive,
                 Address = doctor.Address,
                 Department = doctor?.Department?.Name,
                 DepartmentId = doctor?.DepartmentId,

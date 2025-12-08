@@ -1,4 +1,5 @@
 ﻿using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Hospital_MS.Core.Common
 {
-    public class EmployeeVacationDto
+    public class EmployeeVacationDto : AuditableEntity
     {
         public int? EmployeeId { get; set; }
         public string? EmployeeName { get; set; }
@@ -23,9 +24,5 @@ namespace Hospital_MS.Core.Common
         public string? WorkflowStatusNameAR { get; set; }
         public int? WorkflowStatusId { get; set; } = (int)HRWorkflowStatus.Pending; public bool IsAlternativeAvailable { get; set; }
         public int? TotalCount { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
     }
 }

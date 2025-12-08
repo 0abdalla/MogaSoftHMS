@@ -26,6 +26,8 @@ namespace Hospital_MS.Core.Models
         public int? Tax { get; set; }
         public int? Insurance { get; set; }
         public int? VacationDays { get; set; }
+
+        public bool IsActive { get; set; } = true;
         public JobTitle? JobTitle { get; set; } = default!;
         public JobType? JobType { get; set; } = default!;
         public JobLevel? JobLevel { get; set; } = default!;

@@ -20,7 +20,6 @@ public class ItemResponse
     public bool HasBarcode { get; set; }
     public int? TypeId { get; set; }
     public string? TypeName { get; set; }
-    public bool IsActive { get; set; }
 
     public AuditResponse Audit { get; set; }
 }

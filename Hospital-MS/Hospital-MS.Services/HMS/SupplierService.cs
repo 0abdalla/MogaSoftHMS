@@ -95,7 +95,6 @@ public class SupplierService : ISupplierService
                 Email = row.Field<string>("Email") ?? string.Empty,
                 Website = row.Field<string>("Website"),
                 Notes = row.Field<string>("Notes"),
-                IsActive = row.Field<bool>("IsActive"),
                 
             }).ToList();
 
@@ -135,7 +134,6 @@ public class SupplierService : ISupplierService
                 Email = supplier.Email,
                 Website = supplier.Website,
                 Notes = supplier.Notes,
-                IsActive = supplier.IsActive,
                 Audit = new AuditResponse
                 {
                     CreatedBy = supplier.CreatedById,
@@ -203,7 +201,8 @@ public class SupplierService : ISupplierService
             if (supplier == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            supplier.IsActive = false;
+            supplier.IsDeleted = !supplier.IsDeleted;
+
             _unitOfWork.Repository<Supplier>().Update(supplier);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -214,4 +213,5 @@ public class SupplierService : ISupplierService
             return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
         }
     }
+
 }

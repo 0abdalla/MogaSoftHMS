@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models.HR
 {
     [Table("EmployeeAdvances", Schema = "dbo")]
-    public class EmployeeAdvance
+    public class EmployeeAdvance : AuditableEntity
     {
         [Key]
         public int StaffAdvanceId { get; set; }
@@ -23,10 +23,6 @@ namespace Hospital_MS.Core.Models.HR
         public DateTime PaymentToDate { get; set; }
         public int? WorkflowStatusId { get; set; }
         public string? Notes { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? ModifiedBy { get; set; }
-        public DateTime? ModifiedDate { get; set; }
         public int StaffId { get; set; }
         public Staff Staff { get; set; } = default!;
     }

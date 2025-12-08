@@ -24,5 +24,4 @@ public class Supplier : AuditableEntity
     public string? Website { get; set; }
     public string? Notes { get; set; }
 
-    public bool IsActive { get; set; } = true;
 }

@@ -25,7 +25,6 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             Status = PurchaseStatus.Pending,
             //PriceQuotationId = request.PriceQuotationId,
             PurchaseRequestId = request.PurchaseRequestId,
-            IsActive = true,
             Items = request.Items.Select(i => new PurchaseOrderItem
             {
                 ItemId = i.ItemId,
@@ -33,7 +32,6 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
                 RequestedQuantity = i.RequestedQuantity,
                 Quantity = i.Quantity,
                 UnitPrice = i.UnitPrice,
-                IsActive = true,
                 TotalPrice = i.TotalPrice,
             }).ToList()
         };
@@ -49,7 +47,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         var order = await _unitOfWork.Repository<PurchaseOrder>()
             .GetAll()
             .Include(x => x.Items)
-            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
         if (order == null)
             return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
@@ -63,7 +61,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
 
 
         foreach (var item in order.Items)
-            item.IsActive = false;
+            item.IsDeleted = false;
 
         order.Items = request.Items.Select(i => new PurchaseOrderItem
         {
@@ -72,7 +70,6 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             RequestedQuantity = i.RequestedQuantity,
             Quantity = i.Quantity,
             UnitPrice = i.UnitPrice,
-            IsActive = true,
             TotalPrice = i.TotalPrice,
         }).ToList();
 
@@ -91,7 +88,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             .Include(x => x.PurchaseRequest)
             .Include(x => x.Items)
             .ThenInclude(i => i.Item).ThenInclude(i => i.Unit)
-            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
         if (order == null)
             return ErrorResponseModel<PurchaseOrderResponse>.Failure(GenericErrors.NotFound);
@@ -110,7 +107,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             PurchaseRequestNumber = order.PurchaseRequest?.RequestNumber,
             Description = order.Description,
             Status = order.Status.ToString(),
-            Items = order.Items.Where(i => i.IsActive).Select(i => new PurchaseOrderItemResponse
+            Items = order.Items.Select(i => new PurchaseOrderItemResponse
             {
                 Id = i.ItemId,
                 ItemName = i.Item.NameAr,
@@ -132,7 +129,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             .Include(x => x.Supplier)
             //.Include(x => x.PriceQuotation)
             .Include(x => x.PurchaseRequest)
-            .Where(x => x.IsActive);
+            .AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
             query = query.Where(x => x.OrderNumber.Contains(filter.SearchText) || x.Description.Contains(filter.SearchText));
@@ -169,14 +166,16 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
         var order = await _unitOfWork.Repository<PurchaseOrder>()
             .GetAll()
             .Include(x => x.Items)
-            .FirstOrDefaultAsync(x => x.Id == id && x.IsActive, cancellationToken);
+            .FirstOrDefaultAsync(x => x.Id == id , cancellationToken);
 
         if (order == null)
             return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-        order.IsActive = false;
+
         foreach (var item in order.Items)
-            item.IsActive = false;
+            item.IsDeleted = !item.IsDeleted;
+                
+        order.IsDeleted = !order.IsDeleted; 
 
         _unitOfWork.Repository<PurchaseOrder>().Update(order);
         await _unitOfWork.CompleteAsync(cancellationToken);

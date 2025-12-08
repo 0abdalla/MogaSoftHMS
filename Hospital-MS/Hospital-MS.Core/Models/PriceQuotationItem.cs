@@ -16,5 +16,4 @@ public class PriceQuotationItem : AuditableEntity
     public decimal UnitPrice { get; set; }
     public decimal Total => Quantity * UnitPrice;
     public string? Notes { get; set; }
-    public bool IsActive { get; set; } = true;
 }

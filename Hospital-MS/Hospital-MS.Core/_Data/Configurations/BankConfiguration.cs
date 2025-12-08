@@ -22,7 +22,6 @@ public class BankConfiguration : IEntityTypeConfiguration<Bank>
             .HasMaxLength(200);
 
 
-        builder.Property(b => b.IsActive)
-            .HasDefaultValue(true);
+
     }
 }

@@ -37,12 +37,11 @@ namespace Hospital_MS.Services.HMS
                 tbl.AccountLevel = parentAccount != null ? parentAccount.AccountLevel + 1 : 1;
                 tbl.IsParent = parentAccount != null ? false : true;
                 tbl.AccountNature = string.Empty;
-                tbl.IsActive = Model.IsActive;
                 tbl.IsGroup = Model.IsGroup;
                 tbl.NameAR = Model.NameAR;
                 tbl.NameEN = Model.NameAR;
                 tbl.IsDisToCostCenter = Model.IsDisToCostCenter;
-                tbl.CreatedDate = DateTime.Now;
+                tbl.CreatedOn = DateTime.Now;
                 tbl.CreatedBy = Model.CreatedBy;
 
                 await _unitOfWork.Repository<AccountTree>().AddAsync(tbl, cancellationToken);
@@ -73,13 +72,12 @@ namespace Hospital_MS.Services.HMS
                     entity.AccountLevel = parentAccount != null ? parentAccount.AccountLevel + 1 : 1;
                     entity.IsParent = parentAccount != null ? false : true;
                     entity.AccountNature = string.Empty;
-                    entity.IsActive = Model.IsActive;
                     entity.IsGroup = Model.IsGroup;
                     entity.NameAR = Model.NameAR;
                     entity.NameEN = Model.NameAR;
                     entity.IsDisToCostCenter = Model.IsDisToCostCenter;
-                    entity.ModifiedDate = DateTime.Now;
-                    entity.ModifiedBy = Model.ModifiedBy;
+                    entity.UpdatedOn = DateTime.Now;
+                    entity.UpdatedById = Model.UpdatedById;
 
                     _unitOfWork.Repository<AccountTree>().Update(entity);
                     await _unitOfWork.CompleteAsync(cancellationToken);
@@ -97,13 +95,17 @@ namespace Hospital_MS.Services.HMS
         {
             try
             {
-                var entity = await _unitOfWork.Repository<AccountTree>().GetAll(x => x.AccountId == AccountId).FirstOrDefaultAsync(cancellationToken);
+                var entity = await _unitOfWork.Repository<AccountTree>()
+                    .GetAll(x => x.AccountId == AccountId)
+                    .FirstOrDefaultAsync(cancellationToken);
 
-                if (entity != null)
-                {
-                    _unitOfWork.Repository<AccountTree>().Delete(entity);
-                    await _unitOfWork.CompleteAsync(cancellationToken);
-                }
+                if (entity == null)
+                    return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
+
+                entity.IsDeleted = !entity.IsDeleted;
+
+                _unitOfWork.Repository<AccountTree>().Update(entity);
+                await _unitOfWork.CompleteAsync(cancellationToken);
 
                 return ErrorResponseModel<string>.Success(GenericErrors.DeleteSuccess);
             }
@@ -113,6 +115,7 @@ namespace Hospital_MS.Services.HMS
                 return ErrorResponseModel<string>.Failure(GenericErrors.TransFailed);
             }
         }
+
 
         public List<AccountTreeModel> GetAccountTreeHierarchicalData(string SearchText)
         {

@@ -10,7 +10,6 @@ public class PriceQuotation : AuditableEntity
     public Supplier Supplier { get; set; } = null!;
     public string? Notes { get; set; }
     public QuotationStatus Status { get; set; } = QuotationStatus.Pending;
-    public bool IsActive { get; set; } = true;
 
     public int PurchaseRequestId { get; set; }
     public PurchaseRequest PurchaseRequest { get; set; } = null!;

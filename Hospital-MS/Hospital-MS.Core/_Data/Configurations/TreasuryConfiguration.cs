@@ -24,7 +24,5 @@ public class TreasuryConfiguration : IEntityTypeConfiguration<Treasury>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
     }
 }

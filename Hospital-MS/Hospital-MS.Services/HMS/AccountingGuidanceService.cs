@@ -19,7 +19,6 @@ public class AccountingGuidanceService(IUnitOfWork unitOfWork) : IAccountingGuid
             var entity = new AccountingGuidance
             {
                 Name = request.Name,
-                IsActive = true
             };
 
             await _unitOfWork.Repository<AccountingGuidance>().AddAsync(entity, cancellationToken);
@@ -62,7 +61,7 @@ public class AccountingGuidanceService(IUnitOfWork unitOfWork) : IAccountingGuid
             if (entity == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            entity.IsActive = false;
+            entity.IsDeleted = !entity.IsDeleted;
             _unitOfWork.Repository<AccountingGuidance>().Update(entity);
             await _unitOfWork.CompleteAsync(cancellationToken);
 
@@ -82,12 +81,11 @@ public class AccountingGuidanceService(IUnitOfWork unitOfWork) : IAccountingGuid
                 .GetAll()
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
-                .Where(x => x.Id == id && x.IsActive)
+                .Where(x => x.Id == id )
                 .Select(x => new AccountingGuidanceResponse
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    IsActive = x.IsActive,
                     Audit = new()
                     {
                         CreatedBy = x.CreatedBy != null ? x.CreatedBy.FirstName + " " + x.CreatedBy.LastName : null,
@@ -113,11 +111,14 @@ public class AccountingGuidanceService(IUnitOfWork unitOfWork) : IAccountingGuid
     {
         try
         {
-            var query = _unitOfWork.Repository<AccountingGuidance>()
+            var query = (IQueryable<AccountingGuidance>)_unitOfWork.Repository<AccountingGuidance>()
                 .GetAll()
+                .AsQueryable();
+
+            query = query
                 .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy)
-                .Where(x => x.IsActive);
+                .Include(x => x.UpdatedBy);
+
 
             if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 query = query.Where(x => x.Name.Contains(filter.SearchText));
@@ -132,7 +133,6 @@ public class AccountingGuidanceService(IUnitOfWork unitOfWork) : IAccountingGuid
                 {
                     Id = x.Id,
                     Name = x.Name,
-                    IsActive = x.IsActive,
                     Audit = new()
                     {
                         CreatedBy = x.CreatedBy != null ? x.CreatedBy.FirstName + " " + x.CreatedBy.LastName : null,

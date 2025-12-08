@@ -30,7 +30,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.NotFound);
 
             var bank = await _unitOfWork.Repository<Bank>()
-                .GetAll(x => x.Id == request.BankId && x.IsActive)
+                .GetAll(x => x.Id == request.BankId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (bank == null)
@@ -55,7 +55,6 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = debitNotice.Id.ToString(),
                 RestrictionTypeId = null,
-                IsActive = true,
                 // TODO : replace with the correct accounting guidance id for debit notice
                 AccountingGuidanceId = 15,
                 RestrictionDate = request.Date,
@@ -119,7 +118,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            debitNotice.IsActive = false;
+            debitNotice.IsDeleted = !debitNotice.IsDeleted;
 
             _unitOfWork.Repository<DebitNotice>().Update(debitNotice);
 
@@ -192,7 +191,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
         try
         {
             var debitNotice = await _unitOfWork.Repository<DebitNotice>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.Bank)
                 .Include(x => x.Account)
@@ -253,7 +252,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
         try
         {
             var debitNotice = await _unitOfWork.Repository<DebitNotice>()
-                .GetAll(x => x.Id == id && x.IsActive)
+                .GetAll(x => x.Id == id)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (debitNotice == null)

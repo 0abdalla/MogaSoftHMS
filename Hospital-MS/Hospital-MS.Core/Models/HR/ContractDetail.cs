@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models.HR
 {
     [Table("ContractDetails", Schema = "dbo")]
-    public class ContractDetail
+    public class ContractDetail : AuditableEntity
     {
         public int ContractDetailId { get; set; }
         public int StaffId { get; set; }
