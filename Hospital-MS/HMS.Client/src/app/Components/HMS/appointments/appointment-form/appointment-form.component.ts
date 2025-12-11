@@ -40,7 +40,7 @@ export class AppointmentFormComponent implements OnInit {
 
   // invoiceData: any;
   invoiceData: any;
-  appointmentsSelected:any;
+  appointmentsSelected: any;
   showInvoice = false;
   // private router = inject(Router);
   pagingFilterModel: PagingFilterModel = {
@@ -471,7 +471,7 @@ export class AppointmentFormComponent implements OnInit {
   }
   //
   loadPatients() {
-    this.admissionService.getAddmision(this.pagingFilterModel).subscribe({
+    this.admissionService.getAdmissions(this.pagingFilterModel).subscribe({
       next: (data) => {
         this.patients = data.results.map((patient: any) => {
           switch (patient.patientStatus) {
@@ -603,17 +603,17 @@ export class AppointmentFormComponent implements OnInit {
         if (response.isSuccess) {
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
           this.invoiceData = response.results;
-          this.invoiceData.medicalServiceName= this.appointmentDetailsSelected[0]?.medicalServiceName,
-          this.invoiceData.selectedServicePrice= this.totalPrice,
-          this.appointmentsSelected =this.appointmentDetailsSelected
+          this.invoiceData.medicalServiceName = this.appointmentDetailsSelected[0]?.medicalServiceName,
+            this.invoiceData.selectedServicePrice = this.totalPrice,
+            this.appointmentsSelected = this.appointmentDetailsSelected
 
-            this.generatePdf();
+          this.generatePdf();
 
           this.resetForms();
         } else {
           this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
         }
-      },error: (error) => {
+      }, error: (error) => {
         const errorMessage = error.error?.message || 'حدث خطأ أثناء إنشاء الحجز';
         this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: errorMessage });
       }
@@ -645,21 +645,21 @@ export class AppointmentFormComponent implements OnInit {
     return invoices;
   }
 
-generatePdf() {
-  const element = document.getElementById('printSection');
-  if (!element) {
-    return;
-  }
+  generatePdf() {
+    const element = document.getElementById('printSection');
+    if (!element) {
+      return;
+    }
 
-  const opt = {
-    margin: 0,
-    filename: `invoice.pdf`,
-    image: { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' as const }
-  };
-  html2pdf().set(opt).from(element).save();
-}
+    const opt = {
+      margin: 0,
+      filename: `invoice.pdf`,
+      image: { type: 'jpeg' as const, quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' as const }
+    };
+    html2pdf().set(opt).from(element).save();
+  }
 
 
 
@@ -669,7 +669,7 @@ generatePdf() {
     if (phoneNumber.length === 11 && /^01[0125][0-9]{8}$/.test(phoneNumber)) {
       this.pagingFilterModel.searchText = phoneNumber;
 
-      this.admissionService.getAddmision(this.pagingFilterModel).subscribe({
+      this.admissionService.getAdmissions(this.pagingFilterModel).subscribe({
         next: (data) => {
           if (data.results && data.results.length > 0) {
             const patient = data.results[0];

@@ -9,57 +9,78 @@ import { PagedResponseModel } from '../../Models/Generics/PagedResponseModel';
   providedIn: 'root'
 })
 export class AdmissionService {
-  baseUrl = environment.baseUrl
-  constructor(private http : HttpClient) { }
-  getAddmision(pagingFilter: PagingFilterModel): Observable<any> {
-    return this.http.post<PagedResponseModel<any>>(this.baseUrl + 'patients', pagingFilter);
+  baseUrl = environment.baseUrl;
+
+  constructor(private http: HttpClient) { }
+
+
+  getAdmissions(pagingFilter: PagingFilterModel): Observable<PagedResponseModel<any>> {
+    const params = new HttpParams({ fromObject: pagingFilter as any });
+    return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Admissions`, { params });
   }
+
+
+  getAdmissionById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}Admissions/${id}`);
+  }
+
+
+  addAdmission(request: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}Admissions`, request);
+  }
+
+
+  updateAdmission(id: number, request: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}Admissions/${id}`, request);
+  }
+
+  deleteAdmission(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}Admissions/${id}`);
+  }
+
+  getPatientAdmissions(patientId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}Admissions/patient/${patientId}`);
+  }
+
+  getPatientById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}Patients/${id}`);
+  }
+
+
+
+  getRooms(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}Rooms`);
+  }
+
+  getBeds(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}Beds`);
+  }
+
+  getMedicalHistory(id: number) {
+    return this.http.get(`${this.baseUrl}Patients/medical-history/${id}`)
+  }
+
   getCounts(filterList: any[] = []): Observable<any> {
     let params = new HttpParams().set('FilterList', JSON.stringify(filterList));
     return this.http.get<any>(`${this.baseUrl}patients/counts`, { params });
   }
-  getAddmisionById(id : number): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Admissions/' + id)
-  }
-  getPatientById(id : number): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'Patients/' + id)
-  }
-  addAdmision(addAdmision : FormData){
-    return this.http.post(this.baseUrl + 'Admissions', addAdmision)
-  }
-  updateAdmision(id : number, patient : FormData){
-    return this.http.put(this.baseUrl + 'Patients/status/' + id, patient)
-  }
-  // 
-  addDepartment(department : any){
+
+  addDepartment(department: any) {
     return this.http.post(this.baseUrl + 'Departments', department)
   }
-  getDepartments(){
+  getDepartments() {
     return this.http.get<any>(`${this.baseUrl}Departments`);
   }
-  getDepartmentsById(id : number){
+  getDepartmentsById(id: number) {
     return this.http.get<any>(`${this.baseUrl}Departments/${id}`);
   }
-  updateDepartment(id : number, department : any){
+  updateDepartment(id: number, department: any) {
     return this.http.put(this.baseUrl + 'Departments/' + id, department)
   }
-  deleteDepartment(id : number){
+  deleteDepartment(id: number) {
     return this.http.delete<any>(this.baseUrl + 'Departments/' + id);
   }
-  getWards(){
+  getWards() {
     return this.http.get<any>(`${this.baseUrl}Wards`);
-  }
-  getRooms(){
-    return this.http.get<any>(`${this.baseUrl}Rooms`);
-  }
-  getBeds(){
-    return this.http.get<any>(`${this.baseUrl}Beds`);
-  }
-  deleteAdmision(id : number){
-    return this.http.delete<any>(this.baseUrl + 'Admissions/' + id);
-  }
-  // 
-  getMedicalHistory(id:number){
-    return this.http.get(`${this.baseUrl}Patients/medical-history/${id}`)
   }
 }

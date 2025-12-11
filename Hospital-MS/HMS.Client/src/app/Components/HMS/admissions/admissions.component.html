@@ -1,0 +1,111 @@
+<main id="list-admissions">
+  <div class="container-fluid">
+    <app-breadcrumb [TitleList]="['المرضى الداخليين']"></app-breadcrumb>
+
+    <!-- كروت العدادات حسب الحالة -->
+    <div class="row mt-4 mb-3">
+      <div class="col-lg-2" *ngFor="let status of counts | keyvalue">
+        <div
+          class="card text-white p-3 text-center"
+          style="
+            cursor: pointer;
+            background: linear-gradient(to right, #3a86ff, #84c1ff);
+          "
+        >
+          <h4>{{ status.key }}</h4>
+          <p class="mt-0">{{ status.value }} مريض</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- جدول المرضى والفلاتر -->
+    <div class="table-card border radius-10 overflow-hidden shadow-sm">
+      <div
+        class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+      >
+        <div class="col-md-4 mb-2" *ngIf="totalRecords > 0">
+          <app-pagination
+            (pageChanged)="changePage($event)"
+            [currentPage]="pagingFilter.currentPage"
+            [pageSize]="pagingFilter.pageSize"
+            [totalCount]="totalRecords"
+          ></app-pagination>
+        </div>
+      </div>
+
+      <div class="p-3 bg-white">
+        <div class="table-responsive shadow-sm radius-10">
+          <table
+            class="table table-card-table table-borderless table-hover bg-transparent m-0"
+          >
+            <thead>
+              <tr>
+                <th>الرقم</th>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>القسم</th>
+                <th>الحالة</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let admission of admissions">
+                <td>{{ admission.id }}</td>
+                <td>{{ admission.patientName }}</td>
+                <td>{{ admission.patientPhoneNumber }}</td>
+                <td>{{ admission.departmentName }}</td>
+                <td>
+                  <p
+                    class="text-white status-pill"
+                    [ngStyle]="{ backgroundColor: '#3A86FF' }"
+                  >
+                    {{ admission.patientStatus }}
+                  </p>
+                </td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-primary"
+                    (click)="getAdmissionById(admission.id)"
+                  >
+                    تعديل
+                  </button>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="deleteAdmission(admission.id)"
+                  >
+                    حذف
+                  </button>
+                  <button
+                    class="btn btn-sm btn-info"
+                    (click)="getMedicalHistory(admission.patientId)"
+                  >
+                    السجل الطبي
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="!admissions?.length">
+                <td colspan="6" class="text-center text-muted">
+                  لا يوجد بيانات
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div
+          class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+        >
+          <div class="col-md-8 mb-2"></div>
+          <div class="col-md-4 mb-2" *ngIf="totalRecords > 0">
+            <app-pagination
+              (pageChanged)="changePage($event)"
+              [currentPage]="pagingFilter.currentPage"
+              [pageSize]="pagingFilter.pageSize"
+              [totalCount]="totalRecords"
+            ></app-pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

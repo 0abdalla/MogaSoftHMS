@@ -3,6 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from '../../Auth/auth.guard';
 import { HomeComponent } from './dashboard/home/home.component';
 import { HmsLayoutComponent } from './hms-layout.component';
+import { AdmissionService } from '../../Services/HMS/admission.service';
+import { AdmissionsComponent } from './admissions/admissions.component';
 
 const routes: Routes = [
   {
@@ -12,6 +14,7 @@ const routes: Routes = [
     children: [
       { path: 'home', component: HomeComponent },
       { path: 'patients', loadChildren: () => import('./patients/patients.module').then(m => m.PatientsModule) },
+      { path: 'admission', component: AdmissionsComponent },
       { path: 'staff', loadChildren: () => import('./staff/staff.module').then(m => m.StaffModule) },
       { path: 'appointments', loadChildren: () => import('./appointments/appointments.module').then(m => m.AppointmentsModule) },
       { path: 'emergency', loadChildren: () => import('./emergency/emergency.module').then(m => m.EmergencyModule) },
