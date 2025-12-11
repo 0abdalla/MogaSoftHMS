@@ -1,93 +1,169 @@
 <main id="rooms">
-    <div class="container-fluid">
-        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <p-toast position="top-left"></p-toast>
-        <div class="card p-2">
-            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
-                <div class="col-md-8 mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addRoomModal">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>إضافة غرفة</span>
-                </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
-                    <i class="uil uil-filter"></i>
-                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
-                </button>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-2" *ngIf="total > 0">
-                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-                </div>
-                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
-                    <div class="d-flex align-items-center">
-                        <ng-container>
-                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الغرفة ...'" (filterChanged)="applyFilters($event)"></app-filters>
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
-            <table class="table table-hover mt-4">
-                <thead>
-                    <tr>
-                        <th>رقم الغرفة</th>
-                        <th>إسم الغرفة</th>
-                        <th>الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody *ngIf="rooms?.length > 0">
-                    <tr *ngFor="let room of rooms | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }"  style="cursor: pointer">
-                        <td class="text-secondary">{{ room.id }}</td>
-                        <td>
-                            <!-- <div class="d-flex align-items-center gap-2 justify-content-start">
+  <div class="container-fluid">
+    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+    <p-toast position="top-left"></p-toast>
+    <div class="card p-2">
+      <div
+        class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+      >
+        <div class="col-md-8 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              data-bs-toggle="modal"
+              data-bs-target="#addRoomModal"
+            >
+              <i class="fas fa-plus-circle"></i>
+              <span>إضافة غرفة</span>
+            </button>
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              (click)="isFilter = !isFilter"
+              [attr.aria-expanded]="!isFilter"
+            >
+              <i class="uil uil-filter"></i>
+              <span class="navbar-brand m-0"
+                >{{ isFilter ? "عرض" : "اخفاء" }} الفلاتر</span
+              >
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4 mb-2" *ngIf="total > 0">
+          <app-pagination
+            (pageChanged)="onPageChange($event)"
+            [currentPage]="pagingFilterModel.currentPage"
+            [pageSize]="pagingFilterModel.pageSize"
+            [totalCount]="total"
+          ></app-pagination>
+        </div>
+        <div
+          class="col-md-12 mt-3"
+          #collapse="ngbCollapse"
+          [(ngbCollapse)]="isFilter"
+        >
+          <div class="d-flex align-items-center">
+            <ng-container>
+              <app-filters
+                [showSelector]="false"
+                [searchPlaceholder]="'أدخل إسم الغرفة ...'"
+                (filterChanged)="applyFilters($event)"
+              ></app-filters>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <table class="table table-hover mt-4">
+        <thead>
+          <tr>
+            <th>رقم الغرفة</th>
+            <th>إسم الغرفة</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="rooms?.length > 0">
+          <tr
+            *ngFor="
+              let room of rooms
+                | paginate
+                  : {
+                      id: 'paginate',
+                      itemsPerPage: pagingFilterModel.pageSize,
+                      currentPage: pagingFilterModel.currentPage,
+                      totalItems: total
+                    }
+            "
+            style="cursor: pointer"
+          >
+            <td class="text-secondary">{{ room.id }}</td>
+            <td>
+              <!-- <div class="d-flex align-items-center gap-2 justify-content-start">
                                 <div class="avatar-circle">
                                     {{ (room.name?.split(' ')[1]?.charAt(0) || room.name?.charAt(0)) }}
                                 </div>
                                 <span class="fw-bold">{{ room.name }}</span>
                             </div> -->
-                            غرفة رقم {{room?.number}}
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-primary mx-2" (click)="editRoom(room.id)">
-                                <i class="fa fa-edit"></i>
-                            </button>
-                            <button type="button" class="btn btn-danger mx-2" (click)="deleteRoom(room.id)">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-                <tbody *ngIf="rooms?.length === 0">
-                    <tr>
-                        <td colspan="5" class="text-center text-muted">لا يوجد غرف حتى الآن</td>
-                    </tr>
-                </tbody>
-            </table>
+              غرفة رقم {{ room?.number }}
+            </td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-primary mx-2"
+                (click)="editRoom(room.id)"
+              >
+                <i class="fa fa-edit"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger mx-2"
+                (click)="deleteRoom(room.id)"
+              >
+                <i class="fa fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody *ngIf="rooms?.length === 0">
+          <tr>
+            <td colspan="5" class="text-center text-muted">
+              لا يوجد غرف حتى الآن
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-            <div class="col-lg-12">
-                <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
-                    <div class="my-pagination">
-                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
-                            screenReaderCurrentLabel="You're on page">
-                        </pagination-controls>
-                    </div>
-                </div>
-            </div>
+      <div class="col-lg-12">
+        <div
+          *ngIf="total > 16"
+          class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
+        >
+          <div class="my-pagination">
+            <pagination-controls
+              id="paginate"
+              (pageChange)="onPageChange($event)"
+              (pageBoundsCorrection)="onPageChange($event)"
+              [maxSize]="16"
+              [directionLinks]="true"
+              [autoHide]="true"
+              [responsive]="true"
+              previousLabel=""
+              nextLabel=""
+              screenReaderPageLabel="page"
+              screenReaderCurrentLabel="You're on page"
+            >
+            </pagination-controls>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 </main>
 
-
-<div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" data-bs-backdrop="static" data-bs-keyboard="false" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addRoomModalLabel">{{isEditMode ? 'تعديل غرفة' : 'إضافة غرفة'}}</h5>
-            </div>
-            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="roomForm" (ngSubmit)="addRoom()">
-                    <div class="row">
-                        <!-- <div class="col-lg-12">
+<div
+  class="modal fade"
+  id="addRoomModal"
+  tabindex="-1"
+  aria-labelledby="addRoomModalLabel"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="addRoomModalLabel">
+          {{ isEditMode ? "تعديل غرفة" : "إضافة غرفة" }}
+        </h5>
+      </div>
+      <div
+        class="modal-body"
+        style="
+          background-image: url('assets/vendors/imgs/pattern.png');
+          background-size: cover;
+        "
+      >
+        <form [formGroup]="roomForm" (ngSubmit)="addRoom()">
+          <div class="row">
+            <!-- <div class="col-lg-12">
                             <div class="form-group">
                                 <label class="form-label" for="name">إسم الغرفة</label>
                                 <input type="text" class="form-control shadow-none" formControlName="name" id="name">
@@ -97,54 +173,141 @@
                                 </div>
                             </div>
                         </div> -->
-                        <div class="col-lg-6 mt-2">
-                            <div class="form-group">
-                                <label class="form-label" for="wardId">الطابق</label>
-                                <select class="form-control shadow-none" formControlName="wardId" id="wardId">
-                                    <option value="" selected disabled>اختر الطابق</option>
-                                    <option *ngFor="let ward of wards" [value]="ward.id">{{ ward.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mt-2">
-                            <div class="form-group">
-                                <label class="form-label" for="number">رقم الغرفة</label>
-                                <input type="number" class="form-control shadow-none" formControlName="number" id="number">
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mt-2">
-                            <div class="form-group">
-                                <label class="form-label" for="type">نوع الغرفة</label>
-                                <select class="form-select shadow-none" formControlName="type" id="type">
-                                    <option selected disabled value="">اختر نوع الغرفة</option>
-                                    <option value="Shared">عادية</option>
-                                    <option value="Private">فندقية</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mt-2">
-                            <div class="form-group">
-                                <label class="form-label" for="status">الحالة</label>
-                                <select class="form-select shadow-none" formControlName="status" id="status">
-                                    <option selected disabled value="">اختر الحالة</option>
-                                    <option value="Available">متاحة</option>
-                                    <option value="NotAvailable">محجوز</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 mt-2">
-                            <div class="form-group">
-                                <label class="form-label" for="dailyPrice">سعر الغرفة</label>
-                                <input type="number" class="form-control shadow-none" formControlName="dailyPrice" id="dailyPrice">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="roomForm.invalid">{{isEditMode ? 'تعديل الغرفة' : 'إضافة الغرفة'}}</button>
-                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">خروج</button>
-                    </div>
-                </form>
+            <div class="col-lg-6 mt-2">
+              <div class="form-group">
+                <label class="form-label" for="wardId"
+                  >الطابق<span class="text-danger">*</span></label
+                >
+                <select
+                  class="form-control shadow-none"
+                  formControlName="wardId"
+                  id="wardId"
+                >
+                  <option value="" selected disabled>اختر الطابق</option>
+                  <option *ngFor="let ward of wards" [value]="ward.id">
+                    {{ ward.name }}
+                  </option>
+                </select>
+                <div *ngIf="roomForm.get('wardId')?.touched">
+                  <div
+                    *ngIf="roomForm.get('wardId')?.errors?.['required']"
+                    class="text-danger"
+                  >
+                    الطابق مطلوب
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
+            <div class="col-lg-6 mt-2">
+              <div class="form-group">
+                <label class="form-label" for="number"
+                  >رقم الغرفة<span class="text-danger">*</span></label
+                >
+                <input
+                  type="number"
+                  class="form-control shadow-none"
+                  formControlName="number"
+                  id="number"
+                />
+                <div *ngIf="roomForm.get('number')?.touched">
+                  <div
+                    *ngIf="roomForm.get('number')?.errors?.['required']"
+                    class="text-danger"
+                  >
+                    رقم الغرفة مطلوب
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 mt-2">
+              <div class="form-group">
+                <label class="form-label" for="type"
+                  >نوع الغرفة<span class="text-danger">*</span></label
+                >
+                <select
+                  class="form-select shadow-none"
+                  formControlName="type"
+                  id="type"
+                >
+                  <option selected disabled value="">اختر نوع الغرفة</option>
+                  <option value="Shared">عادية</option>
+                  <option value="Private">فندقية</option>
+                </select>
+                <div *ngIf="roomForm.get('type')?.touched">
+                  <div
+                    *ngIf="roomForm.get('type')?.errors?.['required']"
+                    class="text-danger"
+                  >
+                    نوع الغرفة مطلوب
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 mt-2">
+              <div class="form-group">
+                <label class="form-label" for="status"
+                  >الحالة<span class="text-danger">*</span></label
+                >
+                <select
+                  class="form-select shadow-none"
+                  formControlName="status"
+                  id="status"
+                >
+                  <option selected disabled value="">اختر الحالة</option>
+                  <option value="Available">متاحة</option>
+                  <option value="NotAvailable">محجوز</option>
+                </select>
+                <div *ngIf="roomForm.get('status')?.touched">
+                  <div
+                    *ngIf="roomForm.get('status')?.errors?.['required']"
+                    class="text-danger"
+                  >
+                    الحالة مطلوب
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6 mt-2">
+              <div class="form-group">
+                <label class="form-label" for="dailyPrice"
+                  >سعر الغرفة<span class="text-danger">*</span></label
+                >
+                <input
+                  type="number"
+                  class="form-control shadow-none"
+                  formControlName="dailyPrice"
+                  id="dailyPrice"
+                />
+                <div *ngIf="roomForm.get('dailyPrice')?.touched">
+                  <div
+                    *ngIf="roomForm.get('dailyPrice')?.errors?.['required']"
+                    class="text-danger"
+                  >
+                    سعر الغرفة مطلوب
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="text-center mt-3">
+            <button
+              type="submit"
+              class="btn-blue"
+              [disabled]="roomForm.invalid"
+            >
+              {{ isEditMode ? "تعديل الغرفة" : "إضافة الغرفة" }}
+            </button>
+            <button
+              type="button"
+              class="btn-red mx-2"
+              data-bs-dismiss="modal"
+              (click)="resetFormOnClose()"
+            >
+              خروج
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>

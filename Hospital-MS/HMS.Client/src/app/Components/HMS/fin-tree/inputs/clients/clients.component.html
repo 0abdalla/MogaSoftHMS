@@ -1,223 +1,435 @@
 <main id="clients">
-    <div class="container-fluid">
-        <div class="p-3 mt-4">
-            <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
-                <div class="row justify-content-between align-items-center">
-                    <div class="col-md-4">
-                        <input type="text" formControlName="SearchText" placeholder="ابحث بإستخدام اسم العميل أو رقم الهاتف" class="form-control text-end shadow-none">
-                    </div>
-                    <div class="col-md-4">
-                        <select name="" id="" class="form-select text-end shadow-none">
-                            <option selected disabled value="">اختر المندوب</option>
-                            <option value="">المندوب</option>
-                            <option value="">المندوب</option>
-                            <option value="">المندوب</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 d-flex justify-content-end align-items-center">
-                        <button type="submit" class="btn-blue w-100 mx-2">
-                            بحث <i class="fa fa-search me-1"></i> 
-                        </button>
-                        <button data-bs-toggle="modal" data-bs-target="#addClientModal" type="button" class="btn-red w-100 mx-2">
-                            جديد <i class="fa fa-plus me-1"></i> 
-                        </button>
-                    </div>
-                </div>
-            </form>
+  <div class="container-fluid">
+    <div class="p-3 mt-4">
+      <form
+        [formGroup]="filterForm"
+        (ngSubmit)="applyFilters()"
+        class="p-3 border rounded"
+      >
+        <div class="row justify-content-between align-items-center">
+          <div class="col-md-4">
+            <input
+              type="text"
+              formControlName="SearchText"
+              placeholder="ابحث بإستخدام اسم العميل أو رقم الهاتف"
+              class="form-control text-end shadow-none"
+            />
+          </div>
+          <div class="col-md-4">
+            <select name="" id="" class="form-select text-end shadow-none">
+              <option selected disabled value="">اختر المندوب</option>
+              <option value="">المندوب</option>
+              <option value="">المندوب</option>
+              <option value="">المندوب</option>
+            </select>
+          </div>
+          <div class="col-md-4 d-flex justify-content-end align-items-center">
+            <button type="submit" class="btn-blue w-100 mx-2">
+              بحث <i class="fa fa-search me-1"></i>
+            </button>
+            <button
+              data-bs-toggle="modal"
+              data-bs-target="#addClientModal"
+              type="button"
+              class="btn-red w-100 mx-2"
+            >
+              جديد <i class="fa fa-plus me-1"></i>
+            </button>
+          </div>
         </div>
-        <table class="table table-hover mt-4">
-            <thead>
-                <tr>
-                    <th>كود الحساب</th>
-                    <th>إسم العميل</th>
-                    <th>إسم المسئول</th>
-                    <th>رقم الهاتف</th>
-                    <th>العنوان</th>
-                    <th>المندوب</th>
-                    <th>إسم المستخدم</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody *ngIf="clients?.length > 0">
-                <tr *ngFor="let client of clients | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openMainGroup(client.id)" style="cursor: pointer">
-                    <td>
-                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                            <div class="avatar-circle">{{ client.name.charAt(0) }}</div>
-                            <span class="fw-bold">{{ client.name }}</span>
-                        </div>
-                    </td>
-                    <td class="text-secondary">{{ client.description }}</td>
-                    <td>{{ client.responsibleName }}</td>
-                    <td>{{ client.phoneNumber }}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody *ngIf="clients?.length === 0">
-                <tr>
-                    <td colspan="8" class="text-center text-muted">لا يوجد عملاء حتى الآن</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="col-lg-12">
-            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
-                <div class="my-pagination">
-                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
-                        screenReaderCurrentLabel="You're on page">
-                    </pagination-controls>
-                </div>
-            </div>
-        </div>
+      </form>
     </div>
-</main>
-
-
-
-
-<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header justify-content-center">
-          <h5 class="modal-title" id="addClientModalLabel">إضافة عميل جديد</h5>
-        </div>
-        <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-          <form [formGroup]="clientForm" (ngSubmit)="addProvider()">
-            <div class=" p-3 mb-3 ">
-              <div class="row gy-3">
-                <div class="col-md-4">
-                  <label>كود العميل</label>
-                  <input type="text" formControlName="accountCode" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-4">
-                  <label>اسم العميل</label>
-                  <input type="text" formControlName="name" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-4">
-                  <label>اسم العميل بالإنجليزية</label>
-                  <input type="text" formControlName="nameEn" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>اسم المسئول</label>
-                  <input type="text" formControlName="managerName1" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>اسم المسئول 2</label>
-                  <input type="text" formControlName="managerName2" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>الوظيفة</label>
-                  <input type="text" formControlName="job" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>نوع العميل</label>
-                  <select class="form-select text-end shadow-none" formControlName="type">
-                    <option selected disabled value="">اختر نوع العميل</option>
-                    <option value="فرد">فرد</option>
-                    <option value="شركة">شركة</option>
-                  </select>
-                </div>
-  
-                <div class="col-md-6">
-                  <label>المنطقة</label>
-                  <input type="text" formControlName="region" class="form-control shadow-none text-end" />
-                </div>
-                
-                <div class="col-md-6">
-                    <label>الرقم الضريبي</label>
-                    <input type="text" formControlName="taxNumber" class="form-control shadow-none text-end" />
-                </div>
-                
-                <div class="col-md-6">
-                  <label>هاتف العميل</label>
-                  <input type="text" formControlName="phone1" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>هاتف العميل 2</label>
-                  <input type="text" formControlName="phone2" class="form-control shadow-none text-end" />
-                </div>
-  
-                
-              </div>
+    <table class="table table-hover mt-4">
+      <thead>
+        <tr>
+          <th>كود الحساب</th>
+          <th>إسم العميل</th>
+          <th>إسم المسئول</th>
+          <th>رقم الهاتف</th>
+          <th>العنوان</th>
+          <th>المندوب</th>
+          <th>إسم المستخدم</th>
+          <th>الإجراءات</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="clients?.length > 0">
+        <tr
+          *ngFor="
+            let client of clients
+              | paginate
+                : {
+                    id: 'paginate',
+                    itemsPerPage: pagingFilterModel.pageSize,
+                    currentPage: pagingFilterModel.currentPage,
+                    totalItems: total
+                  }
+          "
+          (click)="openMainGroup(client.id)"
+          style="cursor: pointer"
+        >
+          <td>
+            <div class="d-flex align-items-center gap-2 justify-content-start">
+              <div class="avatar-circle">{{ client.name.charAt(0) }}</div>
+              <span class="fw-bold">{{ client.name }}</span>
             </div>
-  
-            <div class="p-3 mb-3">
-              <div class="row gy-3">
-                <div class="col-md-6">
-                  <label>التليفون 1</label>
-                  <input type="text" formControlName="phoneAlt1" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>الفاكس 1</label>
-                  <input type="text" formControlName="fax1" class="form-control shadow-none text-end" />
-                </div>
-              </div>
-            </div>
-  
-            <div class="p-3 mb-3" >
-              <div class="row gy-3">
-                <div class="col-md-6">
-                  <label>البريد الإلكتروني</label>
-                  <input type="email" formControlName="email" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>رقم حساب البنك</label>
-                  <input type="text" formControlName="bankAccountNumber" class="form-control shadow-none text-end" />
-                </div>
-  
-                <div class="col-md-6">
-                  <label>حد الائتمان</label>
-                  <input type="number" formControlName="creditLimit" class="form-control shadow-none text-end" min="0" />
-                </div>
-  
-                <div class="col-md-3">
-                  <label>طرق الدفع</label>
-                  <select class="form-select shadow-none text-end" formControlName="paymentRate">
-                    <option selected disabled value="">اختر طريقة الدفع</option>
-                    <option value="100">100% عند التوريد</option>
-                    <option value="70">70% مقدم و 30% عند التسليم</option>
-                    <option value="60">60% مقدم و 40% عند التسليم</option>
-                  </select>
-                </div>
-  
-                <div class="col-md-3">
-                  <label>مسئول المبيعات</label>
-                  <!-- <input type="text" formControlName="accountManager" class="form-control shadow-none text-end" /> -->
-                   <select class="form-select shadow-none text-end" formControlName="accountManager">
-                    <option selected disabled value="">اختر مسؤول المبيعات</option>
-                    <option value="1">موظف 1</option>
-                    <option value="2">موظف 2</option>
-                  </select>
-                </div>
+          </td>
+          <td class="text-secondary">{{ client.description }}</td>
+          <td>{{ client.responsibleName }}</td>
+          <td>{{ client.phoneNumber }}</td>
+          <td>
+            <button type="button" class="btn btn-primary">
+              <i class="fa fa-edit"></i>
+            </button>
+            <button type="button" class="btn btn-danger">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="clients?.length === 0">
+        <tr>
+          <td colspan="8" class="text-center text-muted">
+            لا يوجد عملاء حتى الآن
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-                <div class="col-md-12">
-                    <label>ملاحظات</label>
-                    <textarea formControlName="notes" rows="3" class="form-control shadow-none text-end"></textarea>
-                </div>
-
-              </div>
-            </div>
-  
-            <div class="text-center">
-              <button type="submit" class="btn-blue px-5" [disabled]="clientForm.invalid">إضافة العميل</button>
-            </div>
-          </form>
+    <div class="col-lg-12">
+      <div
+        *ngIf="total > 16"
+        class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
+      >
+        <div class="my-pagination">
+          <pagination-controls
+            id="paginate"
+            (pageChange)="onPageChange($event)"
+            (pageBoundsCorrection)="onPageChange($event)"
+            [maxSize]="16"
+            [directionLinks]="true"
+            [autoHide]="true"
+            [responsive]="true"
+            previousLabel=""
+            nextLabel=""
+            screenReaderPageLabel="page"
+            screenReaderCurrentLabel="You're on page"
+          >
+          </pagination-controls>
         </div>
       </div>
     </div>
-</div>  
+  </div>
+</main>
+
+<div
+  class="modal fade"
+  id="addClientModal"
+  tabindex="-1"
+  aria-labelledby="addClientModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="addClientModalLabel">إضافة عميل جديد</h5>
+      </div>
+      <div
+        class="modal-body"
+        style="
+          background-image: url('assets/vendors/imgs/pattern.png');
+          background-size: cover;
+        "
+      >
+        <form [formGroup]="clientForm" (ngSubmit)="addProvider()">
+          <div class="p-3 mb-3">
+            <div class="row gy-3">
+              <div class="col-md-4">
+                <label>كود العميل<span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  formControlName="accountCode"
+                  class="form-control shadow-none text-end"
+                />
+                <div
+                  *ngIf="
+                    clientForm.get('accountCode')?.invalid &&
+                    clientForm.get('accountCode')?.touched
+                  "
+                  class="text-danger"
+                >
+                  كود العميل مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label>اسم العميل<span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  formControlName="name"
+                  class="form-control shadow-none text-end"
+                />
+                <div
+                  *ngIf="
+                    clientForm.get('name')?.invalid &&
+                    clientForm.get('name')?.touched
+                  "
+                  class="text-danger"
+                >
+                  اسم العميل مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label
+                  >اسم العميل بالإنجليزية<span class="text-danger"
+                    >*</span
+                  ></label
+                >
+                <input
+                  type="text"
+                  formControlName="nameEn"
+                  class="form-control shadow-none text-end"
+                />
+                <div
+                  *ngIf="
+                    clientForm.get('nameEn')?.invalid &&
+                    clientForm.get('nameEn')?.touched
+                  "
+                  class="text-danger"
+                >
+                  اسم العميل بالإنجليزية مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label>اسم المسئول<span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  formControlName="managerName1"
+                  class="form-control shadow-none text-end"
+                />
+                <div
+                  *ngIf="
+                    clientForm.get('managerName1')?.invalid &&
+                    clientForm.get('managerName1')?.touched
+                  "
+                  class="text-danger"
+                >
+                  اسم المسئول مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label>اسم المسئول 2</label>
+                <input
+                  type="text"
+                  formControlName="managerName2"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>الوظيفة<span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  formControlName="job"
+                  class="form-control shadow-none text-end"
+                />
+                <div
+                  *ngIf="
+                    clientForm.get('job')?.invalid &&
+                    clientForm.get('job')?.touched
+                  "
+                  class="text-danger"
+                >
+                  الوظيفة مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label>نوع العميل<span class="text-danger">*</span></label>
+                <select
+                  class="form-select text-end shadow-none"
+                  formControlName="type"
+                >
+                  <option selected disabled value="">اختر نوع العميل</option>
+                  <option value="فرد">فرد</option>
+                  <option value="شركة">شركة</option>
+                </select>
+                <div
+                  *ngIf="
+                    clientForm.get('type')?.invalid &&
+                    clientForm.get('type')?.touched
+                  "
+                  class="text-danger"
+                >
+                  نوع العميل مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label>المنطقة</label>
+                <input
+                  type="text"
+                  formControlName="region"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>الرقم الضريبي</label>
+                <input
+                  type="text"
+                  formControlName="taxNumber"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>هاتف العميل<span class="text-danger">*</span></label>
+                <input
+                  type="text"
+                  formControlName="phone1"
+                  class="form-control shadow-none text-end"
+                />
+                <div
+                  *ngIf="
+                    clientForm.get('phone1')?.invalid &&
+                    clientForm.get('phone1')?.touched
+                  "
+                  class="text-danger"
+                >
+                  هاتف العميل مطلوب
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label>هاتف العميل 2</label>
+                <input
+                  type="text"
+                  formControlName="phone2"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 mb-3">
+            <div class="row gy-3">
+              <div class="col-md-6">
+                <label>التليفون 1</label>
+                <input
+                  type="text"
+                  formControlName="phoneAlt1"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>الفاكس 1</label>
+                <input
+                  type="text"
+                  formControlName="fax1"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-3 mb-3">
+            <div class="row gy-3">
+              <div class="col-md-6">
+                <label>البريد الإلكتروني</label>
+                <input
+                  type="email"
+                  formControlName="email"
+                  class="form-control shadow-none text-end"
+                />
+                <div *ngIf="clientForm.get('email')?.touched">
+                  <div
+                    *ngIf="clientForm.get('email')?.errors?.['required']"
+                    class="text-danger"
+                  >
+                    البريد الإلكتروني مطلوب
+                  </div>
+                  <div
+                    *ngIf="clientForm.get('email')?.errors?.['email']"
+                    class="text-danger"
+                  >
+                    البريد الإلكتروني غير صحيح
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label>رقم حساب البنك</label>
+                <input
+                  type="text"
+                  formControlName="bankAccountNumber"
+                  class="form-control shadow-none text-end"
+                />
+              </div>
+
+              <div class="col-md-6">
+                <label>حد الائتمان</label>
+                <input
+                  type="number"
+                  formControlName="creditLimit"
+                  class="form-control shadow-none text-end"
+                  min="0"
+                />
+              </div>
+
+              <div class="col-md-3">
+                <label>طرق الدفع</label>
+                <select
+                  class="form-select shadow-none text-end"
+                  formControlName="paymentRate"
+                >
+                  <option selected disabled value="">اختر طريقة الدفع</option>
+                  <option value="100">100% عند التوريد</option>
+                  <option value="70">70% مقدم و 30% عند التسليم</option>
+                  <option value="60">60% مقدم و 40% عند التسليم</option>
+                </select>
+              </div>
+
+              <div class="col-md-3">
+                <label>مسئول المبيعات</label>
+                <!-- <input type="text" formControlName="accountManager" class="form-control shadow-none text-end" /> -->
+                <select
+                  class="form-select shadow-none text-end"
+                  formControlName="accountManager"
+                >
+                  <option selected disabled value="">
+                    اختر مسؤول المبيعات
+                  </option>
+                  <option value="1">موظف 1</option>
+                  <option value="2">موظف 2</option>
+                </select>
+              </div>
+
+              <div class="col-md-12">
+                <label>ملاحظات</label>
+                <textarea
+                  formControlName="notes"
+                  rows="3"
+                  class="form-control shadow-none text-end"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button
+              type="submit"
+              class="btn-blue px-5"
+              [disabled]="clientForm.invalid"
+            >
+              إضافة العميل
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

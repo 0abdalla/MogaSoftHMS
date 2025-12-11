@@ -56,16 +56,29 @@
           (ngSubmit)="submitFinancialYear()"
         >
           <div class="mb-3">
-            <label class="form-label">تاريخ البداية</label>
+            <label class="form-label"
+              >تاريخ البداية<span class="text-danger">*</span></label
+            >
             <input
               type="date"
               class="form-control shadow-none"
               formControlName="startDate"
             />
+            <div
+              *ngIf="
+                financialYearForm.get('startDate')?.invalid &&
+                financialYearForm.get('startDate')?.touched
+              "
+              class="text-danger"
+            >
+              تاريخ البداية مطلوب
+            </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">تاريخ النهاية</label>
+            <label class="form-label"
+              >تاريخ النهاية<span class="text-danger">*</span></label
+            >
             <input
               type="date"
               class="form-control shadow-none"
@@ -79,6 +92,15 @@
               class="text-danger mt-1"
             >
               لا يمكن أن تكون النهاية قبل البداية.
+            </div>
+            <div
+              *ngIf="
+                financialYearForm.get('endDate')?.invalid &&
+                financialYearForm.get('endDate')?.touched
+              "
+              class="text-danger"
+            >
+              تاريح النهاية مطلوب
             </div>
           </div>
 
@@ -119,16 +141,29 @@
       >
         <form [formGroup]="financialYearForm" (ngSubmit)="closeFinancialYear()">
           <div class="mb-3">
-            <label class="form-label">تاريخ البداية</label>
+            <label class="form-label"
+              >تاريخ البداية<span class="text-danger">*</span></label
+            >
             <input
               type="date"
               class="form-control shadow-none"
               formControlName="startDate"
             />
+            <div
+              *ngIf="
+                financialYearForm.get('startDate')?.invalid &&
+                financialYearForm.get('startDate')?.touched
+              "
+              class="text-danger"
+            >
+              تاريخ البداية مطلوب
+            </div>
           </div>
 
           <div class="mb-3">
-            <label class="form-label">تاريخ النهاية</label>
+            <label class="form-label"
+              >تاريخ النهاية<span class="text-danger">*</span></label
+            >
             <input
               type="date"
               class="form-control shadow-none"
@@ -142,6 +177,15 @@
               class="text-danger mt-1"
             >
               لا يمكن أن تكون النهاية قبل البداية.
+            </div>
+            <div
+              *ngIf="
+                financialYearForm.get('endDate')?.invalid &&
+                financialYearForm.get('endDate')?.touched
+              "
+              class="text-danger"
+            >
+              تاريح النهاية مطلوب
             </div>
           </div>
 

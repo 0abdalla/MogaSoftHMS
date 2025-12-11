@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import html2pdf from 'html2pdf.js';
 import { todayDateValidator } from '../../../../../validators/today-date.validator';
 import { MessageService } from 'primeng/api';
-export declare var bootstrap:any;
+export declare var bootstrap: any;
 
 @Component({
   selector: 'app-add-items',
@@ -17,7 +17,7 @@ export class AddItemsComponent implements OnInit {
   @ViewChild('printSection') printSection!: ElementRef;
   @ViewChild('printEntrySection') printEntrySection!: ElementRef;
   data: any = {};
-  username = sessionStorage.getItem('firstName') + '' + sessionStorage.getItem('lastName') ; 
+  username = sessionStorage.getItem('firstName') + '' + sessionStorage.getItem('lastName');
   get today(): string {
     const date = new Date();
     const dateStr = date.toLocaleDateString('ar-EG', {
@@ -26,60 +26,60 @@ export class AddItemsComponent implements OnInit {
       month: 'long',
       day: 'numeric'
     });
-  
+
     const timeStr = date.toLocaleTimeString('ar-EG', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
     });
-  
-    return `${dateStr} - الساعة ${timeStr}`;
-  }  
 
-  // 
-  filterForm!:FormGroup;
-  addPermissionForm!:FormGroup
-  TitleList = ['المخازن','إذن إستلام'];
-  // 
-  adds:any[]=[];
+    return `${dateStr} - الساعة ${timeStr}`;
+  }
+
+  //
+  filterForm!: FormGroup;
+  addPermissionForm!: FormGroup
+  TitleList = ['المخازن', 'إذن إستلام'];
+  //
+  adds: any[] = [];
   total = 0;
-  pagingFilterModel : PagingFilterModel = {
+  pagingFilterModel: PagingFilterModel = {
     searchText: '',
     currentPage: 1,
     pageSize: 16,
     filterList: []
   }
-  pagingFilterModelSelect : PagingFilterModel = {
-    currentPage : 1,
-    pageSize : 100,
-    filterList : []
+  pagingFilterModelSelect: PagingFilterModel = {
+    currentPage: 1,
+    pageSize: 100,
+    filterList: []
   };
-  // 
+  //
   allItems: any[] = [];
-  allUnits:any[] = []
-  suppliers:any[]=[];
-  stores:any[]=[];
-  purchaseRequests:any[]=[];
-  purchaseOrders:any[]=[];
-  // 
-  isFilter:boolean=true;
-  constructor(private fb:FormBuilder , private financialService : FinancialService , private cdr : ChangeDetectorRef , private toastrService : MessageService){
-    this.filterForm=this.fb.group({
-      SearchText:[],
-      type:[''],
-      responsible:[''],
+  allUnits: any[] = []
+  suppliers: any[] = [];
+  stores: any[] = [];
+  purchaseRequests: any[] = [];
+  purchaseOrders: any[] = [];
+  //
+  isFilter: boolean = true;
+  constructor(private fb: FormBuilder, private financialService: FinancialService, private cdr: ChangeDetectorRef, private toastrService: MessageService) {
+    this.filterForm = this.fb.group({
+      SearchText: [],
+      type: [''],
+      responsible: [''],
     })
     this.addPermissionForm = this.fb.group({
-      documentNumber: ['' , Validators.required],
-      permissionDate: [new Date().toISOString().substring(0, 10) , [todayDateValidator]],
+      documentNumber: ['', Validators.required],
+      permissionDate: [new Date().toISOString().substring(0, 10), [todayDateValidator]],
       notes: [''],
       items: this.fb.array([
         this.createItemGroup()
       ]),
-      storeId: [''],
-      supplierId: [''],
-      purchaseOrderId: [''],
-    });    
+      storeId: ['', Validators.required],
+      supplierId: ['', Validators.required],
+      purchaseOrderId: ['', Validators.required],
+    });
   }
   ngOnInit(): void {
     this.getReceiptPermissions();
@@ -102,16 +102,16 @@ export class AddItemsComponent implements OnInit {
     });
   }
   get items(): FormArray {
-      return this.addPermissionForm.get('items') as FormArray;
+    return this.addPermissionForm.get('items') as FormArray;
   }
-    
+
   addItemRow() {
-      this.items.push(this.createItemGroup());
+    this.items.push(this.createItemGroup());
   }
-    
+
   removeItemRow(index: number) {
     if (this.items.length > 1) {
-    this.items.removeAt(index);
+      this.items.removeAt(index);
     }
   }
 
@@ -121,7 +121,7 @@ export class AddItemsComponent implements OnInit {
         this.financialService.getPurchaseOrdersById(id).subscribe((res: any) => {
           const order = res.results;
           console.log(order);
-          
+
           this.addPermissionForm.patchValue({
             supplierId: order.supplierId,
             notes: order.description || ''
@@ -141,117 +141,117 @@ export class AddItemsComponent implements OnInit {
       }
     });
   }
-  
 
 
 
-  applyFilters(){
-    this.total=this.adds.length;
+
+  applyFilters() {
+    this.total = this.adds.length;
   }
-  resetFilters(){
+  resetFilters() {
     this.filterForm.reset();
     this.applyFilters();
   }
-  
-  // 
-  openMainGroup(id:number){
-    
+
+  //
+  openMainGroup(id: number) {
+
   }
-  // 
+  //
   getReceiptPermissions() {
     this.financialService.getReceiptPermissions(this.pagingFilterModel).subscribe({
-      next: (res:any) => {
+      next: (res: any) => {
         this.total = res.totalCount;
         this.adds = res.results;
         this.cdr.detectChanges();
-      console.log('Results:', this.adds);
+        console.log('Results:', this.adds);
       },
       error: (err) => {
         console.error('فشل جلب إذن الإستلام:', err);
       }
     });
   }
-  // 
+  //
   onPageChange(page: any) {
     console.log('Page changed to:', page);
     this.pagingFilterModel.currentPage = page.page;
     this.getReceiptPermissions();
   }
-  getItems(){
-    this.financialService.getItems(this.pagingFilterModelSelect).subscribe((res:any)=>{
-      this.allItems=res.results;
-      console.log('Items',this.allItems);
-      this.total=res.count;
+  getItems() {
+    this.financialService.getItems(this.pagingFilterModelSelect).subscribe((res: any) => {
+      this.allItems = res.results;
+      console.log('Items', this.allItems);
+      this.total = res.count;
     })
   }
-  getUnits(){
-    this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res:any)=>{
-      this.allUnits=res.results;
-      console.log('Units',this.allUnits);
-      this.total=res.count;
+  getUnits() {
+    this.financialService.getUnits(this.pagingFilterModelSelect).subscribe((res: any) => {
+      this.allUnits = res.results;
+      console.log('Units', this.allUnits);
+      this.total = res.count;
     })
   }
-  getSuppliers(){
-    this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res:any)=>{
-      this.suppliers=res.results;
+  getSuppliers() {
+    this.financialService.getSuppliers(this.pagingFilterModelSelect).subscribe((res: any) => {
+      this.suppliers = res.results;
       // console.log('Supps',this.suppliers);
-      this.total=res.count;
+      this.total = res.count;
     })
   }
-  getStores(){
-    this.financialService.getStores(this.pagingFilterModelSelect).subscribe((res:any)=>{
-      this.stores=res.results;
-      console.log('Stores',this.stores);
-      this.total=res.count;
+  getStores() {
+    this.financialService.getStores(this.pagingFilterModelSelect).subscribe((res: any) => {
+      this.stores = res.results;
+      console.log('Stores', this.stores);
+      this.total = res.count;
     })
   }
-  getPurchaseRequests(){
-    this.financialService.getPurchaseRequests(this.pagingFilterModelSelect).subscribe((res:any)=>{
-      this.purchaseRequests=res.results;
+  getPurchaseRequests() {
+    this.financialService.getPurchaseRequests(this.pagingFilterModelSelect).subscribe((res: any) => {
+      this.purchaseRequests = res.results;
       // console.log(this.purchaseRequests);
-      this.total=res.count;
+      this.total = res.count;
     })
   }
-  getPurchaseOrders(){
-    this.financialService.getPurchaseOrders(this.pagingFilterModelSelect).subscribe((res:any)=>{
-      this.purchaseOrders=res.results;
-      console.log('Orders:',this.purchaseOrders);
-      this.total=res.count;
+  getPurchaseOrders() {
+    this.financialService.getPurchaseOrders(this.pagingFilterModelSelect).subscribe((res: any) => {
+      this.purchaseOrders = res.results;
+      console.log('Orders:', this.purchaseOrders);
+      this.total = res.count;
     })
   }
   filterChecked(filters: FilterModel[]) {
-          this.pagingFilterModel.currentPage = 1;
-          this.pagingFilterModel.filterList = filters;
-          if (filters.some(i => i.categoryName == 'SearchText'))
-            this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
-          else
-            this.pagingFilterModel.searchText = '';
-          this.getItems();
+    this.pagingFilterModel.currentPage = 1;
+    this.pagingFilterModel.filterList = filters;
+    if (filters.some(i => i.categoryName == 'SearchText'))
+      this.pagingFilterModel.searchText = filters.find(i => i.categoryName == 'SearchText')?.itemValue;
+    else
+      this.pagingFilterModel.searchText = '';
+    this.getItems();
   }
-  // 
-  isEditMode : boolean = false;
+  //
+  isEditMode: boolean = false;
   currentpurchaseOrderId: number | null = null;
-  savedOrderData!:any;
-  addNumber!:any;
+  savedOrderData!: any;
+  addNumber!: any;
   addPermission() {
     if (this.addPermissionForm.invalid) {
       this.addPermissionForm.markAllAsTouched();
       return;
     }
-  
+
     const formData = this.addPermissionForm.value;
 
     const supplierName = this.getSupplierName(formData.supplierId);
     const storeName = this.getStoreName(formData.storeId);
-    
+
     const itemsWithNames = formData.items.map((item: any) => {
       const itemName = this.getItemName(item.id);
       const totalPrice = item.quantity * item.unitPrice;
       return { ...item, itemName, totalPrice };
     });
-    
+
     const totalAmount = itemsWithNames.reduce((sum, i) => sum + i.totalPrice, 0);
-    
+
     this.savedOrderData = {
       ...formData,
       supplierName,
@@ -259,7 +259,7 @@ export class AddItemsComponent implements OnInit {
       items: itemsWithNames,
       totalAmount
     };
-      
+
     if (this.isEditMode && this.currentpurchaseOrderId) {
       this.financialService.updateReceiptPermission(this.currentpurchaseOrderId, formData).subscribe({
         next: () => this.getReceiptPermissions(),
@@ -269,9 +269,9 @@ export class AddItemsComponent implements OnInit {
       this.financialService.addReceiptPermission(formData).subscribe({
         next: (res: any) => {
           const formData = this.addPermissionForm.value;
-          console.log('Full Data:' , res);
+          console.log('Full Data:', res);
           console.log(formData);
-          
+
           this.addNumber = res.results.number;
           console.log(this.addNumber);
           console.log(formData);
@@ -282,15 +282,15 @@ export class AddItemsComponent implements OnInit {
           this.getReceiptPermissions();
           const supplier = this.getSupplierName(formData.supplierId);
           const store = this.getStoreName(formData.storeId);
-  
+
           const itemsWithNames = formData.items.map((item: any) => {
             const itemName = this.getItemName(item.id)
             const totalPrice = item.quantity * item.unitPrice;
             return { ...item, itemName, totalPrice };
           });
-  
+
           const totalAmount = itemsWithNames.reduce((sum, i) => sum + i.totalPrice, 0);
-  
+
           this.savedOrderData = {
             ...formData,
             supplierName: supplier,
@@ -301,39 +301,39 @@ export class AddItemsComponent implements OnInit {
             restrictionNumber: res.results.restrictionNumber,
             number: res.results.number
           };
-          
-          this.printReceipt(this.savedOrderData);          
+
+          this.printReceipt(this.savedOrderData);
 
           // this.addPermissionForm.reset();
-          if(res.isSuccess === true){
+          if (res.isSuccess === true) {
             this.toastrService.add({
               severity: 'success',
               summary: 'تم الإضافة',
               detail: `${res.message}`
             });
-          }else{
+          } else {
             this.toastrService.add({
               severity: 'error',
               summary: 'فشل الإضافة',
               detail: `${res.message}`
             });
-          console.log(formData);
+            console.log(formData);
           }
         },
         error: (err) => {
           console.error('فشل الإضافة:', err);
           console.log(formData);
-          
+
         }
       });
     }
   }
-  
-  permission!:any;
+
+  permission!: any;
   editPermission(id: number) {
     this.isEditMode = true;
     this.currentpurchaseOrderId = id;
-  
+
     this.financialService.getReceiptPermissionsById(id).subscribe({
       next: (data) => {
         this.permission = data.results;
@@ -364,7 +364,7 @@ export class AddItemsComponent implements OnInit {
       }
     });
   }
-  
+
   deletePermission(id: number) {
     Swal.fire({
       title: 'هل أنت متأكد؟',
@@ -389,26 +389,26 @@ export class AddItemsComponent implements OnInit {
     });
   }
 
-  // 
-  
+  //
+
   getTotal(): number {
     return this.items.value.reduce((sum: number, item: any) => sum + (+item.totalPrice || 0), 0);
   }
-  
+
   getItemName(id: number): string {
     const item = this.allItems?.find(i => +i.id === +id);
     return item?.nameAr || '---';
-  }  
-  
+  }
+
   getSupplierName(id: number): string {
     const supplier = this.suppliers?.find(s => +s.id === +id);
     return supplier?.name || '---';
   }
-  
+
   getStoreName(id: number): string {
     const store = this.stores?.find(s => +s.id === +id);
     return store?.name || '---';
-  }  
+  }
 
   // printPermission() {
   //   this.data = this.addPermissionForm.value;
@@ -445,7 +445,7 @@ export class AddItemsComponent implements OnInit {
   //       win?.print();
   //   }, 200);
   // }
-  
+
   // printAdditionPermission(): void {
   //   const element = document.getElementById('printSection');
   //   const opt = {
@@ -467,7 +467,7 @@ export class AddItemsComponent implements OnInit {
   //     html2canvas: { scale: 2 },
   //     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
   //   };
-  
+
   //   html2pdf().from(element).set(opt).save();
   // }
   printJournal(data: any) {
@@ -485,7 +485,7 @@ export class AddItemsComponent implements OnInit {
       element.classList.add('d-none');
     });
   }
-  
+
   printReceipt(data: any) {
     const element = document.getElementById('receiptPrintArea');
     html2pdf().set({
@@ -501,7 +501,7 @@ export class AddItemsComponent implements OnInit {
       element.classList.add('d-none');
     });
   }
-  // 
+  //
   generateReceiptPermissionPDFById(orderId: number) {
     this.financialService.getReceiptPermissionsById(orderId).subscribe((res: any) => {
       const data = res?.results;
@@ -510,8 +510,8 @@ export class AddItemsComponent implements OnInit {
         return;
       }
       this.savedOrderData = data;
-      console.log('Data for Print:' , this.savedOrderData);
-      
+      console.log('Data for Print:', this.savedOrderData);
+
       this.addPermissionForm.patchValue({
         orderDate: data.permissionDate,
         documentNumber: data.documentNumber,
@@ -557,7 +557,7 @@ export class AddItemsComponent implements OnInit {
     const backdrops = document.querySelectorAll('.modal-backdrop');
     backdrops.forEach(b => b.remove());
   }
-  resetForm(){
+  resetForm() {
     this.addPermissionForm.reset();
     this.items.clear();
     this.items.push(this.createItemGroup());
