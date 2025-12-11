@@ -46,22 +46,22 @@ export class PatientFormComponent implements OnInit {
   //
   selectedDailyPrice: number | null = null;
   //
-  showAdditionalInfo:boolean = false;
+  showAdditionalInfo: boolean = false;
 
   constructor(
     private fb: FormBuilder,
     private staffService: StaffService,
-    private addmisionService: AdmissionService,
+    private admisionService: AdmissionService,
     private messageService: MessageService,
     private appointmentService: AppointmentService,
     private insuranceService: InsuranceService
   ) {
     const minBirthDate = new Date(1920, 0, 1);
-    const maxBirthDate = new Date(2025 , 0 , 1)
+    const maxBirthDate = new Date(2025, 0, 1)
     this.patientForm = this.fb.group({
       patientName: ['', Validators.required],
       patientPhone: ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
-      patientBirthDate: ['', [Validators.required, this.minDateValidator(minBirthDate) , this.maxDateValidator(maxBirthDate)] ],
+      patientBirthDate: ['', [Validators.required, this.minDateValidator(minBirthDate), this.maxDateValidator(maxBirthDate)]],
       patientNationalId: ['', [Validators.required, Validators.pattern(/^[0-9]{14}$/)]],
       patientAddress: ['', Validators.required],
       patientStatus: ['', Validators.required],
@@ -120,11 +120,11 @@ export class PatientFormComponent implements OnInit {
   loadAdmissionData() {
     forkJoin({
       doctors: this.staffService.getDoctors(this.pagingFilterModel),
-      departments: this.addmisionService.getDepartments(),
-      rooms: this.addmisionService.getRooms(),
-      beds: this.addmisionService.getBeds(),
+      departments: this.admisionService.getDepartments(),
+      rooms: this.admisionService.getRooms(),
+      beds: this.admisionService.getBeds(),
       insuranceCompanies: this.insuranceService.getAllInsurances(),
-      patients: this.addmisionService.getAddmision(this.pagingFilterModel)
+      patients: this.admisionService.getAdmissions(this.pagingFilterModel)
     }).subscribe({
       next: (res: any) => {
         this.doctors = res.doctors.results;
@@ -156,8 +156,8 @@ export class PatientFormComponent implements OnInit {
     });
 
     if (this.patientForm.valid) {
-      this.addmisionService.addAdmision(this.patientForm.value).subscribe({
-        next: (res:any) => {
+      this.admisionService.addAdmission(this.patientForm.value).subscribe({
+        next: (res: any) => {
           this.patientForm.reset();
           this.showSecondContact = false;
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: 'تم إنشاء الحجز بنجاح' });
@@ -277,7 +277,7 @@ export class PatientFormComponent implements OnInit {
 
     if (phoneNumber.length === 11 && /^01[0125][0-9]{8}$/.test(phoneNumber)) {
       this.pagingFilterModel.searchText = phoneNumber;
-      this.addmisionService.getAddmision(this.pagingFilterModel).subscribe({
+      this.admisionService.getAdmissions(this.pagingFilterModel).subscribe({
         next: (data) => {
           const patientId = data.results[0].patientId;
           if (data.results && data.results.length > 0) {
@@ -344,7 +344,7 @@ export class PatientFormComponent implements OnInit {
     this.patientForm.get('insuranceNumber')?.updateValueAndValidity();
   }
   //
-  services!:any;
+  services!: any;
   selectedSurgeryPrice: number | null = null;
   getServices() {
     this.appointmentService.getServices(
