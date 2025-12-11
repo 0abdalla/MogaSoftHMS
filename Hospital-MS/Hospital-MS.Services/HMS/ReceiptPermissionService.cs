@@ -81,17 +81,17 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                     DocumentNumber = x.DocumentNumber,
                     PermissionDate = x.PermissionDate,
                     Notes = x.Notes,
-                    Status = x.Status.ToString(),
+                    //Status = x.Status.ToString(),
                     StoreId = x.StoreId,
                     StoreName = x.Store.Name,
-                    SupplierId = x.SupplierId,
+                    //SupplierId = x.SupplierId,
                     SupplierName = x.Supplier.Name,
                     PurchaseOrderId = x.PurchaseOrderId,
                     PurchaseOrderNumber = x.PurchaseOrder.OrderNumber,
                     Items = x.Items.Select(i => new ReceiptPermissionItemResponse
                     {
                         ItemId = i.ItemId,
-                        ItemName = i.Item.NameAr,
+                        ItemName = i.Item.NameAR,
                         Unit = i.Unit,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
@@ -139,16 +139,16 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 PermissionDate = permission.PermissionDate,
                 Notes = permission.Notes,
                 SupplierName = permission.Supplier.Name,
-                SupplierId = permission.SupplierId,
+                //SupplierId = permission.SupplierId,
                 StoreName = permission.Store.Name,
                 StoreId = permission.StoreId,
-                Status = permission.Status.ToString(),
+                //Status = permission.Status.ToString(),
                 PurchaseOrderId = permission.PurchaseOrderId,
                 PurchaseOrderNumber = permission.PurchaseOrder.OrderNumber,
                 Items = permission.Items.Select(i => new ReceiptPermissionItemResponse
                 {
                     ItemId = i.ItemId,
-                    ItemName = i.Item.NameAr,
+                    ItemName = i.Item.NameAR,
                     Unit = i.Unit,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
@@ -159,11 +159,11 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     Id = permission?.DailyRestriction?.Id,
-                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance?.Name ?? null,
+                    //AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance?.Name ?? null,
                     Amount = totalAmount,
                     From = permission.Supplier.Name,
                     To = permission.Store.Name,
-                    RestrictionDate = permission.DailyRestriction.RestrictionDate,
+                    //RestrictionDate = permission.DailyRestriction.RestrictionDate,
                     RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? null,
                     Number = permission.PermissionNumber
                 }
@@ -246,7 +246,7 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
                 DocumentNumber = request.DocumentNumber,
                 PermissionDate = request.PermissionDate,
                 StoreId = request.StoreId,
-                SupplierId = request.SupplierId,
+                //SupplierId = request.SupplierId,
                 PurchaseOrderId = request.PurchaseOrderId,
                 Notes = request.Notes,
                 Items = request.Items.Select(i => new ReceiptPermissionItem
@@ -268,10 +268,10 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
             var dailyRestriction = new DailyRestriction
             {
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
-                RestrictionDate = request.PermissionDate,
-                RestrictionTypeId = null,
-                Description = $"قيد إذن استلام رقم {permission.PermissionNumber}",
-                AccountingGuidanceId = 16, // المخازن
+                //RestrictionDate = request.PermissionDate,
+                //RestrictionTypeId = null,
+                //Description = $"قيد إذن استلام رقم {permission.PermissionNumber}",
+                //AccountingGuidanceId = 16,
                 Details = new List<DailyRestrictionDetail>
                 {
                     new DailyRestrictionDetail
@@ -301,11 +301,11 @@ public class ReceiptPermissionService(IUnitOfWork unitOfWork, IDailyRestrictionS
             var response = new PartialDailyRestrictionResponse
             {
                 Id = permission.Id,
-                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                //AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidance).FirstOrDefault().Name,
                 Amount = totalAmount,
                 From = supplier.Name,
                 To = store.Name,
-                RestrictionDate = dailyRestriction.RestrictionDate,
+                //RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber,
                 Number = permission.PermissionNumber
             };

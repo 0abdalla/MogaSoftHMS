@@ -64,7 +64,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
 
             var treasuryOperation = new TreasuryOperation
             {
-                Date = request.Date,
+                //Date = request.Date,
                 Amount = request.Amount,
                 Description = request.Notes,
                 TreasuryId = request.TreasuryId,
@@ -87,10 +87,10 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             {
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = treasuryOperation.Id.ToString(),
-                RestrictionTypeId = null,
+                //RestrictionTypeId = null,
                 // TODO : replace it
-                AccountingGuidanceId = 17,
-                RestrictionDate = request.Date,
+                //AccountingGuidanceId = 17,
+                //RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =
                 [
@@ -121,11 +121,11 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             var response = new PartialDailyRestrictionResponse
             {
                 Id = permission.Id,
-                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                //AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
                 Amount = request.Amount,
                 From = account.NameAR,
                 To = treasury.Name,
-                RestrictionDate = dailyRestriction.RestrictionDate,
+                //RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber,
 
             };
@@ -267,11 +267,11 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
                 },
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
-                    AccountingGuidanceName = permission.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
+                    //AccountingGuidanceName = permission.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
                     Amount = permission.Amount,
                     From = permission.Account?.NameAR ?? string.Empty,
                     To = permission.Treasury?.Name ?? string.Empty,
-                    RestrictionDate = permission?.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
+                    //RestrictionDate = permission?.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
                     Id = permission?.DailyRestriction?.Id,
                     RestrictionNumber = permission?.DailyRestriction?.RestrictionNumber ?? string.Empty
                 }
@@ -328,7 +328,7 @@ public class DispensePermissionService(IUnitOfWork unitOfWork, ISQLHelper sQLHel
             // add transaction to treasury
             var treasuryTransaction = new TreasuryOperation
             {
-                Date = request.Date,
+                //Date = request.Date,
                 Amount = request.Amount,
                 Description = request.Notes,
                 TreasuryId = request.TreasuryId,

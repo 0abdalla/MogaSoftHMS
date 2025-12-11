@@ -21,11 +21,11 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             var entity = new DailyRestriction
             {
                 RestrictionNumber = await GenerateRestrictionNumberAsync(cancellationToken),
-                RestrictionDate = request.RestrictionDate,
-                RestrictionTypeId = request.RestrictionTypeId,
+                //RestrictionDate = request.RestrictionDate,
+                //RestrictionTypeId = request.RestrictionTypeId,
                 //LedgerNumber = request.LedgerNumber,
                 Description = request.Description,
-                AccountingGuidanceId = request.AccountingGuidanceId,
+                //AccountingGuidanceId = request.AccountingGuidanceId,
                 Details = request.Details.Select(d => new DailyRestrictionDetail
                 {
                     AccountId = d.AccountId,
@@ -66,11 +66,11 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             {
                 entity.RestrictionNumber = await GenerateRestrictionNumberAsync(cancellationToken);
             }
-            entity.RestrictionDate = request.RestrictionDate;
-            entity.RestrictionTypeId = request.RestrictionTypeId;
+            //entity.RestrictionDate = request.RestrictionDate;
+            //entity.RestrictionTypeId = request.RestrictionTypeId;
             //entity.LedgerNumber = request.LedgerNumber;
             entity.Description = request.Description;
-            entity.AccountingGuidanceId = request.AccountingGuidanceId;
+            //entity.AccountingGuidanceId = request.AccountingGuidanceId;
 
             entity.Details.Clear();
             foreach (var d in request.Details)
@@ -145,25 +145,25 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
             {
                 Id = entity.Id,
                 RestrictionNumber = entity.RestrictionNumber,
-                RestrictionDate = entity.RestrictionDate,
-                RestrictionTypeId = entity.RestrictionTypeId,
-                RestrictionTypeName = entity.RestrictionType?.Name ?? null,
+                //RestrictionDate = entity.RestrictionDate,
+                //RestrictionTypeId = entity.RestrictionTypeI/d,
+                //RestrictionTypeName = entity.RestrictionType?.Name ?? null,
                 //LedgerNumber = entity.LedgerNumber,
                 Description = entity.Description,
                 Details = entity.Details.Select(d => new DailyRestrictionDetailResponse
                 {
                     Id = d.Id,
-                    AccountId = d.AccountId,
+                    //AccountId = d.AccountId,
                     AccountName = d.Account.NameAR ?? d.Account.NameEN ?? "",
-                    Debit = d.Debit,
-                    Credit = d.Credit,
+                    //Debit = d.Debit,
+                    //Credit = d.Credit,
                     CostCenterId = d.CostCenterId,
                     CostCenterName = d.CostCenter?.NameAR,
                     Note = d.Note
                 }).ToList(),
 
-                AccountingGuidanceId = entity.AccountingGuidanceId,
-                AccountingGuidanceName = entity.AccountingGuidance?.Name ?? "",
+                //AccountingGuidanceId = entity.AccountingGuidanceId,
+                //AccountingGuidanceName = entity.AccountingGuidance?.Name ?? "",
                 Audit = new AuditResponse
                 {
                     CreatedBy = entity.CreatedBy != null ? entity.CreatedBy.UserName : null,
@@ -215,21 +215,21 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
                 {
                     Id = x.Id,
                     RestrictionNumber = x.RestrictionNumber,
-                    RestrictionDate = x.RestrictionDate,
-                    RestrictionTypeId = x.RestrictionTypeId,
-                    RestrictionTypeName = x.RestrictionType.Name,
+                    //RestrictionDate = x.RestrictionDate,
+                    //RestrictionTypeId = x.RestrictionTypeId,
+                    //RestrictionTypeName = x.RestrictionType.Name,
                     //LedgerNumber = x.LedgerNumber,
                     Description = x.Description,
-                    AccountingGuidanceId = x.AccountingGuidanceId,
-                    AccountingGuidanceName = x.AccountingGuidance != null ? x.AccountingGuidance.Name : null,
+                    //AccountingGuidanceId = x.AccountingGuidanceId,
+                    //AccountingGuidanceName = x.AccountingGuidance != null ? x.AccountingGuidance.Name : null,
 
                     Details = x.Details.Select(d => new DailyRestrictionDetailResponse
                     {
                         Id = d.Id,
-                        AccountId = d.AccountId,
+                        //AccountId = d.AccountId,
                         AccountName = d.Account.NameAR ?? d.Account.NameEN ?? "",
-                        Debit = d.Debit,
-                        Credit = d.Credit,
+                        //Debit = d.Debit,
+                        //Credit = d.Credit,
                         CostCenterId = d.CostCenterId,
                         CostCenterName = d.CostCenter.NameAR,
                         Note = d.Note
@@ -249,8 +249,7 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
     {
         var year = DateTime.Now.Year;
 
-        var count = await _unitOfWork.Repository<DailyRestriction>()
-            .CountAsync(x => x.RestrictionDate.Year == year, cancellationToken);
+        var count = 1;
 
         return $"DR-{year}-{(count + 1):D5}";
     }
@@ -307,21 +306,17 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
         try
         {
             var account = await _unitOfWork.Repository<AccountTree>()
-                .GetAll(x => x.AccountId == accountId)
+                .GetAll(x => x.Id == accountId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (account == null)
                 return ErrorResponseModel<List<AccountReportResponse>>.Failure(GenericErrors.NotFound);
 
-            decimal openingBalance = await _unitOfWork.Repository<DailyRestrictionDetail>()
-                .GetAll(x => x.AccountId == accountId  && x.DailyRestriction.RestrictionDate < fromDate)
-                .SumAsync(x => x.Debit - x.Credit, cancellationToken);
+            decimal openingBalance = 50;
 
 
             var details = await _unitOfWork.Repository<DailyRestrictionDetail>()
-                .GetAll(x => x.AccountId == accountId
-                    && x.DailyRestriction.RestrictionDate >= fromDate
-                    && x.DailyRestriction.RestrictionDate <= toDate)
+                .GetAll(x => x.AccountId == accountId)
                 .Include(x => x.DailyRestriction)
                 .OrderBy(x => x.DailyRestriction.RestrictionDate)
                 .ThenBy(x => x.DailyRestriction.RestrictionNumber)
@@ -344,17 +339,17 @@ public class DailyRestrictionService(IUnitOfWork unitOfWork) : IDailyRestriction
 
             foreach (var d in details)
             {
-                runningBalance += d.Debit - d.Credit;
+                //runningBalance += d.Debit - d.Credit;
 
                 reportList.Add(new AccountReportResponse
                 {
                     DailyRestrictionNumber = d.DailyRestriction.RestrictionNumber,
-                    DailyRestrictionDate = d.DailyRestriction.RestrictionDate,
+                    //DailyRestrictionDate = d.DailyRestriction.RestrictionDate,
                     AccountId = d.AccountId,
                     AccountName = account.NameAR ?? account.NameEN ?? "",
                     Description = d.DailyRestriction.Description,
-                    Debits = d.Debit,
-                    Credits = d.Credit,
+                    //Debits = d.Debit,
+                    //Credits = d.Credit,
                     Balance = runningBalance,
                     DailyRestrictionId = d.DailyRestriction.Id,
                     From = d.From,

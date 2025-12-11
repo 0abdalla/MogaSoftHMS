@@ -108,7 +108,7 @@ public class PriceQuotationService : IPriceQuotationService
                       Items = x.Items.Select(i => new PriceQuotationItemResponse
                       {
                           Id = i.Id,
-                          NameAr = i.Item.NameAr,
+                          NameAr = i.Item.NameAR,
                           Quantity = i.Quantity,
                           UnitPrice = i.UnitPrice,
                           Total = i.Quantity * i.UnitPrice,
@@ -167,7 +167,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Items = x.Items.Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
-                        NameAr = i.Item.NameAr,
+                        NameAr = i.Item.NameAR,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,
@@ -218,7 +218,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Items = x.Items.Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.Id,
-                        NameAr = i.Item.NameAr,
+                        NameAr = i.Item.NameAR,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,
@@ -262,7 +262,7 @@ public class PriceQuotationService : IPriceQuotationService
                     Items = x.Items.Select(i => new PriceQuotationItemResponse
                     {
                         Id = i.ItemId,
-                        NameAr = i.Item.NameAr,
+                        NameAr = i.Item.NameAR,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,
                         Total = i.Quantity * i.UnitPrice,

@@ -50,7 +50,7 @@ public class TreasuryService : ITreasuryService
         try
         {
             var existingTreasury = await _unitOfWork.Repository<Treasury>()
-                .AnyAsync(x => x.Code == request.Code ||
+                .AnyAsync(x => 
                               (x.Name == request.Name && x.BranchId == request.BranchId),
                          cancellationToken);
 
@@ -59,7 +59,7 @@ public class TreasuryService : ITreasuryService
 
             var treasury = new Treasury
             {
-                Code = request.Code,
+                //Code = request.Code,
                 Name = request.Name,
                 BranchId = request.BranchId,
                 Currency = request.Currency,
@@ -120,8 +120,8 @@ public class TreasuryService : ITreasuryService
                     .Select(m => new PartialMovementResponse
                     {
                         MovementId = m.Id,
-                        OpenedIn = m.OpenedIn,
-                        ClosedIn = m.ClosedIn,
+                        //OpenedIn = m.OpenedIn,
+                        //ClosedIn = m.ClosedIn,
                         IsClosed = m.IsClosed,
                         TreasuryNumber = m.TreasuryNumber,
                         IsReEnabled = m.IsReEnabled
@@ -174,7 +174,7 @@ public class TreasuryService : ITreasuryService
             var response = new TreasuryResponse
             {
                 Id = treasury.Id,
-                Code = treasury.Code,
+                //Code = treasury.Code,
                 Name = treasury.Name,
                 BranchId = treasury?.BranchId,
                 BranchName = treasury?.Branch?.Name,
@@ -209,14 +209,14 @@ public class TreasuryService : ITreasuryService
 
             var isExist = await _unitOfWork.Repository<Treasury>()
                 .AnyAsync(x => x.Id != id &&
-                    (x.Code == request.Code ||
+                    (
                     (x.Name == request.Name && x.BranchId == request.BranchId)),
                     cancellationToken);
 
             if (isExist)
                 return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
 
-            treasury.Code = request.Code;
+            //treasury.Code = request.Code;
             treasury.Name = request.Name;
             treasury.BranchId = request.BranchId;
             treasury.Currency = request.Currency;
@@ -265,8 +265,8 @@ public class TreasuryService : ITreasuryService
             .Select(x => new TreasuryMovementResponse
             {
                 Id = x.Id,
-                ClosedIn = x.ClosedIn,
-                OpenedIn = x.OpenedIn,
+                //ClosedIn = x.ClosedIn,
+                //OpenedIn = x.OpenedIn,
                 TreasuryId = x.TreasuryId,
                 TreasuryName = x.Treasury.Name,
                 IsClosed = x.IsClosed
@@ -284,8 +284,8 @@ public class TreasuryService : ITreasuryService
             .Select(x => new TreasuryMovementResponse
             {
                 Id = x.Id,
-                ClosedIn = x.ClosedIn,
-                OpenedIn = x.OpenedIn,
+                //ClosedIn = x.ClosedIn,
+                //OpenedIn = x.OpenedIn,
                 TreasuryId = x.TreasuryId,
                 TreasuryName = x.Treasury.Name,
                 IsClosed = x.IsClosed
@@ -330,11 +330,11 @@ public class TreasuryService : ITreasuryService
 
 
             var previousBalance = await transactionsQuery
-                .Where(t => t.Date < fromDate)
+                //.Where(t => t.Date < fromDate)
                 .SumAsync(t => t.TransactionType == TransactionType.Credit ? t.Amount : -t.Amount, cancellationToken);
 
             var periodTransactions = await transactionsQuery
-                .Where(t => t.Date >= fromDate && t.Date <= toDate)
+                //.Where(t => t.Date >= fromDate && t.Date <= toDate)
                 .OrderBy(t => t.Date)
                 .ThenBy(t => t.DocumentNumber)
                 .ToListAsync(cancellationToken);
@@ -364,7 +364,7 @@ public class TreasuryService : ITreasuryService
                 Transactions = periodTransactions.Select(t => new TransactionDetail
                 {
                     DocumentId = t.DocumentNumber,
-                    Date = t.Date.ToDateTime(TimeOnly.MinValue),
+                    //Date = t.Date.ToDateTime(TimeOnly.MinValue),
                     Description = t.Description ?? string.Empty,
                     ReceivedFrom = t.ReceivedFrom ?? string.Empty,
                     Credit = t.TransactionType == TransactionType.Credit ? t.Amount : 0,
@@ -414,7 +414,7 @@ public class TreasuryService : ITreasuryService
             //    t.TransactionType == Core.Enums.TransactionType.Credit ? t.Amount : -t.Amount);
 
             treasuryMovement.IsClosed = true;
-            treasuryMovement.ClosedIn = closeInDate;
+            //treasuryMovement.ClosedIn = closeInDate;
 
             // Get the latest TreasuryNumber for this TreasuryId
             var lastTreasuryNumber = await _unitOfWork.Repository<TreasuryMovement>()
@@ -428,8 +428,8 @@ public class TreasuryService : ITreasuryService
             var newMovement = new TreasuryMovement
             {
                 TreasuryId = treasury.Id,
-                OpenedIn = closeInDate.AddDays(1),
-                ClosedIn = closeInDate.AddDays(1),
+                //OpenedIn = closeInDate.AddDays(1),
+                //ClosedIn = closeInDate.AddDays(1),
                 OpeningBalance = newBalance,
                 TreasuryNumber = nextTreasuryNumber,
                 TotalCredits = operations
@@ -466,8 +466,8 @@ public class TreasuryService : ITreasuryService
         var response = await movements.Select(mov => new TreasuryMovementResponse
         {
             Id = mov.Id,
-            ClosedIn = mov.ClosedIn,
-            OpenedIn = mov.OpenedIn,
+            //ClosedIn = mov.ClosedIn,
+            //OpenedIn = mov.OpenedIn,
             TreasuryId = mov.TreasuryId,
             TreasuryName = mov.Treasury.Name,
             IsClosed = mov.IsClosed,
@@ -511,7 +511,7 @@ public class TreasuryService : ITreasuryService
                 .Select(t => new TreasuryTransactionRow
                 {
                     DocumentNumber = t.Id,
-                    Date = t.Date,
+                    //Date = t.Date,
                     // AccountName = t.Account != null ? t.Account.Name : "",
                     Description = t.Description ?? "",
                     Value = t.Amount
@@ -523,7 +523,7 @@ public class TreasuryService : ITreasuryService
                 .Select(t => new TreasuryTransactionRow
                 {
                     DocumentNumber = t.Id,
-                    Date = t.Date,
+                    //Date = t.Date,
                     //AccountName = t.Account != null ? t.Account.Name : "",
                     Description = t.Description ?? "",
                     Value = t.Amount
@@ -537,8 +537,8 @@ public class TreasuryService : ITreasuryService
             {
                 MovementId = movement.Id,
                 TreasuryName = movement.Treasury.Name,
-                FromDate = fromDate,
-                ToDate = toDate,
+                //FromDate = fromDate,
+                //ToDate = toDate,
                 PreviousBalance = previousBalance,
                 TotalReceipts = totalReceipts,
                 TotalPayments = totalPayments,
@@ -626,8 +626,8 @@ public class TreasuryService : ITreasuryService
                 TreasuryName = movement.Treasury.Name,
                 TreasuryNumber = movement.TreasuryNumber,
                 OpeningBalance = movement.OpeningBalance,
-                OpenedIn = movement.OpenedIn,
-                ClosedIn = movement.ClosedIn,
+                //OpenedIn = movement.OpenedIn,
+                //ClosedIn = movement.ClosedIn,
                 IsClosed = movement.IsClosed,
                 TotalCredits = totalReceipts,
                 TotalDebits = totalPayments,
@@ -637,7 +637,7 @@ public class TreasuryService : ITreasuryService
                 Transactions = operations.Select(t => new TransactionDetail
                 {
                     DocumentId = t.DocumentNumber,
-                    Date = t.Date.ToDateTime(TimeOnly.MinValue),
+                    //Date = t.Date.ToDateTime(TimeOnly.MinValue),
                     Description = t.Description ?? string.Empty,
                     ReceivedFrom = t.ReceivedFrom ?? string.Empty,
                     Credit = t.TransactionType == TransactionType.Credit ? t.Amount : 0,

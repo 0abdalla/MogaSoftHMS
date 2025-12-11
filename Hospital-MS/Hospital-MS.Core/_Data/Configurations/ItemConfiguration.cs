@@ -12,11 +12,11 @@ public class ItemConfiguration : IEntityTypeConfiguration<Item>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.NameAr)
+        builder.Property(x => x.NameAR)
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(x => x.NameEn)
+        builder.Property(x => x.NameEN)
             .HasMaxLength(100);
 
 

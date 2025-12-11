@@ -8,15 +8,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Hospital_MS.Core._Data.Configurations;
-internal class CostCenterConfiguration : IEntityTypeConfiguration<CostCenter>
+internal class CostCenterConfiguration : IEntityTypeConfiguration<CostCenterTree>
 {
-    public void Configure(EntityTypeBuilder<CostCenter> builder)
+    public void Configure(EntityTypeBuilder<CostCenterTree> builder)
     {
         builder.ToTable("CostCenters", "finance");
 
         builder.HasKey(cc => cc.Id);
 
-        builder.Property(cc => cc.Name)
+        builder.Property(cc => cc.NameAR)
             .IsRequired()
             .HasMaxLength(100);    
     }

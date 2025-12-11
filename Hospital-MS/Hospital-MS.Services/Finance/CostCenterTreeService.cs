@@ -38,17 +38,13 @@ namespace Hospital_MS.Services.Finance
             return _unitOfWork.Repository<CostCenterTree>().GetAll().Select(x =>
                                         new CostCenterTreeModel
                                         {
-                                            CostCenterId = x.CostCenterId,
+                                            CostCenterId = x.Id,
                                             CostCenterNumber = x.CostCenterNumber,
                                             NameEN = x.NameEN,
                                             NameAR = x.NameAR,
-                                            ParentId = x.ParentId,
+                                            ParentId = x.ParentCostCenterId,
                                             CostLevel = x.CostLevel,
-                                            IsLocked = x.IsLocked,
                                             IsParent = x.IsParent,
-                                            IsExpences = x.IsExpences,
-                                            IsPost = x.IsPost,
-                                            IsGroup = x.IsGroup,
                                             DisplayOrder = x.DisplayOrder,
                                             IsSelected = x.NameEN.Contains(SearchText) || x.NameEN.Contains(SearchText) || x.CostCenterNumber == SearchText
 
@@ -105,19 +101,16 @@ namespace Hospital_MS.Services.Finance
             try
             {
                 CostCenterTree tbl = new CostCenterTree();
-                var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.CostCenterId == Model.ParentId).FirstOrDefault();
+                var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.Id == Model.ParentId).FirstOrDefault();
 
                 tbl.CreatedOn = DateTime.Now;
                 tbl.CreatedById = string.Empty;
                 tbl.CostCenterNumber = GenerateCostCenterNumber(Model.ParentId);
-                tbl.ParentId = Model.ParentId;
+                tbl.ParentCostCenterId = Model.ParentId;
                 tbl.CostLevel = parent != null ? parent.CostLevel + 1 : 1;
                 tbl.NameAR = Model.NameAR;
                 tbl.NameEN = Model.NameAR;
-                tbl.IsLocked = Model.IsLocked;
                 tbl.IsParent = tbl.CostLevel == 1 ? true : false;
-                tbl.IsPost = Model.IsPost;
-                tbl.IsGroup = Model.IsGroup;
                 tbl.DisplayOrder = Model.DisplayOrder;
 
                 await _unitOfWork.Repository<CostCenterTree>().AddAsync(tbl, cancellationToken);
@@ -136,15 +129,15 @@ namespace Hospital_MS.Services.Finance
             string newCostCenterNumber;
             if (parentId == null)
             {
-                var maxParentNumber = _unitOfWork.Repository<CostCenterTree>().GetAll(a => a.ParentId == null || a.ParentId == 0).Max(a => (int?)Convert.ToInt32(a.CostCenterNumber)) ?? 0;
+                var maxParentNumber = _unitOfWork.Repository<CostCenterTree>().GetAll(a => a.ParentCostCenterId == null || a.ParentCostCenterId == 0).Max(a => (int?)Convert.ToInt32(a.CostCenterNumber)) ?? 0;
                 newCostCenterNumber = (maxParentNumber + 1).ToString();
             }
             else
             {
-                var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(acc => acc.CostCenterId == parentId).FirstOrDefault();
+                var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(acc => acc.Id == parentId).FirstOrDefault();
                 if (parent == null) throw new Exception($"Parent (ID: {parentId}) not found");
 
-                var maxChildNumber = _unitOfWork.Repository<CostCenterTree>().GetAll(a => a.ParentId == parentId)
+                var maxChildNumber = _unitOfWork.Repository<CostCenterTree>().GetAll(a => a.ParentCostCenterId == parentId)
                     .Max(a => (int?)Convert.ToInt32(a.CostCenterNumber.Substring(parent.CostCenterNumber.Length))) ?? 0;
                 newCostCenterNumber = $"{parent.CostCenterNumber}{(maxChildNumber + 1):D2}";
             }
@@ -155,24 +148,20 @@ namespace Hospital_MS.Services.Finance
         {
             try
             {
-                var entity = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.CostCenterId == CostCenterId).FirstOrDefault();
+                var entity = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.Id == CostCenterId).FirstOrDefault();
 
                 if (entity != null)
                 {
-                    var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.CostCenterId == Model.ParentId).FirstOrDefault();
+                    var parent = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.Id == Model.ParentId).FirstOrDefault();
 
 
                     entity.UpdatedOn = DateTime.Now;
                     entity.CreatedById = string.Empty;
-                    entity.ParentId = Model.ParentId;
+                    entity.ParentCostCenterId = Model.ParentId;
                     entity.CostLevel = parent != null ? parent.CostLevel + 1 : 1;
                     entity.NameAR = Model.NameAR;
                     entity.NameEN = Model.NameAR;
-                    entity.IsDeleted = Model.IsDeleted;
-                    entity.IsLocked = Model.IsLocked;
                     entity.IsParent = entity.CostLevel == 1 ? true : false;
-                    entity.IsPost = Model.IsPost;
-                    entity.IsGroup = Model.IsGroup;
                     entity.DisplayOrder = Model.DisplayOrder;
 
                     _unitOfWork.Repository<CostCenterTree>().Update(entity);
@@ -192,7 +181,7 @@ namespace Hospital_MS.Services.Finance
         {
             try
             {
-                var entity = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.CostCenterId == CostCenterId).FirstOrDefault();
+                var entity = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.Id == CostCenterId).FirstOrDefault();
 
                 if (entity != null)
                 {

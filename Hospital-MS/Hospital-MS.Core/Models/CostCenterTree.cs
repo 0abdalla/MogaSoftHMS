@@ -9,22 +9,31 @@ using System.Threading.Tasks;
 namespace Hospital_MS.Core.Models
 {
     [Table("CostCenterTree", Schema = "Finance")]
-    public class CostCenterTree : AuditableEntity
+    public class CostCenterTree
     {
-        [Key]
-        public int CostCenterId { get; set; }
-        public string CostCenterNumber { get; set; }
-        public string NameAR { get; set; }
-        public string NameEN { get; set; }
-        public int? ParentId { get; set; }
-        public int? CostLevel { get; set; }
-        public bool? IsActive { get; set; }
-        public bool? IsLocked { get; set; }
-        public bool? IsParent { get; set; }
-        public bool? IsPost { get; set; }
-        public int? IsExpences { get; set; }
-        public bool? IsGroup { get; set; }
+        public int Id { get; set; }
+        public string CostCenterNumber { get; set; } = string.Empty;
+        public string NameAR { get; set; } = string.Empty;
+        public string? NameEN { get; set; }
+        public int? ParentCostCenterId { get; set; }
+        public CostCenterTree? ParentCostCenter { get; set; }
+        public ICollection<CostCenterTree> Children { get; set; } = new List<CostCenterTree>();
+        public int CostLevel { get; set; }
+        public bool IsActive { get; set; } = true;
+        public bool IsParent { get; set; } = false;
+        public bool AllowPosting { get; set; } = true;
+        public bool IsExpenses { get; set; } = false;
         public int? DisplayOrder { get; set; }
+        public ICollection<AccountTree>? LinkedAccounts { get; set; } = new List<AccountTree>();
+        public bool IsDeleted { get; set; } = false;
 
+        public string? CreatedById { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+
+        public DateTime? UpdatedOn { get; set; }
+        public string? UpdatedById { get; set; }
+
+        public ApplicationUser? CreatedBy { get; set; } = default!;
+        public ApplicationUser? UpdatedBy { get; set; }
     }
 }

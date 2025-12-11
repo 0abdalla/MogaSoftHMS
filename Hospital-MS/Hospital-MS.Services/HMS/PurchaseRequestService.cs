@@ -158,7 +158,7 @@ namespace Hospital_MS.Services.HMS
                 {
                     Id = i.Id,
                     ItemId = i.ItemId,
-                    ItemName = i.Item.NameAr,
+                    ItemName = i.Item.NameAR,
                     Quantity = i.Quantity,
                     Notes = i.Notes
                 }).ToList(),
@@ -178,7 +178,7 @@ namespace Hospital_MS.Services.HMS
                         Items = pr.PriceQuotation.Items.Select(i => new PriceQuotationItemResponse
                         {
                             Id = i.ItemId,
-                            NameAr = i.Item.NameAr,
+                            NameAr = i.Item.NameAR,
                             Quantity = i.Quantity,
                             UnitPrice = i.UnitPrice,
                             Total = i.Quantity * i.UnitPrice,

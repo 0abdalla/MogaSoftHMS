@@ -9,13 +9,10 @@ public class Store : AuditableEntity // مخزن
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string Code { get; set; } = string.Empty;
-
+    public int AccountId { get; set; }
+    public AccountTree Account { get; set; }
     public string? Location { get; set; } 
     public string? ContactNumber { get; set; } 
-    public string? Email { get; set; } 
     public int? TypeId { get; set; }
     public StoreType? Type { get; set; } = default!;
-    public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new HashSet<PurchaseOrder>();
-
 }

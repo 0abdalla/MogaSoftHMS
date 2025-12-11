@@ -3,6 +3,7 @@
 public class DispensePermission : AuditableEntity
 {
     public int Id { get; set; }
+    public string DispensePermissionNumber { get; set; }
     public DateOnly Date { get; set; }
     public decimal Amount { get; set; } = 0M;
     public string? DispenseTo { get; set; } // يصرف الي السيد:
@@ -11,6 +12,7 @@ public class DispensePermission : AuditableEntity
     public int? TreasuryId { get; set; }
     public int? CostCenterId { get; set; }
     public int? AccountId { get; set; }
+    public int? DailyRestrictionId { get; set; }
 
 
     public CostCenterTree? CostCenter { get; set; }
@@ -20,5 +22,4 @@ public class DispensePermission : AuditableEntity
     //public string Status { get; set; } = "Pending";
 
     public DailyRestriction? DailyRestriction { get; set; } = default!;
-    public int? DailyRestrictionId { get; set; }
 }

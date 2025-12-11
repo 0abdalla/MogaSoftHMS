@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Items;
+using Hospital_MS.Core.Wrappers;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,17 +11,10 @@ public class ItemsController(IItemService itemService) : ApiBaseController
 {
     private readonly IItemService _itemService = itemService;
 
-    [HttpPost]
-    public async Task<IActionResult> CreateItem([FromBody] ItemRequest request, CancellationToken cancellationToken)
+    [HttpGet("")]
+    public async Task<IActionResult> GetItems([FromQuery] SearchRequest request, CancellationToken cancellationToken)
     {
-        var result = await _itemService.CreateItemAsync(request, cancellationToken);
-        return Ok(result);
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetItems([FromQuery] PagingFilterModel pagingFilter, CancellationToken cancellationToken)
-    {
-        var result = await _itemService.GetItemsAsync(pagingFilter, cancellationToken);
+        var result = await _itemService.GetAllItemsAsync(request, cancellationToken);
         return Ok(result);
     }
 
@@ -28,6 +22,13 @@ public class ItemsController(IItemService itemService) : ApiBaseController
     public async Task<IActionResult> GetItemById(int id, CancellationToken cancellationToken)
     {
         var result = await _itemService.GetItemByIdAsync(id, cancellationToken);
+        return Ok(result);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateItem([FromBody] ItemRequest request, CancellationToken cancellationToken)
+    {
+        var result = await _itemService.CreateItemAsync(request, cancellationToken);
         return Ok(result);
     }
 

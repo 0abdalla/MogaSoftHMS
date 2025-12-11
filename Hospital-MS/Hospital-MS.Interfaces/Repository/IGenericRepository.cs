@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-
+//using Hospital_MS.Services.Specifications;
 namespace Hospital_MS.Interfaces.Repository
 {
     public interface IGenericRepository<T> where T : class
@@ -19,5 +19,11 @@ namespace Hospital_MS.Interfaces.Repository
         Task<IReadOnlyList<T>> GetAllAsync(CancellationToken cancellationToken = default);
         IQueryable<T> GetAllAsQueryable(CancellationToken cancellationToken = default);
         Task<TResult> MaxAsync<TResult>(Expression<Func<T, TResult>> selector, CancellationToken cancellationToken = default);
+
+        //Task<List<T>> ListAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
+
+        //Task<int> CountAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
+
+        //Task<T?> FirstOrDefaultAsync(ISpecification<T> spec, CancellationToken cancellationToken = default);
     }
 }

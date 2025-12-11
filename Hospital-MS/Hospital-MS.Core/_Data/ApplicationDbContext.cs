@@ -44,7 +44,6 @@ namespace Hospital_MS.Core._Data
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemGroup> ItemGroups { get; set; }
         public DbSet<ItemUnit> ItemUnits { get; set; }
-        public DbSet<ItemType> ItemTypes { get; set; }
         public DbSet<Treasury> Treasuries { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Store> Stores { get; set; }
@@ -68,7 +67,6 @@ namespace Hospital_MS.Core._Data
         public DbSet<StoreType> StoreTypes { get; set; }
         public DbSet<DailyRestriction> DailyRestrictions { get; set; }
         public DbSet<DailyRestrictionDetail> DailyRestrictionDetails { get; set; }
-        public DbSet<RestrictionType> RestrictionTypes { get; set; }
         public DbSet<FiscalYear> FiscalYears { get; set; }
         public DbSet<AdditionNotice> AdditionNotices { get; set; }
         public DbSet<DebitNotice> DebitNotices { get; set; }

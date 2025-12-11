@@ -2,10 +2,12 @@
 using Hospital_MS.Core.Contracts.Common;
 using Hospital_MS.Core.Contracts.Items;
 using Hospital_MS.Core.Models;
+using Hospital_MS.Core.Wrappers;
 using Hospital_MS.Interfaces.Common;
 using Hospital_MS.Interfaces.HMS;
 using Hospital_MS.Interfaces.Repository;
 using Hospital_MS.Services.Common;
+using Hospital_MS.Services.Specifications;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -22,26 +24,26 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
         {
             var existingItem = await _unitOfWork.Repository<Item>()
                 .GetAll()
-                .FirstOrDefaultAsync(x => x.NameAr == request.NameAr && x.NameEn == request.NameEn , cancellationToken);
+                .FirstOrDefaultAsync(x => x.NameAR == request.NameAr && x.NameEN == request.NameEn , cancellationToken);
 
             if (existingItem != null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
 
             var item = new Item
             {
-                NameAr = request.NameAr,
-                NameEn = request.NameEn,
-                UnitId = request.UnitId,
+                //NameAr = request.NameAr,
+                //NameEn = request.NameEn,
+                //UnitId = request.UnitId,
                 // Unit = request.Unit,
                 GroupId = request.GroupId,
-                OrderLimit = request.OrderLimit,
+                //OrderLimit = request.OrderLimit,
                 Cost = request.Cost,
-                OpeningBalance = request.OpeningBalance,
+                //OpeningBalance = request.OpeningBalance,
                 SalesTax = request.SalesTax,
                 Price = request.Price,
-                PriceAfterTax = request.Price + (request.Price * request.SalesTax / 100),
+                //PriceAfterTax = request.Price + (request.Price * request.SalesTax / 100),
                 HasBarcode = request.HasBarcode,
-                TypeId = request.TypeId,
+                //TypeId = request.TypeId,
 
             };
 
@@ -56,57 +58,86 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
         }
     }
 
-    public async Task<PagedResponseModel<List<ItemResponse>>> GetItemsAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+    public async Task<PagedResponseModel<List<ItemResponse>>> GetAllItemsAsync(SearchRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
-            var parameters = new SqlParameter[]
-            {
-            new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value),
-            new SqlParameter("@CurrentPage", pagingFilter.CurrentPage),
-            new SqlParameter("@PageSize", pagingFilter.PageSize)
-            };
+            var query = _unitOfWork.Repository<Item>()
+                .GetAllAsQueryable()
+                .Where(i => i.IsDeleted == false)
+                .Include(i => i.Unit)
+                .Include(i => i.Group)
+                .ThenInclude(g => g.MainGroup)
+                .Include(i => i.CreatedBy)
+                .Include(i => i.UpdatedBy)
+                .AsQueryable();
 
-            var dt = await _sQLHelper.ExecuteDataTableAsync("Finance.SP_GetAllItems", parameters);
-
-            var items = dt.AsEnumerable().Select(row => new ItemResponse
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
             {
-                Id = row.Field<int>("Id"),
-                NameAr = row.Field<string>("NameAr") ?? string.Empty,
-                NameEn = row.Field<string>("NameEn") ?? string.Empty,
-                UnitId = row.Field<int?>("UnitId"),
-                UnitName = row.Field<string>("UnitName") ?? string.Empty,
-                //Unit = row.Field<string>("Unit") ?? string.Empty,
-                GroupId = row.Field<int?>("GroupId"),
-                GroupName = row.Field<string>("GroupName"),
-                OrderLimit = row.Field<decimal>("OrderLimit"),
-                Cost = row.Field<decimal>("Cost"),
-                OpeningBalance = row.Field<decimal>("OpeningBalance"),
-                SalesTax = row.Field<decimal>("SalesTax"),
-                Price = row.Field<decimal>("Price"),
-                PriceAfterTax = row.Field<decimal>("PriceAfterTax"),
-                HasBarcode = row.Field<bool>("HasBarcode"),
-                TypeId = row.Field<int?>("TypeId"),
-                TypeName = row.Field<string>("TypeName"),
+                query = query.Where(i =>
+                    i.NameAR.Contains(request.SearchTerm) ||
+                    i.NameEN.Contains(request.SearchTerm));
+            }
+
+            if (!string.IsNullOrWhiteSpace(request.SortBy))
+            {
+                if (request.SortDescending)
+                    query = query.OrderByDescending(e => EF.Property<object>(e, request.SortBy));
+                else
+                    query = query.OrderBy(e => EF.Property<object>(e, request.SortBy));
+            }
+            else
+            {
+                query = query.OrderByDescending(i => i.Id);
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var skip = (request.PageNumber - 1) * request.PageSize;
+
+            var data = await query
+                .Skip(skip)
+                .Take(request.PageSize)
+                .ToListAsync(cancellationToken);
+
+            var items = data.Select(i => new ItemResponse
+            {
+                Id = i.Id,
+                NameAr = i.NameAR,
+                NameEn = i.NameEN,
+
+                UnitId = i.UnitId,
+                UnitName = i.Unit?.Name ?? string.Empty,
+
+                GroupId = i.GroupId,
+                GroupName = i.Group?.Name ?? string.Empty,
+
+
+                OrderLimit = i.OrderLimit,
+                Cost = i.Cost,
+                OpeningBalance = i.OpeningBalance,
+                SalesTax = i.SalesTax,
+                Price = i.Price,
+                PriceAfterTax = i.PriceAfterTax,
+                HasBarcode = i.HasBarcode,
+
+
                 Audit = new AuditResponse
                 {
-                    CreatedBy = row.Field<string>("CreatedBy") ?? string.Empty,
-                    CreatedOn = row.Field<DateTime>("CreatedOn"),
-                    IsDeleted = row.Field<bool>("IsDeleted"),
+                    CreatedBy = i.CreatedBy?.UserName,
+                    UpdatedBy = i.UpdatedBy?.UserName,
+                    CreatedOn = i.CreatedOn,
+                    IsDeleted = i.IsDeleted
                 }
             }).ToList();
 
-            int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int>("TotalCount") : 0;
-
-            return PagedResponseModel<List<ItemResponse>>.Success(
-                GenericErrors.GetSuccess,
-                totalCount,
-                items
-            );
+            return PagedResponseModel<List<ItemResponse>>
+                .Success(GenericErrors.GetSuccess, totalCount, items);
         }
         catch (Exception)
         {
-            return PagedResponseModel<List<ItemResponse>>.Failure(GenericErrors.TransFailed);
+            return PagedResponseModel<List<ItemResponse>>
+                .Failure(GenericErrors.TransFailed);
         }
     }
 
@@ -118,7 +149,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 .GetAll()
                 .Include(x => x.Unit)
                 .Include(x => x.Group)
-                .Include(x => x.Type)
                 .Include(x => x.Unit)
                 .Include(x => x.CreatedBy)
                 .Include(x => x.UpdatedBy)
@@ -130,8 +160,8 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             var response = new ItemResponse
             {
                 Id = item.Id,
-                NameAr = item.NameAr,
-                NameEn = item.NameEn,
+                NameAr = item.NameAR,
+                NameEn = item.NameEN,
                 UnitId = item.UnitId,
                 UnitName = item?.Unit?.Name,
                 //Unit = item.Unit,
@@ -144,8 +174,6 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
                 Price = item.Price,
                 PriceAfterTax = item.PriceAfterTax,
                 HasBarcode = item.HasBarcode,
-                TypeId = item.TypeId,
-                TypeName = item.Type?.NameAr,
 
                 Audit = new AuditResponse
                 {
@@ -173,19 +201,14 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             if (item == null)
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
-            item.NameAr = request.NameAr;
-            item.NameEn = request.NameEn;
+            item.NameAR = request.NameAr;
+            item.NameEN = request.NameEn;
             //item.Unit = request.Unit;
             item.UnitId = request.UnitId;
             item.GroupId = request.GroupId;
-            item.OrderLimit = request.OrderLimit;
             item.Cost = request.Cost;
-            item.OpeningBalance = request.OpeningBalance;
             item.SalesTax = request.SalesTax;
             item.Price = request.Price;
-            item.PriceAfterTax = request.Price + (request.Price * request.SalesTax / 100);
-            item.HasBarcode = request.HasBarcode;
-            item.TypeId = request.TypeId;
 
             _unitOfWork.Repository<Item>().Update(item);
             await _unitOfWork.CompleteAsync(cancellationToken);
@@ -316,7 +339,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             var itemMovement = new ItemMovementResult
             {
                 ItemId = id,
-                ItemName = item.NameAr ?? item.NameEn,
+                ItemName = item.NameAR ?? item.NameEN,
                 ItemGroupName = item.Group?.Name ?? string.Empty,
                 ItemUnit = item.Unit?.Name ?? string.Empty,
                 ItemIssues = issuesResponse,
@@ -429,7 +452,7 @@ public class ItemService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper) : IItemSe
             var result = new ItemMovementResult
             {
                 ItemId = id,
-                ItemName = item.NameAr ?? item.NameEn,
+                ItemName = item.NameAR ?? item.NameEN,
                 ItemGroupName = item.Group?.Name ?? "",
                 ItemUnit = item.Unit?.Name ?? "",
                 ItemIssues = issuesResponse,

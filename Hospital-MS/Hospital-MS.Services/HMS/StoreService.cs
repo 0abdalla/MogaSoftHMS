@@ -16,7 +16,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
     public async Task<ErrorResponseModel<string>> CreateAsync(CreateStoreRequest request, CancellationToken cancellationToken = default)
     {
         var exists = await _unitOfWork.Repository<Store>()
-            .AnyAsync(x => x.Name == request.Name || x.Code == request.Code, cancellationToken);
+            .AnyAsync(x => x.Name == request.Name , cancellationToken);
 
         if (exists)
             return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
@@ -24,7 +24,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         var store = new Store
         {
             Name = request.Name,
-            Code = request.Code,
+            AccountId = request.AccountId,
             TypeId = request.StoreTypeId,
         };
 
@@ -47,10 +47,8 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         {
             Id = store.Id,
             Name = store.Name,
-            Code = store.Code,
             Location = store.Location,
             ContactNumber = store.ContactNumber,
-            Email = store.Email,
             StoreTypeId = store.TypeId,
             StoreTypeName = store.Type?.Name,
         };
@@ -74,7 +72,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
         if (!string.IsNullOrWhiteSpace(filter.SearchText))
         {
             query = (IOrderedQueryable<Store>)query
-                .Where(x => x.Name.Contains(filter.SearchText) || x.Code.Contains(filter.SearchText));
+                .Where(x => x.Name.Contains(filter.SearchText));
         }
 
 
@@ -89,10 +87,8 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             {
                 Id = x.Id,
                 Name = x.Name,
-                Code = x.Code,
                 Location = x.Location,
                 ContactNumber = x.ContactNumber,
-                Email = x.Email,
                 StoreTypeId = x.TypeId,
                 StoreTypeName = x.Type.Name,
             })
@@ -109,13 +105,12 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
 
         var exists = await _unitOfWork.Repository<Store>()
-            .AnyAsync(x => x.Id != id && (x.Name == request.Name || x.Code == request.Code), cancellationToken);
+            .AnyAsync(x => x.Id != id && (x.Name == request.Name), cancellationToken);
 
         if (exists)
             return ErrorResponseModel<string>.Failure(GenericErrors.AlreadyExists);
 
         store.Name = request.Name;
-        store.Code = request.Code;
         store.TypeId = request.StoreTypeId;
 
         _unitOfWork.Repository<Store>().Update(store);
@@ -220,7 +215,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
             return new ItemMovementResponse
             {
                 ItemId = item.Id,
-                ItemName = item.NameAr,
+                ItemName = item.NameAR,
                 OpeningBalance = openingBalance,
                 ReceivedBalance = receivedBalance,
                 IssueBalance = issueBalance,
@@ -340,7 +335,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                             return new StoreRateItemsResponseV2
                             {
                                 ItemId = item.Id,
-                                ItemName = item.NameAr,
+                                ItemName = item.NameAR,
                                 Balance = balance,
                                 TotalAmount = totalAmount
                             };
@@ -430,7 +425,7 @@ public class StoreService(IUnitOfWork unitOfWork) : IStoreService
                                 return new ItemLimitsResponseV2
                                 {
                                     ItemId = item.Id,
-                                    ItemName = item.NameAr,
+                                    ItemName = item.NameAR,
                                     OrderLimit = item.OrderLimit,
                                     Balance = balance
                                 };

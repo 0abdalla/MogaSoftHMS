@@ -23,7 +23,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
         try
         {
             var account = await _unitOfWork.Repository<AccountTree>()
-                .GetAll(x => x.AccountId == request.AccountId)
+                .GetAll(x => x.Id == request.AccountId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (account == null)
@@ -55,10 +55,6 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
             {
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = notification.Id.ToString(),
-                RestrictionTypeId = null,
-                // TODO : replace with the correct accounting guidance id
-                AccountingGuidanceId = 15,
-                RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =
                 [
@@ -88,11 +84,9 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
             var response = new PartialDailyRestrictionResponse
             {
                 Id = notification.Id,
-                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
                 Amount = request.Amount,
                 From = bank.Name,
                 To = account.NameAR,
-                RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber,
 
             };
@@ -166,7 +160,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
 
                 var accountFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Account");
                 if (accountFilter != null && int.TryParse(accountFilter.ItemValue, out var accountId))
-                    query = query.Where(x => x.AccountId == accountId);
+                    query = query.Where(x => x.Id == accountId);
 
                 var dateFilter = pagingFilter.FilterList.FirstOrDefault(f => f.CategoryName == "Date");
                 if (dateFilter != null)
@@ -194,7 +188,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                     Date = x.Date,
                     BankId = x.BankId,
                     BankName = x.Bank.Name,
-                    AccountId = x.AccountId,
+                    AccountId = x.Id,
                     AccountName = x.Account.NameAR ?? x.Account.NameEN ?? "",
                     CheckNumber = x.CheckNumber,
                     Amount = x.Amount,
@@ -244,7 +238,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 Date = notification.Date,
                 BankId = notification.BankId,
                 BankName = notification.Bank.Name,
-                AccountId = notification.AccountId,
+                AccountId = notification.Id,
                 AccountName = notification.Account.NameAR ?? notification.Account.NameEN ?? "",
                 CheckNumber = notification.CheckNumber,
                 Amount = notification.Amount,
@@ -259,7 +253,6 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
                     Id = notification?.DailyRestriction?.Id,
-                    AccountingGuidanceName = notification?.DailyRestriction?.AccountingGuidance?.Name ?? string.Empty,
                     Amount = notification.Amount,
                     From = notification.Bank.Name,
                     To = notification.Account.NameAR ?? notification.Account.NameEN ?? "",
@@ -291,7 +284,7 @@ public class AdditionNotificationService(IUnitOfWork unitOfWork, ISQLHelper sQLH
 
             notification.Date = request.Date;
             notification.BankId = request.BankId;
-            notification.AccountId = request.AccountId;
+            notification.Id = request.AccountId;
             notification.CheckNumber = request.CheckNumber;
             notification.Amount = request.Amount;
             notification.Notes = request.Notes;

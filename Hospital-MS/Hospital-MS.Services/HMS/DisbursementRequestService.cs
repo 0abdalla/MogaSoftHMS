@@ -80,7 +80,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
                 Id = disbursementRequest.Id,
                 Number = disbursementRequest.Number,
                 DepartmentName = department?.Name,
-                ItemsNames = items?.Items.Select(i => i.Item?.NameAr ?? i.Item?.NameEn ?? "").ToList()
+                //ItemsNames = items?.Items.Select(i => i.Item?.NameAr ?? i.Item?.NameEn ?? "").ToList()
             };
             return ErrorResponseModel<DisbursementToReturnResponse>.Success(GenericErrors.GetSuccess, response);
         }
@@ -151,7 +151,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             {
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
-                ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
+                //ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
                 Unit = item.Item?.Unit?.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax
@@ -201,7 +201,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             {
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
-                ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
+                //ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
                 Unit = item.Item?.Unit?.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax
@@ -244,7 +244,7 @@ public class DisbursementRequestService(IUnitOfWork unitOfWork) : IDisbursementR
             {
                 ItemId = item.ItemId,
                 Quantity = item.Quantity,
-                ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
+                //ItemName = item.Item?.NameAr ?? item.Item?.NameEn ?? "",
                 Unit = item.Item?.Unit?.Name,
                 Price = item.Item.Price,
                 PriceAfterTax = item.Item.PriceAfterTax

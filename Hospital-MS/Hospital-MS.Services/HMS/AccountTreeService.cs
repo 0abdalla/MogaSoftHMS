@@ -25,7 +25,7 @@ namespace Hospital_MS.Services.HMS
             try
             {
                 var parentAccount = await _unitOfWork.Repository<AccountTree>().GetByIdAsync(Model.ParentAccountId.Value);
-                if (parentAccount is not null && !parentAccount.IsParent.Value)
+                if (parentAccount is not null && !parentAccount.IsParent)
                 {
                     parentAccount.IsParent = true;
                 }
@@ -33,14 +33,10 @@ namespace Hospital_MS.Services.HMS
 
                 tbl.AccountNumber = GenerateAccountNumber(Model.ParentAccountId);
                 tbl.ParentAccountId = Model.ParentAccountId;
-                tbl.AccountTypeId = Model.AccountTypeId;
                 tbl.AccountLevel = parentAccount != null ? parentAccount.AccountLevel + 1 : 1;
                 tbl.IsParent = parentAccount != null ? false : true;
-                tbl.AccountNature = string.Empty;
-                tbl.IsGroup = Model.IsGroup;
                 tbl.NameAR = Model.NameAR;
                 tbl.NameEN = Model.NameAR;
-                tbl.IsDisToCostCenter = Model.IsDisToCostCenter;
                 tbl.CreatedOn = DateTime.Now;
                 tbl.CreatedBy = Model.CreatedBy;
 
@@ -63,19 +59,15 @@ namespace Hospital_MS.Services.HMS
 
                 if (entity != null)
                 {
-                    var parentAccount = _unitOfWork.Repository<AccountTree>().GetAll(x => x.AccountId == Model.ParentAccountId).FirstOrDefault();
-                    if (parentAccount is not null && !parentAccount.IsParent.Value)
+                    var parentAccount = _unitOfWork.Repository<AccountTree>().GetAll(x => x.ParentAccountId == Model.ParentAccountId).FirstOrDefault();
+                    if (parentAccount is not null && !parentAccount.IsParent)
                         parentAccount.IsParent = true;
 
                     entity.ParentAccountId = Model.ParentAccountId;
-                    entity.AccountTypeId = Model.AccountTypeId;
                     entity.AccountLevel = parentAccount != null ? parentAccount.AccountLevel + 1 : 1;
                     entity.IsParent = parentAccount != null ? false : true;
-                    entity.AccountNature = string.Empty;
-                    entity.IsGroup = Model.IsGroup;
                     entity.NameAR = Model.NameAR;
                     entity.NameEN = Model.NameAR;
-                    entity.IsDisToCostCenter = Model.IsDisToCostCenter;
                     entity.UpdatedOn = DateTime.Now;
                     entity.UpdatedById = Model.UpdatedById;
 
@@ -96,7 +88,7 @@ namespace Hospital_MS.Services.HMS
             try
             {
                 var entity = await _unitOfWork.Repository<AccountTree>()
-                    .GetAll(x => x.AccountId == AccountId)
+                    .GetAll(x => x.Id == AccountId)
                     .FirstOrDefaultAsync(cancellationToken);
 
                 if (entity == null)
@@ -162,9 +154,9 @@ namespace Hospital_MS.Services.HMS
 
         public List<SelectorDataModel> GetAccountsSelector(bool? IsGroup)
         {
-            var result = _unitOfWork.Repository<AccountTree>().GetAll(x => IsGroup == null || x.IsGroup == IsGroup).Select(a => new SelectorDataModel
+            var result = _unitOfWork.Repository<AccountTree>().GetAll(x => IsGroup == null).Select(a => new SelectorDataModel
             {
-                Id = a.AccountId,
+                Id = a.Id,
                 Name = a.NameAR,
                 Code = a.AccountNumber
             }).ToList();
@@ -174,9 +166,8 @@ namespace Hospital_MS.Services.HMS
 
         public List<SelectorDataModel> GetCostCenterSelector(bool IsParent)
         {
-            var result = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.IsGroup == IsParent).Select(a => new SelectorDataModel
+            var result = _unitOfWork.Repository<CostCenterTree>().GetAll(x => x.IsParent == IsParent).Select(a => new SelectorDataModel
             {
-                Id = a.CostCenterId,
                 Name = a.NameAR,
                 Code = a.CostCenterNumber
             }).ToList();

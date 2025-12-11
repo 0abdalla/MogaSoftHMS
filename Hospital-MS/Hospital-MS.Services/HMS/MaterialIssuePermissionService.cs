@@ -57,12 +57,12 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
             var dailyRestriction = new DailyRestriction
             {
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
-                RestrictionDate = DateOnly.FromDateTime(request.PermissionDate),
-                RestrictionTypeId = null,
+                //RestrictionDate = DateOnly.FromDateTime(request.PermissionDate),
+                //RestrictionTypeId = null,
                 Description = $"قيد إذن صرف مواد رقم {permission.PermissionNumber}",
 
                 // TODO: Set the correct AccountingGuidanceId
-                AccountingGuidanceId = 16,
+                //AccountingGuidanceId = 16,
                 Details = new List<DailyRestrictionDetail>
                 {
                     new DailyRestrictionDetail
@@ -93,11 +93,11 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
             var dailyRestrictionResponse = new PartialDailyRestrictionResponse
             {
                 Id = permission.Id,
-                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                //AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
                 Amount = totalAmount,
                 From = store.Name,
                 To = department.Name,
-                RestrictionDate = dailyRestriction.RestrictionDate,
+                //RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber,
                 Number = permission.PermissionNumber
             };
@@ -231,7 +231,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                 Items = permission.Items.Select(i => new MaterialIssueItemResponse
                 {
                     ItemId = i.ItemId,
-                    ItemName = i.Item.NameAr,
+                    ItemName = i.Item.NameAR,
                     Unit = i.Unit,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
@@ -245,8 +245,8 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                 {
                     Id = permission.DailyRestriction.Id,
                     RestrictionNumber = permission.DailyRestriction.RestrictionNumber,
-                    RestrictionDate = permission.DailyRestriction.RestrictionDate,
-                    AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance.Name,
+                    //RestrictionDate = permission.DailyRestriction.RestrictionDate,
+                    //AccountingGuidanceName = permission?.DailyRestriction?.AccountingGuidance.Name,
                     Amount = totalAmount,
                     From = permission?.Store.Name,
                     To = permission?.JobDepartment?.Name,
@@ -303,7 +303,7 @@ public class MaterialIssuePermissionService(IUnitOfWork unitOfWork, IDailyRestri
                     Items = x.Items.Select(i => new MaterialIssueItemResponse
                     {
                         ItemId = i.ItemId,
-                        ItemName = i.Item.NameAr,
+                        ItemName = i.Item.NameAR,
                         Unit = i.Unit,
                         Quantity = i.Quantity,
                         UnitPrice = i.UnitPrice,

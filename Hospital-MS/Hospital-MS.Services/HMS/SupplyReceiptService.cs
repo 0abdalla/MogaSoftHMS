@@ -31,7 +31,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 return ErrorResponseModel<PartialDailyRestrictionResponse>.Failure(GenericErrors.NotFound, null);
 
             var account = await _unitOfWork.Repository<AccountTree>()
-                .GetAll(x => x.AccountId == request.AccountId)
+                .GetAll(x => x.Id == request.AccountId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (account == null)
@@ -40,7 +40,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
 
             var supplyReceipt = new SupplyReceipt
             {
-                Date = request.Date,
+                //Date = request.Date,
                 ReceivedFrom = request.ReceivedFrom,
                 Amount = request.Amount,
                 Description = request.Description,
@@ -61,7 +61,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
 
             var treasuryOperation = new TreasuryOperation
             {
-                Date = request.Date,
+                //Date = request.Date,
                 Amount = request.Amount,
                 Description = request.Description,
                 TreasuryId = request.TreasuryId,
@@ -85,9 +85,9 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
             {
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = treasuryOperation.Id.ToString(),
-                RestrictionTypeId = null,
-                AccountingGuidanceId = 1, // المخازن
-                RestrictionDate = request.Date,
+                //RestrictionTypeId = null,
+                //AccountingGuidanceId = 1,
+                //RestrictionDate = request.Date,
                 Description = request.Description,
                 Details =
                 [
@@ -119,11 +119,11 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
             var response = new PartialDailyRestrictionResponse
             {
                 Id = supplyReceipt.Id,
-                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                //AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
                 Amount = request.Amount,
                 From = treasury.Name,
                 To = account.NameAR,
-                RestrictionDate = dailyRestriction.RestrictionDate,
+                //RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber
             };
 
@@ -189,10 +189,10 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
             var response = new SupplyReceiptResponse
             {
                 Id = supplyReceipt.Id,
-                Date = supplyReceipt.Date,
+                //Date = supplyReceipt.Date,
                 ReceivedFrom = supplyReceipt.ReceivedFrom,
                 AccountNumber = supplyReceipt.Account.AccountNumber,
-                AccountId = supplyReceipt.Account.AccountId,
+                //AccountId = supplyReceipt.Account.AccountId,
                 Amount = supplyReceipt.Amount,
                 Description = supplyReceipt.Description,
                 CostCenterId = supplyReceipt.CostCenterId,
@@ -210,8 +210,8 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 {
                     Id = supplyReceipt.DailyRestriction?.Id ?? 0,
                     RestrictionNumber = supplyReceipt.DailyRestriction?.RestrictionNumber ?? string.Empty,
-                    RestrictionDate = supplyReceipt.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
-                    AccountingGuidanceName = supplyReceipt.DailyRestriction?.AccountingGuidance?.Name ?? "",
+                    //RestrictionDate = supplyReceipt.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
+                    //AccountingGuidanceName = supplyReceipt.DailyRestriction?.AccountingGuidance?.Name ?? "",
                     Amount = supplyReceipt.Amount,
                     From = supplyReceipt.Treasury?.Name,
                     To = supplyReceipt.Account?.NameAR
@@ -288,7 +288,7 @@ public class SupplyReceiptService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, 
                 return ErrorResponseModel<string>.Failure(GenericErrors.NotFound);
             }
 
-            supplyReceipt.Date = request.Date;
+            //supplyReceipt.Date = request.Date;
             supplyReceipt.ReceivedFrom = request.ReceivedFrom;
             supplyReceipt.AccountId = request.AccountId;
             supplyReceipt.Amount = request.Amount;

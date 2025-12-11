@@ -23,7 +23,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
         try
         {
             var account = await _unitOfWork.Repository<AccountTree>()
-               .GetAll(x => x.AccountId == request.AccountId)
+               .GetAll(x => x.Id == request.AccountId)
                .FirstOrDefaultAsync(cancellationToken);
 
             if (account == null)
@@ -42,7 +42,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 Amount = request.Amount,
                 BankId = request.BankId,
                 CheckNumber = request.CheckNumber,
-                Date = request.Date,
+                //Date = request.Date,
                 Notes = request.Notes,
             };
 
@@ -54,10 +54,10 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
             {
                 RestrictionNumber = await _dailyRestrictionService.GenerateRestrictionNumberAsync(cancellationToken),
                 DocumentNumber = debitNotice.Id.ToString(),
-                RestrictionTypeId = null,
+                //RestrictionTypeId = null,
                 // TODO : replace with the correct accounting guidance id for debit notice
-                AccountingGuidanceId = 15,
-                RestrictionDate = request.Date,
+                //AccountingGuidanceId = 15,
+                //RestrictionDate = request.Date,
                 Description = request.Notes,
                 Details =
                 [
@@ -87,11 +87,11 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
             var response = new PartialDailyRestrictionResponse
             {
                 Id = debitNotice.Id,
-                AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
+                //AccountingGuidanceName = _unitOfWork.Repository<AccountingGuidance>().GetAll(x => x.Id == dailyRestriction.AccountingGuidanceId).FirstOrDefault().Name,
                 Amount = request.Amount,
                 From = account.NameAR,
                 To = bank.Name,
-                RestrictionDate = dailyRestriction.RestrictionDate,
+                //RestrictionDate = dailyRestriction.RestrictionDate,
                 RestrictionNumber = dailyRestriction.RestrictionNumber
             };
 
@@ -215,7 +215,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 Amount = debitNotice.Amount,
                 BankId = debitNotice.BankId,
                 CheckNumber = debitNotice.CheckNumber,
-                Date = debitNotice.Date,
+                //Date = debitNotice.Date,
                 Notes = debitNotice.Notes,
                 AccountName = debitNotice.Account.NameAR,
                 BankName = debitNotice.Bank.Name,
@@ -228,12 +228,12 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
                 },
                 DailyRestriction = new PartialDailyRestrictionResponse
                 {
-                    AccountingGuidanceName = debitNotice.DailyRestriction?.AccountingGuidance?.Name,
-                    Amount = debitNotice.DailyRestriction.Details.Sum(x => x.Debit),
+                    //AccountingGuidanceName = debitNotice.DailyRestriction?.AccountingGuidance?.Name,
+                    //Amount = debitNotice.DailyRestriction.Details.Sum(x => x.Debit),
                     From = debitNotice.Account.NameAR,
                     To = debitNotice.Bank.Name,
                     Id = debitNotice?.DailyRestriction?.Id,
-                    RestrictionDate = debitNotice?.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
+                    //RestrictionDate = debitNotice?.DailyRestriction?.RestrictionDate ?? DateOnly.MinValue,
                     RestrictionNumber = debitNotice?.DailyRestriction?.RestrictionNumber ?? ""
                 }
             };
@@ -264,7 +264,7 @@ public class DebitNoticeService(IUnitOfWork unitOfWork, ISQLHelper sQLHelper, ID
             debitNotice.Amount = request.Amount;
             debitNotice.BankId = request.BankId;
             debitNotice.CheckNumber = request.CheckNumber;
-            debitNotice.Date = request.Date;
+            //debitNotice.Date = request.Date;
             debitNotice.Notes = request.Notes;
 
             _unitOfWork.Repository<DebitNotice>().Update(debitNotice);

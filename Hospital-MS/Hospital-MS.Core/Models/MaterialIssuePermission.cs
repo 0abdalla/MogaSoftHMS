@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Models.HR;
+﻿using Hospital_MS.Core.Enums;
+using Hospital_MS.Core.Models.HR;
 
 namespace Hospital_MS.Core.Models;
 public class MaterialIssuePermission : AuditableEntity // اذن الصرف
@@ -19,6 +20,7 @@ public class MaterialIssuePermission : AuditableEntity // اذن الصرف
     public int? DisbursementRequestId { get; set; }
     public DisbursementRequest? DisbursementRequest { get; set; } = default!;
     public ICollection<MaterialIssueItem> Items { get; set; } = new List<MaterialIssueItem>();
+    public MaterialIssueType Type { get; set; }
 
     public DailyRestriction DailyRestriction { get; set; } = default!;
     public int? DailyRestrictionId { get; set; }

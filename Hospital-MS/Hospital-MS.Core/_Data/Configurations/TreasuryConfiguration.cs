@@ -12,9 +12,8 @@ public class TreasuryConfiguration : IEntityTypeConfiguration<Treasury>
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Code)
-            .IsRequired()
-            .HasMaxLength(100);
+        builder.Property(x => x.AccountId)
+            .IsRequired();
 
         builder.Property(x => x.Name)
             .IsRequired()

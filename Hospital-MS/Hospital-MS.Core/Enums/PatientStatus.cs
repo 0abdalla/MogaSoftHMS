@@ -16,7 +16,7 @@ namespace Hospital_MS.Core.Enums
         [EnumMember(Value = "عيادات خارجية")]
         Outpatient = 4,
 
-        [EnumMember(Value = "منوم / إقامة داخلية")]
+        [EnumMember(Value = "عيادات داخلية")]
         Inpatient = 5,
 
         [EnumMember(Value = "متوفي")]

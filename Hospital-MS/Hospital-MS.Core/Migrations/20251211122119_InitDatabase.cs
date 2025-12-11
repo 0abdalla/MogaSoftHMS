@@ -14,13 +14,10 @@ namespace Hospital_MS.Core.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "finance");
-
-            migrationBuilder.EnsureSchema(
-                name: "Finance");
-
-            migrationBuilder.EnsureSchema(
                 name: "dbo");
+
+            migrationBuilder.EnsureSchema(
+                name: "finance");
 
             migrationBuilder.EnsureSchema(
                 name: "config");
@@ -201,85 +198,6 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AccountingGuidance",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountingGuidance", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AccountingGuidance_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AccountingGuidance_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AccountTrees",
-                schema: "Finance",
-                columns: table => new
-                {
-                    AccountId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ParentAccountId = table.Column<int>(type: "int", nullable: true),
-                    AccountLevel = table.Column<int>(type: "int", nullable: true),
-                    AccountTypeId = table.Column<int>(type: "int", nullable: true),
-                    NameAR = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    NameEN = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsParent = table.Column<bool>(type: "bit", nullable: true),
-                    IsGroup = table.Column<bool>(type: "bit", nullable: true),
-                    IsReadOnly = table.Column<bool>(type: "bit", nullable: true),
-                    CostCenterId = table.Column<int>(type: "int", nullable: true),
-                    AccountNature = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsLocked = table.Column<bool>(type: "bit", nullable: true),
-                    IsDisToCostCenter = table.Column<bool>(type: "bit", nullable: true),
-                    IsPost = table.Column<bool>(type: "bit", nullable: true),
-                    AssetType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DepreciationMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DepreciationYears = table.Column<int>(type: "int", nullable: true),
-                    DepreciationId = table.Column<int>(type: "int", nullable: true),
-                    AccumulatedDepreciationId = table.Column<int>(type: "int", nullable: true),
-                    PreCredit = table.Column<double>(type: "float", nullable: true),
-                    PreDebit = table.Column<double>(type: "float", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AccountTrees", x => x.AccountId);
-                    table.ForeignKey(
-                        name: "FK_AccountTrees_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_AccountTrees_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AdvanceTypes",
                 schema: "dbo",
                 columns: table => new
@@ -397,39 +315,6 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Banks",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    InitialBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Banks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Banks_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Banks_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Branches",
                 schema: "finance",
                 columns: table => new
@@ -537,12 +422,21 @@ namespace Hospital_MS.Core.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CostCenterNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameAR = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    NameEN = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ParentCostCenterId = table.Column<int>(type: "int", nullable: true),
+                    CostLevel = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsParent = table.Column<bool>(type: "bit", nullable: false),
+                    AllowPosting = table.Column<bool>(type: "bit", nullable: false),
+                    IsExpenses = table.Column<bool>(type: "bit", nullable: false),
+                    DisplayOrder = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -557,45 +451,11 @@ namespace Hospital_MS.Core.Migrations
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CostCenterTree",
-                schema: "Finance",
-                columns: table => new
-                {
-                    CostCenterId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CostCenterNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NameAR = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NameEN = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ParentId = table.Column<int>(type: "int", nullable: true),
-                    CostLevel = table.Column<int>(type: "int", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: true),
-                    IsLocked = table.Column<bool>(type: "bit", nullable: true),
-                    IsParent = table.Column<bool>(type: "bit", nullable: true),
-                    IsPost = table.Column<bool>(type: "bit", nullable: true),
-                    IsExpences = table.Column<int>(type: "int", nullable: true),
-                    IsGroup = table.Column<bool>(type: "bit", nullable: true),
-                    DisplayOrder = table.Column<int>(type: "int", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CostCenterTree", x => x.CostCenterId);
                     table.ForeignKey(
-                        name: "FK_CostCenterTree_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_CostCenterTree_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
+                        name: "FK_CostCenters_CostCenters_ParentCostCenterId",
+                        column: x => x.ParentCostCenterId,
+                        principalSchema: "finance",
+                        principalTable: "CostCenters",
                         principalColumn: "Id");
                 });
 
@@ -639,6 +499,43 @@ namespace Hospital_MS.Core.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Customers_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DailyRestrictions",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RestrictionNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    RestrictionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AccountingGuidance = table.Column<int>(type: "int", nullable: false),
+                    RestrictionType = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DocumentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsPosted = table.Column<bool>(type: "bit", nullable: false),
+                    PostedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsFromTransaction = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DailyRestrictions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DailyRestrictions_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DailyRestrictions_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -773,36 +670,6 @@ namespace Hospital_MS.Core.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_InsuranceCompany_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ItemTypes",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NameAr = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    NameEn = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ItemTypes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ItemTypes_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ItemTypes_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -994,36 +861,6 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RestrictionTypes",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RestrictionTypes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RestrictionTypes_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_RestrictionTypes_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "StoreTypes",
                 schema: "finance",
                 columns: table => new
@@ -1047,48 +884,6 @@ namespace Hospital_MS.Core.Migrations
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_StoreTypes_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Suppliers",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    ResponsibleName1 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ResponsibleName2 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Phone1 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
-                    Phone2 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    TaxNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Job = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Fax1 = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Fax2 = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Suppliers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Suppliers_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Suppliers_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
@@ -1216,43 +1011,55 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Treasuries",
-                schema: "finance",
+                name: "AccountTrees",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    BranchId = table.Column<int>(type: "int", nullable: false),
-                    OpeningBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ParentAccountId = table.Column<int>(type: "int", nullable: true),
+                    AccountLevel = table.Column<int>(type: "int", nullable: false),
+                    AccountType = table.Column<int>(type: "int", nullable: false),
+                    NameAR = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameEN = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsParent = table.Column<bool>(type: "bit", nullable: false),
+                    AllowPosting = table.Column<bool>(type: "bit", nullable: false),
+                    AccountNature = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CostCenterId = table.Column<int>(type: "int", nullable: true),
+                    CostCenterTreeId = table.Column<int>(type: "int", nullable: true),
+                    PreDebit = table.Column<double>(type: "float", nullable: true),
+                    PreCredit = table.Column<double>(type: "float", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Treasuries", x => x.Id);
+                    table.PrimaryKey("PK_AccountTrees", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Treasuries_AspNetUsers_CreatedById",
+                        name: "FK_AccountTrees_AccountTrees_ParentAccountId",
+                        column: x => x.ParentAccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_AccountTrees_AspNetUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Treasuries_AspNetUsers_UpdatedById",
+                        name: "FK_AccountTrees_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Treasuries_Branches_BranchId",
-                        column: x => x.BranchId,
+                        name: "FK_AccountTrees_CostCenters_CostCenterTreeId",
+                        column: x => x.CostCenterTreeId,
                         principalSchema: "finance",
-                        principalTable: "Branches",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalTable: "CostCenters",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -1491,92 +1298,6 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DailyRestrictions",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RestrictionNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    RestrictionDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    RestrictionTypeId = table.Column<int>(type: "int", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    DocumentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AccountingGuidanceId = table.Column<int>(type: "int", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DailyRestrictions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictions_AccountingGuidance_AccountingGuidanceId",
-                        column: x => x.AccountingGuidanceId,
-                        principalSchema: "finance",
-                        principalTable: "AccountingGuidance",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictions_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictions_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictions_RestrictionTypes_RestrictionTypeId",
-                        column: x => x.RestrictionTypeId,
-                        principalSchema: "finance",
-                        principalTable: "RestrictionTypes",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stores",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ContactNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    TypeId = table.Column<int>(type: "int", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stores", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Stores_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Stores_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Stores_StoreTypes_TypeId",
-                        column: x => x.TypeId,
-                        principalSchema: "finance",
-                        principalTable: "StoreTypes",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
@@ -1615,22 +1336,21 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TreasuryMovements",
+                name: "Banks",
                 schema: "finance",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TreasuryNumber = table.Column<int>(type: "int", nullable: false),
-                    OpeningBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OpenedIn = table.Column<DateOnly>(type: "date", nullable: false),
-                    ClosedIn = table.Column<DateOnly>(type: "date", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AccountNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    InitialBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     IsClosed = table.Column<bool>(type: "bit", nullable: false),
-                    TotalCredits = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TotalDebits = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    TreasuryId = table.Column<int>(type: "int", nullable: false),
-                    IsReEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    ClosedIn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1639,22 +1359,204 @@ namespace Hospital_MS.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TreasuryMovements", x => x.Id);
+                    table.PrimaryKey("PK_Banks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TreasuryMovements_AspNetUsers_CreatedById",
+                        name: "FK_Banks_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Banks_AspNetUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TreasuryMovements_AspNetUsers_UpdatedById",
+                        name: "FK_Banks_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DailyRestrictionDetails",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Debit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Credit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    From = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    To = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DailyRestrictionId = table.Column<int>(type: "int", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: true),
+                    CostCenterId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DailyRestrictionDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_DailyRestrictionDetails_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DailyRestrictionDetails_CostCenters_CostCenterId",
+                        column: x => x.CostCenterId,
+                        principalSchema: "finance",
+                        principalTable: "CostCenters",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DailyRestrictionDetails_DailyRestrictions_DailyRestrictionId",
+                        column: x => x.DailyRestrictionId,
+                        principalSchema: "finance",
+                        principalTable: "DailyRestrictions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stores",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    ContactNumber = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    TypeId = table.Column<int>(type: "int", nullable: true),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stores_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Stores_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Stores_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_TreasuryMovements_Treasuries_TreasuryId",
-                        column: x => x.TreasuryId,
+                        name: "FK_Stores_StoreTypes_TypeId",
+                        column: x => x.TypeId,
                         principalSchema: "finance",
-                        principalTable: "Treasuries",
+                        principalTable: "StoreTypes",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Suppliers",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    AccountCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    ResponsibleName1 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ResponsibleName2 = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Phone1 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
+                    Phone2 = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    TaxNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Job = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Fax1 = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Fax2 = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    PaymentType = table.Column<int>(type: "int", nullable: false),
+                    CreditLimit = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    CurrentBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suppliers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Suppliers_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Suppliers_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Suppliers_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Treasuries",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Currency = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OpeningBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CurrentBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Treasuries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Treasuries_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Treasuries_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Treasuries_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Treasuries_Branches_BranchId",
+                        column: x => x.BranchId,
+                        principalSchema: "finance",
+                        principalTable: "Branches",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1823,7 +1725,7 @@ namespace Hospital_MS.Core.Migrations
                     Phone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Address = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    Nationality = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Nation = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmergencyPhone01 = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     EmergencyContact01 = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
                     EmergencyPhone02 = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
@@ -1834,6 +1736,7 @@ namespace Hospital_MS.Core.Migrations
                     InsuranceCompanyId = table.Column<int>(type: "int", nullable: true),
                     InsuranceCategoryId = table.Column<int>(type: "int", nullable: true),
                     InsuranceNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastVisitDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1959,19 +1862,24 @@ namespace Hospital_MS.Core.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    NameAr = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    NameEn = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UnitId = table.Column<int>(type: "int", nullable: true),
-                    GroupId = table.Column<int>(type: "int", nullable: true),
-                    OrderLimit = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    NameAR = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    NameEN = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OrderLimit = table.Column<int>(type: "int", precision: 18, scale: 2, nullable: false, defaultValue: 0),
                     Cost = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
-                    OpeningBalance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
+                    IsConsumable = table.Column<bool>(type: "bit", nullable: false),
+                    IsMedicine = table.Column<bool>(type: "bit", nullable: false),
+                    IsAsset = table.Column<bool>(type: "bit", nullable: false),
                     SalesTax = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
                     Price = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
                     PriceAfterTax = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false, defaultValue: 0m),
                     HasBarcode = table.Column<bool>(type: "bit", nullable: false),
-                    TypeId = table.Column<int>(type: "int", nullable: true),
                     IsGroupHead = table.Column<bool>(type: "bit", nullable: false),
+                    OpeningBalance = table.Column<long>(type: "bigint", precision: 18, scale: 2, nullable: false, defaultValue: 0L),
+                    CurrentBalance = table.Column<long>(type: "bigint", nullable: false),
+                    AverageCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnitId = table.Column<int>(type: "int", nullable: true),
+                    GroupId = table.Column<int>(type: "int", nullable: true),
+                    HasExpiryDate = table.Column<bool>(type: "bit", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1998,17 +1906,47 @@ namespace Hospital_MS.Core.Migrations
                         principalTable: "ItemGroups",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Items_ItemTypes_TypeId",
-                        column: x => x.TypeId,
-                        principalSchema: "finance",
-                        principalTable: "ItemTypes",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_Items_ItemUnits_UnitId",
                         column: x => x.UnitId,
                         principalSchema: "finance",
                         principalTable: "ItemUnits",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Beds",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Number = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: false),
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Beds", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Beds_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Beds_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Beds_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -2036,9 +1974,8 @@ namespace Hospital_MS.Core.Migrations
                     table.ForeignKey(
                         name: "FK_AdditionNotices_AccountTrees_AccountId",
                         column: x => x.AccountId,
-                        principalSchema: "Finance",
                         principalTable: "AccountTrees",
-                        principalColumn: "AccountId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AdditionNotices_AspNetUsers_CreatedById",
@@ -2066,59 +2003,19 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DailyRestrictionDetails",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    DailyRestrictionId = table.Column<int>(type: "int", nullable: false),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    Debit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Credit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    CostCenterId = table.Column<int>(type: "int", nullable: true),
-                    Note = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    From = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    To = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DailyRestrictionDetails", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictionDetails_AccountTrees_AccountId",
-                        column: x => x.AccountId,
-                        principalSchema: "Finance",
-                        principalTable: "AccountTrees",
-                        principalColumn: "AccountId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictionDetails_CostCenterTree_CostCenterId",
-                        column: x => x.CostCenterId,
-                        principalSchema: "Finance",
-                        principalTable: "CostCenterTree",
-                        principalColumn: "CostCenterId");
-                    table.ForeignKey(
-                        name: "FK_DailyRestrictionDetails_DailyRestrictions_DailyRestrictionId",
-                        column: x => x.DailyRestrictionId,
-                        principalSchema: "finance",
-                        principalTable: "DailyRestrictions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "DebitNotices",
                 schema: "finance",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    BankId = table.Column<int>(type: "int", nullable: false),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    DebitNoticeNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CheckNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    BankId = table.Column<int>(type: "int", nullable: false),
                     DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2132,9 +2029,8 @@ namespace Hospital_MS.Core.Migrations
                     table.ForeignKey(
                         name: "FK_DebitNotices_AccountTrees_AccountId",
                         column: x => x.AccountId,
-                        principalSchema: "Finance",
                         principalTable: "AccountTrees",
-                        principalColumn: "AccountId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_DebitNotices_AspNetUsers_CreatedById",
@@ -2162,127 +2058,6 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DispensePermissions",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    DispenseTo = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    TreasuryId = table.Column<int>(type: "int", nullable: true),
-                    CostCenterId = table.Column<int>(type: "int", nullable: true),
-                    AccountId = table.Column<int>(type: "int", nullable: true),
-                    DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DispensePermissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_DispensePermissions_AccountTrees_AccountId",
-                        column: x => x.AccountId,
-                        principalSchema: "Finance",
-                        principalTable: "AccountTrees",
-                        principalColumn: "AccountId");
-                    table.ForeignKey(
-                        name: "FK_DispensePermissions_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DispensePermissions_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DispensePermissions_CostCenterTree_CostCenterId",
-                        column: x => x.CostCenterId,
-                        principalSchema: "Finance",
-                        principalTable: "CostCenterTree",
-                        principalColumn: "CostCenterId");
-                    table.ForeignKey(
-                        name: "FK_DispensePermissions_DailyRestrictions_DailyRestrictionId",
-                        column: x => x.DailyRestrictionId,
-                        principalSchema: "finance",
-                        principalTable: "DailyRestrictions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_DispensePermissions_Treasuries_TreasuryId",
-                        column: x => x.TreasuryId,
-                        principalSchema: "finance",
-                        principalTable: "Treasuries",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SupplyReceipts",
-                schema: "finance",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TreasuryId = table.Column<int>(type: "int", nullable: false),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    ReceivedFrom = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CostCenterId = table.Column<int>(type: "int", nullable: true),
-                    AccountId = table.Column<int>(type: "int", nullable: true),
-                    DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
-                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SupplyReceipts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SupplyReceipts_AccountTrees_AccountId",
-                        column: x => x.AccountId,
-                        principalSchema: "Finance",
-                        principalTable: "AccountTrees",
-                        principalColumn: "AccountId");
-                    table.ForeignKey(
-                        name: "FK_SupplyReceipts_AspNetUsers_CreatedById",
-                        column: x => x.CreatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_SupplyReceipts_AspNetUsers_UpdatedById",
-                        column: x => x.UpdatedById,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_SupplyReceipts_CostCenterTree_CostCenterId",
-                        column: x => x.CostCenterId,
-                        principalSchema: "Finance",
-                        principalTable: "CostCenterTree",
-                        principalColumn: "CostCenterId");
-                    table.ForeignKey(
-                        name: "FK_SupplyReceipts_DailyRestrictions_DailyRestrictionId",
-                        column: x => x.DailyRestrictionId,
-                        principalSchema: "finance",
-                        principalTable: "DailyRestrictions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_SupplyReceipts_Treasuries_TreasuryId",
-                        column: x => x.TreasuryId,
-                        principalSchema: "finance",
-                        principalTable: "Treasuries",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MaterialIssuePermissions",
                 schema: "finance",
                 columns: table => new
@@ -2296,6 +2071,7 @@ namespace Hospital_MS.Core.Migrations
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     JobDepartmentId = table.Column<int>(type: "int", nullable: true),
                     DisbursementRequestId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2381,14 +2157,21 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Beds",
+                name: "DispensePermissions",
+                schema: "finance",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: false),
-                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    DispensePermissionNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Date = table.Column<DateOnly>(type: "date", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DispenseTo = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    TreasuryId = table.Column<int>(type: "int", nullable: true),
+                    CostCenterId = table.Column<int>(type: "int", nullable: true),
+                    AccountId = table.Column<int>(type: "int", nullable: true),
+                    DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -2397,58 +2180,147 @@ namespace Hospital_MS.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Beds", x => x.Id);
+                    table.PrimaryKey("PK_DispensePermissions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Beds_AspNetUsers_CreatedById",
+                        name: "FK_DispensePermissions_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DispensePermissions_AspNetUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Beds_AspNetUsers_UpdatedById",
+                        name: "FK_DispensePermissions_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Beds_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_DispensePermissions_CostCenters_CostCenterId",
+                        column: x => x.CostCenterId,
+                        principalSchema: "finance",
+                        principalTable: "CostCenters",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DispensePermissions_DailyRestrictions_DailyRestrictionId",
+                        column: x => x.DailyRestrictionId,
+                        principalSchema: "finance",
+                        principalTable: "DailyRestrictions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_DispensePermissions_Treasuries_TreasuryId",
+                        column: x => x.TreasuryId,
+                        principalSchema: "finance",
+                        principalTable: "Treasuries",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "TreasuryOperations",
+                name: "SupplyReceipts",
                 schema: "finance",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Date = table.Column<DateOnly>(type: "date", nullable: false),
-                    DocumentNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    ReceivedFrom = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
-                    AccountId = table.Column<int>(type: "int", nullable: true),
-                    TransactionType = table.Column<int>(type: "int", nullable: false),
+                    SupplyReceiptNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TreasuryId = table.Column<int>(type: "int", nullable: false),
-                    TreasuryMovementId = table.Column<int>(type: "int", nullable: true)
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReceivedFrom = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CostCenterId = table.Column<int>(type: "int", nullable: true),
+                    AccountId = table.Column<int>(type: "int", nullable: true),
+                    DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
+                    PaymentType = table.Column<int>(type: "int", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TreasuryOperations", x => x.Id);
+                    table.PrimaryKey("PK_SupplyReceipts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TreasuryOperations_Treasuries_TreasuryId",
+                        name: "FK_SupplyReceipts_AccountTrees_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "AccountTrees",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SupplyReceipts_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SupplyReceipts_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SupplyReceipts_CostCenters_CostCenterId",
+                        column: x => x.CostCenterId,
+                        principalSchema: "finance",
+                        principalTable: "CostCenters",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SupplyReceipts_DailyRestrictions_DailyRestrictionId",
+                        column: x => x.DailyRestrictionId,
+                        principalSchema: "finance",
+                        principalTable: "DailyRestrictions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_SupplyReceipts_Treasuries_TreasuryId",
                         column: x => x.TreasuryId,
                         principalSchema: "finance",
                         principalTable: "Treasuries",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TreasuryMovements",
+                schema: "finance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TreasuryNumber = table.Column<int>(type: "int", nullable: false),
+                    OpeningBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OpenedIn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClosedIn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsClosed = table.Column<bool>(type: "bit", nullable: false),
+                    TotalCredits = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TotalDebits = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    TreasuryId = table.Column<int>(type: "int", nullable: false),
+                    IsReEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TreasuryMovements", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TreasuryOperations_TreasuryMovements_TreasuryMovementId",
-                        column: x => x.TreasuryMovementId,
-                        principalSchema: "finance",
-                        principalTable: "TreasuryMovements",
+                        name: "FK_TreasuryMovements_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TreasuryMovements_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TreasuryMovements_Treasuries_TreasuryId",
+                        column: x => x.TreasuryId,
+                        principalSchema: "finance",
+                        principalTable: "Treasuries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -2461,15 +2333,19 @@ namespace Hospital_MS.Core.Migrations
                     DoctorId = table.Column<int>(type: "int", nullable: true),
                     ClinicId = table.Column<int>(type: "int", nullable: true),
                     MedicalServiceId = table.Column<int>(type: "int", nullable: true),
-                    AppointmentDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DurationInMinutes = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: false),
                     Type = table.Column<string>(type: "nvarchar(55)", maxLength: 55, nullable: false),
-                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: true),
+                    BillingStatus = table.Column<int>(type: "int", nullable: false),
                     AppointmentNumber = table.Column<int>(type: "int", nullable: false),
-                    EmergencyLevel = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompanionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompanionNationalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CompanionPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CancellationReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CheckInTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RoomId = table.Column<int>(type: "int", nullable: true),
+                    EncounterNumber = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IsClosed = table.Column<bool>(type: "bit", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -2511,6 +2387,11 @@ namespace Hospital_MS.Core.Migrations
                         principalTable: "Patients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -2979,6 +2860,87 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Admissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AdmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DischargeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    AdmissionType = table.Column<int>(type: "int", nullable: false),
+                    InitialDiagnosis = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    HealthStatus = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Notes = table.Column<string>(type: "nvarchar(750)", maxLength: 750, nullable: true),
+                    HasCompanion = table.Column<bool>(type: "bit", nullable: false),
+                    CompanionName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    CompanionPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    CompanionNationalId = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    DoctorId = table.Column<int>(type: "int", nullable: true),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false),
+                    RoomId = table.Column<int>(type: "int", nullable: false),
+                    BedId = table.Column<int>(type: "int", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "int", nullable: true),
+                    DischargeSummary = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EncounterNumber = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MedicalServiceId = table.Column<int>(type: "int", nullable: true),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Admissions_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Admissions_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Admissions_Beds_BedId",
+                        column: x => x.BedId,
+                        principalTable: "Beds",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Admissions_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Admissions_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Admissions_MedicalServices_MedicalServiceId",
+                        column: x => x.MedicalServiceId,
+                        principalTable: "MedicalServices",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Admissions_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Admissions_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MaterialIssueItems",
                 schema: "finance",
                 columns: table => new
@@ -3027,25 +2989,53 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Admissions",
+                name: "TreasuryOperations",
+                schema: "finance",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AdmissionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    HealthStatus = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    InitialDiagnosis = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    Notes = table.Column<string>(type: "nvarchar(750)", maxLength: 750, nullable: true),
-                    HasCompanion = table.Column<bool>(type: "bit", nullable: false),
-                    CompanionName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    CompanionNationalId = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    CompanionPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DocumentNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ReceivedFrom = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValue: 0m),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: true),
+                    TransactionType = table.Column<int>(type: "int", nullable: false),
+                    TreasuryId = table.Column<int>(type: "int", nullable: false),
+                    TreasuryMovementId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TreasuryOperations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TreasuryOperations_Treasuries_TreasuryId",
+                        column: x => x.TreasuryId,
+                        principalSchema: "finance",
+                        principalTable: "Treasuries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_TreasuryOperations_TreasuryMovements_TreasuryMovementId",
+                        column: x => x.TreasuryMovementId,
+                        principalSchema: "finance",
+                        principalTable: "TreasuryMovements",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Invoice",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     PatientId = table.Column<int>(type: "int", nullable: false),
-                    BedId = table.Column<int>(type: "int", nullable: false),
-                    DoctorId = table.Column<int>(type: "int", nullable: false),
-                    DepartmentId = table.Column<int>(type: "int", nullable: false),
-                    RoomId = table.Column<int>(type: "int", nullable: false),
-                    MedicalServiceId = table.Column<int>(type: "int", nullable: true),
+                    AppointmentId = table.Column<int>(type: "int", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Discount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    PaidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    BillingStatus = table.Column<int>(type: "int", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -3054,50 +3044,27 @@ namespace Hospital_MS.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Admissions", x => x.Id);
+                    table.PrimaryKey("PK_Invoice", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Admissions_AspNetUsers_CreatedById",
+                        name: "FK_Invoice_Appointments_AppointmentId",
+                        column: x => x.AppointmentId,
+                        principalTable: "Appointments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Invoice_AspNetUsers_CreatedById",
                         column: x => x.CreatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Admissions_AspNetUsers_UpdatedById",
+                        name: "FK_Invoice_AspNetUsers_UpdatedById",
                         column: x => x.UpdatedById,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Admissions_Beds_BedId",
-                        column: x => x.BedId,
-                        principalTable: "Beds",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Admissions_Departments_DepartmentId",
-                        column: x => x.DepartmentId,
-                        principalTable: "Departments",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Admissions_Doctors_DoctorId",
-                        column: x => x.DoctorId,
-                        principalTable: "Doctors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Admissions_MedicalServices_MedicalServiceId",
-                        column: x => x.MedicalServiceId,
-                        principalTable: "MedicalServices",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Admissions_Patients_PatientId",
+                        name: "FK_Invoice_Patients_PatientId",
                         column: x => x.PatientId,
                         principalTable: "Patients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Admissions_Rooms_RoomId",
-                        column: x => x.RoomId,
-                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -3111,7 +3078,7 @@ namespace Hospital_MS.Core.Migrations
                     AppointmentId = table.Column<int>(type: "int", nullable: false),
                     MedicalServiceId = table.Column<int>(type: "int", nullable: false),
                     RadiologyBodyTypeId = table.Column<int>(type: "int", nullable: true),
-                    AppointmentDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    AppointmentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -3141,6 +3108,191 @@ namespace Hospital_MS.Core.Migrations
                         name: "FK_MedicalServiceDetails_MedicalServices_MedicalServiceId",
                         column: x => x.MedicalServiceId,
                         principalTable: "MedicalServices",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AdmissionCharge",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AdmissionId = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ChargeDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdmissionCharge", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AdmissionCharge_Admissions_AdmissionId",
+                        column: x => x.AdmissionId,
+                        principalTable: "Admissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EmergencyVisit",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PatientId = table.Column<int>(type: "int", nullable: false),
+                    ArrivalTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Severity = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    ChiefComplaint = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BloodPressure = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HeartRate = table.Column<int>(type: "int", nullable: true),
+                    RespiratoryRate = table.Column<int>(type: "int", nullable: true),
+                    Temperature = table.Column<float>(type: "real", nullable: true),
+                    OxygenSaturation = table.Column<int>(type: "int", nullable: true),
+                    PainScore = table.Column<int>(type: "int", nullable: true),
+                    Allergies = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AssessmentNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TreatmentNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompanionName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompanionPhone = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompanionNationalId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DoctorId = table.Column<int>(type: "int", nullable: true),
+                    IsAdmitted = table.Column<bool>(type: "bit", nullable: false),
+                    AdmissionId = table.Column<int>(type: "int", nullable: true),
+                    DischargeTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DischargeNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastStatusUpdate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EncounterNumber = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EmergencyVisit", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EmergencyVisit_Admissions_AdmissionId",
+                        column: x => x.AdmissionId,
+                        principalTable: "Admissions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EmergencyVisit_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EmergencyVisit_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EmergencyVisit_Doctors_DoctorId",
+                        column: x => x.DoctorId,
+                        principalTable: "Doctors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_EmergencyVisit_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemBatch",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    BatchNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductionDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    StoreId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RemainingQuantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnitCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsOpeningBalance = table.Column<bool>(type: "bit", nullable: false),
+                    ReceiptPermissionId = table.Column<int>(type: "int", nullable: true),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemBatch", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemBatch_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ItemBatch_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ItemBatch_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalSchema: "finance",
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ItemBatch_Stores_StoreId",
+                        column: x => x.StoreId,
+                        principalSchema: "finance",
+                        principalTable: "Stores",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MaterialIssueBatch",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MaterialIssueItemId = table.Column<int>(type: "int", nullable: false),
+                    ItemBatchId = table.Column<int>(type: "int", nullable: false),
+                    BatchNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    UnitCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MaterialIssueBatch", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MaterialIssueBatch_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MaterialIssueBatch_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_MaterialIssueBatch_ItemBatch_ItemBatchId",
+                        column: x => x.ItemBatchId,
+                        principalTable: "ItemBatch",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_MaterialIssueBatch_MaterialIssueItems_MaterialIssueItemId",
+                        column: x => x.MaterialIssueItemId,
+                        principalSchema: "finance",
+                        principalTable: "MaterialIssueItems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -3290,8 +3442,6 @@ namespace Hospital_MS.Core.Migrations
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
                     PurchaseRequestId = table.Column<int>(type: "int", nullable: true),
-                    CostCenterId = table.Column<int>(type: "int", nullable: true),
-                    StoreId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -3312,22 +3462,10 @@ namespace Hospital_MS.Core.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PurchaseOrders_CostCenters_CostCenterId",
-                        column: x => x.CostCenterId,
-                        principalSchema: "finance",
-                        principalTable: "CostCenters",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_PurchaseOrders_PurchaseRequests_PurchaseRequestId",
                         column: x => x.PurchaseRequestId,
                         principalSchema: "finance",
                         principalTable: "PurchaseRequests",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_PurchaseOrders_Stores_StoreId",
-                        column: x => x.StoreId,
-                        principalSchema: "finance",
-                        principalTable: "Stores",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PurchaseOrders_Suppliers_SupplierId",
@@ -3444,11 +3582,16 @@ namespace Hospital_MS.Core.Migrations
                     DocumentNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     PermissionDate = table.Column<DateOnly>(type: "date", nullable: false),
                     StoreId = table.Column<int>(type: "int", nullable: false),
-                    SupplierId = table.Column<int>(type: "int", nullable: false),
+                    TargetId = table.Column<int>(type: "int", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     PurchaseOrderId = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    SupplierId = table.Column<int>(type: "int", nullable: false),
                     DailyRestrictionId = table.Column<int>(type: "int", nullable: true),
+                    IsPaid = table.Column<bool>(type: "bit", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaidAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    RemainingAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -3498,6 +3641,45 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ReceiptPayment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ReceiptPermissionId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PaymentType = table.Column<int>(type: "int", nullable: false),
+                    DocumentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedOn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReceiptPayment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ReceiptPayment_AspNetUsers_CreatedById",
+                        column: x => x.CreatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ReceiptPayment_AspNetUsers_UpdatedById",
+                        column: x => x.UpdatedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ReceiptPayment_ReceiptPermissions_ReceiptPermissionId",
+                        column: x => x.ReceiptPermissionId,
+                        principalSchema: "finance",
+                        principalTable: "ReceiptPermissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ReceiptPermissionItems",
                 schema: "finance",
                 columns: table => new
@@ -3509,6 +3691,7 @@ namespace Hospital_MS.Core.Migrations
                     Quantity = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    BatchNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ReceiptPermissionId = table.Column<int>(type: "int", nullable: true),
                     CreatedById = table.Column<string>(type: "nvarchar(450)", nullable: true),
@@ -3563,26 +3746,22 @@ namespace Hospital_MS.Core.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccountingGuidance_CreatedById",
-                schema: "finance",
-                table: "AccountingGuidance",
-                column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AccountingGuidance_UpdatedById",
-                schema: "finance",
-                table: "AccountingGuidance",
-                column: "UpdatedById");
+                name: "IX_AccountTrees_CostCenterTreeId",
+                table: "AccountTrees",
+                column: "CostCenterTreeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AccountTrees_CreatedById",
-                schema: "Finance",
                 table: "AccountTrees",
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccountTrees_ParentAccountId",
+                table: "AccountTrees",
+                column: "ParentAccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AccountTrees_UpdatedById",
-                schema: "Finance",
                 table: "AccountTrees",
                 column: "UpdatedById");
 
@@ -3610,6 +3789,11 @@ namespace Hospital_MS.Core.Migrations
                 name: "IX_AdditionNotices_UpdatedById",
                 table: "AdditionNotices",
                 column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AdmissionCharge_AdmissionId",
+                table: "AdmissionCharge",
+                column: "AdmissionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Admissions_BedId",
@@ -3689,6 +3873,11 @@ namespace Hospital_MS.Core.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointments_RoomId",
+                table: "Appointments",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Appointments_UpdatedById",
                 table: "Appointments",
                 column: "UpdatedById");
@@ -3764,6 +3953,12 @@ namespace Hospital_MS.Core.Migrations
                 name: "IX_Attendances_UpdatedById",
                 table: "Attendances",
                 column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Banks_AccountId",
+                schema: "finance",
+                table: "Banks",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Banks_CreatedById",
@@ -3864,21 +4059,15 @@ namespace Hospital_MS.Core.Migrations
                 column: "CreatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CostCenters_ParentCostCenterId",
+                schema: "finance",
+                table: "CostCenters",
+                column: "ParentCostCenterId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CostCenters_UpdatedById",
                 schema: "finance",
                 table: "CostCenters",
-                column: "UpdatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CostCenterTree_CreatedById",
-                schema: "Finance",
-                table: "CostCenterTree",
-                column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CostCenterTree_UpdatedById",
-                schema: "Finance",
-                table: "CostCenterTree",
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
@@ -3931,22 +4120,10 @@ namespace Hospital_MS.Core.Migrations
                 column: "DailyRestrictionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DailyRestrictions_AccountingGuidanceId",
-                schema: "finance",
-                table: "DailyRestrictions",
-                column: "AccountingGuidanceId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_DailyRestrictions_CreatedById",
                 schema: "finance",
                 table: "DailyRestrictions",
                 column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_DailyRestrictions_RestrictionTypeId",
-                schema: "finance",
-                table: "DailyRestrictions",
-                column: "RestrictionTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_DailyRestrictions_UpdatedById",
@@ -4143,6 +4320,31 @@ namespace Hospital_MS.Core.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EmergencyVisit_AdmissionId",
+                table: "EmergencyVisit",
+                column: "AdmissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyVisit_CreatedById",
+                table: "EmergencyVisit",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyVisit_DoctorId",
+                table: "EmergencyVisit",
+                column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyVisit_PatientId",
+                table: "EmergencyVisit",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmergencyVisit_UpdatedById",
+                table: "EmergencyVisit",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_EmployeeAdvances_CreatedById",
                 schema: "dbo",
                 table: "EmployeeAdvances",
@@ -4210,6 +4412,52 @@ namespace Hospital_MS.Core.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Invoice_AppointmentId",
+                table: "Invoice",
+                column: "AppointmentId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoice_CreatedById",
+                table: "Invoice",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoice_PatientId",
+                table: "Invoice",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invoice_UpdatedById",
+                table: "Invoice",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemBatch_CreatedById",
+                table: "ItemBatch",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemBatch_ItemId",
+                table: "ItemBatch",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemBatch_ReceiptPermissionId",
+                table: "ItemBatch",
+                column: "ReceiptPermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemBatch_StoreId",
+                table: "ItemBatch",
+                column: "StoreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemBatch_UpdatedById",
+                table: "ItemBatch",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ItemGroups_CreatedById",
                 schema: "finance",
                 table: "ItemGroups",
@@ -4240,12 +4488,6 @@ namespace Hospital_MS.Core.Migrations
                 column: "GroupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Items_TypeId",
-                schema: "finance",
-                table: "Items",
-                column: "TypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Items_UnitId",
                 schema: "finance",
                 table: "Items",
@@ -4255,31 +4497,6 @@ namespace Hospital_MS.Core.Migrations
                 name: "IX_Items_UpdatedById",
                 schema: "finance",
                 table: "Items",
-                column: "UpdatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemTypes_CreatedById",
-                schema: "finance",
-                table: "ItemTypes",
-                column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemTypes_NameAr",
-                schema: "finance",
-                table: "ItemTypes",
-                column: "NameAr",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemTypes_NameEn",
-                schema: "finance",
-                table: "ItemTypes",
-                column: "NameEn");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ItemTypes_UpdatedById",
-                schema: "finance",
-                table: "ItemTypes",
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
@@ -4349,6 +4566,26 @@ namespace Hospital_MS.Core.Migrations
                 name: "IX_MainGroups_UpdatedById",
                 schema: "finance",
                 table: "MainGroups",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialIssueBatch_CreatedById",
+                table: "MaterialIssueBatch",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialIssueBatch_ItemBatchId",
+                table: "MaterialIssueBatch",
+                column: "ItemBatchId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialIssueBatch_MaterialIssueItemId",
+                table: "MaterialIssueBatch",
+                column: "MaterialIssueItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MaterialIssueBatch_UpdatedById",
+                table: "MaterialIssueBatch",
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
@@ -4636,12 +4873,6 @@ namespace Hospital_MS.Core.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrders_CostCenterId",
-                schema: "finance",
-                table: "PurchaseOrders",
-                column: "CostCenterId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PurchaseOrders_CreatedById",
                 schema: "finance",
                 table: "PurchaseOrders",
@@ -4652,12 +4883,6 @@ namespace Hospital_MS.Core.Migrations
                 schema: "finance",
                 table: "PurchaseOrders",
                 column: "PurchaseRequestId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PurchaseOrders_StoreId",
-                schema: "finance",
-                table: "PurchaseOrders",
-                column: "StoreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PurchaseOrders_SupplierId",
@@ -4722,6 +4947,21 @@ namespace Hospital_MS.Core.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ReceiptPayment_CreatedById",
+                table: "ReceiptPayment",
+                column: "CreatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReceiptPayment_ReceiptPermissionId",
+                table: "ReceiptPayment",
+                column: "ReceiptPermissionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReceiptPayment_UpdatedById",
+                table: "ReceiptPayment",
+                column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReceiptPermissionItems_CreatedById",
                 schema: "finance",
                 table: "ReceiptPermissionItems",
@@ -4779,18 +5019,6 @@ namespace Hospital_MS.Core.Migrations
                 name: "IX_ReceiptPermissions_UpdatedById",
                 schema: "finance",
                 table: "ReceiptPermissions",
-                column: "UpdatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RestrictionTypes_CreatedById",
-                schema: "finance",
-                table: "RestrictionTypes",
-                column: "CreatedById");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RestrictionTypes_UpdatedById",
-                schema: "finance",
-                table: "RestrictionTypes",
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
@@ -4905,6 +5133,12 @@ namespace Hospital_MS.Core.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Stores_AccountId",
+                schema: "finance",
+                table: "Stores",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stores_CreatedById",
                 schema: "finance",
                 table: "Stores",
@@ -4940,6 +5174,12 @@ namespace Hospital_MS.Core.Migrations
                 table: "Suppliers",
                 column: "AccountCode",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Suppliers_AccountId",
+                schema: "finance",
+                table: "Suppliers",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Suppliers_CreatedById",
@@ -5008,6 +5248,12 @@ namespace Hospital_MS.Core.Migrations
                 schema: "finance",
                 table: "SupplyReceipts",
                 column: "UpdatedById");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Treasuries_AccountId",
+                schema: "finance",
+                table: "Treasuries",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Treasuries_BranchId",
@@ -5092,6 +5338,14 @@ namespace Hospital_MS.Core.Migrations
                 column: "UpdatedById");
 
             migrationBuilder.AddForeignKey(
+                name: "FK_ItemBatch_ReceiptPermissions_ReceiptPermissionId",
+                table: "ItemBatch",
+                column: "ReceiptPermissionId",
+                principalSchema: "finance",
+                principalTable: "ReceiptPermissions",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
                 name: "FK_PriceQuotationItems_PriceQuotations_PriceQuotationId",
                 schema: "finance",
                 table: "PriceQuotationItems",
@@ -5115,6 +5369,24 @@ namespace Hospital_MS.Core.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_AccountTrees_AspNetUsers_CreatedById",
+                table: "AccountTrees");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_AccountTrees_AspNetUsers_UpdatedById",
+                table: "AccountTrees");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_CostCenters_AspNetUsers_CreatedById",
+                schema: "finance",
+                table: "CostCenters");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_CostCenters_AspNetUsers_UpdatedById",
+                schema: "finance",
+                table: "CostCenters");
+
             migrationBuilder.DropForeignKey(
                 name: "FK_PriceQuotations_AspNetUsers_CreatedById",
                 schema: "finance",
@@ -5166,6 +5438,20 @@ namespace Hospital_MS.Core.Migrations
                 table: "Suppliers");
 
             migrationBuilder.DropForeignKey(
+                name: "FK_AccountTrees_CostCenters_CostCenterTreeId",
+                table: "AccountTrees");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Stores_AccountTrees_AccountId",
+                schema: "finance",
+                table: "Stores");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Suppliers_AccountTrees_AccountId",
+                schema: "finance",
+                table: "Suppliers");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_PurchaseRequests_Stores_StoreId",
                 schema: "finance",
                 table: "PurchaseRequests");
@@ -5179,7 +5465,7 @@ namespace Hospital_MS.Core.Migrations
                 name: "AdditionNotices");
 
             migrationBuilder.DropTable(
-                name: "Admissions");
+                name: "AdmissionCharge");
 
             migrationBuilder.DropTable(
                 name: "AdvanceTypes",
@@ -5244,6 +5530,9 @@ namespace Hospital_MS.Core.Migrations
                 name: "DoctorSchedules");
 
             migrationBuilder.DropTable(
+                name: "EmergencyVisit");
+
+            migrationBuilder.DropTable(
                 name: "EmployeeAdvances",
                 schema: "dbo");
 
@@ -5256,8 +5545,10 @@ namespace Hospital_MS.Core.Migrations
                 schema: "finance");
 
             migrationBuilder.DropTable(
-                name: "MaterialIssueItems",
-                schema: "finance");
+                name: "Invoice");
+
+            migrationBuilder.DropTable(
+                name: "MaterialIssueBatch");
 
             migrationBuilder.DropTable(
                 name: "MedicalServiceDetails");
@@ -5308,6 +5599,9 @@ namespace Hospital_MS.Core.Migrations
                 name: "RadiologyBodyTypes");
 
             migrationBuilder.DropTable(
+                name: "ReceiptPayment");
+
+            migrationBuilder.DropTable(
                 name: "ReceiptPermissionItems",
                 schema: "finance");
 
@@ -5346,9 +5640,6 @@ namespace Hospital_MS.Core.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
-                name: "Beds");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -5356,19 +5647,17 @@ namespace Hospital_MS.Core.Migrations
                 schema: "finance");
 
             migrationBuilder.DropTable(
-                name: "MaterialIssuePermissions",
+                name: "Admissions");
+
+            migrationBuilder.DropTable(
+                name: "ItemBatch");
+
+            migrationBuilder.DropTable(
+                name: "MaterialIssueItems",
                 schema: "finance");
 
             migrationBuilder.DropTable(
                 name: "Appointments");
-
-            migrationBuilder.DropTable(
-                name: "Items",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "ReceiptPermissions",
-                schema: "finance");
 
             migrationBuilder.DropTable(
                 name: "Shifts");
@@ -5377,22 +5666,22 @@ namespace Hospital_MS.Core.Migrations
                 name: "Staff");
 
             migrationBuilder.DropTable(
-                name: "AccountTrees",
-                schema: "Finance");
-
-            migrationBuilder.DropTable(
-                name: "CostCenterTree",
-                schema: "Finance");
-
-            migrationBuilder.DropTable(
                 name: "TreasuryMovements",
                 schema: "finance");
 
             migrationBuilder.DropTable(
-                name: "Rooms");
+                name: "Beds");
 
             migrationBuilder.DropTable(
-                name: "DisbursementRequests",
+                name: "ReceiptPermissions",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "Items",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "MaterialIssuePermissions",
                 schema: "finance");
 
             migrationBuilder.DropTable(
@@ -5403,26 +5692,6 @@ namespace Hospital_MS.Core.Migrations
 
             migrationBuilder.DropTable(
                 name: "Patients");
-
-            migrationBuilder.DropTable(
-                name: "ItemGroups",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "ItemTypes",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "ItemUnits",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "DailyRestrictions",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "PurchaseOrders",
-                schema: "finance");
 
             migrationBuilder.DropTable(
                 name: "Clinics");
@@ -5441,7 +5710,27 @@ namespace Hospital_MS.Core.Migrations
                 schema: "finance");
 
             migrationBuilder.DropTable(
-                name: "Wards");
+                name: "Rooms");
+
+            migrationBuilder.DropTable(
+                name: "PurchaseOrders",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "ItemGroups",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "ItemUnits",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "DailyRestrictions",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "DisbursementRequests",
+                schema: "finance");
 
             migrationBuilder.DropTable(
                 name: "Specialties");
@@ -5453,33 +5742,31 @@ namespace Hospital_MS.Core.Migrations
                 name: "InsuranceCategory");
 
             migrationBuilder.DropTable(
+                name: "Branches",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "Wards");
+
+            migrationBuilder.DropTable(
                 name: "MainGroups",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "AccountingGuidance",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "RestrictionTypes",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
-                name: "CostCenters",
                 schema: "finance");
 
             migrationBuilder.DropTable(
                 name: "JobDepartment");
 
             migrationBuilder.DropTable(
-                name: "Branches",
-                schema: "finance");
-
-            migrationBuilder.DropTable(
                 name: "InsuranceCompany");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "CostCenters",
+                schema: "finance");
+
+            migrationBuilder.DropTable(
+                name: "AccountTrees");
 
             migrationBuilder.DropTable(
                 name: "Stores",

@@ -87,7 +87,7 @@ public class NotificationService(IUnitOfWork unitOfWork,
             { "{Purpose}", purchaseRequest.Purpose },
             { "{Status}", purchaseRequest.Status.ToString() },
             { "{Notes}", purchaseRequest.Notes ?? string.Empty },
-            { "{Items}", string.Join("<br/>", purchaseRequest.Items.Select(i => $"- {i.Item.NameAr} ({i.Quantity})")) }
+            { "{Items}", string.Join("<br/>", purchaseRequest.Items.Select(i => $"- {i.Item.NameAR} ({i.Quantity})")) }
 
         };
         var body = EmailBodyBuilder.GenerateEmailBody("NewPurchaseRequest", templateModel);

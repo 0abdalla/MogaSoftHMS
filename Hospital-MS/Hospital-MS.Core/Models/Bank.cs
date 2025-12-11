@@ -14,5 +14,12 @@ public class Bank : AuditableEntity
     public string? Code { get; set; }
     public string? AccountNumber { get; set; }
     public string Currency { get; set; } = string.Empty;
-    public decimal InitialBalance { get; set; } = 0;    
+    public decimal InitialBalance { get; set; } = 0M;
+    public decimal CurrentBalance { get; set; } = 0M;
+
+    public bool IsClosed { get; set; } = false;
+
+    public DateTime? ClosedIn { get; set; }
+    public int AccountId { get; set; }
+    public AccountTree Account { get; set; } = default!;
 }

@@ -29,9 +29,6 @@ namespace Hospital_MS.Services.HMS
 
                 var query = repo.GetAll().AsQueryable();
 
-                // -------------------------
-                // Apply Search
-                // -------------------------
                 if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))
                 {
                     query = query.Where(p =>
@@ -40,9 +37,6 @@ namespace Hospital_MS.Services.HMS
                         p.NationalId.Contains(pagingFilter.SearchText));
                 }
 
-                // -------------------------
-                // Apply Status Filter
-                // -------------------------
                 var statusStr = pagingFilter.FilterList
                     .FirstOrDefault(f => f.CategoryName == "Status")?.ItemValue;
 
@@ -53,9 +47,6 @@ namespace Hospital_MS.Services.HMS
                     query = query.Where(p => p.Status == statusEnum);
                 }
 
-                // -------------------------
-                // Apply Date Range Filter
-                // -------------------------
                 var dateFilter = pagingFilter.FilterList
                     .FirstOrDefault(f => f.CategoryName == "Date");
 
@@ -68,15 +59,8 @@ namespace Hospital_MS.Services.HMS
                 {
                     query = query.Where(p => p.CreatedOn.Date <= dateFilter.ToDate.Value.Date);
                 }
-
-                // -------------------------
-                // Count
-                // -------------------------
                 var totalCount = await query.CountAsync(cancellationToken);
 
-                // -------------------------
-                // Paging
-                // -------------------------
                 var patients = await query
                     .OrderByDescending(p => p.CreatedOn)
                     .Skip((pagingFilter.CurrentPage - 1) * pagingFilter.PageSize)
@@ -94,9 +78,6 @@ namespace Hospital_MS.Services.HMS
                     })
                     .ToListAsync(cancellationToken);
 
-                // -------------------------
-                // Translate Enums to Arabic
-                // -------------------------
                 foreach (var p in patients)
                 {
                     p.Status = p.Status.TryTranslateEnum<PatientStatus>();

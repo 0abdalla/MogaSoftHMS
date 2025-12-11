@@ -110,7 +110,7 @@ public class PurchaseOrderService(IUnitOfWork unitOfWork) : IPurchaseOrderServic
             Items = order.Items.Select(i => new PurchaseOrderItemResponse
             {
                 Id = i.ItemId,
-                ItemName = i.Item.NameAr,
+                ItemName = i.Item.NameAR,
                 Unit = i.Item.Unit.Name,
                 RequestedQuantity = i.RequestedQuantity,
                 Quantity = i.Quantity,
