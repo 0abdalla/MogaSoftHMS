@@ -14,6 +14,13 @@ export class MenueService {
       isGroup: false
     },
     {
+      displayName: 'المرضى الداخليين',
+      icon: 'fa-solid fa-users',
+      route: '/hms/admission',
+      pageName: 'admission',
+      isGroup: false
+    },
+    {
       displayName: 'المواعيد والحجز',
       icon: 'fa-solid fa-calendar-check',
       route: '/hms/appointments/list',
@@ -241,7 +248,7 @@ export class MenueService {
           route: '/hms/settings/medical-services-list',
           pageName: 'MedicalServicesList',
           isGroup: true,
-          subMenus:[
+          subMenus: [
             {
               displayName: 'الطوابق',
               icon: 'fa-solid fa-circle',

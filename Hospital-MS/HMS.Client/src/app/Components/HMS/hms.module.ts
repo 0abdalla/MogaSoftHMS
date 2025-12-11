@@ -9,6 +9,7 @@ import { ChartModule } from 'angular-highcharts';
 import { HMSSideMenueComponent } from './dashboard/hms-side-menue/hms-side-menue.component';
 import { FormsModule } from '@angular/forms';
 import { PurchaseOrderComponent } from './fin-tree/inputs/purchase-order/purchase-order.component';
+import { AdmissionsComponent } from './admissions/admissions.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { PurchaseOrderComponent } from './fin-tree/inputs/purchase-order/purchas
     HmsLayoutComponent,
     HMSSideMenueComponent,
     HomeComponent,
+    AdmissionsComponent,
   ],
   imports: [
     CommonModule,
