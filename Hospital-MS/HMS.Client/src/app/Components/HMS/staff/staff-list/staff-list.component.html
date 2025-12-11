@@ -1,196 +1,304 @@
 <main id="staff-list" @fadeIn>
-    <section class="section2" id="table-employees">
-        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="card p-2">
-            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
-                <div class="col-md-8 mb-2">
-                    <div class="d-flex align-items-center gap-2">
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/staff/add">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>إضافة موظف</span>
-                </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
-                    <i class="uil uil-filter"></i>
-                    <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
-                </button>
-                    </div>
-                </div>
-                <!-- <div class="col-md-4 mb-2" *ngIf="total > 0">
+  <section class="section2" id="table-employees">
+    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+    <div class="card p-2">
+      <div
+        class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+      >
+        <div class="col-md-8 mb-2">
+          <div class="d-flex align-items-center gap-2">
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              routerLink="/hms/staff/add"
+            >
+              <i class="fas fa-plus-circle"></i>
+              <span>إضافة موظف</span>
+            </button>
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              (click)="isFilter = !isFilter"
+              [attr.aria-expanded]="!isFilter"
+            >
+              <i class="uil uil-filter"></i>
+              <span class="navbar-brand m-0"
+                >{{ isFilter ? "عرض" : "اخفاء" }} الفلاتر</span
+              >
+            </button>
+          </div>
+        </div>
+        <!-- <div class="col-md-4 mb-2" *ngIf="total > 0">
                     <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
                 </div> -->
-                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
-                    <div class="d-flex align-items-center">
-                        <ng-container>
-                            <app-filters [showSelector]="false" [searchPlaceholder]="'أدخل إسم الموظف ...'" [categoryName]="'Status'" (filterChanged)="applyFilters($event)"></app-filters>
-                        </ng-container>
-                    </div>
+        <div
+          class="col-md-12 mt-3"
+          #collapse="ngbCollapse"
+          [(ngbCollapse)]="isFilter"
+        >
+          <div class="d-flex align-items-center">
+            <ng-container>
+              <app-filters
+                [showSelector]="false"
+                [searchPlaceholder]="'أدخل إسم الموظف ...'"
+                [categoryName]="'Status'"
+                (filterChanged)="applyFilters($event)"
+              ></app-filters>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <table class="table table-hover mt-4">
+        <thead>
+          <tr>
+            <th>الإسم</th>
+            <th>الوظيفة</th>
+            <th>تاريخ التعيين</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="employees && employees.length > 0; else noData">
+          <tr
+            *ngFor="
+              let employee of employees
+                | paginate
+                  : {
+                      id: 'paginate',
+                      itemsPerPage: pageSize,
+                      currentPage: currentPage,
+                      totalItems: total
+                    }
+            "
+            (click)="openStaffModal(employee.id)"
+            data-bs-toggle="modal"
+            data-bs-target="#employeeDetailsModal"
+            style="cursor: pointer"
+          >
+            <td>
+              <div
+                class="d-flex align-items-center gap-2 justify-content-start"
+              >
+                <div class="avatar-circle">
+                  {{ employee.fullName.charAt(0) }}
                 </div>
-            </div>
-            <table class="table table-hover mt-4">
-                <thead>
-                    <tr>
-                        <th>الإسم</th>
-                        <th>الوظيفة</th>
-                        <th>تاريخ التعيين</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-                <tbody *ngIf="employees && employees.length > 0; else noData">
-                    <tr *ngFor="let employee of employees | paginate : { id: 'paginate', itemsPerPage: pageSize, currentPage: currentPage, totalItems: total }" (click)="openStaffModal(employee.id)" data-bs-toggle="modal" data-bs-target="#employeeDetailsModal" style="cursor: pointer">
-                        <td>
-                            <div class="d-flex align-items-center gap-2 justify-content-start">
-                                <div class="avatar-circle">{{ employee.fullName.charAt(0) }}</div>
-                                <span class="fw-bold">{{ employee.fullName }}</span>
-                            </div>
-                        </td>
-                        <td>
-                            {{ employee.jobTitleName || 'غير محدد' }}
-                        </td>
-                        <td class="text-secondary fw-semibold">
-                            {{ employee.hireDate | date: 'yyyy/MM/dd' }}
-                        </td>
-                        <td>
-                            <span [ngClass]="{
+                <span class="fw-bold">{{ employee.fullName }}</span>
+              </div>
+            </td>
+            <td>
+              {{ employee.jobTitleName || "غير محدد" }}
+            </td>
+            <td class="text-secondary fw-semibold">
+              {{ employee.hireDate | date : "yyyy/MM/dd" }}
+            </td>
+            <td>
+              <span
+                [ngClass]="{
                   'text-success': employee.status === 'متاح',
                   'text-secondary': employee.status !== 'متاح'
-                }">
-                  {{ employee.status }}
-                </span>
-                        </td>
-                    </tr>
-                </tbody>
-                <ng-template #noData>
-                    <tbody>
-                        <tr>
-                            <td colspan="4" class="text-center text-muted">لا يوجد موظفين حتى الآن</td>
-                        </tr>
-                    </tbody>
-                </ng-template>
-            </table>
+                }"
+              >
+                {{ employee.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+        <ng-template #noData>
+          <tbody>
+            <tr>
+              <td colspan="4" class="text-center text-muted">
+                لا يوجد موظفين حتى الآن
+              </td>
+            </tr>
+          </tbody>
+        </ng-template>
+      </table>
 
-            <div class="col-lg-12" *ngIf="total > pageSize">
-                <div class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
-                    <div class="my-pagination">
-                        <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
-                            screenReaderCurrentLabel="You're on page"></pagination-controls>
-                    </div>
-                </div>
-            </div>
+      <div class="col-lg-12" *ngIf="total > pageSize">
+        <div
+          class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
+        >
+          <div class="my-pagination">
+            <pagination-controls
+              id="paginate"
+              (pageChange)="onPageChange($event)"
+              (pageBoundsCorrection)="onPageChange($event)"
+              [maxSize]="16"
+              [directionLinks]="true"
+              [autoHide]="true"
+              [responsive]="true"
+              previousLabel=""
+              nextLabel=""
+              screenReaderPageLabel="page"
+              screenReaderCurrentLabel="You're on page"
+            ></pagination-controls>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 </main>
 
+<div
+  class="modal fade"
+  id="employeeDetailsModal"
+  tabindex="-1"
+  aria-labelledby="employeeDetailsLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+  >
+    <div class="modal-content">
+      <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid" />
 
+      <div #employeeDetailsPDF>
+        <div class="modal-header justify-content-center">
+          <h5 class="modal-title" id="employeeDetailsLabel">تفاصيل الموظف</h5>
+        </div>
 
-<div class="modal fade" id="employeeDetailsModal" tabindex="-1" aria-labelledby="employeeDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid">
-
-            <div #employeeDetailsPDF>
-                <div class="modal-header justify-content-center">
-                    <h5 class="modal-title" id="employeeDetailsLabel">تفاصيل الموظف</h5>
-                </div>
-    
-                <div class="modal-body p-4">
-                    <h4>👤 البيانات الشخصية</h4>
-                    <div class="row mb-3">
-                        <div class="col-lg-4">
-                            <strong>الإسم الكامل:</strong> <span>{{ selectedEmployee?.fullName || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>الرقم القومي:</strong> <span>{{ selectedEmployee?.nationalId || '---' }}</span>
-                        </div>
-    
-                        <div class="col-lg-4">
-                            <strong>النوع:</strong> <span>{{ selectedEmployee?.gender || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>الحالة الاجتماعية:</strong> <span>{{ selectedEmployee?.maritalStatus || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>تاريخ الميلاد:</strong> <span>{{ selectedEmployee?.dateOfBirth || '---' }}</span>
-                        </div>
-    
-                    </div>
-    
-                    <hr>
-    
-                    <h4>💼 معلومات الوظيفة</h4>
-                    <div class="row mb-3">
-                        <div class="col-lg-4">
-                            <strong>المسمى الوظيفي:</strong> <span>{{ selectedEmployee?.jobTitleName || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>القسم:</strong> <span>{{ selectedEmployee?.jobDepartmentName || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>الفرع:</strong> <span>{{ selectedEmployee?.branchName || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>تاريخ التعيين:</strong> <span>{{ selectedEmployee?.hireDate || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>الحالة:</strong> <span> {{ selectedEmployee?.status || '---' }} </span>
-                        </div>
-                    </div>
-    
-                    <hr>
-    
-                    <h4>📞 معلومات الاتصال</h4>
-                    <div class="row mb-3">
-                        <div class="col-lg-4">
-                            <strong>رقم الهاتف:</strong> <span>{{ selectedEmployee?.phoneNumber || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>البريد الإلكتروني:</strong> <span>{{ selectedEmployee?.email || '---' }}</span>
-                        </div>
-                        <div class="col-lg-4">
-                            <strong>العنوان:</strong> <span>{{ selectedEmployee?.address || '---' }}</span>
-                        </div>
-                    </div>
-                    <hr>
-                    <h4>💰بيانات المرتب</h4>
-                    <div class="row mb-3">
-                        <div class="col-lg-3">
-                          <strong>المرتب الأساسي:</strong>
-                          <span>{{ selectedEmployee?.basicSalary | number : '1.2-2' }} جنيه</span>
-                        </div>
-                        <div class="col-lg-3">
-                          <strong>البدلات:</strong>
-                          <span>{{ selectedEmployee?.allowances | number : '1.2-2' }} جنيه</span>
-                        </div>
-                        <div class="col-lg-3">
-                          <strong>الخصومات:</strong>
-                          <span>{{ selectedEmployee?.deductions | number : '1.2-2' }} جنيه</span>
-                        </div>
-                        <div class="col-lg-3">
-                          <strong>صافي المرتب:</strong>
-                          <span>{{ selectedEmployee?.netSalary | number : '1.2-2' }} جنيه</span>
-                        </div>
-                      </div>                      
-    
-                    <hr>
-    
-                    <h4>📝 ملاحظات</h4>
-                    <p class="text-muted">{{ selectedEmployee?.notes || 'لا يوجد ملاحظات' }}</p>
-                </div>
+        <div class="modal-body p-4">
+          <h4>👤 البيانات الشخصية</h4>
+          <div class="row mb-3">
+            <div class="col-lg-4">
+              <strong>الإسم الكامل:</strong>
+              <span>{{ selectedEmployee?.fullName || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>الرقم القومي:</strong>
+              <span>{{ selectedEmployee?.nationalId || "---" }}</span>
             </div>
 
-            <div class="modal-footer row">
-                <div class="col-4 m-0">
-                    <button class="btn col-12 btn-outline-warning" (click)="editEmployee()">تعديل البيانات</button>
-                </div>
-                <!-- <div class="col-4 m-0">
+            <div class="col-lg-4">
+              <strong>النوع:</strong>
+              <span>{{ selectedEmployee?.gender || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>الحالة الاجتماعية:</strong>
+              <span>{{ selectedEmployee?.maritalStatus || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>تاريخ الميلاد:</strong>
+              <span>{{ selectedEmployee?.dateOfBirth || "---" }}</span>
+            </div>
+          </div>
+
+          <hr />
+
+          <h4>💼 معلومات الوظيفة</h4>
+          <div class="row mb-3">
+            <div class="col-lg-4">
+              <strong>المسمى الوظيفي:</strong>
+              <span>{{ selectedEmployee?.jobTitleName || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>القسم:</strong>
+              <span>{{ selectedEmployee?.jobDepartmentName || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>الفرع:</strong>
+              <span>{{ selectedEmployee?.branchName || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>تاريخ التعيين:</strong>
+              <span>{{ selectedEmployee?.hireDate || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>الحالة:</strong>
+              <span> {{ selectedEmployee?.status || "---" }} </span>
+            </div>
+          </div>
+
+          <hr />
+
+          <h4>📞 معلومات الاتصال</h4>
+          <div class="row mb-3">
+            <div class="col-lg-4">
+              <strong>رقم الهاتف:</strong>
+              <span>{{ selectedEmployee?.phoneNumber || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>البريد الإلكتروني:</strong>
+              <span>{{ selectedEmployee?.email || "---" }}</span>
+            </div>
+            <div class="col-lg-4">
+              <strong>العنوان:</strong>
+              <span>{{ selectedEmployee?.address || "---" }}</span>
+            </div>
+          </div>
+          <hr />
+          <h4>💰بيانات المرتب</h4>
+          <div class="row mb-3">
+            <div class="col-lg-3">
+              <strong>المرتب الأساسي:</strong>
+              <span
+                >{{
+                  selectedEmployee?.basicSalary | number : "1.2-2"
+                }}
+                جنيه</span
+              >
+            </div>
+            <div class="col-lg-3">
+              <strong>البدلات:</strong>
+              <span
+                >{{
+                  selectedEmployee?.allowances | number : "1.2-2"
+                }}
+                جنيه</span
+              >
+            </div>
+            <div class="col-lg-3">
+              <strong>الخصومات:</strong>
+              <span
+                >{{
+                  selectedEmployee?.deductions | number : "1.2-2"
+                }}
+                جنيه</span
+              >
+            </div>
+            <div class="col-lg-3">
+              <strong>صافي المرتب:</strong>
+              <span
+                >{{ selectedEmployee?.netSalary | number : "1.2-2" }} جنيه</span
+              >
+            </div>
+          </div>
+
+          <hr />
+
+          <h4>📝 ملاحظات</h4>
+          <p class="text-muted">
+            {{ selectedEmployee?.notes || "لا يوجد ملاحظات" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer row">
+        <div class="col-4 m-0">
+          <button
+            class="btn col-12 btn-outline-warning"
+            (click)="editEmployee()"
+          >
+            تعديل البيانات
+          </button>
+        </div>
+        <!-- <div class="col-4 m-0">
                     <button class="btn col-12 btn-outline-info" (click)="print()">طباعة</button>
                 </div> -->
-                <div class="col-4 m-0">
-                    <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
-                </div>
-                <div class="col-4 m-0">
-                    <button class="btn col-12 btn-outline-primary" (click)="suspendEmployee()">تعليق مؤقت</button>
-                </div>
-            </div>
+        <div class="col-4 m-0">
+          <button
+            class="btn col-12 btn-outline-primary"
+            (click)="exportToPDF()"
+          >
+            تحويل إلى PDF
+          </button>
         </div>
+        <div class="col-4 m-0">
+          <button
+            class="btn col-12 btn-outline-primary"
+            (click)="suspendEmployee()"
+          >
+            تعليق مؤقت
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

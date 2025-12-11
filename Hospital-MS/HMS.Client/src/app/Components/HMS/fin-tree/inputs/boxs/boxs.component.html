@@ -1,8 +1,8 @@
 <main id="boxes">
-    <div class="container-fluid">
-        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <p-toast position="top-left"></p-toast>
-        <!-- <div class="p-3 mt-4">
+  <div class="container-fluid">
+    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+    <p-toast position="top-left"></p-toast>
+    <!-- <div class="p-3 mt-4">
             <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="p-3 border rounded">
                 <div class="row justify-content-between align-items-center">
                     <div class="col-md-8 row">
@@ -10,158 +10,330 @@
                     </div>
                     <div class="col-md-4 d-flex justify-content-end align-items-center">
                         <button type="submit" class="btn-blue w-100 mx-2">
-                            بحث <i class="fa fa-search me-1"></i> 
+                            بحث <i class="fa fa-search me-1"></i>
                         </button>
                         <button data-bs-toggle="modal" data-bs-target="#addBoxModal" type="button" class="btn-red w-100 mx-2">
-                            جديد <i class="fa fa-plus me-1"></i> 
+                            جديد <i class="fa fa-plus me-1"></i>
                         </button>
                     </div>
                 </div>
             </form>
         </div> -->
-        <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
-            <div class="col-md-8 mb-2">
-                <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" data-bs-toggle="modal" data-bs-target="#addBoxModal">
-                <i class="fas fa-plus-circle"></i>
-                <span>إضافة خزينة</span>
-            </button>
-                    <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
-                <i class="uil uil-filter"></i>
-                <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
-            </button>
-                </div>
-            </div>
-            <div class="col-md-4 mb-2" *ngIf="total > 0">
-                <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-            </div>
-            <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
-                <div class="d-flex align-items-center">
-                    <ng-container>
-                        <app-filters [filterData]="items" [filterPlaceholder]="'المخزن'" [searchPlaceholder]="'ابحث بإستخدام رقم الخزينة أو اسم الخزينة ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
-                    </ng-container>
-                </div>
-            </div>
+    <div
+      class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+    >
+      <div class="col-md-8 mb-2">
+        <div class="d-flex align-items-center gap-2">
+          <button
+            class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+            data-bs-toggle="modal"
+            data-bs-target="#addBoxModal"
+          >
+            <i class="fas fa-plus-circle"></i>
+            <span>إضافة خزينة</span>
+          </button>
+          <button
+            class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+            (click)="isFilter = !isFilter"
+            [attr.aria-expanded]="!isFilter"
+          >
+            <i class="uil uil-filter"></i>
+            <span class="navbar-brand m-0"
+              >{{ isFilter ? "عرض" : "اخفاء" }} الفلاتر</span
+            >
+          </button>
         </div>
-        <table class="table table-hover mt-4">
-            <thead>
-                <tr>
-                    <th>الرقم</th>
-                    <th>اسم الخزينة</th>
-                    <!-- <th>العملة</th> -->
-                    <th>رصيد أول المدة</th>
-                    <th>الفرع</th>
-                    <th>إجراءات</th>
-                </tr>
-            </thead>
-            <tbody *ngIf="items?.length > 0">
-                <tr *ngFor="let item of items | paginate : { id: 'paginate', itemsPerPage: pagingFilterModel.pageSize, currentPage: pagingFilterModel.currentPage, totalItems: total }" (click)="openItem(item.id)" style="cursor: pointer">
-                    <td>{{ item.id }}</td>
-                    <td class="fw-bold">{{ item.name }}</td>
-                    <!-- <td>{{ item.currency }}</td> -->
-                    <td>{{ item.openingBalance + ' ' + item.currency }}</td>
-                    <td>{{ item.branchName }}</td>
-                    <td>
-                        <button type="button" class="btn btn-primary mx-2" (click)="editAccount(item.id)">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        <button type="button" class="btn btn-danger mx-2" (click)="deleteAccount(item.id)">
-                            <i class="fa fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody *ngIf="items?.length === 0">
-                <tr>
-                    <td colspan="6" class="text-center text-muted">لا يوجد خزائن حتى الآن</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="col-lg-12">
-            <div *ngIf="total > 16" class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center">
-                <div class="my-pagination">
-                    <pagination-controls id="paginate" (pageChange)="onPageChange($event)" (pageBoundsCorrection)="onPageChange($event)" [maxSize]="16" [directionLinks]="true" [autoHide]="true" [responsive]="true" previousLabel="" nextLabel="" screenReaderPageLabel="page"
-                        screenReaderCurrentLabel="You're on page">
-                    </pagination-controls>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-4 mb-2" *ngIf="total > 0">
+        <app-pagination
+          (pageChanged)="onPageChange($event)"
+          [currentPage]="pagingFilterModel.currentPage"
+          [pageSize]="pagingFilterModel.pageSize"
+          [totalCount]="total"
+        ></app-pagination>
+      </div>
+      <div
+        class="col-md-12 mt-3"
+        #collapse="ngbCollapse"
+        [(ngbCollapse)]="isFilter"
+      >
+        <div class="d-flex align-items-center">
+          <ng-container>
+            <app-filters
+              [filterData]="items"
+              [filterPlaceholder]="'المخزن'"
+              [searchPlaceholder]="
+                'ابحث بإستخدام رقم الخزينة أو اسم الخزينة ...'
+              "
+              [categoryName]="'Type'"
+              (filterChanged)="filterChecked($event)"
+            ></app-filters>
+          </ng-container>
         </div>
+      </div>
     </div>
+    <table class="table table-hover mt-4">
+      <thead>
+        <tr>
+          <th>الرقم</th>
+          <th>اسم الخزينة</th>
+          <!-- <th>العملة</th> -->
+          <th>رصيد أول المدة</th>
+          <th>الفرع</th>
+          <th>إجراءات</th>
+        </tr>
+      </thead>
+      <tbody *ngIf="items?.length > 0">
+        <tr
+          *ngFor="
+            let item of items
+              | paginate
+                : {
+                    id: 'paginate',
+                    itemsPerPage: pagingFilterModel.pageSize,
+                    currentPage: pagingFilterModel.currentPage,
+                    totalItems: total
+                  }
+          "
+          (click)="openItem(item.id)"
+          style="cursor: pointer"
+        >
+          <td>{{ item.id }}</td>
+          <td class="fw-bold">{{ item.name }}</td>
+          <!-- <td>{{ item.currency }}</td> -->
+          <td>{{ item.openingBalance + " " + item.currency }}</td>
+          <td>{{ item.branchName }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-primary mx-2"
+              (click)="editAccount(item.id)"
+            >
+              <i class="fa fa-edit"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger mx-2"
+              (click)="deleteAccount(item.id)"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="items?.length === 0">
+        <tr>
+          <td colspan="6" class="text-center text-muted">
+            لا يوجد خزائن حتى الآن
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="col-lg-12">
+      <div
+        *ngIf="total > 16"
+        class="pagination-container my-0 px-3 d-flex justify-content-center align-items-center"
+      >
+        <div class="my-pagination">
+          <pagination-controls
+            id="paginate"
+            (pageChange)="onPageChange($event)"
+            (pageBoundsCorrection)="onPageChange($event)"
+            [maxSize]="16"
+            [directionLinks]="true"
+            [autoHide]="true"
+            [responsive]="true"
+            previousLabel=""
+            nextLabel=""
+            screenReaderPageLabel="page"
+            screenReaderCurrentLabel="You're on page"
+          >
+          </pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
-
-
-
-<div class="modal fade" id="addBoxModal" tabindex="-1" aria-labelledby="addBoxModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="addBoxModalLabel">{{isEditMode ? 'تعديل' : 'إضافة'}} خزينة جديدة</h5>
+<div
+  class="modal fade"
+  id="addBoxModal"
+  tabindex="-1"
+  aria-labelledby="addBoxModalLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="addBoxModalLabel">
+          {{ isEditMode ? "تعديل" : "إضافة" }} خزينة جديدة
+        </h5>
+      </div>
+      <div
+        class="modal-body"
+        style="
+          background-image: url('assets/vendors/imgs/pattern.png');
+          background-size: cover;
+        "
+      >
+        <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
+          <div class="row">
+            <div class="col-md-12 mb-2">
+              <label for="code" class="form-label"
+                >تكويد الحسابات<span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control shadow-none"
+                formControlName="code"
+                id="code"
+                placeholder="تكويد الحسابات"
+              />
+              <div
+                *ngIf="
+                  accountForm.get('code')?.invalid &&
+                  accountForm.get('code')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="accountForm.get('code')?.errors?.['required']"
+                  >هذا الحقل مطلوب</ng-container
+                >
+              </div>
             </div>
-            <div class="modal-body" style="background-image: url('assets/vendors/imgs/pattern.png'); background-size: cover;">
-                <form [formGroup]="accountForm" (ngSubmit)="addAccount()">
-                    <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <label for="code" class="form-label">تكويد الحسابات</label>
-                            <input type="text" class="form-control shadow-none" formControlName="code" id="code" placeholder="تكويد الحسابات">
-                            <div *ngIf="accountForm.get('code')?.invalid && accountForm.get('code')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('code')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                            </div>
-                        </div>
 
-                        <div class="col-md-6 mb-2">
-                            <label for="name" class="form-label">اسم الخزينة</label>
-                            <input type="text" class="form-control shadow-none" formControlName="name" id="name" placeholder="اسم الخزينة">
-                            <div *ngIf="accountForm.get('name')?.invalid && accountForm.get('name')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('name')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                            </div>
-                        </div>
+            <div class="col-md-6 mb-2">
+              <label for="name" class="form-label"
+                >اسم الخزينة<span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control shadow-none"
+                formControlName="name"
+                id="name"
+                placeholder="اسم الخزينة"
+              />
+              <div
+                *ngIf="
+                  accountForm.get('name')?.invalid &&
+                  accountForm.get('name')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="accountForm.get('name')?.errors?.['required']"
+                  >هذا الحقل مطلوب</ng-container
+                >
+              </div>
+            </div>
 
-                        <div class="col-md-6 mb-2">
-                            <label for="branchId" class="form-label">الفرع</label>
-                            <select class="form-select shadow-none" formControlName="branchId" id="branchId">
-                                <option selected disabled value="">اختر الفرع</option>
-                                <!-- <option value="1">الرئيسية</option>
+            <div class="col-md-6 mb-2">
+              <label for="branchId" class="form-label"
+                >الفرع<span class="text-danger">*</span></label
+              >
+              <select
+                class="form-select shadow-none"
+                formControlName="branchId"
+                id="branchId"
+              >
+                <option selected disabled value="">اختر الفرع</option>
+                <!-- <option value="1">الرئيسية</option>
                                 <option value="2">الفرع</option> -->
-                                <option *ngFor="let branch of branches" [value]="branch.id">{{ branch.name }}</option>
-                            </select>
-                            <div *ngIf="accountForm.get('branchId')?.invalid && accountForm.get('branchId')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('branchId')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-2">
-                            <label for="currency" class="form-label">العملة</label>
-                            <select class="form-select shadow-none" formControlName="currency" id="currency">
-                                <option selected disabled value="">اختر العملة</option>
-                                <option value="ريال">ريال</option>
-                                <option value="دولار">دولار</option>
-                                <option value="جنيه">جنيه</option>
-                            </select>
-                            <div *ngIf="accountForm.get('currency')?.invalid && accountForm.get('currency')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('currency')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mb-2">
-                            <label for="openingBalance" class="form-label">رصيد أول المدة</label>
-                            <input type="number" class="form-control shadow-none" formControlName="openingBalance" id="openingBalance" placeholder="رصيد أول المدة">
-                            <div *ngIf="accountForm.get('openingBalance')?.invalid && accountForm.get('openingBalance')?.touched" class="text-danger">
-                                <ng-container *ngIf="accountForm.get('openingBalance')?.errors?.['required']">هذا الحقل مطلوب</ng-container>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-3">
-                        <button type="submit" class="btn-blue" [disabled]="accountForm.invalid">{{isEditMode ? 'تعديل' : 'إضافة'}} الخزينة</button>
-                        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal" (click)="resetFormOnClose()">
-                            خروج
-                        </button>
-                    </div>
-                </form>
-
+                <option *ngFor="let branch of branches" [value]="branch.id">
+                  {{ branch.name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                  accountForm.get('branchId')?.invalid &&
+                  accountForm.get('branchId')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="accountForm.get('branchId')?.errors?.['required']"
+                  >هذا الحقل مطلوب</ng-container
+                >
+              </div>
             </div>
-        </div>
+
+            <div class="col-md-6 mb-2">
+              <label for="currency" class="form-label"
+                >العملة<span class="text-danger">*</span></label
+              >
+              <select
+                class="form-select shadow-none"
+                formControlName="currency"
+                id="currency"
+              >
+                <option selected disabled value="">اختر العملة</option>
+                <option value="ريال">ريال</option>
+                <option value="دولار">دولار</option>
+                <option value="جنيه">جنيه</option>
+              </select>
+              <div
+                *ngIf="
+                  accountForm.get('currency')?.invalid &&
+                  accountForm.get('currency')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="accountForm.get('currency')?.errors?.['required']"
+                  >هذا الحقل مطلوب</ng-container
+                >
+              </div>
+            </div>
+
+            <div class="col-md-6 mb-2">
+              <label for="openingBalance" class="form-label"
+                >رصيد أول المدة<span class="text-danger">*</span></label
+              >
+              <input
+                type="number"
+                class="form-control shadow-none"
+                formControlName="openingBalance"
+                id="openingBalance"
+                placeholder="رصيد أول المدة"
+              />
+              <div
+                *ngIf="
+                  accountForm.get('openingBalance')?.invalid &&
+                  accountForm.get('openingBalance')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="accountForm.get('openingBalance')?.errors?.['required']"
+                  >هذا الحقل مطلوب</ng-container
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-3">
+            <button
+              type="submit"
+              class="btn-blue"
+              [disabled]="accountForm.invalid"
+            >
+              {{ isEditMode ? "تعديل" : "إضافة" }} الخزينة
+            </button>
+            <button
+              type="button"
+              class="btn-red mx-2"
+              data-bs-dismiss="modal"
+              (click)="resetFormOnClose()"
+            >
+              خروج
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>

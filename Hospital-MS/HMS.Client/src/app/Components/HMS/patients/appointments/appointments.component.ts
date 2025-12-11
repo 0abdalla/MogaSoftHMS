@@ -16,17 +16,17 @@ export class AppointmentsComponent {
       title: ['', Validators.required],
       orderNumber: ['', Validators.required],
       startDate: ['', Validators.required],
-      endDate: [''],
-      client: [''],
-      assignedEmployees: [''],
-      budget: [''],
-      tags: [''],
+      endDate: ['', Validators.required],
+      client: ['', Validators.required],
+      assignedEmployees: ['', Validators.required],
+      budget: ['', [Validators.min(0)]],
+      tags: ['', Validators.required],
       description: [''],
-      examType: [''],
-      doctorName: [''],
-      patientNumber: [''],
-      email: [''],
-      age: [''],
+      examType: ['', Validators.required],
+      doctorName: ['', Validators.required],
+      patientNumber: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      age: ['', [Validators.min(0)]],
       address: [''],
       chronicDiseases: [''],
       formerSurgeries: [''],
@@ -40,11 +40,11 @@ export class AppointmentsComponent {
       insuranceCompany: [''],
       partnerFullName: [''],
       partnerPhoneNumber: [''],
-      partnerEmail: ['']
+      partnerEmail: ['', [Validators.email]]
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   onFileChange(event: Event, controlName: string): void {
     const input = event.target as HTMLInputElement;
