@@ -30,7 +30,7 @@ public class DashboardService(IUnitOfWork unitOfWork) : IDashboardService
 
         var currentPatients = await _unitOfWork.Repository<Patient>().CountAsync(cancellationToken);
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = DateTime.UtcNow;
         var thisMonth = DateOnly.FromDateTime(DateTime.UtcNow).Month;
 
         var appointmentsCount = await _unitOfWork.Repository<Appointment>().CountAsync(
@@ -90,7 +90,7 @@ public class DashboardService(IUnitOfWork unitOfWork) : IDashboardService
         var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
         var dailyAppointments = await _unitOfWork.Repository<Appointment>()
-            .GetAll(a => a.AppointmentDate >= DateOnly.FromDateTime(startOfMonth) && a.AppointmentDate <= DateOnly.FromDateTime(endOfMonth))
+            .GetAll(a => a.AppointmentDate >=startOfMonth && a.AppointmentDate <= endOfMonth)
             .GroupBy(a => a.AppointmentDate)
             .Select(g => new { Date = g.Key, Count = g.Count() })
             .ToListAsync(cancellationToken);
@@ -98,7 +98,7 @@ public class DashboardService(IUnitOfWork unitOfWork) : IDashboardService
         var dailyCounts = new Dictionary<string, int>();
         for (var day = startOfMonth; day <= endOfMonth; day = day.AddDays(1))
         {
-            var count = dailyAppointments.FirstOrDefault(a => a.Date == DateOnly.FromDateTime(day))?.Count ?? 0;
+            var count = dailyAppointments.FirstOrDefault(a => a.Date == day)?.Count ?? 0;
             dailyCounts.Add(day.ToString("d/M"), count);
         }
 
@@ -120,20 +120,20 @@ public class DashboardService(IUnitOfWork unitOfWork) : IDashboardService
         var startOfMonth = new DateTime(parsedMonth.Year, parsedMonth.Month, 1);
         var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
-        var weeks = new List<(DateOnly Start, DateOnly End, string WeekName)>();
+        var weeks = new List<(DateTime Start, DateTime End, string WeekName)>();
         var currentDate = startOfMonth;
 
         for (int weekNumber = 1; weekNumber <= 3; weekNumber++)
         {
             var weekStart = DateOnly.FromDateTime(currentDate);
             var weekEnd = DateOnly.FromDateTime(currentDate.AddDays(6));
-            weeks.Add((weekStart, weekEnd, $"Week {weekNumber}"));
+            //weeks.Add((weekStart, weekEnd, $"Week {weekNumber}"));
             currentDate = currentDate.AddDays(7);
         }
 
         var lastWeekStart = DateOnly.FromDateTime(currentDate);
         var lastWeekEnd = DateOnly.FromDateTime(endOfMonth);
-        weeks.Add((lastWeekStart, lastWeekEnd, "Week 4"));
+        //weeks.Add((lastWeekStart, lastWeekEnd, "Week 4"));
 
         var weeklyTopDoctors = new List<WeeklyTopDoctorMetrics>();
 
@@ -150,8 +150,8 @@ public class DashboardService(IUnitOfWork unitOfWork) : IDashboardService
             WeeklyActivityCounts = weeks.ToDictionary(
                 w => w.WeekName,
                 w => d.Appointments.Count(a => a.AppointmentDate >= w.Start && a.AppointmentDate <= w.End) +
-                     d.Admissions.Count(a => DateOnly.FromDateTime(a.AdmissionDate) >= w.Start &&
-                                           DateOnly.FromDateTime(a.AdmissionDate) <= w.End)
+                     d.Admissions.Count(a => a.AdmissionDate >= w.Start &&
+                                           a.AdmissionDate <= w.End)
             )
         })
         .Select(d => {
@@ -178,8 +178,8 @@ public class DashboardService(IUnitOfWork unitOfWork) : IDashboardService
         var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
         var appointmentCounts = await _unitOfWork.Repository<Appointment>()
-            .GetAll(a => a.AppointmentDate >= DateOnly.FromDateTime(startOfMonth) &&
-                         a.AppointmentDate <= DateOnly.FromDateTime(endOfMonth) &&
+            .GetAll(a => a.AppointmentDate >= startOfMonth &&
+                         a.AppointmentDate <= endOfMonth &&
                          a.MedicalServiceId != null)
             .GroupBy(a => a.MedicalService!.Name)
             .Select(g => new

@@ -2,7 +2,7 @@
 
 namespace Hospital_MS.Core.Models
 {
-    public sealed class Patient : AuditableEntity
+    public class Patient : AuditableEntity
     {
         public int Id { get; set; }
         public string FullName { get; set; } 
@@ -11,7 +11,7 @@ namespace Hospital_MS.Core.Models
         public string? Phone { get; set; } 
         public string? Email { get; set; } 
         public string? Address { get; set; } 
-        public string? Nationality { get; set; } 
+        public string Nation { get; set; } = "مصر";
 
         public string? EmergencyPhone01 { get; set; }
         public string? EmergencyContact01 { get; set; } 
@@ -34,5 +34,8 @@ namespace Hospital_MS.Core.Models
 
         public ICollection<PatientAttachment> Attachments { get; set; } = new HashSet<PatientAttachment>();
         public ICollection<PatientMedicalHistory> MedicalHistories { get; set; } = new HashSet<PatientMedicalHistory>();
+        public ICollection<Admission> Admissions { get; set; }
+        public ICollection<Appointment> Appointments { get; set; }
+        public DateTime? LastVisitDate { get; set; }
     }
 }

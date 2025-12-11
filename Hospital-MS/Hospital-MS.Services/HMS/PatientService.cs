@@ -19,43 +19,101 @@ namespace Hospital_MS.Services.HMS
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ISQLHelper _sQLHelper = sQLHelper;
 
-        public async Task<PagedResponseModel<DataTable>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<List<PatientListResponse>>> GetAllAsync(PagingFilterModel pagingFilter,CancellationToken cancellationToken = default)
         {
+            pagingFilter ??= new PagingFilterModel();
+            pagingFilter.FilterList ??= new List<FilterModel>();
             try
             {
-                var Params = new SqlParameter[6];
-                var Status = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Status")?.ItemValue;
-                var FromDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.FromDate;
-                var ToDate = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Date")?.ToDate;
-                Params[0] = new SqlParameter("@SearchText", pagingFilter.SearchText ?? (object)DBNull.Value);
-                Params[1] = new SqlParameter("@Status", Status ?? (object)DBNull.Value);
-                Params[2] = new SqlParameter("@FromDate", FromDate ?? (object)DBNull.Value);
-                Params[3] = new SqlParameter("@ToDate", ToDate ?? (object)DBNull.Value);
-                Params[4] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-                Params[5] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllPatients", Params);
-                int totalCount = 0;
-                if (dt.Rows.Count > 0)
+                var repo = _unitOfWork.Repository<Patient>();
+
+                var query = repo.GetAll().AsQueryable();
+
+                // -------------------------
+                // Apply Search
+                // -------------------------
+                if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))
                 {
-                    int.TryParse(dt.Rows[0]["TotalCount"]?.ToString(), out totalCount);
+                    query = query.Where(p =>
+                        p.FullName.Contains(pagingFilter.SearchText) ||
+                        p.Phone.Contains(pagingFilter.SearchText) ||
+                        p.NationalId.Contains(pagingFilter.SearchText));
                 }
 
-                //Covert Enm to Arabic 
-                foreach (DataRow row in dt.Rows)
+                // -------------------------
+                // Apply Status Filter
+                // -------------------------
+                var statusStr = pagingFilter.FilterList
+                    .FirstOrDefault(f => f.CategoryName == "Status")?.ItemValue;
+
+                if (!string.IsNullOrEmpty(statusStr) &&
+                    Enum.TryParse(typeof(PatientStatus), statusStr, out var statusObj))
                 {
-                    row.TryTranslateEnum<PatientStatus>("Status");
-                    row.TryTranslateEnum<Gender>("Gender");
+                    var statusEnum = (PatientStatus)statusObj;
+                    query = query.Where(p => p.Status == statusEnum);
                 }
 
-                return PagedResponseModel<DataTable>.Success(GenericErrors.GetSuccess, totalCount, dt);
+                // -------------------------
+                // Apply Date Range Filter
+                // -------------------------
+                var dateFilter = pagingFilter.FilterList
+                    .FirstOrDefault(f => f.CategoryName == "Date");
+
+                if (dateFilter?.FromDate != null)
+                {
+                    query = query.Where(p => p.CreatedOn.Date >= dateFilter.FromDate.Value.Date);
+                }
+
+                if (dateFilter?.ToDate != null)
+                {
+                    query = query.Where(p => p.CreatedOn.Date <= dateFilter.ToDate.Value.Date);
+                }
+
+                // -------------------------
+                // Count
+                // -------------------------
+                var totalCount = await query.CountAsync(cancellationToken);
+
+                // -------------------------
+                // Paging
+                // -------------------------
+                var patients = await query
+                    .OrderByDescending(p => p.CreatedOn)
+                    .Skip((pagingFilter.CurrentPage - 1) * pagingFilter.PageSize)
+                    .Take(pagingFilter.PageSize)
+                    .Select(p => new PatientListResponse
+                    {
+                        Id = p.Id,
+                        FullName = p.FullName,
+                        Phone = p.Phone,
+                        Gender = p.Gender.ToString(),
+                        Status = p.Status.ToString(),
+                        DateOfBirth = p.DateOfBirth,
+                        NationalId = p.NationalId,
+                        CreatedOn = p.CreatedOn
+                    })
+                    .ToListAsync(cancellationToken);
+
+                // -------------------------
+                // Translate Enums to Arabic
+                // -------------------------
+                foreach (var p in patients)
+                {
+                    p.Status = p.Status.TryTranslateEnum<PatientStatus>();
+                    p.Gender = p.Gender.TryTranslateEnum<Gender>();
+                }
+
+                return PagedResponseModel<List<PatientListResponse>>
+                    .Success(GenericErrors.GetSuccess, totalCount, patients);
             }
             catch (Exception)
             {
-                return PagedResponseModel<DataTable>.Failure(GenericErrors.TransFailed);
+                return PagedResponseModel<List<PatientListResponse>>
+                    .Failure(GenericErrors.TransFailed);
             }
         }
 
-        public async Task<ErrorResponseModel<PatientResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<PatientListResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {
             var patient = await _unitOfWork.Repository<Patient>()
                 .GetAll(i => i.Id == id)
@@ -66,12 +124,12 @@ namespace Hospital_MS.Services.HMS
                 .FirstOrDefaultAsync(cancellationToken);
 
             if (patient is not { })
-                return ErrorResponseModel<PatientResponse>.Failure(GenericErrors.NotFound);
+                return ErrorResponseModel<PatientListResponse>.Failure(GenericErrors.NotFound);
 
-            var response = new PatientResponse
+            var response = new PatientListResponse
             {
-                PatientId = patient.Id,
-                PatientName = patient.FullName,
+                Id = patient.Id,
+                FullName = patient.FullName,
                 Address = patient.Address,
                 DateOfBirth = patient.DateOfBirth,
                 PatientStatus = patient?.Status?.GetArabicValue(),
@@ -83,7 +141,7 @@ namespace Hospital_MS.Services.HMS
                 UpdatedBy = patient.UpdatedBy != null ? $"{patient.UpdatedBy.FirstName} {patient.UpdatedBy.LastName}" : string.Empty
             };
 
-            return ErrorResponseModel<PatientResponse>.Success(GenericErrors.GetSuccess, response);
+            return ErrorResponseModel<PatientListResponse>.Success(GenericErrors.GetSuccess, response);
         }
 
         public async Task<PagedResponseModel<DataTable>> GetCountsAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)

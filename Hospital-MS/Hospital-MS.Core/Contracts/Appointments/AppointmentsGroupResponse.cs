@@ -11,7 +11,7 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public int Id { get; set; }
         public string PatientName { get; set; }
         public string? DoctorName { get; set; }
-        public DateTime AppointmentDate { get; set; }
+        public DateTime? AppointmentDate { get; set; }
         public string PaymentMethod { get; set; }
         public string Status { get; set; }
         public string Type { get; set; }
@@ -23,11 +23,7 @@ namespace Hospital_MS.Core.Contracts.Appointments
         public string CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public string PatientPhone { get; set; }
-        public int? ClinicId { get; set; }
-        public string? ClinicName { get; set; }
-        public int TotalCount { get; set; }
         public string? MedicalServiceName { get; set; }
-        public string? RadiologyBodyTypeName { get; set; }
 
         public bool? IsDeleted { get; set; }
     }

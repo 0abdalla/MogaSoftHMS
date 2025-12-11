@@ -11,6 +11,7 @@ namespace Hospital_MS.Core.Common
         public string? SearchText { get; set; }
         public int CurrentPage { get; set; }
         public int PageSize { get; set; }
-        public List<FilterModel> FilterList { get; set; }
+        public List<FilterModel>? FilterList { get; set; }
+        public int? Type { get; set; } 
     }
 }

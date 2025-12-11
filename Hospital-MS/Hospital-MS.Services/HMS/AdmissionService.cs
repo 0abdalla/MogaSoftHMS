@@ -13,112 +13,124 @@ namespace Hospital_MS.Services.HMS
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<ErrorResponseModel<string>> CreateAsync(CreateAdmissionRequest request, CancellationToken cancellationToken = default)
+        public async Task<ErrorResponseModel<string>> CreateAsync(CreateAdmissionRequest request,CancellationToken cancellationToken = default)
         {
             using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
             try
             {
-                if (!Enum.TryParse<PatientStatus>(request.PatientStatus, true, out var patientStatus))
-                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
+                var patientStatus = request.PatientStatus;
+                var patientGender = request.PatientGender;
 
-                if (!Enum.TryParse<Gender>(request.PatientGender, true, out var patientGender))
-                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidStatus);
+                if (!await _unitOfWork.Repository<Doctor>()
+                    .AnyAsync(d => d.Id == request.DoctorId, cancellationToken))
+                    return ErrorResponseModel<string>.Failure(
+                        new Error("لا يوجد طبيب بهذا الرقم", Status.NotFound));
 
-                var doctorExists = await _unitOfWork.Repository<Doctor>().AnyAsync(d => d.Id == request.DoctorId, cancellationToken);
-                if (!doctorExists)
-                    return ErrorResponseModel<string>.Failure(new Error("لايوجد طبيب بهذا الرقم", Status.NotFound));
+                var room = await _unitOfWork.Repository<Room>()
+                    .GetByIdAsync(request.RoomId, cancellationToken);
 
-                var roomExists = await _unitOfWork.Repository<Room>().AnyAsync(r => r.Id == request.RoomId, cancellationToken);
-                if (!roomExists)
-                    return ErrorResponseModel<string>.Failure(new Error("لايوجد غرفة بهذا الرقم", Status.NotFound));
+                if (room == null)
+                    return ErrorResponseModel<string>.Failure(
+                        new Error("لا يوجد غرفة بهذا الرقم", Status.NotFound));
 
-                var bedExists = await _unitOfWork.Repository<Bed>().GetByIdAsync(request.BedId);
-                if (bedExists == null)
-                    return ErrorResponseModel<string>.Failure(new Error("لايوجد سرير بهذا الرقم", Status.NotFound));
+                var bed = await _unitOfWork.Repository<Bed>()
+                    .GetByIdAsync(request.BedId, cancellationToken);
 
-                var bedAssigned = await _unitOfWork.Repository<Admission>().AnyAsync(a => a.BedId == request.BedId, cancellationToken);
-                if (bedAssigned)
-                    return ErrorResponseModel<string>.Failure(new Error("السرير محجوز بالفعل", Status.Conflict));
+                if (bed == null)
+                    return ErrorResponseModel<string>.Failure(
+                        new Error("لا يوجد سرير بهذا الرقم", Status.NotFound));
 
-                // Check if the patient already exists by phone number
-                var existingPatient = await _unitOfWork.Repository<Patient>()
+                if (bed.RoomId != request.RoomId)
+                    return ErrorResponseModel<string>.Failure(
+                        new Error("السرير لا ينتمي إلى هذه الغرفة", Status.Conflict));
+
+                if (bed.Status == BedStatus.NotAvailable)
+                    return ErrorResponseModel<string>.Failure(
+                        new Error("السرير محجوز بالفعل", Status.Conflict));
+                var patientRepo = _unitOfWork.Repository<Patient>();
+
+                var patient = await patientRepo
                     .GetAll(p => p.Phone == request.PatientPhone)
                     .FirstOrDefaultAsync(cancellationToken);
 
-                Patient patient;
-
-                if (existingPatient != null)
-                {
-                    existingPatient.FullName = ArabicNormalizer.NormalizeArabic(request.PatientName);
-                    existingPatient.InsuranceCompanyId = request.InsuranceCompanyId;
-                    existingPatient.InsuranceCategoryId = request.InsuranceCategoryId;
-                    existingPatient.DateOfBirth = request.PatientBirthDate;
-                    existingPatient.Address = request.PatientAddress;
-                    existingPatient.EmergencyContact01 = request.EmergencyContact01;
-                    existingPatient.EmergencyPhone01 = request.EmergencyPhone01;
-                    existingPatient.EmergencyContact02 = request.EmergencyContact02;
-                    existingPatient.EmergencyPhone02 = request.EmergencyPhone02;
-                    existingPatient.Status = patientStatus;
-                    existingPatient.NationalId = request.PatientNationalId;
-                    existingPatient.InsuranceNumber = request.InsuranceNumber;
-                    existingPatient.Gender = patientGender;
-
-                    _unitOfWork.Repository<Patient>().Update(existingPatient);
-                    patient = existingPatient;
-                }
-                else
+                if (patient == null)
                 {
                     patient = new Patient
                     {
                         FullName = ArabicNormalizer.NormalizeArabic(request.PatientName),
                         Phone = request.PatientPhone,
-                        InsuranceCompanyId = request.InsuranceCompanyId,
-                        InsuranceCategoryId = request.InsuranceCategoryId,
+                        Gender = patientGender,
+                        Status = PatientStatus.Inpatient,
                         DateOfBirth = request.PatientBirthDate,
+                        NationalId = request.PatientNationalId,
                         Address = request.PatientAddress,
                         EmergencyContact01 = request.EmergencyContact01,
                         EmergencyPhone01 = request.EmergencyPhone01,
                         EmergencyContact02 = request.EmergencyContact02,
                         EmergencyPhone02 = request.EmergencyPhone02,
-                        Status = patientStatus,
-                        NationalId = request.PatientNationalId,
+                        InsuranceCompanyId = request.InsuranceCompanyId,
+                        InsuranceCategoryId = request.InsuranceCategoryId,
                         InsuranceNumber = request.InsuranceNumber,
-                        Gender = patientGender
+                        LastVisitDate = DateTime.UtcNow
                     };
 
-                    await _unitOfWork.Repository<Patient>().AddAsync(patient, cancellationToken);
+                    await patientRepo.AddAsync(patient, cancellationToken);
+                }
+                else
+                {
+                    patient.FullName = ArabicNormalizer.NormalizeArabic(request.PatientName);
+                    patient.Gender = patientGender;
+                    patient.Status = PatientStatus.Inpatient;
+                    patient.DateOfBirth = request.PatientBirthDate;
+                    patient.NationalId = request.PatientNationalId;
+                    patient.Address = request.PatientAddress;
+                    patient.EmergencyContact01 = request.EmergencyContact01;
+                    patient.EmergencyPhone01 = request.EmergencyPhone01;
+                    patient.EmergencyContact02 = request.EmergencyContact02;
+                    patient.EmergencyPhone02 = request.EmergencyPhone02;
+                    patient.InsuranceCompanyId = request.InsuranceCompanyId;
+                    patient.InsuranceCategoryId = request.InsuranceCategoryId;
+                    patient.InsuranceNumber = request.InsuranceNumber;
+                    patient.LastVisitDate = DateTime.UtcNow;
+
+                    patientRepo.Update(patient);
                 }
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
 
-                int? medicalServiceId = null;
-                if (patientStatus == PatientStatus.Surgery && request.MedicalServiceId.HasValue)
-                {
-                    medicalServiceId = request.MedicalServiceId;
-                }
+                if (!Enum.IsDefined(typeof(AdmissionType), request.AdmissionType))
+                    return ErrorResponseModel<string>.Failure(GenericErrors.InvalidType);
+
+                //if (request.AdmissionType == AdmissionType.Surgery && request.MedicalServiceId == null)
+                //    return ErrorResponseModel<string>.Failure(
+                //        new Error("يجب اختيار خدمة طبية عند اختيار نوع دخول (جراحة", Status.Failed));
 
                 var admission = new Admission
                 {
                     PatientId = patient.Id,
-                    BedId = request.BedId,
-                    RoomId = request.RoomId,
-                    CompanionName = request.CompanionName,
-                    CompanionNationalId = request.CompanionNationalId,
-                    CompanionPhone = request.CompanionPhone,
                     DepartmentId = request.DepartmentId,
                     DoctorId = request.DoctorId,
+                    RoomId = request.RoomId,
+                    BedId = request.BedId,
+
+                    AdmissionType = request.AdmissionType,
+                    PaymentMethod = request.PaymentMethod,
+
                     HealthStatus = request.HealthStatus,
-                    HasCompanion = request.HasCompanion,
                     InitialDiagnosis = request.InitialDiagnosis,
                     Notes = request.Notes,
 
-                    MedicalServiceId = medicalServiceId
+                    HasCompanion = request.HasCompanion,
+                    CompanionName = request.CompanionName,
+                    CompanionPhone = request.CompanionPhone,
+                    CompanionNationalId = request.CompanionNationalId
                 };
 
                 await _unitOfWork.Repository<Admission>().AddAsync(admission, cancellationToken);
 
-                bedExists.Status = BedStatus.NotAvailable;
-                _unitOfWork.Repository<Bed>().Update(bedExists);
+                bed.Status = BedStatus.NotAvailable;
+                _unitOfWork.Repository<Bed>().Update(bed);
 
                 await _unitOfWork.CompleteAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
@@ -132,61 +144,218 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int patientId, CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<List<AdmissionResponse>>> GetAllAsync(
+    PagingFilterModel pagingFilter,
+    CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var repo = _unitOfWork.Repository<Admission>();
+
+                var query = repo.GetAll()
+                    .Include(a => a.Patient)
+                    .Include(a => a.Doctor)
+                    .Include(a => a.Department)
+                    .Include(a => a.Room)
+                    .Include(a => a.Bed)
+                    .Include(a => a.Charges)
+                    .AsQueryable();
+
+                // Search
+                if (!string.IsNullOrWhiteSpace(pagingFilter.SearchText))
+                {
+                    query = query.Where(a =>
+                        a.Patient.FullName.Contains(pagingFilter.SearchText) ||
+                        a.Patient.Phone.Contains(pagingFilter.SearchText));
+                }
+
+                // Paging
+                var totalCount = await query.CountAsync(cancellationToken);
+
+                var admissions = await query
+                    .OrderByDescending(a => a.AdmissionDate)
+                    .Skip((pagingFilter.CurrentPage - 1) * pagingFilter.PageSize)
+                    .Take(pagingFilter.PageSize)
+                    .ToListAsync(cancellationToken);
+
+                var mapped = admissions.Select(MapToResponse).ToList();
+
+                return PagedResponseModel<List<AdmissionResponse>>
+                    .Success(GenericErrors.GetSuccess, totalCount, mapped);
+            }
+            catch
+            {
+                return PagedResponseModel<List<AdmissionResponse>>
+                    .Failure(GenericErrors.TransFailed);
+            }
+        }
+
+        public async Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var admission = await _unitOfWork.Repository<Admission>()
-                .GetAll(i => i.PatientId == patientId)
-                .Include(x => x.CreatedBy)
-                .Include(x => x.UpdatedBy)
-                .Include(x => x.Patient)
-                .Include(x => x.Bed)
-                .Include(x => x.Room)
-                .Include(x => x.MedicalService)
-                .Include(x => x.Doctor)
-                .Include(x => x.Department)
+                .GetAll(a => a.Id == id)
+                .Include(a => a.Patient)
+                .Include(a => a.Doctor)
+                .Include(a => a.Department)
+                .Include(a => a.Room)
+                .Include(a => a.Bed)
+                .Include(a => a.Charges)
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (admission is not { })
-                return ErrorResponseModel<AdmissionResponse>.Failure(GenericErrors.NotFound);
+            if (admission == null)
+                return ErrorResponseModel<AdmissionResponse>
+                    .Failure(new Error("لا يوجد سجل دخول بهذا الرقم", Status.NotFound));
 
-            var response = new AdmissionResponse
+            return ErrorResponseModel<AdmissionResponse>
+                .Success(GenericErrors.GetSuccess, MapToResponse(admission));
+        }
+
+        public async Task<ErrorResponseModel<string>> UpdateAsync(
+    int id,
+    UpdateAdmissionRequest request,
+    CancellationToken cancellationToken)
+        {
+            var repo = _unitOfWork.Repository<Admission>();
+            var admission = await repo.GetByIdAsync(id, cancellationToken);
+
+            if (admission == null)
+                return ErrorResponseModel<string>.Failure(new Error("غير موجود", Status.NotFound));
+
+            admission.HealthStatus = request.HealthStatus;
+            admission.InitialDiagnosis = request.InitialDiagnosis;
+            admission.Notes = request.Notes;
+
+            admission.HasCompanion = request.HasCompanion;
+            admission.CompanionName = request.CompanionName;
+            admission.CompanionNationalId = request.CompanionNationalId;
+            admission.CompanionPhone = request.CompanionPhone;
+
+            admission.Status = request.Status;
+            admission.PaymentMethod = request.PaymentMethod;
+
+            if (request.Status == AdmissionStatus.Discharged)
             {
-                PatientName = admission.Patient.FullName,
-                PatientId = admission.PatientId,
-                DateOfBirth = admission.Patient.DateOfBirth,
-                Phone = admission.Patient.Phone,
-                Address = admission.Patient.Address,
-                PatientStatus = admission.Patient.Status.ToString(),
-                AdmissionDate = admission.AdmissionDate,
-                RoomNumber = admission.Room.Number,
-                BedNumber = admission.Bed.Number,
-                DepartmentName = admission.Department.Name,
-                DoctorName = admission.Doctor.FullName,
-                InsuranceCompanyName = admission.Patient.InsuranceCompany?.Name,
-                InsuranceCategoryName = admission.Patient.InsuranceCategory?.Name,
-                InsuranceNumber = admission.Patient.InsuranceNumber,
-                EmergencyContact01 = admission.Patient.EmergencyContact01,
-                EmergencyPhone01 = admission.Patient.EmergencyPhone01,
-                EmergencyContact02 = admission.Patient.EmergencyPhone02,
-                EmergencyPhone02 = admission.Patient.EmergencyPhone02,
-                HealthStatus = admission.HealthStatus,
-                InitialDiagnosis = admission.InitialDiagnosis,
-                HasCompanion = admission.HasCompanion,
-                CompanionName = admission.CompanionName,
-                CompanionPhone = admission.CompanionPhone,
-                CompanionNationalId = admission.CompanionNationalId,
-                Notes = admission.Notes,
-                MedicalServiceId = admission.MedicalServiceId,
-                MedicalServiceName = admission?.MedicalService?.Name,
-                //surgeryType = admission.surgeryType,
+                admission.DischargeSummary = request.DischargeSummary;
+                admission.DischargeDate = request.DischargeDate ?? DateTime.UtcNow;
 
-                CreatedOn = admission.CreatedOn,
-                CreatedBy = $"{admission.CreatedBy?.FirstName} {admission.CreatedBy?.LastName}",
-                UpdatedOn = admission.UpdatedOn,
-                UpdatedBy = admission.UpdatedBy != null ? $"{admission.UpdatedBy.FirstName} {admission.UpdatedBy.LastName}" : string.Empty
+                // تحرير السرير
+                var bed = await _unitOfWork.Repository<Bed>()
+                    .GetByIdAsync(admission.BedId, cancellationToken);
+
+                if (bed != null)
+                {
+                    bed.Status = BedStatus.Available;
+                    _unitOfWork.Repository<Bed>().Update(bed);
+                }
+            }
+
+            repo.Update(admission);
+            await _unitOfWork.CompleteAsync(cancellationToken);
+
+            return ErrorResponseModel<string>.Success(GenericErrors.UpdateSuccess);
+        }
+
+        //public async Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int patientId, CancellationToken cancellationToken = default)
+        //{
+        //    var admission = await _unitOfWork.Repository<Admission>()
+        //        .GetAll(i => i.PatientId == patientId)
+        //        .Include(x => x.CreatedBy)
+        //        .Include(x => x.UpdatedBy)
+        //        .Include(x => x.Patient)
+        //        .Include(x => x.Bed)
+        //        .Include(x => x.Room)
+        //        .Include(x => x.MedicalService)
+        //        .Include(x => x.Doctor)
+        //        .Include(x => x.Department)
+        //        .FirstOrDefaultAsync(cancellationToken);
+
+        //    if (admission is not { })
+        //        return ErrorResponseModel<AdmissionResponse>.Failure(GenericErrors.NotFound);
+
+        //    var response = new AdmissionResponse
+        //    {
+        //        PatientName = admission.Patient.FullName,
+        //        PatientId = admission.PatientId,
+        //        DateOfBirth = admission.Patient.DateOfBirth,
+        //        Phone = admission.Patient.Phone,
+        //        Address = admission.Patient.Address,
+        //        PatientStatus = admission.Patient.Status.ToString(),
+        //        AdmissionDate = admission.AdmissionDate,
+        //        RoomNumber = admission.Room.Number,
+        //        BedNumber = admission.Bed.Number,
+        //        DepartmentName = admission.Department.Name,
+        //        DoctorName = admission.Doctor.FullName,
+        //        InsuranceCompanyName = admission.Patient.InsuranceCompany?.Name,
+        //        InsuranceCategoryName = admission.Patient.InsuranceCategory?.Name,
+        //        InsuranceNumber = admission.Patient.InsuranceNumber,
+        //        EmergencyContact01 = admission.Patient.EmergencyContact01,
+        //        EmergencyPhone01 = admission.Patient.EmergencyPhone01,
+        //        EmergencyContact02 = admission.Patient.EmergencyPhone02,
+        //        EmergencyPhone02 = admission.Patient.EmergencyPhone02,
+        //        HealthStatus = admission.HealthStatus,
+        //        InitialDiagnosis = admission.InitialDiagnosis,
+        //        HasCompanion = admission.HasCompanion,
+        //        CompanionName = admission.CompanionName,
+        //        CompanionPhone = admission.CompanionPhone,
+        //        CompanionNationalId = admission.CompanionNationalId,
+        //        Notes = admission.Notes,
+        //        //MedicalServiceName = admission?.MedicalService?.Name,
+        //        //surgeryType = admission.surgeryType,
+
+        //        CreatedOn = admission.CreatedOn,
+        //        CreatedBy = $"{admission.CreatedBy?.FirstName} {admission.CreatedBy?.LastName}",
+        //        UpdatedOn = admission.UpdatedOn,
+        //        UpdatedBy = admission.UpdatedBy != null ? $"{admission.UpdatedBy.FirstName} {admission.UpdatedBy.LastName}" : string.Empty
+        //    };
+
+        //    return ErrorResponseModel<AdmissionResponse>.Success(GenericErrors.GetSuccess, response);
+        //}
+        private AdmissionResponse MapToResponse(Admission a)
+        {
+            return new AdmissionResponse
+            {
+                Id = a.Id,
+                AdmissionDate = a.AdmissionDate,
+                DischargeDate = a.DischargeDate,
+
+                PatientStatus = a.Status.ToString(),
+                AdmissionType = a.AdmissionType.ToString(),
+
+                InitialDiagnosis = a.InitialDiagnosis,
+                HealthStatus = a.HealthStatus,
+                Notes = a.Notes,
+
+                HasCompanion = a.HasCompanion,
+                CompanionName = a.CompanionName,
+                CompanionPhone = a.CompanionPhone,
+                CompanionNationalId = a.CompanionNationalId,
+
+                PatientId = a.PatientId,
+                PatientName = a.Patient.FullName,
+                PatientPhone = a.Patient.Phone,
+
+                DoctorId = a.DoctorId,
+                DoctorName = a.Doctor?.FullName,
+
+                DepartmentId = a.DepartmentId,
+                DepartmentName = a.Department.Name,
+
+                RoomId = a.RoomId,
+                RoomName = a.Room.Number,
+
+                BedId = a.BedId,
+                BedNumber = a.Bed.Number,
+
+                //PaymentMethod = a.PaymentMethod,
+                //DischargeSummary = a.DischargeSummary,
+
+                //Charges = a.Charges.Select(c => new AdmissionChargeDto
+                //{
+                //    Description = c.Description,
+                //    Price = c.Price,
+                //    ChargeDate = c.ChargeDate
+                //}).ToList()
             };
-
-            return ErrorResponseModel<AdmissionResponse>.Success(GenericErrors.GetSuccess, response);
         }
 
         public async Task<ErrorResponseModel<IReadOnlyList<PatientAdmissionsResponse>>> GetPatientAdmissionsByIdAsync(int id, CancellationToken cancellationToken = default)

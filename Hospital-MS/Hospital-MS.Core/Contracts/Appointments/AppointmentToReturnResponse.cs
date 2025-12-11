@@ -2,10 +2,11 @@
 {
     public class AppointmentToReturnResponse
     {
+        public int AppointmentId { get; set; }
         public int AppointmentNumber { get; set; }
         public string? MedicalServiceName { get; set; }
         public string? DoctorName { get; set; }
-        public DateOnly? AppointmentDate { get; set; }
+        public DateTime? AppointmentDate { get; set; }
         public decimal TotalPrice { get; set; }
 
         public string? PatientName { get; set; }

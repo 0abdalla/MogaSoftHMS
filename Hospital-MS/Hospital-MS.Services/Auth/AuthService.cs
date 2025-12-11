@@ -61,8 +61,8 @@ namespace Hospital_MS.Services.Auth
                     roleId = role?.Id;
                 }
 
-                var Pages = GetPagesByRoleId(roleId);
-                var Branch = await GetUserBranchById(user.BranchId.Value);
+                //var Pages = GetPagesByRoleId(roleId);
+                //var Branch = await GetUserBranchById(user.BranchId.Value);
 
                 var response = new AuthResponse(
                     user.Id,
@@ -75,10 +75,10 @@ namespace Hospital_MS.Services.Auth
                     user.UserName!,
                     token,
                     expiresIn,
-                    roles.FirstOrDefault(),
-                    Branch.Id,
-                    Branch.Name,
-                    Pages.Select(i => i.PageName).ToList()
+                    roles.FirstOrDefault()
+                    //Branch.Id,
+                    //Branch.Name
+                    //Pages.Select(i => i.PageName).ToList()
                 );
 
                 return ErrorResponseModel<AuthResponse>.Success(GenericErrors.SuccessLogin, response);

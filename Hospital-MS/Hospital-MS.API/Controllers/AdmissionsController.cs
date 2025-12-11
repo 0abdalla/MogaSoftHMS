@@ -1,4 +1,5 @@
-﻿using Hospital_MS.Core.Contracts.Admissions;
+﻿using Hospital_MS.Core.Common;
+using Hospital_MS.Core.Contracts.Admissions;
 using Hospital_MS.Core.Contracts.Patients;
 using Hospital_MS.Core.Services;
 using Hospital_MS.Services;
@@ -13,10 +14,37 @@ namespace Hospital_MS.API.Controllers
     {
         private readonly IAdmissionService _admissionService = admissionService;
 
+        [HttpGet("")]
+        public async Task<IActionResult> GetAllAdmissions(
+        [FromQuery] PagingFilterModel filter,
+        CancellationToken cancellationToken)
+        {
+            var result = await _admissionService.GetAllAsync(filter, cancellationToken);
+            return Ok(result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAdmissionById(int id, CancellationToken cancellationToken)
+        {
+            var result = await _admissionService.GetByIdAsync(id, cancellationToken);
+            return Ok(result);
+        }
+
+
         [HttpPost("")]
         public async Task<IActionResult> CreateAdmission([FromBody] CreateAdmissionRequest request)
         {
             var result = await _admissionService.CreateAsync(request);
+            return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAdmission(
+        int id,
+        UpdateAdmissionRequest request,
+        CancellationToken cancellationToken)
+        {
+            var result = await _admissionService.UpdateAsync(id, request, cancellationToken);
             return Ok(result);
         }
 

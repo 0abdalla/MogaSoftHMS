@@ -17,10 +17,10 @@ namespace Hospital_MS.Core.Contracts.Auth
         string UserName,
         string Token,
         int ExpiresIn,
-        string? Role,
-        int BranchId,
-        string BranchName,
-        List<string> Pages
+        string? Role
+        //int BranchId,
+        //string BranchName
+        //List<string> Pages
     );
 
 }

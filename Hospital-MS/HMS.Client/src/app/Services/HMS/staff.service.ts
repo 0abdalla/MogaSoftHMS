@@ -13,11 +13,11 @@ import { EmployeeSalarySummaryModel } from '../../Models/HMS/Staff/EmployeeSalar
 import { ErrorResponseModel } from '../../Models/Generics/ErrorResponseModel';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StaffService {
-  baseUrl = environment.baseUrl
-  constructor(private http: HttpClient) { }
+  baseUrl = environment.baseUrl;
+  constructor(private http: HttpClient) {}
   getStaff() {
     return this.http.get<any>(`${this.baseUrl}Staff`);
   }
@@ -45,19 +45,24 @@ export class StaffService {
     let params = new HttpParams()
       .set('CurrentPage', '1')
       .set('PageSize', '16')
-      .set('FilterList', JSON.stringify([{
-        categoryName: 'string',
-        itemId: 'string',
-        itemKey: 'string',
-        itemValue: 'string',
-        isChecked: true,
-        fromDate: '2025-05-01T21:50:30.220Z',
-        toDate: '2025-05-01T21:50:30.220Z',
-        filterType: 'string',
-        isVisible: true,
-        filterItems: ['string'],
-        displayOrder: 0
-      }]));
+      .set(
+        'FilterList',
+        JSON.stringify([
+          {
+            categoryName: 'string',
+            itemId: 'string',
+            itemKey: 'string',
+            itemValue: 'string',
+            isChecked: true,
+            fromDate: '2025-05-01T21:50:30.220Z',
+            toDate: '2025-05-01T21:50:30.220Z',
+            filterType: 'string',
+            isVisible: true,
+            filterItems: ['string'],
+            displayOrder: 0,
+          },
+        ])
+      );
 
     return this.http.get<any>(`${this.baseUrl}Staff/counts`, { params });
   }
@@ -69,14 +74,24 @@ export class StaffService {
   }
   updateStaff(id: number, staff: any) {
     return this.http.put<any>(`${this.baseUrl}Staff/${id}`, staff);
-  }  
+  }
   deleteStaff(id: number) {
     return this.http.delete<any>(`${this.baseUrl}Staff/${id}`);
   }
   // ===========================================================================
-  getDoctors(pagingFilter: PagingFilterModel) {
-    return this.http.post<PagedResponseModel<any>>(`${this.baseUrl}Doctors/all`, pagingFilter);
+  getDoctors(paging: PagingFilterModel) {
+    const params = {
+      CurrentPage: paging.currentPage,
+      PageSize: paging.pageSize,
+      SearchText: paging.searchText || '',
+    };
+
+    return this.http.get<PagedResponseModel<any>>(
+      `${this.baseUrl}Doctors/all`,
+      { params }
+    );
   }
+
   getDoctorById(id: any) {
     return this.http.get<any>(`${this.baseUrl}Doctors/${id}`);
   }
@@ -86,14 +101,21 @@ export class StaffService {
   putDoctor(doctor: any, id: number) {
     return this.http.put<any>(`${this.baseUrl}Doctors/${id}`, doctor);
   }
-  deleteDoctor(id:number){
+  deleteDoctor(id: number) {
     return this.http.delete<any>(`${this.baseUrl}Doctors/${id}`);
   }
   getDoctorsCount() {
-    return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Doctors/counts`);
+    return this.http.get<PagedResponseModel<any>>(
+      `${this.baseUrl}Doctors/counts`
+    );
   }
   // ===========================================================================
-  getJobTypes(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
+  getJobTypes(
+    searchText: string,
+    currentPage: number,
+    pageSize: number,
+    filterList: any[] = []
+  ) {
     let params = new HttpParams()
       .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
@@ -113,8 +135,13 @@ export class StaffService {
   deleteJobType(id: number) {
     return this.http.delete<any>(`${this.baseUrl}JobTypes/${id}`);
   }
-  // 
-  getJobTitles(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
+  //
+  getJobTitles(
+    searchText: string,
+    currentPage: number,
+    pageSize: number,
+    filterList: any[] = []
+  ) {
     let params = new HttpParams()
       .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
@@ -134,8 +161,13 @@ export class StaffService {
   deleteJobTitle(id: number) {
     return this.http.delete<any>(`${this.baseUrl}JobTitles/${id}`);
   }
-  // 
-  getJobLevels(searchText: string, currentPage: number, pageSize: number, filterList: any[] = []) {
+  //
+  getJobLevels(
+    searchText: string,
+    currentPage: number,
+    pageSize: number,
+    filterList: any[] = []
+  ) {
     let params = new HttpParams()
       .set('SearchText', searchText.toString())
       .set('CurrentPage', currentPage.toString())
@@ -155,8 +187,13 @@ export class StaffService {
   deleteJobLevel(id: number) {
     return this.http.delete<any>(`${this.baseUrl}JobLevels/${id}`);
   }
-  // 
-  getJobDepartment(searchText: string = '', currentPage: number = 1, pageSize: number = 10, filterList: any[] = []) {
+  //
+  getJobDepartment(
+    searchText: string = '',
+    currentPage: number = 1,
+    pageSize: number = 10,
+    filterList: any[] = []
+  ) {
     let params = new HttpParams()
       .set('SearchText', (searchText ?? '').toString())
       .set('CurrentPage', currentPage.toString())
@@ -170,125 +207,219 @@ export class StaffService {
     return this.http.get<any>(`${this.baseUrl}JobDepartment/${id}`);
   }
   addJobDepartment(jobDepartment: any) {
-    return this.http.post<any>(`${this.baseUrl}JobDepartment`, jobDepartment)
+    return this.http.post<any>(`${this.baseUrl}JobDepartment`, jobDepartment);
   }
   updateJobDeprtment(id: number, jobDepartment: any) {
-    return this.http.put<any>(`${this.baseUrl}JobDepartment/${id}`, jobDepartment)
+    return this.http.put<any>(
+      `${this.baseUrl}JobDepartment/${id}`,
+      jobDepartment
+    );
   }
   deleteJobDepartment(id: number) {
-    return this.http.delete<any>(`${this.baseUrl}JobDepartment/${id}`)
+    return this.http.delete<any>(`${this.baseUrl}JobDepartment/${id}`);
   }
 
   // ================================= Penalty ==========================================
 
   GetPenaltiesByEmployeeId(employeeId, model: PagingFilterModel) {
-    return this.http.post<PagedResponseModel<EmployeePenaltyModel[]>>(this.baseUrl + 'Penalty/GetPenaltiesByEmployeeId?EmployeeId=' + employeeId, model);
+    return this.http.post<PagedResponseModel<EmployeePenaltyModel[]>>(
+      this.baseUrl +
+        'Penalty/GetPenaltiesByEmployeeId?EmployeeId=' +
+        employeeId,
+      model
+    );
   }
 
   GetEmployeeContractDetails(EmployeeId: number) {
-    return this.http.get<EmployeeContractModel>(this.baseUrl + 'Penalty/GetEmployeeContractDetails?EmployeeId=' + EmployeeId);
+    return this.http.get<EmployeeContractModel>(
+      this.baseUrl +
+        'Penalty/GetEmployeeContractDetails?EmployeeId=' +
+        EmployeeId
+    );
   }
 
   AddNewEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
-    return this.http.post<any>(this.baseUrl + 'Penalty/AddNewEmployeePenalty?EmployeeId=' + employeeId, model);
+    return this.http.post<any>(
+      this.baseUrl + 'Penalty/AddNewEmployeePenalty?EmployeeId=' + employeeId,
+      model
+    );
   }
 
   EditEmployeePenalty(employeeId: number, model: EmployeePenaltyModel) {
-    return this.http.post<any>(this.baseUrl + 'Penalty/EditEmployeePenalty?EmployeeId=' + employeeId, model);
+    return this.http.post<any>(
+      this.baseUrl + 'Penalty/EditEmployeePenalty?EmployeeId=' + employeeId,
+      model
+    );
   }
 
   GetPenaltyTypesSelector() {
-    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'Penalty/GetPenaltyTypesSelector');
+    return this.http.get<FormDropdownModel[]>(
+      this.baseUrl + 'Penalty/GetPenaltyTypesSelector'
+    );
   }
 
   GetActiveEmployeesSelector() {
-    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'Penalty/GetActiveEmployeesSelector');
+    return this.http.get<FormDropdownModel[]>(
+      this.baseUrl + 'Penalty/GetActiveEmployeesSelector'
+    );
   }
 
   DeleteEmployeePenalty(PenaltyId: number) {
-    return this.http.get<any>(this.baseUrl + 'Penalty/DeleteEmployeePenalty?PenaltyId=' + PenaltyId);
+    return this.http.get<any>(
+      this.baseUrl + 'Penalty/DeleteEmployeePenalty?PenaltyId=' + PenaltyId
+    );
   }
 
   // ================================= Vacation ==========================================
 
   GetVacationsByEmployeeId(employeeId, model: PagingFilterModel) {
-    return this.http.post<PagedResponseModel<EmployeeVacationModel[]>>(this.baseUrl + 'Vacation/GetVacationsByEmployeeId?EmployeeId=' + employeeId, model);
+    return this.http.post<PagedResponseModel<EmployeeVacationModel[]>>(
+      this.baseUrl +
+        'Vacation/GetVacationsByEmployeeId?EmployeeId=' +
+        employeeId,
+      model
+    );
   }
 
   AddNewEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
-    return this.http.post<any>(this.baseUrl + 'Vacation/AddNewEmployeeVacation?EmployeeId=' + employeeId, model);
+    return this.http.post<any>(
+      this.baseUrl + 'Vacation/AddNewEmployeeVacation?EmployeeId=' + employeeId,
+      model
+    );
   }
 
   EditEmployeeVacation(employeeId: number, model: EmployeeVacationModel) {
-    return this.http.post<any>(this.baseUrl + 'Vacation/EditEmployeeVacation?EmployeeId=' + employeeId, model);
+    return this.http.post<any>(
+      this.baseUrl + 'Vacation/EditEmployeeVacation?EmployeeId=' + employeeId,
+      model
+    );
   }
 
   GetVacationTypesSelector() {
-    return this.http.get<GeneralSelectorModel[]>(this.baseUrl + 'Vacation/GetVacationTypesSelector');
+    return this.http.get<GeneralSelectorModel[]>(
+      this.baseUrl + 'Vacation/GetVacationTypesSelector'
+    );
   }
 
   DeleteVacation(VacationId: number) {
-    return this.http.get<any>(this.baseUrl + 'Vacation/DeleteVacation?VacationId=' + VacationId);
+    return this.http.get<any>(
+      this.baseUrl + 'Vacation/DeleteVacation?VacationId=' + VacationId
+    );
   }
 
   // ================================= Advances ==========================================
 
   GetAdvancesByEmployeeId(employeeId, model: PagingFilterModel) {
-    return this.http.post<PagedResponseModel<EmployeeAdvanceModel[]>>(this.baseUrl + 'EmployeeAdvances/GetAdvancesByEmployeeId?EmployeeId=' + employeeId, model);
+    return this.http.post<PagedResponseModel<EmployeeAdvanceModel[]>>(
+      this.baseUrl +
+        'EmployeeAdvances/GetAdvancesByEmployeeId?EmployeeId=' +
+        employeeId,
+      model
+    );
   }
 
   AddNewEmployeeAdvance(employeeId: number, model: EmployeeAdvanceModel) {
-    return this.http.post<any>(this.baseUrl + 'EmployeeAdvances/AddNewEmployeeAdvance?EmployeeId=' + employeeId, model);
+    return this.http.post<any>(
+      this.baseUrl +
+        'EmployeeAdvances/AddNewEmployeeAdvance?EmployeeId=' +
+        employeeId,
+      model
+    );
   }
 
   EditEmployeeAdvance(employeeId: number, model: EmployeeAdvanceModel) {
-    return this.http.post<any>(this.baseUrl + 'EmployeeAdvances/EditEmployeeAdvance?EmployeeId=' + employeeId, model);
+    return this.http.post<any>(
+      this.baseUrl +
+        'EmployeeAdvances/EditEmployeeAdvance?EmployeeId=' +
+        employeeId,
+      model
+    );
   }
 
   DeleteEmployeeAdvance(employeeAdvanceId: number) {
-    return this.http.get<any>(this.baseUrl + 'EmployeeAdvances/DeleteEmployeeAdvance?EmployeeAdvanceId=' + employeeAdvanceId);
+    return this.http.get<any>(
+      this.baseUrl +
+        'EmployeeAdvances/DeleteEmployeeAdvance?EmployeeAdvanceId=' +
+        employeeAdvanceId
+    );
   }
 
-  ApproveEmployeeAdvance(employeeAdvanceId: number, isApproved: boolean = true) {
-    return this.http.get<any>(this.baseUrl + `EmployeeAdvances/ApproveEmployeeAdvance?EmployeeAdvanceId=${employeeAdvanceId}&IsApproved=${isApproved}`);
+  ApproveEmployeeAdvance(
+    employeeAdvanceId: number,
+    isApproved: boolean = true
+  ) {
+    return this.http.get<any>(
+      this.baseUrl +
+        `EmployeeAdvances/ApproveEmployeeAdvance?EmployeeAdvanceId=${employeeAdvanceId}&IsApproved=${isApproved}`
+    );
   }
 
   GetAdvanceTypesSelector() {
-    return this.http.get<FormDropdownModel[]>(this.baseUrl + 'EmployeeAdvances/GetAdvanceTypesSelector');
+    return this.http.get<FormDropdownModel[]>(
+      this.baseUrl + 'EmployeeAdvances/GetAdvanceTypesSelector'
+    );
   }
 
-  GetEmployeeSalarySummary(year: number, month: number, model: PagingFilterModel) {
+  GetEmployeeSalarySummary(
+    year: number,
+    month: number,
+    model: PagingFilterModel
+  ) {
     year = year ?? new Date().getFullYear();
     month = month ?? new Date().getMonth() + 1;
-    return this.http.post<PagedResponseModel<EmployeeSalarySummaryModel[]>>(this.baseUrl + 'Attendance/GetEmployeeSalarySummary?Year=' + year + '&Month=' + month, model);
+    return this.http.post<PagedResponseModel<EmployeeSalarySummaryModel[]>>(
+      this.baseUrl +
+        'Attendance/GetEmployeeSalarySummary?Year=' +
+        year +
+        '&Month=' +
+        month,
+      model
+    );
   }
 
   // ================================= Attendance ==========================================
 
   AddAttendaceSalaries(Model: any) {
-    return this.http.post<any>(this.baseUrl + 'Attendance/AddAttendaceSalaries', Model);
+    return this.http.post<any>(
+      this.baseUrl + 'Attendance/AddAttendaceSalaries',
+      Model
+    );
   }
 
   GetAllAttendanceSalaries(filter: PagingFilterModel) {
-    return this.http.post<any>(this.baseUrl + 'Attendance/GetAllAttendanceSalaries', filter);
+    return this.http.post<any>(
+      this.baseUrl + 'Attendance/GetAllAttendanceSalaries',
+      filter
+    );
   }
   // ================================= Branches ============================================
 
   GetBranches(filter: PagingFilterModel) {
-    return this.http.post<any>(this.baseUrl + 'Branches/GetAllBranches', filter);
+    return this.http.post<any>(
+      this.baseUrl + 'Branches/GetAllBranches',
+      filter
+    );
   }
 
   // ================================= StaffSalaries ============================================
 
   CalculateStaffSalaries(Date: any) {
-    return this.http.get<any>(this.baseUrl + 'StaffSalaries/CalculateStaffSalaries?Date=' + Date);
+    return this.http.get<any>(
+      this.baseUrl + 'StaffSalaries/CalculateStaffSalaries?Date=' + Date
+    );
   }
 
   AddStaffSalaries(Salaries: any) {
-    return this.http.post<ErrorResponseModel<any>>(this.baseUrl + 'StaffSalaries/AddStaffSalaries', Salaries);
+    return this.http.post<ErrorResponseModel<any>>(
+      this.baseUrl + 'StaffSalaries/AddStaffSalaries',
+      Salaries
+    );
   }
 
   GetAllStaffSalaries(filter: PagingFilterModel) {
-    return this.http.post<any>(this.baseUrl + 'StaffSalaries/GetAllStaffSalaries', filter);
+    return this.http.post<any>(
+      this.baseUrl + 'StaffSalaries/GetAllStaffSalaries',
+      filter
+    );
   }
 }

@@ -2,51 +2,44 @@
 {
     public class AdmissionResponse
     {
-        // Patient Information
+        public int Id { get; set; }
         public string PatientName { get; set; } = string.Empty;
+        public string PatientPhone { get; set; } = string.Empty;
         public int PatientId { get; set; }
         //public string? MedicalNumber { get; set; }
         public DateOnly? DateOfBirth { get; set; }
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public string PatientStatus { get; set; }
-
-        // Admission Details
+        public string AdmissionType { get; set; } = string.Empty;
+        public DateTime? DischargeDate { get; set; }
         public DateTime AdmissionDate { get; set; }
         public int? RoomNumber { get; set; }
         public int? BedNumber { get; set; }
+        public int DepartmentId { get; set; }
         public string? DepartmentName { get; set; }
-
-        // Doctor Information
+        public int? DoctorId { get; set; }
+        public int RoomId { get; set; }
+        public int RoomName { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
+        public int BedId { get; set; }
         public string? DoctorName { get; set; }
-
-        // Insurance Information
         public string? InsuranceCompanyName { get; set; }
         public string? InsuranceCategoryName { get; set; }
         public string? InsuranceNumber { get; set; }
-
-        // Emergency Contacts
         public string? EmergencyContact01 { get; set; }
         public string? EmergencyPhone01 { get; set; }
         public string? EmergencyContact02 { get; set; }
         public string? EmergencyPhone02 { get; set; }
-
-        // Medical Information
         public string? HealthStatus { get; set; }
         public string? InitialDiagnosis { get; set; }
-
-        public int? MedicalServiceId { get; set; }
-        public string? MedicalServiceName { get; set; }
-
-        // Additional Information
         public bool HasCompanion { get; set; }
         public string? CompanionName { get; set; }
         public string? CompanionPhone { get; set; }
         public string? CompanionNationalId { get; set; }
         public string? Notes { get; set; }
         //public string? surgeryType { get; set; }
-
-        // Audit Information
+        
         public DateTime CreatedOn { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedOn { get; set; }

@@ -197,6 +197,10 @@ namespace Hospital_MS.Services.Common
 
             return dt;
         }
+        public SqlConnection GetConnection()
+        {
+            return new SqlConnection(ConnectionString);
+        }
     }
 }
 

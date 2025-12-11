@@ -1,6 +1,7 @@
 ﻿using Hospital_MS.Core.Extensions;
 using Hospital_MS.Core.Models;
 using Hospital_MS.Core.Models.HR;
+using Hospital_MS.Core.Models.Medical;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace Hospital_MS.Core._Data
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<EmergencyVisit> EmergencyVisits { get; set; }
         public DbSet<Staff> Staff { get; set; }
         public DbSet<Admission> Admissions { get; set; }
         public DbSet<Bed> Beds { get; set; }
@@ -105,6 +107,9 @@ namespace Hospital_MS.Core._Data
                 .WithMany()
                 .HasForeignKey(s => s.UpdatedById)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            modelBuilder.Entity<EmergencyVisit>().ToTable("EmergencyVisit");
         }
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

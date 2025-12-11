@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  baseUrl: 'https://hospital-ms.runasp.net/api/',
-  // baseUrl: 'https://localhost:44388/api/',
-}
+  baseUrl: 'https://infinity-hms-test.runasp.net/api/',
+  // baseUrl: 'https://localhost:7018/api/',
+};

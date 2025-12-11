@@ -59,6 +59,7 @@ namespace Hospital_MS.API
             services.AddScoped<ISQLHelper, SQLHelper>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
+            services.AddScoped<IEmergencyService, EmergencyService>();
             services.AddScoped<IClinicService, ClinicService>();
             services.AddScoped<IStaffService, StaffService>();
             services.AddScoped<IAdmissionService, AdmissionService>();

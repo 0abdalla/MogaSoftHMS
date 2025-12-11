@@ -21,7 +21,7 @@ namespace Hospital_MS.Services.Repository
 
         public IQueryable<T> GetAll(Expression<Func<T, bool>> filter = null)
         {
-            IQueryable<T> baseQuery = _dbContext.Set<T>().AsNoTracking();
+            IQueryable<T> baseQuery = _dbContext.Set<T>();
 
             if (filter != null)
             {

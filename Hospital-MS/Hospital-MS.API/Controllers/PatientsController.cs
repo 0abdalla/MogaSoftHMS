@@ -9,8 +9,10 @@ namespace Hospital_MS.API.Controllers
     {
         private readonly IPatientService _patientService = patientService;
 
-        [HttpPost("")]
-        public async Task<IActionResult> GetPatients(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        [HttpGet("")]
+        public async Task<IActionResult> GetPatients(
+            [FromQuery] PagingFilterModel pagingFilter,
+            CancellationToken cancellationToken)
         {
             var result = await _patientService.GetAllAsync(pagingFilter, cancellationToken);
             return Ok(result);

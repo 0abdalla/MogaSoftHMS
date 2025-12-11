@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hospital_MS.Core.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251208195545_init")]
-    partial class init
+    [Migration("20251210183028_FixAppointments")]
+    partial class FixAppointments
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -254,8 +254,17 @@ namespace Hospital_MS.Core.Migrations
                     b.Property<int>("DepartmentId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("DischargeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DischargeSummary")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("EncounterNumber")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("HasCompanion")
                         .HasColumnType("bit");
@@ -282,6 +291,9 @@ namespace Hospital_MS.Core.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdatedById")
@@ -409,23 +421,23 @@ namespace Hospital_MS.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly?>("AppointmentDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime?>("AppointmentDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("AppointmentNumber")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ClinicId")
+                    b.Property<int>("BillingStatus")
                         .HasColumnType("int");
 
-                    b.Property<string>("CompanionName")
+                    b.Property<string>("CancellationReason")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CompanionNationalId")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime?>("CheckInTime")
+                        .HasColumnType("datetime2");
 
-                    b.Property<string>("CompanionPhone")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ClinicId")
+                        .HasColumnType("int");
 
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
@@ -436,8 +448,14 @@ namespace Hospital_MS.Core.Migrations
                     b.Property<int?>("DoctorId")
                         .HasColumnType("int");
 
-                    b.Property<string>("EmergencyLevel")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("EncounterNumber")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsClosed")
                         .HasColumnType("bit");
@@ -451,8 +469,14 @@ namespace Hospital_MS.Core.Migrations
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
 
-                    b.Property<string>("PaymentMethod")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("PaymentMethod")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -481,6 +505,8 @@ namespace Hospital_MS.Core.Migrations
                     b.HasIndex("MedicalServiceId");
 
                     b.HasIndex("PatientId");
+
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("UpdatedById");
 
@@ -2486,6 +2512,61 @@ namespace Hospital_MS.Core.Migrations
                     b.ToTable("InsuranceCompany");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.Invoice", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AppointmentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BillingStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Discount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal?>("PaidAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId")
+                        .IsUnique();
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("Invoice");
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.Item", b =>
                 {
                     b.Property<int>("Id")
@@ -2872,6 +2953,116 @@ namespace Hospital_MS.Core.Migrations
                     b.ToTable("MaterialIssuePermissions", "finance");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.Medical.EmergencyVisit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("AdmissionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Allergies")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ArrivalTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AssessmentNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BloodPressure")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ChiefComplaint")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanionNationalId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompanionPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DischargeNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DischargeTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DoctorId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("EncounterNumber")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("HeartRate")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAdmitted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastStatusUpdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("OxygenSaturation")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PainScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PatientId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RespiratoryRate")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Severity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<float?>("Temperature")
+                        .HasColumnType("real");
+
+                    b.Property<string>("TreatmentNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdmissionId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("DoctorId");
+
+                    b.HasIndex("PatientId");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("EmergencyVisit", (string)null);
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.MedicalService", b =>
                 {
                     b.Property<int>("Id")
@@ -2930,8 +3121,8 @@ namespace Hospital_MS.Core.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateOnly>("AppointmentDate")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("AppointmentDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("AppointmentId")
                         .HasColumnType("int");
@@ -3227,10 +3418,14 @@ namespace Hospital_MS.Core.Migrations
                     b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("NationalId")
+                    b.Property<DateTime?>("LastVisitDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Nation")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Nationality")
+                    b.Property<string>("NationalId")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Notes")
@@ -5110,7 +5305,7 @@ namespace Hospital_MS.Core.Migrations
                         .HasForeignKey("MedicalServiceId");
 
                     b.HasOne("Hospital_MS.Core.Models.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("Admissions")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -5161,10 +5356,14 @@ namespace Hospital_MS.Core.Migrations
                         .HasForeignKey("MedicalServiceId");
 
                     b.HasOne("Hospital_MS.Core.Models.Patient", "Patient")
-                        .WithMany()
+                        .WithMany("Appointments")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId");
 
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
                         .WithMany()
@@ -5179,6 +5378,8 @@ namespace Hospital_MS.Core.Migrations
                     b.Navigation("MedicalService");
 
                     b.Navigation("Patient");
+
+                    b.Navigation("Room");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -5912,6 +6113,37 @@ namespace Hospital_MS.Core.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("Hospital_MS.Core.Models.Invoice", b =>
+                {
+                    b.HasOne("Hospital_MS.Core.Models.Appointment", "Appointment")
+                        .WithOne("Invoice")
+                        .HasForeignKey("Hospital_MS.Core.Models.Invoice", "AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Hospital_MS.Core.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Appointment");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Patient");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("Hospital_MS.Core.Models.Item", b =>
                 {
                     b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
@@ -6079,6 +6311,41 @@ namespace Hospital_MS.Core.Migrations
                     b.Navigation("JobDepartment");
 
                     b.Navigation("Store");
+
+                    b.Navigation("UpdatedBy");
+                });
+
+            modelBuilder.Entity("Hospital_MS.Core.Models.Medical.EmergencyVisit", b =>
+                {
+                    b.HasOne("Hospital_MS.Core.Models.Admission", "Admission")
+                        .WithMany()
+                        .HasForeignKey("AdmissionId");
+
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("Hospital_MS.Core.Models.Doctor", "Doctor")
+                        .WithMany()
+                        .HasForeignKey("DoctorId");
+
+                    b.HasOne("Hospital_MS.Core.Models.Patient", "Patient")
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Hospital_MS.Core.Models.ApplicationUser", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Admission");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Doctor");
+
+                    b.Navigation("Patient");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -6958,6 +7225,8 @@ namespace Hospital_MS.Core.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Appointment", b =>
                 {
+                    b.Navigation("Invoice");
+
                     b.Navigation("MedicalServiceDetails");
                 });
 
@@ -7059,6 +7328,10 @@ namespace Hospital_MS.Core.Migrations
 
             modelBuilder.Entity("Hospital_MS.Core.Models.Patient", b =>
                 {
+                    b.Navigation("Admissions");
+
+                    b.Navigation("Appointments");
+
                     b.Navigation("Attachments");
 
                     b.Navigation("MedicalHistories");

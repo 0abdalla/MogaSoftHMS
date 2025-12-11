@@ -1,7 +1,7 @@
 public class PatientAppointmentResponse
 {
     public int AppointmentId { get; set; }
-    public DateOnly? AppointmentDate { get; set; }
+    public DateTime? AppointmentDate { get; set; }
     public string? DoctorName { get; set; }
     public string? ClinicName { get; set; }
     public string? MedicalServiceName { get; set; }

@@ -4,34 +4,25 @@ namespace Hospital_MS.Core.Enums
 {
     public enum PatientStatus
     {
-        [EnumMember(Value = "أرشيف")]
-        Archived,
+        [EnumMember(Value = "نشط")]
+        Active = 1,
 
-        [EnumMember(Value = "تم علاجه")]
-        Treated,
-
-        [EnumMember(Value = "حالة حرجة")]
-        CriticalCondition,
-
-        [EnumMember(Value = "جراحة")]
-        Surgery,
-
-        [EnumMember(Value = "متابعة")]
-        FollowUp,
-
-        [EnumMember(Value = "إقامة")]
-        Staying,
-
-        [EnumMember(Value = "عيادات خارجية")]
-        Outpatient,
-
-        [EnumMember(Value = "عناية مركزة")]
-        IntensiveCare,
+        [EnumMember(Value = "غير نشط")]
+        Inactive = 2,
 
         [EnumMember(Value = "طوارئ")]
-        Emergency,
+        Emergency = 3,
 
-        [EnumMember(Value = "حضانات الأطفال")]
-        NeonatalCare,
+        [EnumMember(Value = "عيادات خارجية")]
+        Outpatient = 4,
+
+        [EnumMember(Value = "منوم / إقامة داخلية")]
+        Inpatient = 5,
+
+        [EnumMember(Value = "متوفي")]
+        Deceased = 6,
+
+        [EnumMember(Value = "أرشيف")]
+        Archived = 7
     }
 }

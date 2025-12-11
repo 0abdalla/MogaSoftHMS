@@ -10,24 +10,34 @@ namespace Hospital_MS.Core.Models
         public int? ClinicId { get; set; }
         public int? MedicalServiceId { get; set; }
 
-        public DateOnly? AppointmentDate { get; set; }
+        public DateTime? AppointmentDate { get; set; }
+        public int DurationInMinutes { get; set; } = 15;
+
         public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
         public AppointmentType Type { get; set; }
-        public string? PaymentMethod { get; set; }
+
+        public PaymentMethodType? PaymentMethod { get; set; }
+        public BillingStatus BillingStatus { get; set; } = BillingStatus.Unpaid;
+
         public int AppointmentNumber { get; set; }
+        public string? CancellationReason { get; set; }
 
-        // بيانات الطوارئ
-        public string? EmergencyLevel { get; set; }
-        public string? CompanionName { get; set; }
-        public string? CompanionNationalId { get; set; }
-        public string? CompanionPhone { get; set; }
+        public DateTime? CheckInTime { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+        public int? RoomId { get; set; }
 
-        public Clinic? Clinic { get; set; } = default!;
-        public Patient Patient { get; set; } = default!;
-        public Doctor? Doctor { get; set; } = default!;
-        public MedicalService? MedicalService { get; set; }
-        public ICollection<MedicalServiceDetail>? MedicalServiceDetails { get; set; } = new HashSet<MedicalServiceDetail>();
-
+        public Guid EncounterNumber { get; set; } = Guid.NewGuid();
         public bool IsClosed { get; set; } = false;
+
+        // Navigation
+        public Clinic? Clinic { get; set; }
+        public Patient Patient { get; set; } = default!;
+        public Doctor? Doctor { get; set; }
+        public Room? Room { get; set; }
+        public MedicalService? MedicalService { get; set; }
+        public ICollection<MedicalServiceDetail> MedicalServiceDetails { get; set; } = new HashSet<MedicalServiceDetail>();
+        public Invoice? Invoice { get; set; }
     }
+
 }

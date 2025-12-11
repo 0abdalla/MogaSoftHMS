@@ -6,8 +6,7 @@ namespace Hospital_MS.Interfaces.HMS
 {
     public interface IAppointmentService
     {
-        Task<ErrorResponseModel<AppointmentToReturnResponse>> CreateAsync(CreateAppointmentRequest request, CancellationToken cancellationToken = default);
-        PagedResponseModel<List<AppointmentsGroupResponse>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
+        Task<PagedResponseModel<List<AppointmentsGroupResponse>>>GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<AppointmentResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<PagedResponseModel<DataTable>> GetCountsAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<string>> UpdateAsync(int id, UpdateAppointmentRequest request, CancellationToken cancellationToken = default);
@@ -24,6 +23,6 @@ namespace Hospital_MS.Interfaces.HMS
         Task<ErrorResponseModel<List<ShiftResponse>>> GetAllShiftsAsync(CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<ShiftResponse>> GetShiftByIdAsync(int id, CancellationToken cancellationToken = default);
 
-        Task<ErrorResponseModel<AppointmentTypeCountsResponse>> GetCountsAsyncV2(CancellationToken cancellationToken = default);
+        //Task<ErrorResponseModel<AppointmentTypeCountsResponse>> GetCountsAsyncV2(CancellationToken cancellationToken = default);
     }
 }

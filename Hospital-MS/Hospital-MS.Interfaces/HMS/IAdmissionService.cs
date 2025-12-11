@@ -12,16 +12,11 @@ namespace Hospital_MS.Core.Services
 {
     public interface IAdmissionService
     {
-        Task<ErrorResponseModel<string>> CreateAsync(CreateAdmissionRequest request, CancellationToken cancellationToken = default);
+        Task<PagedResponseModel<List<AdmissionResponse>>> GetAllAsync(PagingFilterModel pagingFilter,CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
-
-        // add GetPatientAdmissionsByIdAsync
+        Task<ErrorResponseModel<string>> UpdateAsync(int id,UpdateAdmissionRequest request,CancellationToken cancellationToken = default);
+        Task<ErrorResponseModel<string>> CreateAsync(CreateAdmissionRequest request, CancellationToken cancellationToken = default);
+        //Task<ErrorResponseModel<AdmissionResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<ErrorResponseModel<IReadOnlyList<PatientAdmissionsResponse>>> GetPatientAdmissionsByIdAsync(int id, CancellationToken cancellationToken = default);
-
-        //Task<Result<IReadOnlyList<PatientResponse>>> GetAllAsync(GetPatientsRequest request, CancellationToken cancellationToken = default);
-
-        //Task<int> GetAdmissionsCountAsync(GetPatientsRequest request, CancellationToken cancellationToken = default);
-
-        //Task<Result<AdmissionCountsResponse>> GetCountsAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -10,7 +10,7 @@ import { MenuSidebarItem } from '../../../../Models/Generics/MenuSidebarItem';
 @Component({
   selector: 'app-hms-side-menue',
   templateUrl: './hms-side-menue.component.html',
-  styleUrl: './hms-side-menue.component.css'
+  styleUrl: './hms-side-menue.component.css',
 })
 export class HMSSideMenueComponent {
   menusList: MenuSidebarItem[] = [];
@@ -30,23 +30,21 @@ export class HMSSideMenueComponent {
     private permissionService: AppsService,
     private menuService: MenueService
   ) {
-    this.menusList = this.menuService.getFilteredMenus();
+    // this.menusList = this.menuService.getFilteredMenus();
+    this.menusList = this.menuService.menus;
   }
 
   ngOnInit() {
-    this.RoleName = sessionStorage.getItem('role');
-
-    this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => {
-        this.setActiveMenuBasedOnRoute();
-      });
-
-    this.setActiveMenuBasedOnRoute();
-
-    this.permissionService.permissions$.subscribe(permissions => {
-      this.permissions = permissions;
-    });
+    // this.RoleName = sessionStorage.getItem('role');
+    // this.router.events
+    //   .pipe(filter((event) => event instanceof NavigationEnd))
+    //   .subscribe(() => {
+    //     this.setActiveMenuBasedOnRoute();
+    //   });
+    // this.setActiveMenuBasedOnRoute();
+    // this.permissionService.permissions$.subscribe((permissions) => {
+    //   this.permissions = permissions;
+    // });
   }
 
   setActiveMenuBasedOnRoute() {
@@ -78,15 +76,14 @@ export class HMSSideMenueComponent {
     }
   }
 
-
-
   toggleMainMenu(menu: string) {
     this.activeMenu = this.activeMenu === menu ? null : menu;
     this.activeChildMenu = null;
   }
 
   toggleChildMenu(childMenu: string) {
-    this.activeChildMenu = this.activeChildMenu === childMenu ? null : childMenu;
+    this.activeChildMenu =
+      this.activeChildMenu === childMenu ? null : childMenu;
   }
 
   toggleSidebar() {
@@ -102,7 +99,7 @@ export class HMSSideMenueComponent {
       confirmButtonColor: '#3D5DA7',
       cancelButtonColor: '#ED3B93',
       confirmButtonText: 'نعم',
-      cancelButtonText: 'لا'
+      cancelButtonText: 'لا',
     }).then((result) => {
       if (result.isConfirmed) {
         this.authService.logout();

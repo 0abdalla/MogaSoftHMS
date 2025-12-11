@@ -112,38 +112,64 @@ namespace Hospital_MS.Services.HMS
             }
         }
 
-        public async Task<PagedResponseModel<List<MedicalServiceResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<List<MedicalServiceResponse>>> GetAllAsync(
+            PagingFilterModel filter, CancellationToken cancellationToken = default)
         {
             try
             {
-                var SearchText = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
-                var Params = new SqlParameter[3];
-                Params[0] = new SqlParameter("@SearchText", SearchText ?? (object)DBNull.Value);
-                Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-                Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
+                var repo = _unitOfWork.Repository<MedicalService>();
 
-                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetMedicalServices", Params);
+                var query = repo
+                    .GetAll()
+                    .Include(ms => ms.Department)
+                    .Include(ms => ms.Schedules)
+                    .AsQueryable();
 
-                var doctors = dt.AsEnumerable().Select(row => new MedicalServiceResponse
+                // ---------------- Search Filter ----------------
+                if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 {
-                    Id = row.Field<int>("ServiceId"),
-                    Name = row.Field<string>("ServiceName") ?? string.Empty,
-                    Price = row.Field<decimal?>("Price") ?? 0,
-                    Type = row.Field<string>("ServiceType") ?? string.Empty,
-                    DepartmentId = row.Field<int?>("DepartmentId"),
-                    MedicalServiceSchedules = JsonConvert.DeserializeObject<List<MedicalServiceScheduleResponse>>(row.Field<string>("MedicalServiceSchedules") ?? "[]"),
-                    RadiologyBodyTypes = JsonConvert.DeserializeObject<List<RadiologyBodyTypeResponse>>(row.Field<string>("RadiologyBodyTypes") ?? "[]")
-                }).ToList();
+                    query = query.Where(ms =>
+                        ms.Name.Contains(filter.SearchText) ||
+                        (ms.Department != null && ms.Department.Name.Contains(filter.SearchText))
+                    );
+                }
 
-                int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int?>("TotalCount") ?? 0 : 0;
+                // ---------------- Count ----------------
+                var totalCount = await query.CountAsync(cancellationToken);
 
-                return PagedResponseModel<List<MedicalServiceResponse>>.Success(GenericErrors.GetSuccess, totalCount, doctors);
+                // ---------------- Pagination ----------------
+                var services = await query
+                    .OrderBy(ms => ms.Name)
+                    .Skip((filter.CurrentPage - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .Select(ms => new MedicalServiceResponse
+                    {
+                        Id = ms.Id,
+                        Name = ms.Name,
+                        Type = ms.Type.ToString(),
+                        Price = ms.Price ?? 0,
+                        DepartmentId = ms.DepartmentId,
+                        DepartmentName = ms.Department != null ? ms.Department.Name : null,
+
+                        MedicalServiceSchedules = ms.Schedules
+                            .Select(s => new MedicalServiceScheduleResponse
+                            {
+                                Id = s.Id,
+                                WeekDay = s.WeekDay
+                            }).ToList(),
+                    })
+                    .ToListAsync(cancellationToken);
+
+                return PagedResponseModel<List<MedicalServiceResponse>>
+                    .Success(GenericErrors.GetSuccess, totalCount, services);
             }
             catch (Exception)
             {
-                return PagedResponseModel<List<MedicalServiceResponse>>.Failure(GenericErrors.TransFailed);
+                return PagedResponseModel<List<MedicalServiceResponse>>
+                    .Failure(GenericErrors.TransFailed);
             }
         }
+
 
         public Task<ErrorResponseModel<MedicalServiceResponse>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
         {

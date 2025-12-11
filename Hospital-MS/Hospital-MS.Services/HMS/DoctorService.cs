@@ -186,38 +186,65 @@ namespace Hospital_MS.Services.HMS
 
 
 
-        public async Task<PagedResponseModel<List<AllDoctorsResponse>>> GetAllAsync(PagingFilterModel pagingFilter, CancellationToken cancellationToken = default)
+        public async Task<PagedResponseModel<List<AllDoctorsResponse>>> GetAllAsync(PagingFilterModel filter, CancellationToken cancellationToken = default)
         {
             try
             {
-                var Params = new SqlParameter[4];
-                var Type = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "Type")?.ItemValue;
-                var SearchText = pagingFilter.FilterList.FirstOrDefault(i => i.CategoryName == "SearchText")?.ItemValue;
-                Params[0] = new SqlParameter("@SearchText", SearchText ?? (object)DBNull.Value);
-                Params[1] = new SqlParameter("@CurrentPage", pagingFilter.CurrentPage);
-                Params[2] = new SqlParameter("@PageSize", pagingFilter.PageSize);
-                Params[3] = new SqlParameter("@Type", Type ?? (object)DBNull.Value);
+                var repo = _unitOfWork.Repository<Doctor>();
 
-                var dt = await _sQLHelper.ExecuteDataTableAsync("dbo.SP_GetAllDoctors", Params);
+                var query = repo
+                    .GetAll()
+                    .Include(d => d.Department)
+                    .Include(d => d.DoctorMedicalServices)
+                        .ThenInclude(ms => ms.MedicalService)
+                    .Include(d => d.Schedules)
+                    .AsQueryable();
 
-                var doctors = dt.AsEnumerable().Select(row => new AllDoctorsResponse
+                if (!string.IsNullOrWhiteSpace(filter.SearchText))
                 {
-                    Id = row.Field<int>("DoctorId"),
-                    FullName = row.Field<string>("FullName") ?? string.Empty,
-                    Phone = row.Field<string>("Phone") ?? string.Empty,
-                    Status = row.Field<string>("Status") ?? string.Empty,
-                    DepartmentId = row.Field<int?>("DepartmentId") ?? 0,
-                    Department = row.Field<string>("Department") ?? string.Empty,
-                    Price = row.Field<double?>("Price"),
-                    MedicalServices = JsonConvert.DeserializeObject<List<DoctorMedicalServiceResponse>>(row.Field<string>("MedicalServiceNames") ?? "[]"),
-                    DoctorSchedules = JsonConvert.DeserializeObject<List<DoctorScheduleResponse>>(row.Field<string>("DoctorSchedules") ?? "[]")
-                }).ToList();
+                    query = query.Where(d =>
+                        d.FullName.Contains(filter.SearchText) ||
+                        d.Phone.Contains(filter.SearchText));
+                }
 
-                int totalCount = dt.Rows.Count > 0 ? dt.Rows[0].Field<int?>("TotalCount") ?? 0 : 0;
+                var totalCount = await query.CountAsync(cancellationToken);
+
+                var doctors = await query
+                    .OrderBy(d => d.FullName)
+                    .Skip((filter.CurrentPage - 1) * filter.PageSize)
+                    .Take(filter.PageSize)
+                    .Select(d => new AllDoctorsResponse
+                    {
+                        Id = d.Id,
+                        FullName = d.FullName,
+                        Phone = d.Phone,
+                        Status = d.Status.ToString(),
+                        DepartmentId = d.DepartmentId ?? 0,
+                        Department = d.Department.Name,
+                        Price = d.Price,
+
+                        MedicalServices = d.DoctorMedicalServices
+                            .Select(ms => new DoctorMedicalServiceResponse
+                            {
+                                Id = ms.MedicalServiceId,
+                                Name = ms.MedicalService.Name
+                            })
+                            .ToList(),
+
+                        DoctorSchedules = d.Schedules
+                            .Select(s => new DoctorScheduleResponse
+                            {
+                                WeekDay = s.WeekDay,
+                                StartTime = s.StartTime,
+                                EndTime = s.EndTime
+                            })
+                            .ToList()
+                    })
+                    .ToListAsync(cancellationToken);
 
                 return PagedResponseModel<List<AllDoctorsResponse>>.Success(GenericErrors.GetSuccess, totalCount, doctors);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return PagedResponseModel<List<AllDoctorsResponse>>.Failure(GenericErrors.TransFailed);
             }

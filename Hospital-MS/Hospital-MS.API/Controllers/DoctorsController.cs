@@ -25,12 +25,15 @@ namespace Hospital_MS.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("all")]
-        public async Task<IActionResult> GetAllDoctors(PagingFilterModel pagingFilter, CancellationToken cancellationToken)
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllDoctors(
+        [FromQuery] PagingFilterModel filter,
+        CancellationToken cancellationToken)
         {
-            var result = await _doctorService.GetAllAsync(pagingFilter, cancellationToken);
+            var result = await _doctorService.GetAllAsync(filter, cancellationToken);
             return Ok(result);
         }
+
 
         [HttpGet("counts")]
         public async Task<IActionResult> GetAllCount(CancellationToken cancellationToken)
