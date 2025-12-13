@@ -7,9 +7,10 @@ import { SharedModule } from '../../Shared/shared.module';
 import { HomeComponent } from './dashboard/home/home.component';
 import { ChartModule } from 'angular-highcharts';
 import { HMSSideMenueComponent } from './dashboard/hms-side-menue/hms-side-menue.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PurchaseOrderComponent } from './fin-tree/inputs/purchase-order/purchase-order.component';
 import { AdmissionsComponent } from './admissions/admissions.component';
+import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
@@ -24,7 +25,9 @@ import { AdmissionsComponent } from './admissions/admissions.component';
     HmsRoutingModule,
     ChartModule,
     SharedModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule,
+    ToastModule
   ]
 })
 export class HmsModule { }

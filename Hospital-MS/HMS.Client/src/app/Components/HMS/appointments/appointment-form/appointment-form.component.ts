@@ -116,7 +116,8 @@ export class AppointmentFormComponent implements OnInit {
     this.appointmentDetailsForm = this.fb.group({
       id: null,
       // appointmentDate: [new Date().toISOString().substring(0, 10), []],
-      appointmentDate: ['', [Validators.required, notOldDayValidator]],
+      // appointmentDate: ['', [Validators.required, notOldDayValidator]],
+      appointmentDate: ['', [Validators.required]],
       appointmentType: ['', Validators.required],
       medicalServiceId: ['', Validators.required],
       medicalServiceName: null,
@@ -555,31 +556,42 @@ export class AppointmentFormComponent implements OnInit {
 
 
   onSubmit() {
+    console.log('Submitting form...');
+
     if (this.reservationForm.invalid) {
+      console.log('Form invalid', this.reservationForm.value);
       this.messageService.add({ severity: 'warn', summary: 'بيانات غير مكتملة', detail: 'يرجى ملء جميع الحقول المطلوبة' });
       return;
     }
 
     if (this.appointmentDetailsSelected.length === 0) {
+      console.log('No services selected');
       this.messageService.add({ severity: 'warn', summary: 'لا توجد خدمات', detail: 'يرجى إضافة خدمة طبية واحدة على الأقل' });
       return;
     }
 
     let validService = ['General', 'Consultation', 'Surgery'];
     let service = this.appointmentDetailsSelected.find(i => validService.includes(i.appointmentType));
+    console.log('Selected service:', service);
+
     const formData = this.reservationForm.value;
+    console.log('Form data:', formData);
 
     let medicalServices = [];
-    let appointmentTypes = [... new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
+    let appointmentTypes = [...new Set(this.appointmentDetailsSelected.map(item => item.appointmentType))];
+    console.log('Appointment types:', appointmentTypes);
+
     appointmentTypes.forEach(type => {
       let types = this.appointmentDetailsSelected.filter(item => item.appointmentType === type);
       let obj = {
         medicalServiceIds: types.map(item => item.medicalServiceId),
         appointmentDate: types[0].appointmentDate,
         appointmentType: types[0].appointmentType,
-      }
+      };
       medicalServices.push(obj);
     });
+
+    console.log('Medical services payload:', medicalServices);
 
     const payload = {
       patientName: formData.patientName,
@@ -590,35 +602,41 @@ export class AppointmentFormComponent implements OnInit {
       insuranceCompanyId: formData.insuranceCompanyId || null,
       insuranceCategoryId: formData.insuranceCategoryId || null,
       insuranceNumber: formData.insuranceNumber || '',
-      paymentMethod: formData.paymentMethod,
-      emergencyLevel: formData.emergencyLevel,
-      companionName: formData.companionName,
-      companionNationalId: formData.companionNationalId,
-      companionPhone: formData.companionPhone,
-      medicalServices: medicalServices
+      paymentMethod: formData.paymentMethod === 'نقدي' ? 'Cash' : 'BankTransfer',
+      appointmentDate: medicalServices[0]?.appointmentDate + 'T00:00:00', // تحويل التاريخ لصيغة ISO
+      medicalServiceIds: medicalServices.flatMap(ms => ms.medicalServiceIds) // دمج كل الـ IDs في array واحدة
     };
+    console.log('Sending payload to API:', JSON.stringify(payload, null, 2));
+
+
+    console.log('Final payload:', payload);
 
     this.appointmentService.createAppointment(payload).subscribe({
       next: (response) => {
+        console.log('API response:', response);
         if (response.isSuccess) {
           this.messageService.add({ severity: 'success', summary: 'تم الحجز', detail: response.message });
           this.invoiceData = response.results;
-          this.invoiceData.medicalServiceName = this.appointmentDetailsSelected[0]?.medicalServiceName,
-            this.invoiceData.selectedServicePrice = this.totalPrice,
-            this.appointmentsSelected = this.appointmentDetailsSelected
+          this.invoiceData.medicalServiceName = this.appointmentDetailsSelected[0]?.medicalServiceName;
+          this.invoiceData.selectedServicePrice = this.totalPrice;
+          this.appointmentsSelected = this.appointmentDetailsSelected;
 
           this.generatePdf();
-
           this.resetForms();
         } else {
+          console.log('Booking failed:', response.message);
           this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: response.message });
         }
-      }, error: (error) => {
+      },
+      error: (error) => {
+        console.log('API error:', error);
+        console.log('API error details:', error.error.errors);
         const errorMessage = error.error?.message || 'حدث خطأ أثناء إنشاء الحجز';
         this.messageService.add({ severity: 'error', summary: 'فشل الحجز', detail: errorMessage });
       }
     });
   }
+
   // To-Do
   createInvoiceObj(apiData: any): any[] {
     if (!apiData) return [];
@@ -814,5 +832,7 @@ export class AppointmentFormComponent implements OnInit {
     });
     this.appointmentDetailsSelected = [];
   }
+
+
 
 }

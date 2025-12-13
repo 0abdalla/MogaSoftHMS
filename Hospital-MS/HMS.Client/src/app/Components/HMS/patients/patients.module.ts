@@ -32,7 +32,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     NgxPaginationModule,
     ToastModule,
     NgbModule,
-    SharedModule
+    SharedModule,
   ]
 })
 export class PatientsModule { }

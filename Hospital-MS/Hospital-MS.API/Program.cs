@@ -40,16 +40,16 @@ var jobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>(
 var appointmentService = scope.ServiceProvider.GetRequiredService<IAppointmentService>();
 var doctorService = scope.ServiceProvider.GetRequiredService<IDoctorService>();
 
-jobManager.AddOrUpdate(
-    "UpdateAppointmentStatus",
-    () => appointmentService.UpdateAppointmentsToCompletedAsync(), Cron.Daily
-);
+//jobManager.AddOrUpdate(
+//    "UpdateAppointmentStatus",
+//    () => appointmentService.UpdateAppointmentsToCompletedAsync(), Cron.Daily
+//);
 
 
-jobManager.AddOrUpdate(
-    "ResetDoctorScheduleAppointments",
-    () => doctorService.ResetCurrentAppointmentsAsync(), Cron.Daily
-);
+//jobManager.AddOrUpdate(
+//    "ResetDoctorScheduleAppointments",
+//    () => doctorService.ResetCurrentAppointmentsAsync(), Cron.Daily
+//);
 
 #endregion
 

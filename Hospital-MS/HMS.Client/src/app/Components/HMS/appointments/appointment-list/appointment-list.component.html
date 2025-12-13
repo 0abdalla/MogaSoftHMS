@@ -1,213 +1,332 @@
 <main id="list-patients" @fadeIn>
-    <p-toast position="top-left"></p-toast>
-    <div class="container-fluid">
-        <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
-        <div class="row mt-4 mb-3">
-            <div class="col-lg-2" *ngFor="let status of patientServices">
-                <div class="card text-white p-3 text-center" (click)="ApplyCardFilter(status)" [ngStyle]="{ 'background-image': status.color }">
-                    <h4>{{ status.name }}</h4>
-                    <p class="mt-0">{{ status.count }} مريض</p>
-                    <div class="percentage d-flex align-items-center justify-content-center gap-1">
-                        <p class="m-0">12%</p>
-                        <i class="fa-regular fa-circle-arrow-up"></i>
-                    </div>
-                    <img [src]="status.img" alt="" class="vector" />
-                </div>
-            </div>
+  <p-toast position="top-left"></p-toast>
+  <div class="container-fluid">
+    <app-breadcrumb [TitleList]="TitleList"></app-breadcrumb>
+    <div class="row mt-4 mb-3">
+      <div class="col-lg-2" *ngFor="let status of patientServices">
+        <div
+          class="card text-white p-3 text-center"
+          (click)="ApplyCardFilter(status)"
+          [ngStyle]="{ 'background-image': status.color }"
+        >
+          <h4>{{ status.name }}</h4>
+          <p class="mt-0">{{ status.count }} مريض</p>
+          <div
+            class="percentage d-flex align-items-center justify-content-center gap-1"
+          >
+            <p class="m-0">12%</p>
+            <i class="fa-regular fa-circle-arrow-up"></i>
+          </div>
+          <img [src]="status.img" alt="" class="vector" />
         </div>
-
-        <div class="table-card border radius-10 overflow-hidden shadow-sm">
-            <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
-                <div class="col-md-8 mb-2">
-                    <div class="d-flex align-items-center gap-2 btn-parent">
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" routerLink="/hms/appointments/add">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>إضافة حجز</span>
-                        </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3 " (click)="confirmShiftClose()">
-                            <i class="fas fa-close"></i>
-                            <span class="btn-close-text">إغلاق حركة الشيفت</span>
-                        </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3 " (click)="openChooseShiftModal()">
-                            <i class="fas fa-list"></i>
-                            <span class="btn-list-text">عرض حركة الشيفت</span>
-                        </button>
-                        <button class="btn btn-success d-flex align-items-center gap-2 border rounded px-3" (click)="isFilter = !isFilter" [attr.aria-expanded]="!isFilter">
-                            <i class="uil uil-filter"></i>
-                            <span class="navbar-brand m-0">{{ isFilter ? 'عرض' : 'اخفاء' }} الفلاتر</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-2" *ngIf="total > 0">
-                    <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-                </div>
-                <div class="col-md-12 mt-3" #collapse="ngbCollapse" [(ngbCollapse)]="isFilter">
-                    <div class="d-flex align-items-center">
-                        <ng-container>
-                            <app-filters [filterData]="AppointmentTypes" [filterPlaceholder]="'النوع'" [searchPlaceholder]="'أدخل إسم المريض أو رقم الهاتف ...'" [categoryName]="'Type'" (filterChanged)="filterChecked($event)"></app-filters>
-                        </ng-container>
-                    </div>
-                </div>
-            </div>
-            <div class="p-3 bg-white">
-                <div class="table-responsive shadow-sm radius-10">
-                    <table class="table table-card-table table-borderless table-hover bg-transparent m-0">
-                        <thead>
-                            <tr>
-                                <th>رقم الحجز</th>
-                                <th>الإسم</th>
-                                 <th>الخدمة الطبية</th>
-                                <th>العيادة الطبية</th>
-                                <th>حالة الحجز</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <ng-container>
-                                <tr *ngFor="let appointment of patients" [ngClass]="{'canceled-row': appointment.status === 'ملغي'}" (click)="openAppointmentModal(appointment.id)" data-bs-toggle="modal" data-bs-target="#bookingDetailsModal" style="cursor: pointer; background-color: red !important;">
-                                  <td class="text-secondary">{{ appointment.id }}</td>
-                                  <td>
-                                        <div class="d-flex align-items-center gap-2 justify-content-start">
-                                            <div class="avatar-circle">{{ appointment.patientName.charAt(0) }}</div>
-                                            <span class="fw-bold">{{ appointment.patientName }}</span>
-                                        </div>
-                                    </td>
-                                        <td>
-                                        <p class="text-white status-pill fw-bold" *ngIf="appointment.type" [ngStyle]="{ backgroundColor: getServiceColor(appointment.type) }">
-                                            {{ appointment.type | medicalTypeToArabic }}
-                                        </p>
-                                    </td>
-                                    <td class="text-secondary fw-semibold">
-                                        <app-tag [tags]="appointment.medicalServiceName" [header]="'العيادة الطبية'" [showWithMore]="true"></app-tag>
-                                        <td [ngStyle]="{'color': getStatusColor(appointment.status)}">
-                                          {{ appointment.status }}
-                                        </td>
-
-                            </ng-container>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light">
-                    <div class="col-md-8 mb-2"></div>
-                    <div class="col-md-4 mb-2" *ngIf="total > 0">
-                        <app-pagination (pageChanged)="onPageChange($event)" [currentPage]="pagingFilterModel.currentPage" [pageSize]="pagingFilterModel.pageSize" [totalCount]="total"></app-pagination>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+
+    <div class="table-card border radius-10 overflow-hidden shadow-sm">
+      <div
+        class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+      >
+        <div class="col-md-8 mb-2">
+          <div class="d-flex align-items-center gap-2 btn-parent">
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              routerLink="/hms/appointments/add"
+            >
+              <i class="fas fa-plus-circle"></i>
+              <span>إضافة حجز</span>
+            </button>
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              (click)="confirmShiftClose()"
+            >
+              <i class="fas fa-close"></i>
+              <span class="btn-close-text">إغلاق حركة الشيفت</span>
+            </button>
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              (click)="openChooseShiftModal()"
+            >
+              <i class="fas fa-list"></i>
+              <span class="btn-list-text">عرض حركة الشيفت</span>
+            </button>
+            <button
+              class="btn btn-success d-flex align-items-center gap-2 border rounded px-3"
+              (click)="isFilter = !isFilter"
+              [attr.aria-expanded]="!isFilter"
+            >
+              <i class="uil uil-filter"></i>
+              <span class="navbar-brand m-0"
+                >{{ isFilter ? "عرض" : "اخفاء" }} الفلاتر</span
+              >
+            </button>
+          </div>
+        </div>
+        <div class="col-md-4 mb-2" *ngIf="total > 0">
+          <app-pagination
+            (pageChanged)="onPageChange($event)"
+            [currentPage]="pagingFilterModel.currentPage"
+            [pageSize]="pagingFilterModel.pageSize"
+            [totalCount]="total"
+          ></app-pagination>
+        </div>
+        <div
+          class="col-md-12 mt-3"
+          #collapse="ngbCollapse"
+          [(ngbCollapse)]="isFilter"
+        >
+          <div class="d-flex align-items-center">
+            <ng-container>
+              <app-filters
+                [filterData]="AppointmentTypes"
+                [filterPlaceholder]="'النوع'"
+                [searchPlaceholder]="'أدخل إسم المريض أو رقم الهاتف ...'"
+                [categoryName]="'Type'"
+                (filterChanged)="filterChecked($event)"
+              ></app-filters>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="p-3 bg-white">
+        <div class="table-responsive shadow-sm radius-10">
+          <table
+            class="table table-card-table table-borderless table-hover bg-transparent m-0"
+          >
+            <thead>
+              <tr>
+                <th>رقم الحجز</th>
+                <th>الإسم</th>
+                <th>الخدمة الطبية</th>
+                <th>العيادة الطبية</th>
+                <th>حالة الحجز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container>
+                <tr
+                  *ngFor="let appointment of patients"
+                  [ngClass]="{ 'canceled-row': appointment.status === 'ملغي' }"
+                  (click)="openAppointmentModal(appointment.id)"
+                  data-bs-toggle="modal"
+                  data-bs-target="#bookingDetailsModal"
+                  style="cursor: pointer; background-color: red !important"
+                >
+                  <td class="text-secondary">{{ appointment.id }}</td>
+                  <td>
+                    <div
+                      class="d-flex align-items-center gap-2 justify-content-start"
+                    >
+                      <div class="avatar-circle">
+                        {{ appointment.patientName.charAt(0) }}
+                      </div>
+                      <span class="fw-bold">{{ appointment.patientName }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <p
+                      class="text-white status-pill fw-bold"
+                      *ngIf="appointment.type"
+                      [ngStyle]="{
+                        backgroundColor: getServiceColor(appointment.type)
+                      }"
+                    >
+                      {{ appointment.type | medicalTypeToArabic }}
+                    </p>
+                  </td>
+                  <td class="text-secondary fw-semibold">
+                    <app-tag
+                      [tags]="appointment.medicalServiceName"
+                      [header]="'العيادة الطبية'"
+                      [showWithMore]="true"
+                    ></app-tag>
+                  </td>
+
+                  <td [ngStyle]="{ color: getStatusColor(appointment.status) }">
+                    {{ mapStatusToArabic(appointment.status) }}
+                  </td>
+                </tr></ng-container
+              >
+            </tbody>
+          </table>
+        </div>
+        <div
+          class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
+        >
+          <div class="col-md-8 mb-2"></div>
+          <div class="col-md-4 mb-2" *ngIf="total > 0">
+            <app-pagination
+              (pageChanged)="onPageChange($event)"
+              [currentPage]="pagingFilterModel.currentPage"
+              [pageSize]="pagingFilterModel.pageSize"
+              [totalCount]="total"
+            ></app-pagination>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
-<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
-            <div class="modal-header justify-content-center">
-                <h5 class="modal-title" id="bookingDetailsLabel">تفاصيل الحجز</h5>
+<div
+  class="modal fade"
+  id="bookingDetailsModal"
+  tabindex="-1"
+  aria-labelledby="bookingDetailsLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+  >
+    <div class="modal-content">
+      <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+      <div class="modal-header justify-content-center">
+        <h5 class="modal-title" id="bookingDetailsLabel">تفاصيل الحجز</h5>
+      </div>
+
+      <div id="pdfContent" class="modal-body p-4 print-section">
+        <div class="row mb-3">
+          <h4>👤 تفاصيل المريض</h4>
+          <div class="col-lg-4">
+            <strong class="strong">اسم المريض:</strong>
+            <span class="span">
+              {{ selectedAppointment?.patientName || "---" }}</span
+            >
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">الرقم الطبي:</strong>
+            <span class="span">
+              {{ selectedAppointment?.patientId || "---" }}</span
+            >
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">رقم الحجز:</strong>
+            <span class="span"> {{ selectedAppointment?.id || "---" }}</span>
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">تاريخ الحجز:</strong>
+            <span class="span">
+              {{ selectedAppointment?.createdOn | date : "yyyy-MM-dd" }}</span
+            >
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">الوقت:</strong>
+            <span class="span">
+              {{ selectedAppointment?.createdOn | time12 }}</span
+            >
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">الحالة:</strong>
+            <span class="span"> {{ selectedAppointment?.status }}</span>
+          </div>
+        </div>
+        <hr />
+
+        <h4 class="mb-3">📝 تفاصيل الحجز</h4>
+        <div class="row mb-3">
+          <div
+            class="col-lg-3"
+            *ngIf="selectedAppointment?.type == 'Emergency'"
+          >
+            <strong class="strong">نوع الحجز:</strong>
+            <span class="span"> {{ selectedAppointment?.type || "---" }}</span>
+          </div>
+          <div *ngIf="selectedAppointment?.type !== 'Emergency'" class="row">
+            <div class="col-lg-3">
+              <strong class="strong">نوع الحجز:</strong>
+              <span class="span">
+                {{ selectedAppointment?.type || "---" }}</span
+              >
             </div>
-
-            <div id="pdfContent" class="modal-body p-4 print-section">
-
-                <div class="row mb-3">
-                    <h4>
-                        👤 تفاصيل المريض</h4>
-                    <div class="col-lg-4">
-                        <strong class="strong">اسم المريض:</strong> <span class="span"> {{ selectedAppointment?.patientName || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">الرقم الطبي:</strong> <span class="span"> {{ selectedAppointment?.patientId || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">رقم الحجز:</strong> <span class="span"> {{ selectedAppointment?.id || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">تاريخ الحجز:</strong> <span class="span"> {{ selectedAppointment?.createdOn | date:'yyyy-MM-dd' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">الوقت:</strong> <span class="span"> {{ selectedAppointment?.createdOn | time12 }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">الحالة:</strong> <span class="span"> {{ selectedAppointment?.status }}</span>
-                    </div>
-                </div>
-                <hr>
-
-                <h4 class="mb-3">
-                    📝 تفاصيل الحجز</h4>
-                <div class="row mb-3">
-                    <div class="col-lg-3" *ngIf="selectedAppointment?.type == 'Emergency'">
-                        <strong class="strong">نوع الحجز:</strong> <span class="span"> {{ selectedAppointment?.type || '---' }}</span>
-                    </div>
-                    <div *ngIf="selectedAppointment?.type !== 'Emergency'" class="row">
-                        <div class="col-lg-3">
-                            <strong class="strong">نوع الحجز:</strong> <span class="span"> {{ selectedAppointment?.type || '---' }}</span>
-                        </div>
-                        <!-- <div class="col-lg-3">
+            <!-- <div class="col-lg-3">
                             <strong class="strong">العيادة:</strong> <span class="span"> {{ item.medicalServiceName || '---' }}</span>
                         </div> -->
-                        <div class="col-lg-3">
-                            <strong class="strong">الطبيب:</strong> <span class="span"> {{ selectedAppointment?.doctorName || '---' }}</span>
-                        </div>
-                        <div class="col-lg-3">
-                            <strong class="strong">طريقة الحجز:</strong> عبر التطبيق
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="p-3 bg-white">
-                                <div class="table-responsive shadow-sm radius-10">
-                                    <table class="table table-card-table table-borderless table-hover bg-transparent m-0" *ngIf="selectedAppointment?.type !== 'طوارئ'">
-                                        <thead>
-                                            <tr>
-                                              <th>تاريخ الحجز</th>
-                                              <th>نوع الخدمة</th>
-                                              <th>الدكتور المختص</th>
-                                              <th>التكلفة</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            <tr *ngFor="let item of selectedAppointment?.medicalServices">
-                                              <td>{{ item.medicalServiceDate | date: 'dd/MM/yyyy' }}</td>
-                                              <td>{{ item.medicalServiceName }}</td>
+            <div class="col-lg-3">
+              <strong class="strong">الطبيب:</strong>
+              <span class="span">
+                {{ selectedAppointment?.doctorName || "---" }}</span
+              >
+            </div>
+            <div class="col-lg-3">
+              <strong class="strong">طريقة الحجز:</strong> عبر التطبيق
+            </div>
+            <div class="col-lg-12">
+              <div class="p-3 bg-white">
+                <div class="table-responsive shadow-sm radius-10">
+                  <table
+                    class="table table-card-table table-borderless table-hover bg-transparent m-0"
+                    *ngIf="selectedAppointment?.type !== 'طوارئ'"
+                  >
+                    <thead>
+                      <tr>
+                        <th>تاريخ الحجز</th>
+                        <th>نوع الخدمة</th>
+                        <th>الدكتور المختص</th>
+                        <th>التكلفة</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="
+                          let item of selectedAppointment?.medicalServices
+                        "
+                      >
+                        <td>
+                          {{ item.medicalServiceDate | date : "dd/MM/yyyy" }}
+                        </td>
+                        <td>{{ item.medicalServiceName }}</td>
 
-                                              <!-- خلية واحدة: إذا النوع ضمن doctorTypes اعرض اسم الدكتور وإلا اعرض --- -->
-                                              <td>
-                                                {{ doctorTypes.includes(item.medicalServiceType) ? (item.doctorName || '---') : '---' }}
-                                              </td>
+                        <!-- خلية واحدة: إذا النوع ضمن doctorTypes اعرض اسم الدكتور وإلا اعرض --- -->
+                        <td>
+                          {{
+                            doctorTypes.includes(item.medicalServiceType)
+                              ? item.doctorName || "---"
+                              : "---"
+                          }}
+                        </td>
 
-                                              <td>{{ item.medicalServicePrice }} جنيه</td>
-                                            </tr>
+                        <td>{{ item.medicalServicePrice }} جنيه</td>
+                      </tr>
 
-                                            <tr *ngIf="selectedAppointment?.medicalServices?.length">
-                                              <td></td>
-                                              <td class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
-                                              <td></td>
-                                              <td class="fw-bold">{{ totalPrice }} جنيه</td>
-                                            </tr>
-                                          </tbody>
-
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                      <tr *ngIf="selectedAppointment?.medicalServices?.length">
+                        <td></td>
+                        <td class="text-end fw-bold">إجمالي تكلفة الخدمة</td>
+                        <td></td>
+                        <td class="fw-bold">{{ totalPrice }} جنيه</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-                <hr>
+        <hr />
 
-                <div class="row mb-3" *ngIf="selectedAppointment?.type === 'طوارئ'">
-                    <h4 class="mb-3">
-                        👥 بيانات المرافق</h4>
-                    <div class="col-lg-4">
-                        <strong class="strong">اسم المرافق:</strong> <span class="span"> {{ selectedAppointment?.companionName || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">رقم الهوية:</strong> <span class="span"> {{ selectedAppointment?.companionNationalId || '---' }}</span>
-                    </div>
-                    <div class="col-lg-4">
-                        <strong class="strong">رقم الهاتف:</strong> <span class="span"> {{ selectedAppointment?.companionPhone || '---' }}</span>
-                    </div>
-                    <hr class="mt-3">
-                </div>
+        <div class="row mb-3" *ngIf="selectedAppointment?.type === 'طوارئ'">
+          <h4 class="mb-3">👥 بيانات المرافق</h4>
+          <div class="col-lg-4">
+            <strong class="strong">اسم المرافق:</strong>
+            <span class="span">
+              {{ selectedAppointment?.companionName || "---" }}</span
+            >
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">رقم الهوية:</strong>
+            <span class="span">
+              {{ selectedAppointment?.companionNationalId || "---" }}</span
+            >
+          </div>
+          <div class="col-lg-4">
+            <strong class="strong">رقم الهاتف:</strong>
+            <span class="span">
+              {{ selectedAppointment?.companionPhone || "---" }}</span
+            >
+          </div>
+          <hr class="mt-3" />
+        </div>
 
-                <!-- <h4 class="mb-3">
+        <!-- <h4 class="mb-3">
                     💶 بيانات الدفع</h4>
                 <div class="row mb-3">
                     <div class="col-lg-4">
@@ -221,347 +340,507 @@
                     </div>
                 </div> -->
 
-                <!-- <hr> -->
+        <!-- <hr> -->
 
-                <h4 class="mb-3">
-                    📝 ملاحظات إضافية</h4>
-                <p class="text-muted"> <span class="span"> {{ selectedAppointment?.notes || 'لا يوجد ملاحظات' }}</span></p>
+        <h4 class="mb-3">📝 ملاحظات إضافية</h4>
+        <p class="text-muted">
+          <span class="span">
+            {{ selectedAppointment?.notes || "لا يوجد ملاحظات" }}</span
+          >
+        </p>
+      </div>
 
-            </div>
-
-            <div class="modal-footer row">
-                <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-warning" data-bs-target="#updateEmergencyModal" data-bs-toggle="modal">تحديث الحالة</button>
-                </div>
-                <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-success" routerLink="/hms/appointments/edit/{{selectedAppointment?.id}}">تعديل الحجز</button>
-                </div>
-                <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-primary" (click)="exportToPDF()">تحويل إلى PDF</button>
-                </div>
-                <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-warning">تحويل إلى فاتورة</button>
-                </div>
-                <div class="col-2 m-0">
-                    <button class="btn col-12 btn-outline-danger" (click)="deleteAppointment(selectedAppointment?.id)">حذف الحجز</button>
-                </div>
-            </div>
+      <div class="modal-footer row">
+        <div class="col-2 m-0">
+          <button
+            class="btn col-12 btn-outline-warning"
+            data-bs-target="#updateEmergencyModal"
+            data-bs-toggle="modal"
+          >
+            تحديث الحالة
+          </button>
         </div>
+        <div class="col-2 m-0">
+          <button
+            class="btn col-12 btn-outline-success"
+            routerLink="/hms/appointments/edit/{{ selectedAppointment?.id }}"
+          >
+            تعديل الحجز
+          </button>
+        </div>
+        <div class="col-2 m-0">
+          <button
+            class="btn col-12 btn-outline-primary"
+            (click)="exportToPDF()"
+          >
+            تحويل إلى PDF
+          </button>
+        </div>
+        <div class="col-2 m-0">
+          <button class="btn col-12 btn-outline-warning">
+            تحويل إلى فاتورة
+          </button>
+        </div>
+        <div class="col-2 m-0">
+          <button
+            class="btn col-12 btn-outline-danger"
+            (click)="deleteAppointment(selectedAppointment?.id)"
+          >
+            حذف الحجز
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="updateEmergencyModal" tabindex="-1" role="dialog" aria-labelledby="updateEmergencyModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
-            <div class="modal-header justify-content-between align-items-center">
-                <h5 class="modal-title" id="updateEmergencyModalLabel">تحديث الحالة</h5>
-                <!-- <button type="button" class="btn btn-secondary" (click)="backToMainModal('updateEmergencyModal')">رجوع</button> -->
-            </div>
-            <div class="modal-body">
-                              <div *ngIf="selectedAppointment">
-                    <strong class="strong">الاسم:</strong> <span class="span"> {{ selectedAppointment.patientName }}</span>
-                    <br>
-                    <strong class="strong">رقم المريض:</strong> <span class="span"> {{ selectedAppointment.patientId }}</span>
-                </div>
-                <form [formGroup]="updateEmergencyForm" (ngSubmit)="onSubmit()">
-                                      <div class="mb-3">
-                        <strong class="strong">الحالة الحالية:</strong>
-                        <span class="span"> {{ selectedAppointment?.status }}</span>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label class="form-label">الحالة النهائية</label>
-                        <select class="form-select shadow-none" formControlName="newStatus">
-                            <option selected disabled value="">اختر الحالة</option>
-                            <option value="CriticalCondition">تم نقله إلى العناية المركزة</option>
-                            <option value="Surgery">دخل غرفة العمليات</option>
-                            <!-- <option value="General">تم تحويله إلى كشف</option> -->
-                            <option value="Treated">تم علاجه</option>
-                            <option value="Archived">تم نقله إلى مستشفى أخرى</option>
-                            <option value="Archived">رفض العلاج وخرج على مسؤوليته</option>
-                            <option value="Archived">توفى</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="form-label">ملاحظات</label>
-                        <textarea class="form-control shadow-none" formControlName="notes"></textarea>
-                    </div>
-
-                    <!-- <button type="submit" [disabled]="updateEmergencyForm.invalid" class="btn-blue">حفظ التحديث</button> -->
-                        <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn-blue" [disabled]="updateEmergencyForm.invalid">حفظ التغييرات</button>
-                        <button type="button" class="btn-red mx-2" (click)="backToMainModal('updateEmergencyModal')">رجوع</button>
-                    </div>
-                </form>
-            </div>
+<div
+  class="modal fade"
+  id="updateEmergencyModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="updateEmergencyModalLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div
+    class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
+    role="document"
+  >
+    <div class="modal-content">
+      <!-- <img src="assets/vendors/imgs/pattern.png" alt="" class="img-fluid"> -->
+      <div class="modal-header justify-content-between align-items-center">
+        <h5 class="modal-title" id="updateEmergencyModalLabel">تحديث الحالة</h5>
+        <!-- <button type="button" class="btn btn-secondary" (click)="backToMainModal('updateEmergencyModal')">رجوع</button> -->
+      </div>
+      <div class="modal-body">
+        <div *ngIf="selectedAppointment">
+          <strong class="strong">الاسم:</strong>
+          <span class="span"> {{ selectedAppointment.patientName }}</span>
+          <br />
+          <strong class="strong">رقم المريض:</strong>
+          <span class="span"> {{ selectedAppointment.patientId }}</span>
         </div>
+        <form [formGroup]="updateEmergencyForm" (ngSubmit)="onSubmit()">
+          <div class="mb-3">
+            <strong class="strong">الحالة الحالية:</strong>
+            <span class="span"> {{ selectedAppointment?.status }}</span>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">الحالة النهائية</label>
+            <select class="form-select shadow-none" formControlName="newStatus">
+              <option selected disabled value="">اختر الحالة</option>
+              <option value="Pending">معلق</option>
+              <option value="Rejected">ملغي</option>
+              <option value="Completed">مكتمل</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-3">
+            <label class="form-label">ملاحظات</label>
+            <textarea
+              class="form-control shadow-none"
+              formControlName="notes"
+            ></textarea>
+          </div>
+
+          <!-- <button type="submit" [disabled]="updateEmergencyForm.invalid" class="btn-blue">حفظ التحديث</button> -->
+          <div class="d-flex justify-content-center">
+            <button
+              type="submit"
+              class="btn-blue"
+              [disabled]="updateEmergencyForm.invalid"
+            >
+              حفظ التغييرات
+            </button>
+            <button
+              type="button"
+              class="btn-red mx-2"
+              (click)="backToMainModal('updateEmergencyModal')"
+            >
+              رجوع
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
-<div class="modal fade" id="cashMovementModal" tabindex="-1" aria-labelledby="cashMovementLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header justify-content-between align-items-center">
-                <h5 class="modal-title" id="cashMovementLabel">كشف حركة الخزينة</h5>
-                <button type="button" class="btn btn-secondary" (click)="backToMainModal('cashMovementModal')">رجوع</button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-bordered text-center">
-                    <thead class="table-light">
-                        <tr>
-                            <th>اليوم</th>
-                            <th>العدد</th>
-                            <th>السعر الإجمالي</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of cashMovementData">
-                            <td>{{ item.day }}</td>
-                            <td>{{ item.count }}</td>
-                            <td>{{ item.total | currency:'EGP' }}</td>
-                        </tr>
-                        <tr class="fw-bold table-secondary">
-                            <td>العيادات</td>
-                            <td>{{ clinicCount }}</td>
-                            <td>{{ clinicTotal | currency:'EGP' }}</td>
-                        </tr>
-                        <tr class="fw-bold table-dark text-white">
-                            <td>الإجمالي</td>
-                            <td>{{ totalCount }}</td>
-                            <td>{{ totalAmount | currency:'EGP' }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="printablePDFContent" style=" display: none;" dir="rtl" class="container border rounded p-5">
-    <div class="d-flex justify-content-around align-items-center mb-2">
-        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <div class="text-center">
-            <h5 class="fw-bold mb-1"> حجز رقم <span class="text-primary">  {{ selectedAppointment?.id }}</span></h5>
-        </div>
-    </div>
-
-    <h5 class="fw-bold mb-2">بيانات المريض</h5>
-    <div class="row">
-        <div class="col-lg-6">
-            <p><strong>الاسم:</strong> {{ selectedAppointment?.patientName || '---' }}</p>
-            <p><strong>الرقم الطبي:</strong> {{ selectedAppointment?.patientId || '---' }}</p>
-            <p><strong>رقم الهاتف:</strong> {{ selectedAppointment?.patientPhone || '---' }}</p>
-        </div>
-        <div class="col-lg-6">
-            <p><strong>التاريخ:</strong> {{ selectedAppointment?.createdOn | date:'yyyy-MM-dd' }}</p>
-            <p><strong>الوقت:</strong> {{ selectedAppointment?.createdOn | time12 }}</p>
-            <p><strong>الحالة:</strong> {{ selectedAppointment?.status || '---' }}</p>
-        </div>
-    </div>
-
-    <hr>
-
-    <h5 class="fw-bold mb-2">تفاصيل الحجز</h5>
-    <div class="row">
-        <div class="col-lg-6">
-            <p><strong>نوع الحجز:</strong> {{ selectedAppointment?.type || '---' }}</p>
-            <p><strong>الطبيب:</strong> {{ selectedAppointment?.doctorName || '---' }}</p>
-        </div>
-        <div class="col-lg-6">
-            <p><strong>طريقة الحجز:</strong> عبر التطبيق</p>
-        </div>
-    </div>
-
-    <div *ngIf="selectedAppointment?.medicalServices?.length">
-        <table class="border rounded">
-            <thead>
-                <tr>
-                    <th>تاريخ الخدمة</th>
-                    <th>نوع الخدمة</th>
-                    <th>الدكتور</th>
-                    <th>السعر</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of selectedAppointment?.medicalServices">
-                    <td>{{ item.medicalServiceDate | date:'dd/MM/yyyy' }}</td>
-                    <td>{{ item.medicalServiceName }}</td>
-                    <td *ngIf="item.medicalServiceType == 'General' || item.medicalServiceType == 'Surgery' || item.medicalServiceType == 'Consultation'">{{ item.doctorName }}</td>
-                    <td *ngIf="item.medicalServiceType == 'Screening' || item.medicalServiceType == 'Radiology'">---</td>
-                    <td>{{ item.medicalServicePrice }} جنيه</td>
-                </tr>
-                <tr>
-                    <td colspan="3" class="fw-bold text-center">الإجمالي</td>
-                    <td class="fw-bold">{{ totalPrice }} جنيه</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-
-    <div *ngIf="selectedAppointment?.type === 'Emergency'">
-        <h5 class="fw-bold mb-2">بيانات المرافق</h5>
-        <div class="row">
-            <div class="col-lg-6">
-                <p><strong>الاسم:</strong> {{ selectedAppointment?.companionName || '---' }}</p>
-                <p><strong>الهوية:</strong> {{ selectedAppointment?.companionNationalId || '---' }}</p>
-            </div>
-            <div class="col-lg-6">
-                <p><strong>رقم الهاتف:</strong> {{ selectedAppointment?.companionPhone || '---' }}</p>
-            </div>
-        </div>
-    </div>
-    <div *ngIf="selectedAppointment?.notes">
-        <hr>
-        <h5 class="fw-bold mb-2">📝 ملاحظات إضافية</h5>
-        <p>{{ selectedAppointment?.notes || '---' }}</p>
-    </div>
-
-    <div class="row mt-4">
-        <hr>
-        <div class="col-md-6">
-            <strong>إسم المستخدم:</strong> {{ userName }}
-        </div>
-        <div class="col-md-6 text-end">
-            <strong>التاريخ:</strong> {{ today }}
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="shiftReportModal" tabindex="-1" aria-labelledby="shiftReportModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content p-3">
-            <div class="modal-body">
-                <div dir="rtl" class="px-4 bg-white">
-                    <div class="d-flex justify-content-evenly align-items-center">
-                        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-                        <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
-                    </div>
-
-                    <div class="row mt-3">
-                        <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
-                        <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
-                        <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
-                    </div>
-
-                    <table class="table table-bordered mt-3">
-                        <thead>
-                            <tr>
-                                <th>م</th>
-                                <th>نوع الخدمة</th>
-                                <th>العدد</th>
-                                <th>السعر</th>
-                                <th>السعر الإجمالي</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let service of medicalServices; let i = index">
-                                <td>{{ i + 1 }}</td>
-                                <td>{{ service.medicalServiceName }}</td>
-                                <td>{{ service.count }}</td>
-                                <td>{{ service.price | number:'1.2-2' }} ج.م</td>
-                                <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
-                                <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                    <hr class="my-4" />
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <p><strong>المستخدم:</strong> {{ userName }}</p>
-                        </div>
-                        <div class="col-6">
-                            <p><strong>التاريخ:</strong> {{ today }}</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
-                <button type="button" class="btn btn-primary" (click)="printShiftReport()">طباعة PDF</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="border rounded p-5" id="printableShiftModal">
-    <div class="d-flex justify-content-evenly align-items-center">
-        <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px;" />
-        <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
-        <div class="col-md-4 mb-2"><strong>التاريخ:</strong> {{ closedAt | date:'dd/MM/yyyy - hh:mm a' }}</div>
-        <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
-    </div>
-
-    <table class="table table-bordered mt-3">
-        <thead>
+<div
+  class="modal fade"
+  id="cashMovementModal"
+  tabindex="-1"
+  aria-labelledby="cashMovementLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header justify-content-between align-items-center">
+        <h5 class="modal-title" id="cashMovementLabel">كشف حركة الخزينة</h5>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="backToMainModal('cashMovementModal')"
+        >
+          رجوع
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table table-bordered text-center">
+          <thead class="table-light">
             <tr>
+              <th>اليوم</th>
+              <th>العدد</th>
+              <th>السعر الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of cashMovementData">
+              <td>{{ item.day }}</td>
+              <td>{{ item.count }}</td>
+              <td>{{ item.total | currency : "EGP" }}</td>
+            </tr>
+            <tr class="fw-bold table-secondary">
+              <td>العيادات</td>
+              <td>{{ clinicCount }}</td>
+              <td>{{ clinicTotal | currency : "EGP" }}</td>
+            </tr>
+            <tr class="fw-bold table-dark text-white">
+              <td>الإجمالي</td>
+              <td>{{ totalCount }}</td>
+              <td>{{ totalAmount | currency : "EGP" }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  id="printablePDFContent"
+  style="display: none"
+  dir="rtl"
+  class="container border rounded p-5"
+>
+  <div class="d-flex justify-content-around align-items-center mb-2">
+    <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px" />
+    <div class="text-center">
+      <h5 class="fw-bold mb-1">
+        حجز رقم <span class="text-primary"> {{ selectedAppointment?.id }}</span>
+      </h5>
+    </div>
+  </div>
+
+  <h5 class="fw-bold mb-2">بيانات المريض</h5>
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>الاسم:</strong> {{ selectedAppointment?.patientName || "---" }}
+      </p>
+      <p>
+        <strong>الرقم الطبي:</strong>
+        {{ selectedAppointment?.patientId || "---" }}
+      </p>
+      <p>
+        <strong>رقم الهاتف:</strong>
+        {{ selectedAppointment?.patientPhone || "---" }}
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <p>
+        <strong>التاريخ:</strong>
+        {{ selectedAppointment?.createdOn | date : "yyyy-MM-dd" }}
+      </p>
+      <p>
+        <strong>الوقت:</strong> {{ selectedAppointment?.createdOn | time12 }}
+      </p>
+      <p><strong>الحالة:</strong> {{ selectedAppointment?.status || "---" }}</p>
+    </div>
+  </div>
+
+  <hr />
+
+  <h5 class="fw-bold mb-2">تفاصيل الحجز</h5>
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <strong>نوع الحجز:</strong> {{ selectedAppointment?.type || "---" }}
+      </p>
+      <p>
+        <strong>الطبيب:</strong> {{ selectedAppointment?.doctorName || "---" }}
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <p><strong>طريقة الحجز:</strong> عبر التطبيق</p>
+    </div>
+  </div>
+
+  <div *ngIf="selectedAppointment?.medicalServices?.length">
+    <table class="border rounded">
+      <thead>
+        <tr>
+          <th>تاريخ الخدمة</th>
+          <th>نوع الخدمة</th>
+          <th>الدكتور</th>
+          <th>السعر</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of selectedAppointment?.medicalServices">
+          <td>{{ item.medicalServiceDate | date : "dd/MM/yyyy" }}</td>
+          <td>{{ item.medicalServiceName }}</td>
+          <td
+            *ngIf="
+              item.medicalServiceType == 'General' ||
+              item.medicalServiceType == 'Surgery' ||
+              item.medicalServiceType == 'Consultation'
+            "
+          >
+            {{ item.doctorName }}
+          </td>
+          <td
+            *ngIf="
+              item.medicalServiceType == 'Screening' ||
+              item.medicalServiceType == 'Radiology'
+            "
+          >
+            ---
+          </td>
+          <td>{{ item.medicalServicePrice }} جنيه</td>
+        </tr>
+        <tr>
+          <td colspan="3" class="fw-bold text-center">الإجمالي</td>
+          <td class="fw-bold">{{ totalPrice }} جنيه</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="selectedAppointment?.type === 'Emergency'">
+    <h5 class="fw-bold mb-2">بيانات المرافق</h5>
+    <div class="row">
+      <div class="col-lg-6">
+        <p>
+          <strong>الاسم:</strong>
+          {{ selectedAppointment?.companionName || "---" }}
+        </p>
+        <p>
+          <strong>الهوية:</strong>
+          {{ selectedAppointment?.companionNationalId || "---" }}
+        </p>
+      </div>
+      <div class="col-lg-6">
+        <p>
+          <strong>رقم الهاتف:</strong>
+          {{ selectedAppointment?.companionPhone || "---" }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="selectedAppointment?.notes">
+    <hr />
+    <h5 class="fw-bold mb-2">📝 ملاحظات إضافية</h5>
+    <p>{{ selectedAppointment?.notes || "---" }}</p>
+  </div>
+
+  <div class="row mt-4">
+    <hr />
+    <div class="col-md-6"><strong>إسم المستخدم:</strong> {{ userName }}</div>
+    <div class="col-md-6 text-end"><strong>التاريخ:</strong> {{ today }}</div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="shiftReportModal"
+  tabindex="-1"
+  aria-labelledby="shiftReportModalLabel"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-body">
+        <div dir="rtl" class="px-4 bg-white">
+          <div class="d-flex justify-content-evenly align-items-center">
+            <img
+              src="assets/vendors/imgs/logo.png"
+              alt="logo"
+              style="height: 100px"
+            />
+            <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md-4 mb-2">
+              <strong>يوم:</strong> {{ shiftDay }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <strong>التاريخ:</strong>
+              {{ closedAt | date : "dd/MM/yyyy - hh:mm a" }}
+            </div>
+            <div class="col-md-4 mb-2">
+              <strong>اسم الموظف:</strong> {{ userName }}
+            </div>
+          </div>
+
+          <table class="table table-bordered mt-3">
+            <thead>
+              <tr>
                 <th>م</th>
                 <th>نوع الخدمة</th>
                 <th>العدد</th>
                 <th>السعر</th>
                 <th>السعر الإجمالي</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let service of medicalServices; let i = index">
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let service of medicalServices; let i = index">
                 <td>{{ i + 1 }}</td>
                 <td>{{ service.medicalServiceName }}</td>
                 <td>{{ service.count }}</td>
-                <td>{{ service.price | number:'1.2-2' }} ج.م</td>
-                <td>{{ service.totalPrice | number:'1.2-2' }} ج.م</td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="4" class="text-start"><strong>إجمالي الإيرادات:</strong></td>
-                <td><strong>{{ totalAmountForShift | number:'1.2-2' }} ج.م</strong></td>
-            </tr>
-        </tfoot>
-    </table>
-    <hr class="my-4" />
-    <div class="row text-center">
-        <div class="col-6">
-            <p><strong>المستخدم:</strong> {{ userName }}</p>
+                <td>{{ service.price | number : "1.2-2" }} ج.م</td>
+                <td>{{ service.totalPrice | number : "1.2-2" }} ج.م</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" class="text-start">
+                  <strong>إجمالي الإيرادات:</strong>
+                </td>
+                <td>
+                  <strong
+                    >{{ totalAmountForShift | number : "1.2-2" }} ج.م</strong
+                  >
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+          <hr class="my-4" />
+          <div class="row text-center">
+            <div class="col-6">
+              <p><strong>المستخدم:</strong> {{ userName }}</p>
+            </div>
+            <div class="col-6">
+              <p><strong>التاريخ:</strong> {{ today }}</p>
+            </div>
+          </div>
         </div>
-        <div class="col-6">
-            <p><strong>التاريخ:</strong> {{ today }}</p>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="chooseShiftModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-md modal-dialog-centered">
-      <div class="modal-content p-3">
-        <div class="modal-header">
-          <h5 class="modal-title">اختيار حركة الشيفت</h5>
-        </div>
-        <div class="modal-body">
-            <label for="shiftSelect" class="form-label">اختر حركة الشيفت</label>
-            <select id="shiftSelect" class="form-select" [(ngModel)]="selectedShiftId">
-                <option [ngValue]="null">اختر حركة الشيفت</option>
-                <option *ngFor="let shift of shifts" [ngValue]="shift.id">
-                    {{ getDayName(shift.closedAt) }} -
-                    {{ shift.closedAt | date:'dd/MM/yyyy' }} -
-                    {{ shift.openedAt  }} - {{ shift.closedAt  }} -
-                    {{ shift.closedBy }}
-                </option>
-            </select>
-        </div>
-        <div class="text-center">
-            <button type="button" class="btn-blue" (click)="openShiftReport()">عرض</button>
-            <button type="button" class="btn-red mx-2" data-bs-dismiss="modal">خروج</button>
-        </div>
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          إغلاق
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="printShiftReport()"
+        >
+          طباعة PDF
+        </button>
       </div>
     </div>
   </div>
+</div>
+
+<div class="border rounded p-5" id="printableShiftModal">
+  <div class="d-flex justify-content-evenly align-items-center">
+    <img src="assets/vendors/imgs/logo.png" alt="logo" style="height: 100px" />
+    <h5 class="fw-bold mb-1">كشف إيرادات الشيفت</h5>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-4 mb-2"><strong>يوم:</strong> {{ shiftDay }}</div>
+    <div class="col-md-4 mb-2">
+      <strong>التاريخ:</strong> {{ closedAt | date : "dd/MM/yyyy - hh:mm a" }}
+    </div>
+    <div class="col-md-4 mb-2"><strong>اسم الموظف:</strong> {{ userName }}</div>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>م</th>
+        <th>نوع الخدمة</th>
+        <th>العدد</th>
+        <th>السعر</th>
+        <th>السعر الإجمالي</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let service of medicalServices; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ service.medicalServiceName }}</td>
+        <td>{{ service.count }}</td>
+        <td>{{ service.price | number : "1.2-2" }} ج.م</td>
+        <td>{{ service.totalPrice | number : "1.2-2" }} ج.م</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4" class="text-start">
+          <strong>إجمالي الإيرادات:</strong>
+        </td>
+        <td>
+          <strong>{{ totalAmountForShift | number : "1.2-2" }} ج.م</strong>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+  <hr class="my-4" />
+  <div class="row text-center">
+    <div class="col-6">
+      <p><strong>المستخدم:</strong> {{ userName }}</p>
+    </div>
+    <div class="col-6">
+      <p><strong>التاريخ:</strong> {{ today }}</p>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="chooseShiftModal"
+  tabindex="-1"
+  aria-hidden="true"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">اختيار حركة الشيفت</h5>
+      </div>
+      <div class="modal-body">
+        <label for="shiftSelect" class="form-label">اختر حركة الشيفت</label>
+        <select
+          id="shiftSelect"
+          class="form-select"
+          [(ngModel)]="selectedShiftId"
+        >
+          <option [ngValue]="null">اختر حركة الشيفت</option>
+          <option *ngFor="let shift of shifts" [ngValue]="shift.id">
+            {{ getDayName(shift.closedAt) }} -
+            {{ shift.closedAt | date : "dd/MM/yyyy" }} - {{ shift.openedAt }} -
+            {{ shift.closedAt }} -
+            {{ shift.closedBy }}
+          </option>
+        </select>
+      </div>
+      <div class="text-center">
+        <button type="button" class="btn-blue" (click)="openShiftReport()">
+          عرض
+        </button>
+        <button type="button" class="btn-red mx-2" data-bs-dismiss="modal">
+          خروج
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

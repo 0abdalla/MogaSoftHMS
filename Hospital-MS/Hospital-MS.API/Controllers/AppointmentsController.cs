@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
+using Hospital_MS.Core.Enums;
 using Hospital_MS.Interfaces.HMS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -93,6 +94,21 @@ namespace Hospital_MS.API.Controllers
         //{
         //    var result = await _appointmentService.GetCountsAsyncV2(cancellationToken);
         //    return Ok(result);
-        //}
+        //}\
+
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateAppointmentStatus(int id, [FromBody] UpdateAppointmentStatusRequest request, CancellationToken cancellationToken)
+        {
+            if (!Enum.TryParse<AppointmentStatus>(request.Status, true, out var newStatus))
+            {
+                return BadRequest(new { isSuccess = false, message = "حالة الحجز غير صالحة" });
+            }
+
+            var result = await _appointmentService.UpdateAppointmentStatusAsync(id, newStatus, cancellationToken);
+            return Ok(result);
+        }
+
+
     }
 }

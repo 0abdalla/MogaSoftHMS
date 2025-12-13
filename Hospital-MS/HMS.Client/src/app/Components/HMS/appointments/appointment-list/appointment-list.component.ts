@@ -364,12 +364,12 @@ export class AppointmentListComponent implements OnInit {
   closedBy: any;
   closedAt: any;
   shiftDay = new Date().toLocaleDateString('ar-EG', { weekday: 'long' });
-  shifts!:any;
-  getAllShifts(){
+  shifts!: any;
+  getAllShifts() {
     this.appointmentService.getAllShifts().subscribe({
-      next:(data:any)=>{
+      next: (data: any) => {
         this.shifts = data.results
-        console.log('Shifts : ',this.shifts);
+        console.log('Shifts : ', this.shifts);
       }
     })
   }
@@ -475,18 +475,35 @@ export class AppointmentListComponent implements OnInit {
   }
   getDayName(dateString: string): string {
     const date = new Date(dateString);
-    const days = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     return days[date.getDay()];
   }
-  getStatusColor(status: string): string {
-  switch (status) {
-    case 'ملغي':
-      return '#ff4d4f';
-    case 'مكتمل':
-      return '#52c41a';
-    default:
-      return '#000';
+  //   getStatusColor(status: string): string {
+  //   switch (status) {
+  //     case 'ملغي':
+  //       return '#ff4d4f';
+  //     case 'مكتمل':
+  //       return '#52c41a';
+  //     default:
+  //       return '#000';
+  //   }
+  // }
+
+  mapStatusToArabic(status: string): string {
+    switch (status) {
+      case 'Pending': return 'معلق';
+      case 'Rejected': return 'ملغي';
+      case 'Completed': return 'Completed';
+      default: return status;
+    }
   }
-}
+  getStatusColor(status: string): string {
+    switch (status) {
+      case 'Pending': return '#3A86FF';
+      case 'Rejected': return '#FFA500';
+      case 'Completed': return '#FF006E';
+      default: return '#999999';
+    }
+  }
 
 }

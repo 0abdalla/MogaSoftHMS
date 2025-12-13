@@ -23,13 +23,14 @@
       <div
         class="align-items-center border-bottom d-flex flex-wrap justify-content-between p-3 table-card-title bg-light"
       >
-        <div class="col-md-4 mb-2" *ngIf="totalRecords > 0">
-          <app-pagination
-            (pageChanged)="changePage($event)"
-            [currentPage]="pagingFilter.currentPage"
-            [pageSize]="pagingFilter.pageSize"
-            [totalCount]="totalRecords"
-          ></app-pagination>
+        <div class="mb-3">
+          <button
+            class="btn btn-success"
+            data-bs-toggle="modal"
+            data-bs-target="#addAdmissionModal"
+          >
+            <i class="fas fa-plus-circle"></i> إضافة مريض
+          </button>
         </div>
       </div>
 
@@ -45,46 +46,33 @@
                 <th>الهاتف</th>
                 <th>القسم</th>
                 <th>الحالة</th>
-                <th>الإجراءات</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let admission of admissions">
+              <tr
+                *ngFor="let admission of admissions"
+                (click)="openPatientDetails(admission)"
+                style="cursor: pointer"
+              >
                 <td>{{ admission.id }}</td>
                 <td>{{ admission.patientName }}</td>
-                <td>{{ admission.patientPhoneNumber }}</td>
+                <td>{{ admission.patientPhone }}</td>
                 <td>{{ admission.departmentName }}</td>
                 <td>
                   <p
-                    class="text-white status-pill"
-                    [ngStyle]="{ backgroundColor: '#3A86FF' }"
+                    class="text-white status-pill ng-star-inserted"
+                    [ngStyle]="{
+                      backgroundColor: getStatusColor(admission.patientStatus),
+                      width: 'fit-content'
+                    }"
                   >
-                    {{ admission.patientStatus }}
+                    {{ mapStatusToArabic(admission.patientStatus) }}
                   </p>
                 </td>
-                <td>
-                  <button
-                    class="btn btn-sm btn-primary"
-                    (click)="getAdmissionById(admission.id)"
-                  >
-                    تعديل
-                  </button>
-                  <button
-                    class="btn btn-sm btn-danger"
-                    (click)="deleteAdmission(admission.id)"
-                  >
-                    حذف
-                  </button>
-                  <button
-                    class="btn btn-sm btn-info"
-                    (click)="getMedicalHistory(admission.patientId)"
-                  >
-                    السجل الطبي
-                  </button>
-                </td>
               </tr>
+
               <tr *ngIf="!admissions?.length">
-                <td colspan="6" class="text-center text-muted">
+                <td colspan="5" class="text-center text-muted">
                   لا يوجد بيانات
                 </td>
               </tr>
@@ -109,3 +97,769 @@
     </div>
   </div>
 </main>
+<!-- add-modal -->
+<div
+  class="modal fade"
+  id="addAdmissionModal"
+  tabindex="-1"
+  aria-labelledby="addAdmissionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"></div>
+      <div class="modal-body">
+        <form
+          [formGroup]="admissionForm"
+          class="form p-2"
+          (ngSubmit)="addAdmission()"
+        >
+          <h4>🏥 بيانات الاستقبال</h4>
+
+          <div class="row">
+            <!-- الاسم -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >إسم المريض<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientName"
+                placeholder="أدخل إسم المريض"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientName')?.invalid &&
+                  admissionForm.get('patientName')?.touched
+                "
+                class="text-danger"
+              >
+                الاسم مطلوب وطوله على الأقل 3 حروف
+              </div>
+            </div>
+
+            <!-- الهاتف -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >رقم هاتف المريض<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientPhone"
+                placeholder="أدخل رقم الهاتف"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientPhone')?.invalid &&
+                  admissionForm.get('patientPhone')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="admissionForm.get('patientPhone')?.errors?.['required']"
+                  >رقم الهاتف مطلوب</ng-container
+                >
+                <ng-container
+                  *ngIf="admissionForm.get('patientPhone')?.errors?.['pattern']"
+                  >رقم الهاتف يجب أن يكون 11 رقمًا</ng-container
+                >
+              </div>
+            </div>
+
+            <!-- النوع -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >النوع<span class="text-danger">*</span></label
+              >
+              <select
+                formControlName="patientGender"
+                class="form-select shadow-none"
+              >
+                <option value="" disabled selected>اختر النوع</option>
+                <option [value]="0">ذكر</option>
+                <option [value]="1">أنثى</option>
+              </select>
+              <div
+                *ngIf="
+                  admissionForm.get('patientGender')?.invalid &&
+                  admissionForm.get('patientGender')?.touched
+                "
+                class="text-danger"
+              >
+                النوع مطلوب
+              </div>
+            </div>
+
+            <!-- تاريخ الميلاد -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >تاريخ الميلاد<span class="text-danger">*</span></label
+              >
+              <input
+                type="date"
+                formControlName="patientBirthDate"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientBirthDate')?.invalid &&
+                  admissionForm.get('patientBirthDate')?.touched
+                "
+                class="text-danger"
+              >
+                تاريخ الميلاد مطلوب
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- الرقم القومي -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >الرقم القومي<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientNationalId"
+                placeholder="أدخل الرقم القومي"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientNationalId')?.invalid &&
+                  admissionForm.get('patientNationalId')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="admissionForm.get('patientNationalId')?.errors?.['required']"
+                  >الرقم القومي مطلوب</ng-container
+                >
+                <ng-container
+                  *ngIf="admissionForm.get('patientNationalId')?.errors?.['pattern']"
+                  >الرقم القومي يجب أن يكون 14 رقمًا</ng-container
+                >
+              </div>
+            </div>
+
+            <!-- العنوان -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >العنوان<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientAddress"
+                placeholder="أدخل العنوان"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientAddress')?.invalid &&
+                  admissionForm.get('patientAddress')?.touched
+                "
+                class="text-danger"
+              >
+                العنوان مطلوب
+              </div>
+            </div>
+
+            <!-- القسم -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >القسم<span class="text-danger">*</span></label
+              >
+              <select
+                formControlName="departmentId"
+                class="form-select shadow-none"
+              >
+                <option value="" disabled selected>اختر القسم</option>
+                <option *ngFor="let dep of departments" [value]="dep.id">
+                  {{ dep.name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                  admissionForm.get('departmentId')?.invalid &&
+                  admissionForm.get('departmentId')?.touched
+                "
+                class="text-danger"
+              >
+                القسم مطلوب
+              </div>
+            </div>
+
+            <!-- الدكتور -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">الدكتور</label>
+              <select
+                formControlName="doctorId"
+                class="form-select shadow-none"
+              >
+                <option value="" disabled selected>اختر الدكتور</option>
+                <option *ngFor="let doctor of doctors" [value]="doctor.id">
+                  {{ doctor.fullName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- الغرفة -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">الغرفة</label>
+              <select formControlName="roomId" class="form-select shadow-none">
+                <option value="" disabled selected>اختر الغرفة</option>
+                <option *ngFor="let room of rooms" [value]="room.id">
+                  {{ room.number }}
+                </option>
+              </select>
+            </div>
+
+            <!-- السرير -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">السرير</label>
+              <select formControlName="bedId" class="form-select shadow-none">
+                <option value="" disabled selected>اختر السرير</option>
+                <option *ngFor="let bed of beds" [value]="bed.id">
+                  {{ bed.number }}
+                </option>
+              </select>
+            </div>
+
+            <!-- نوع الدخول -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">
+                نوع الدخول <span class="text-danger">*</span>
+              </label>
+
+              <select
+                formControlName="admissionType"
+                class="form-select shadow-none"
+              >
+                <option
+                  *ngFor="let type of admissionTypes"
+                  [value]="type.value"
+                >
+                  {{ type.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- طريقة الدفع -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">
+                طريقة الدفع <span class="text-danger">*</span>
+              </label>
+
+              <select
+                formControlName="paymentMethod"
+                class="form-select shadow-none"
+              >
+                <option
+                  *ngFor="let method of paymentMethods"
+                  [value]="method.value"
+                >
+                  {{ method.label }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">
+                حالة المريض <span class="text-danger">*</span>
+              </label>
+              <select
+                formControlName="patientStatus"
+                class="form-select shadow-none"
+              >
+                <option
+                  *ngFor="let st of admissionStatusList"
+                  [value]="st.value"
+                >
+                  {{ st.label }}
+                </option>
+              </select>
+
+              <div
+                *ngIf="
+                  admissionForm.get('patientStatus')?.invalid &&
+                  admissionForm.get('patientStatus')?.touched
+                "
+                class="text-danger"
+              >
+                الحالة مطلوبة
+              </div>
+            </div>
+          </div>
+
+          <!-- بيانات المرافق -->
+          <h5 class="mt-4">👨‍👩‍👧 بيانات المرافق</h5>
+          <div class="row">
+            <div class="col-lg-4 mb-3">
+              <label class="form-label">إسم المرافق</label>
+              <input
+                formControlName="companionName"
+                placeholder="أدخل إسم المرافق"
+                class="form-control shadow-none"
+              />
+            </div>
+            <div class="col-lg-4 mb-3">
+              <label class="form-label">الرقم القومي للمرافق</label>
+              <input
+                formControlName="companionNationalId"
+                placeholder="أدخل الرقم القومي للمرافق"
+                class="form-control shadow-none"
+              />
+            </div>
+            <div class="col-lg-4 mb-3">
+              <label class="form-label">رقم هاتف المرافق</label>
+              <input
+                formControlName="companionPhone"
+                placeholder="أدخل رقم هاتف المرافق"
+                class="form-control shadow-none"
+              />
+            </div>
+          </div>
+
+          <!-- ملاحظات -->
+          <div class="mb-3">
+            <label class="form-label">ملاحظات</label>
+            <textarea
+              formControlName="notes"
+              rows="3"
+              class="form-control shadow-none"
+            ></textarea>
+          </div>
+
+          <div class="row justify-content-center gap-2">
+            <button
+              [disabled]="admissionForm.invalid"
+              type="submit"
+              class="btn-blue col-2"
+            >
+              حفظ البيانات
+            </button>
+            <button
+              type="button"
+              class="btn-blue col-2"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            >
+              خروج
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- details-modal -->
+
+<!-- تفاصيل المريض Modal -->
+<div
+  class="modal fade"
+  id="inpatientDetailsModal"
+  tabindex="-1"
+  aria-labelledby="inpatientDetailsLabel"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"
+  >
+    <div class="modal-content">
+      <div class="modal-header justify-content-center text-center">
+        <h5 class="modal-title" id="inpatientDetailsLabel">
+          بيانات {{ patientDetails?.patientName || "---" }}
+        </h5>
+      </div>
+      <div class="modal-body p-4">
+        <h4 class="mb-3">👤 بيانات المريض</h4>
+        <div class="row mb-3">
+          <div class="col-lg-4">
+            <strong>الاسم:</strong> {{ patientDetails?.patientName || "---" }}
+          </div>
+          <div class="col-lg-4">
+            <strong>الرقم الطبي:</strong> {{ patientDetails?.id || "---" }}
+          </div>
+          <div class="col-lg-4">
+            <strong>النوع:</strong> {{ patientDetails?.patientGender || "---" }}
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-lg-4">
+            <strong>تاريخ الميلاد:</strong>
+            {{ patientDetails?.patientBirthDate | date }}
+          </div>
+          <div class="col-lg-4">
+            <strong>الهاتف:</strong> {{ patientDetails?.patientPhone || "---" }}
+          </div>
+          <div class="col-lg-4">
+            <strong>العنوان:</strong>
+            {{ patientDetails?.patientAddress || "---" }}
+          </div>
+        </div>
+
+        <!-- بيانات إضافية -->
+        <hr />
+        <h4 class="mb-3">📋 بيانات إضافية</h4>
+        <div class="row mb-3">
+          <div class="col-lg-12">
+            <strong>تاريخ التسجيل:</strong>
+            {{ patientDetails?.createdOn | date }}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <!-- <button
+          type="button"
+          class="btn btn-outline-success"
+          (click)="openStatusUpdateModal(patientDetails)"
+        >
+          تحديث الحالة
+        </button> -->
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          (click)="editAdmission(patientDetails)"
+        >
+          تعديل
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-danger"
+          (click)="deleteAdmission(patientDetails.id)"
+        >
+          حذف
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          إغلاق
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- edit-modal -->
+<div
+  class="modal fade"
+  id="editAdmissionModal"
+  tabindex="-1"
+  aria-labelledby="editAdmissionModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editAdmissionModalLabel">
+          تعديل بيانات المريض
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <form
+          [formGroup]="admissionForm"
+          class="form p-2"
+          (ngSubmit)="updateAdmission()"
+        >
+          <h4>🏥 بيانات الاستقبال</h4>
+
+          <div class="row">
+            <!-- الاسم -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >إسم المريض<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientName"
+                placeholder="أدخل إسم المريض"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientName')?.invalid &&
+                  admissionForm.get('patientName')?.touched
+                "
+                class="text-danger"
+              >
+                الاسم مطلوب وطوله على الأقل 3 حروف
+              </div>
+            </div>
+
+            <!-- الهاتف -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >رقم هاتف المريض<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientPhone"
+                placeholder="أدخل رقم الهاتف"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientPhone')?.invalid &&
+                  admissionForm.get('patientPhone')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="admissionForm.get('patientPhone')?.errors?.['required']"
+                  >رقم الهاتف مطلوب</ng-container
+                >
+                <ng-container
+                  *ngIf="admissionForm.get('patientPhone')?.errors?.['pattern']"
+                  >رقم الهاتف يجب أن يكون 11 رقمًا</ng-container
+                >
+              </div>
+            </div>
+
+            <!-- النوع -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >النوع<span class="text-danger">*</span></label
+              >
+              <select
+                formControlName="patientGender"
+                class="form-select shadow-none"
+              >
+                <option value="" disabled selected>اختر النوع</option>
+                <option [value]="0">ذكر</option>
+                <option [value]="1">أنثى</option>
+              </select>
+              <div
+                *ngIf="
+                  admissionForm.get('patientGender')?.invalid &&
+                  admissionForm.get('patientGender')?.touched
+                "
+                class="text-danger"
+              >
+                النوع مطلوب
+              </div>
+            </div>
+
+            <!-- تاريخ الميلاد -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >تاريخ الميلاد<span class="text-danger">*</span></label
+              >
+              <input
+                type="date"
+                formControlName="patientBirthDate"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientBirthDate')?.invalid &&
+                  admissionForm.get('patientBirthDate')?.touched
+                "
+                class="text-danger"
+              >
+                تاريخ الميلاد مطلوب
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- الرقم القومي -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >الرقم القومي<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientNationalId"
+                placeholder="أدخل الرقم القومي"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientNationalId')?.invalid &&
+                  admissionForm.get('patientNationalId')?.touched
+                "
+                class="text-danger"
+              >
+                <ng-container
+                  *ngIf="admissionForm.get('patientNationalId')?.errors?.['required']"
+                  >الرقم القومي مطلوب</ng-container
+                >
+                <ng-container
+                  *ngIf="admissionForm.get('patientNationalId')?.errors?.['pattern']"
+                  >الرقم القومي يجب أن يكون 14 رقمًا</ng-container
+                >
+              </div>
+            </div>
+
+            <!-- العنوان -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >العنوان<span class="text-danger">*</span></label
+              >
+              <input
+                formControlName="patientAddress"
+                placeholder="أدخل العنوان"
+                class="form-control shadow-none"
+              />
+              <div
+                *ngIf="
+                  admissionForm.get('patientAddress')?.invalid &&
+                  admissionForm.get('patientAddress')?.touched
+                "
+                class="text-danger"
+              >
+                العنوان مطلوب
+              </div>
+            </div>
+
+            <!-- القسم -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >القسم<span class="text-danger">*</span></label
+              >
+              <select
+                formControlName="departmentId"
+                class="form-select shadow-none"
+              >
+                <option value="" disabled selected>اختر القسم</option>
+                <option *ngFor="let dep of departments" [value]="dep.id">
+                  {{ dep.name }}
+                </option>
+              </select>
+              <div
+                *ngIf="
+                  admissionForm.get('departmentId')?.invalid &&
+                  admissionForm.get('departmentId')?.touched
+                "
+                class="text-danger"
+              >
+                القسم مطلوب
+              </div>
+            </div>
+
+            <!-- الدكتور -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">الدكتور</label>
+              <select
+                formControlName="doctorId"
+                class="form-select shadow-none"
+              >
+                <option value="" disabled selected>اختر الدكتور</option>
+                <option *ngFor="let doctor of doctors" [value]="doctor.id">
+                  {{ doctor.fullName }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- الغرفة -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">الغرفة</label>
+              <select formControlName="roomId" class="form-select shadow-none">
+                <option value="" disabled selected>اختر الغرفة</option>
+                <option *ngFor="let room of rooms" [value]="room.id">
+                  {{ room.number }}
+                </option>
+              </select>
+            </div>
+
+            <!-- السرير -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label">السرير</label>
+              <select formControlName="bedId" class="form-select shadow-none">
+                <option value="" disabled selected>اختر السرير</option>
+                <option *ngFor="let bed of beds" [value]="bed.id">
+                  {{ bed.number }}
+                </option>
+              </select>
+            </div>
+
+            <!-- نوع الدخول -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >نوع الدخول<span class="text-danger">*</span></label
+              >
+              <select
+                formControlName="admissionType"
+                class="form-select shadow-none"
+              >
+                <option [value]="0">داخلي</option>
+                <option [value]="1">خارجي</option>
+              </select>
+            </div>
+
+            <!-- طريقة الدفع -->
+            <div class="col-lg-3 mb-3">
+              <label class="form-label"
+                >طريقة الدفع<span class="text-danger">*</span></label
+              >
+              <select
+                formControlName="paymentMethod"
+                class="form-select shadow-none"
+              >
+                <option [value]="1">كاش</option>
+                <option [value]="2">تأمين</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- بيانات المرافق -->
+          <h5 class="mt-4">👨‍👩‍👧 بيانات المرافق</h5>
+          <div class="row">
+            <div class="col-lg-4 mb-3">
+              <label class="form-label">إسم المرافق</label>
+              <input
+                formControlName="companionName"
+                placeholder="أدخل إسم المرافق"
+                class="form-control shadow-none"
+              />
+            </div>
+            <div class="col-lg-4 mb-3">
+              <label class="form-label">الرقم القومي للمرافق</label>
+              <input
+                formControlName="companionNationalId"
+                placeholder="أدخل الرقم القومي للمرافق"
+                class="form-control shadow-none"
+              />
+            </div>
+            <div class="col-lg-4 mb-3">
+              <label class="form-label">رقم هاتف المرافق</label>
+              <input
+                formControlName="companionPhone"
+                placeholder="أدخل رقم هاتف المرافق"
+                class="form-control shadow-none"
+              />
+            </div>
+          </div>
+
+          <!-- ملاحظات -->
+          <div class="mb-3">
+            <label class="form-label">ملاحظات</label>
+            <textarea
+              formControlName="notes"
+              rows="3"
+              class="form-control shadow-none"
+            ></textarea>
+          </div>
+          <div class="row justify-content-center gap-2">
+            <button
+              [disabled]="admissionForm.invalid"
+              type="submit"
+              class="btn-blue col-2"
+            >
+              تحديث البيانات
+            </button>
+            <button type="reset" class="btn-outline-blue col-2">إلغاء</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<p-toast></p-toast>

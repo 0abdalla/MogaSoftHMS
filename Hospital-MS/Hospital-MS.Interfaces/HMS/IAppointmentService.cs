@@ -1,5 +1,6 @@
 ﻿using Hospital_MS.Core.Common;
 using Hospital_MS.Core.Contracts.Appointments;
+using Hospital_MS.Core.Enums;
 using System.Data;
 
 namespace Hospital_MS.Interfaces.HMS
@@ -24,5 +25,8 @@ namespace Hospital_MS.Interfaces.HMS
         Task<ErrorResponseModel<ShiftResponse>> GetShiftByIdAsync(int id, CancellationToken cancellationToken = default);
 
         //Task<ErrorResponseModel<AppointmentTypeCountsResponse>> GetCountsAsyncV2(CancellationToken cancellationToken = default);
+
+        Task<ErrorResponseModel<string>> UpdateAppointmentStatusAsync(
+            int appointmentId, AppointmentStatus newStatus, CancellationToken cancellationToken);
     }
 }

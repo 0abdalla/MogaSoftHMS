@@ -15,9 +15,11 @@ export class AppointmentService {
   baseUrl = environment.baseUrl;
   constructor(private http: HttpClient) { }
 
-  getAllAppointments(pagingFilter: PagingFilterModel): Observable<any> {
-    return this.http.post<PagedResponseModel<any>>(this.baseUrl + 'Appointments/GetAppointments', pagingFilter);
+  getAllAppointments(pagingFilter: PagingFilterModel): Observable<PagedResponseModel<any>> {
+    const params = new HttpParams({ fromObject: pagingFilter as any });
+    return this.http.get<PagedResponseModel<any>>(`${this.baseUrl}Appointments`, { params });
   }
+
 
   getAppointmentById(id: number): Observable<ErrorResponseModel<Patients>> {
     return this.http.get<ErrorResponseModel<Patients>>(`${this.baseUrl}Appointments/${id}`);
@@ -32,13 +34,13 @@ export class AppointmentService {
   deleteAppointment(id: number): Observable<ErrorResponseModel<string>> {
     return this.http.delete<ErrorResponseModel<string>>(`${this.baseUrl}Appointments?id=${id}`);
   }
-  getAllShifts(){
+  getAllShifts() {
     return this.http.get(`${this.baseUrl}Appointments/all-shifts`);
   }
-  getShiftById(id:number){
+  getShiftById(id: number) {
     return this.http.get(`${this.baseUrl}Appointments/shift/${id}`);
   }
-  closeShift(){
+  closeShift() {
     return this.http.post<any>(`${this.baseUrl}Appointments/close-shift`, {});
   }
   updateEmergency(id: number, updateEmergencyForm: FormGroup): Observable<ErrorResponseModel<string>> {
@@ -48,11 +50,11 @@ export class AppointmentService {
   getCounts(pagingFilter: PagingFilterModel): Observable<any> {
     return this.http.post<PagedResponseModel<any>>(`${this.baseUrl}Appointments/GetAppointmentsCounts`, pagingFilter);
   }
-  // 
+  //
   getClinics() {
     return this.http.get<any>(`${this.baseUrl}Clinics`);
   }
-  // 
+  //
   getServices(
     currentPage: number = 1,
     pageSize: number = 16,
@@ -89,52 +91,52 @@ export class AppointmentService {
   editService(id: number, service: any) {
     return this.http.put<any>(`${this.baseUrl}MedicalService/${id}`, service);
   }
-  // 
-  getWards(){
+  //
+  getWards() {
     return this.http.get<any>(`${this.baseUrl}Wards`);
   }
-  getWardsById(id: number){
+  getWardsById(id: number) {
     return this.http.get<any>(`${this.baseUrl}Wards/${id}`);
   }
-  addWard(ward: any){
+  addWard(ward: any) {
     return this.http.post<any>(`${this.baseUrl}Wards`, ward);
   }
-  editWard(id: number, ward: any){
+  editWard(id: number, ward: any) {
     return this.http.put<any>(`${this.baseUrl}Wards/${id}`, ward);
   }
-  deleteWard(id: number){
+  deleteWard(id: number) {
     return this.http.delete<any>(`${this.baseUrl}Wards/${id}`);
   }
-  // 
-  getRooms(){
+  //
+  getRooms() {
     return this.http.get<any>(`${this.baseUrl}Rooms`);
   }
-  getRoomsById(id: number){
+  getRoomsById(id: number) {
     return this.http.get<any>(`${this.baseUrl}Rooms/${id}`);
   }
-  addRoom(room: any){
+  addRoom(room: any) {
     return this.http.post<any>(`${this.baseUrl}Rooms`, room);
   }
-  editRoom(id: number, room: any){
+  editRoom(id: number, room: any) {
     return this.http.put<any>(`${this.baseUrl}Rooms/${id}`, room);
   }
-  deleteRoom(id: number){
+  deleteRoom(id: number) {
     return this.http.delete<any>(`${this.baseUrl}Rooms/${id}`);
   }
-  // 
-  getBeds(){
+  //
+  getBeds() {
     return this.http.get<any>(`${this.baseUrl}Beds`);
   }
-  getBedsById(id: number){
+  getBedsById(id: number) {
     return this.http.get<any>(`${this.baseUrl}Beds/${id}`);
   }
-  addBed(bed: any){
+  addBed(bed: any) {
     return this.http.post<any>(`${this.baseUrl}Beds`, bed);
   }
-  editBed(id: number, bed: any){
+  editBed(id: number, bed: any) {
     return this.http.put<any>(`${this.baseUrl}Beds/${id}`, bed);
   }
-  deleteBed(id: number){
+  deleteBed(id: number) {
     return this.http.delete<any>(`${this.baseUrl}Beds/${id}`);
   }
 }
