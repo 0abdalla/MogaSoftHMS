@@ -26,7 +26,5 @@ namespace Hospital_MS.Interfaces.HMS
 
         //Task<ErrorResponseModel<AppointmentTypeCountsResponse>> GetCountsAsyncV2(CancellationToken cancellationToken = default);
 
-        Task<ErrorResponseModel<string>> UpdateAppointmentStatusAsync(
-            int appointmentId, AppointmentStatus newStatus, CancellationToken cancellationToken);
     }
 }

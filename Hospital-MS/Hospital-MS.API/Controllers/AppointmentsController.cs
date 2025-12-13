@@ -97,15 +97,14 @@ namespace Hospital_MS.API.Controllers
         //}\
 
 
-        [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateAppointmentStatus(int id, [FromBody] UpdateAppointmentStatusRequest request, CancellationToken cancellationToken)
-        {
-            if (!Enum.TryParse<AppointmentStatus>(request.Status, true, out var newStatus))
-            {
-                return BadRequest(new { isSuccess = false, message = "حالة الحجز غير صالحة" });
-            }
 
-            var result = await _appointmentService.UpdateAppointmentStatusAsync(id, newStatus, cancellationToken);
+        [HttpPut("update-status/{id}")]
+        public async Task<IActionResult> UpdatePatientStatus(
+    int id,
+    [FromBody] UpdatePatientStatusInEmergencyRequest request,
+    CancellationToken cancellationToken)
+        {
+            var result = await _appointmentService.UpdateStatusAsync(id, request, cancellationToken);
             return Ok(result);
         }
 
